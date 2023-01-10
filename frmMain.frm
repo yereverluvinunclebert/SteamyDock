@@ -685,8 +685,8 @@ Attribute VB_Exposed = False
 ' routines:
 
     ' drawSmallStaticIcons - quick and simple routine using little cpu that keeps the dock on screen in small mode
-    ' drawDockByCursorEntryPosition - calculates the initial dock position from the cursor entry point
-    ' sequentialBubbleAnimation - performs the animation of the central three icons.
+    ' drawDockByCursorEntryPosition - calculates and draws once using the initial dock position from the cursor entry point
+    ' sequentialBubbleAnimation - performs the regular animation of the central three icons.
 
 ' animating the entry of the cursor into the dock
     ' the timer modifies a grow value by incrementing a value
