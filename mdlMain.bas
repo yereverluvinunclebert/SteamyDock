@@ -25,7 +25,7 @@ Option Explicit
 '
 '
 '------------------------------------------------------------
-
+Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
 
 'Public Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal Image As Long, ByVal filename As String, clsidEncoder As CLSID, encoderParams As Any) As GpStatus
 Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal image As Long, ByVal x As Single, ByVal y As Single) As Long
@@ -2875,3 +2875,243 @@ End Function
 
 
 
+Public Function checkProcessAndhandleWindowConditionAndZorder(ByVal thisCommand As String, ByVal selectedIconIndex As Integer, ByVal commandOverride As String, ByVal runAction As String) As Boolean
+    Dim processID As Long:  processID = 0
+    Dim lngRetVal As Long: lngRetVal = 0
+
+    If processCheckArray(selectedIconIndex) = True Or commandOverride <> vbNullString Then
+        'the array check above is the quick way to check process is already running
+        'but we need to run IsRunning again to get the process PID
+        If IsRunning(thisCommand, processID) Then ' it checks again that the process is still running, as the check process timer that populates the processCheckArray is too infrequent to be relied upon
+            
+            lngRetVal = handleWindowConditionAndZorder(processID, runAction)
+            checkProcessAndhandleWindowConditionAndZorder = True
+            'If lngRetVal = 0 Then
+
+        End If ' IsRunning(thisCommand, processID)
+    End If ' processCheckArray(selectedIconIndex)
+End Function
+
+
+
+Public Function handleWindowConditionAndZorder(ByVal processID As Long, ByVal runAction As String) As Long
+
+    Dim windowHwnd As Long:  windowHwnd = 0
+    Dim CurrentForegroundThreadID As Long: CurrentForegroundThreadID = 0
+    Dim NewForegroundThreadID As Long: NewForegroundThreadID = 0
+    Dim lngRetVal As Long: lngRetVal = 0
+    Dim hTray As Long: hTray = 0 ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+    Dim hOverflow As Long: hOverflow = 0 ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+    ' .22 DAEB frmMain.frm 08/02/2021 changes to replace old method of enumerating all windows with enumerate improved Windows function STARTS
+    
+    hTray = FindWindow_NotifyTray() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+    hOverflow = FindWindow_NotifyOverflow() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+
+    
+    'windowHwnd = getWindowHWndForPid(processID) ' old method of enumerating all windows and find the associated pid of each, returning the hWnd of the window associated with the PID
+    
+    'The EnumWindows function is more reliable than calling the GetWindow function in a loop as we used to do.
+    'ie. An application that calls GetWindow to perform this task risks being caught in an infinite
+    'loop or referencing a handle to a window that has been destroyed.
+    
+    ' enumerate all windows and find the associated pid of each, returning the hWnd of the window associated with the given PID
+    Call fEnumWindows(processID)
+    windowHwnd = storeWindowHwnd
+    
+    ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas STARTS
+    ' if the hwnd is zero then a matching process has not been found, in this case search the systray
+    If windowHwnd = 0 Then
+    
+        'Me.Print "Tray Handle: 0x" & Hex(hTray)
+        isSysTray hTray, processID, windowHwnd
+    
+        'Me.Print "Overflow Handle: 0x" & Hex(hOverflow)
+        isSysTray hOverflow, processID, windowHwnd
+    End If
+    ' .33 DAEB 03/03/2021 frmMain.frm New systray code from DragokasENDS
+    
+     'GetWindowRect windowHwnd, pRect unused
+    
+    ' Get the thread for the current window that is to fore now (the dock)
+    CurrentForegroundThreadID = GetWindowThreadProcessId(GetForegroundWindow(), ByVal 0&)
+    
+    ' Get the thread ID for the window we are trying to bring to the fore
+    NewForegroundThreadID = GetWindowThreadProcessId(windowHwnd, ByVal 0&)
+    
+    'AttachThreadInput is used to ensure SetForegroundWindow will work
+    'even if our application isn't currently the foreground window
+    '(e.g. a minimised application running in the background)
+    
+    If CurrentForegroundThreadID <> NewForegroundThreadID Then
+        ' Attach shared keyboard input to the thread we are raising
+        Call AttachThreadInput(CurrentForegroundThreadID, NewForegroundThreadID, True)
+        
+        ' Make the raised window the foreground window.
+        If runAction = "back" Then
+            ' .38 DAEB 18/03/2021 frmMain.frm utilised SetActiveWindow to give window focus without bringing it to fore
+            
+            '    The SetActiveWindow function activates a window, but not if the application is in the background.
+            '    The window will be brought into the foreground (top of Z order) if the application is in the foreground when it sets the activation.
+            lngRetVal = SetActiveWindow(windowHwnd)
+        Else
+            '     Brings the thread that created the specified window into the foreground AND activates the window. Keyboard input is
+            '     directed to the window, and various visual cues are changed for the user. The system assigns a slightly higher
+            '     priority to the thread that created the foreground window than it does to other threads.
+            lngRetVal = SetForegroundWindow(windowHwnd)
+        End If
+        
+        ' break the thread's attachment to the newly raised window, breaking the association
+        ' effectively passing control to the raised window.
+        Call AttachThreadInput(CurrentForegroundThreadID, NewForegroundThreadID, False)
+    Else
+       lngRetVal = SetForegroundWindow(windowHwnd) ' bring window to the fore
+    End If
+    
+    ' .22 DAEB frmMain.frm 08/02/2021 changes to replace old method of enumerating all windows with enumerate improved Windows function ENDS
+    If lngRetVal <> 0 Then
+                          
+        If IsIconic(windowHwnd) Then
+            Call ShowWindow(windowHwnd, SW_RESTORE) ' if a minimised window, bring to fore as a standard window
+            Call setWindowZorder(windowHwnd, runAction)
+        ElseIf IsZoomed(windowHwnd) Then
+            Call ShowWindow(windowHwnd, SW_MINIMIZE) ' if a full size window, minimise
+            Call setWindowZorder(windowHwnd, runAction)
+        ElseIf (Not IsIconic(windowHwnd) And Not IsZoomed(windowHwnd)) Then ' a normal window
+            Call setWindowZorder(windowHwnd, runAction)
+            If prevIconIndex <> selectedIconIndex Then ' .27 DAEB frmMain.frm 11/02/2021 now operates like the standard Windows dock on a click, minimising then restoring
+                
+                ' .34 DAEB frmMain.frm 08/02/2021  - commented out the extra unwanted ShowWindow(windowHwnd, SW_RESTORE)
+                ' bringing this window to the fore, not needed, SetForegroundWindow does the job already - the showWindow causes a z-order problem if it is included.
+                ''''Call ShowWindow(windowHwnd, SW_RESTORE) ' < do not comment back in, leave all the commands in this if...else section commented out
+                
+                ' lngRetVal = SetForegroundWindow(windowHwnd) ' trial bring window to the fore
+                'SetWindowPos windowHwnd, HWND_TOPMOST, pRect.Left, pRect.Top, 0, 0, SWP_NOSIZE' trial bring window to the fore
+                
+            Else ' if the icon clicked is the same as the one before then
+                If runAction <> "focus" And runAction <> "back" Then
+                    'Call ShowWindow(windowHwnd, SW_MINIMIZE)   ' minimise the window
+                    Call ShowWindowAsync(windowHwnd, SW_MINIMIZE) ' .41 DAEB 18/03/2021 frmMain.frm utilised ShowWindowAsync instead of ShowWindow as the C program utilised it and it seemed to make sense to do so too
+                End If
+            End If
+            
+            ' I was not able to obtain a handle of a window with focus as it never matched
+            ' the selected window. It seems that you cannot check whether the chosen window already has focus as the
+            ' second you click an icon on the dock, the dock itself
+            ' seems to acquire focus.
+    
+        ' .26 DAEB frmMain.frm 10/02/2021 added test to check window state and alter it accordingly
+    
+        End If
+        prevIconIndex = selectedIconIndex ' .27 DAEB frmMain.frm 11/02/2021 now operates like the standard Windows dock on a click, minimising then restoring
+        
+    End If
+    handleWindowConditionAndZorder = lngRetVal
+
+End Function
+
+Private Sub setWindowZorder(ByVal windowHwnd As Long, ByVal runAction As String)
+
+    If runAction = "focus" Then
+        BringWindowToTop windowHwnd ' .39 DAEB 18/03/2021 frmMain.frm utilised BringWindowToTop instead of SetWindowPos & HWND_TOP as that was used by a C program that worked perfectly.
+        'SetWindowPos windowHwnd, HWND_TOP, 0, 0, 0, 0, SWP_ACTIVATE Or SWP_SHOWWINDOW Or SWP_NOMOVE Or SWP_NOSIZE
+    End If
+    
+    ' .42 DAEB 03/03/2021 frmMain.frm To support new receive focus menu option
+    If runAction = "normal" Then
+        ' .40 DAEB 18/03/2021 frmMain.frm Added SWP_NOOWNERZORDER as an additional flag as that was used by a C program that worked perfectly, fixing the z-order position problems
+        SetWindowPos windowHwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOOWNERZORDER
+    End If
+    
+     ' .42 DAEB 03/03/2021 frmMain.frm To support new receive focus menu option
+    If runAction = "back" Then
+        ' .40 DAEB 18/03/2021 frmMain.frm Added SWP_NOOWNERZORDER as an additional flag as that was used by a C program that worked perfectly, fixing the z-order position problems
+        SetWindowPos windowHwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOOWNERZORDER
+    End If
+End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : isSysTray
+' Author    : beededea
+' Date      : 20/02/2021
+' Purpose   : .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+'---------------------------------------------------------------------------------------
+'
+Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As Long)
+
+    Dim Count As Long: Count = 0
+    Dim hIcon() As Long: 'hIcon() = 0
+    Dim i As Long: i = 0
+    Dim pid As Long: pid = 0
+
+    On Error GoTo isSysTray_Error
+
+    Count = GetIconCount(hTray)
+
+    If Count <> 0 Then
+        Call GetIconHandles(hTray, Count, hIcon)
+    End If
+
+    For i = 0 To Count - 1
+        pid = GetPidByWindow(hIcon(i))
+        'if the extracted pid matches the supplied processID then we have the window handle
+        If pid = processID Then
+            hWnd = hIcon(i)
+            Exit Function
+        End If
+    Next
+
+   On Error GoTo 0
+   Exit Function
+
+isSysTray_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure isSysTray of Form dock"
+End Function
+
+'---------------------------------------------------------------------------------------
+' Procedure : confirmEachKillPutWindowBehind
+' Author    : beededea
+' Date      : 20/12/2022
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function confirmEachKillPutWindowBehind(ByVal binaryName As String, ByVal procId As Long, ByVal processToKill As String, ByVal confirmEachProcessKill As Boolean, ByRef ExitCode As Long) As Boolean
+    Dim goAheadAndKill As Boolean: goAheadAndKill = False
+    Dim rmessage As String: rmessage = ""
+    Dim answer As VbMsgBoxResult: answer = vbNo
+    Dim a As Long
+
+    On Error GoTo confirmEachKillPutWindowBehind_Error
+
+    If confirmEachProcessKill = True Then
+        ' send application to back so the msgbox appears on top
+        a = handleWindowConditionAndZorder(procId, "back")
+        rmessage = "A matching process has been found. Kill this application? - " & binaryName & " with process ID " & procId
+        answer = MsgBox(rmessage, vbYesNo)
+        If answer = vbNo Then
+            goAheadAndKill = False
+        Else
+            goAheadAndKill = True
+        End If
+    Else
+        goAheadAndKill = True
+    End If
+    
+    If goAheadAndKill = True Then
+        confirmEachKillPutWindowBehind = TerminateProcess(processToKill, ExitCode)
+        Call CloseHandle(processToKill)
+    Else
+        a = handleWindowConditionAndZorder(procId, "focus")
+    End If
+
+    On Error GoTo 0
+    Exit Function
+
+confirmEachKillPutWindowBehind_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure confirmEachKillPutWindowBehind of Module common"
+            Resume Next
+          End If
+    End With
+End Function

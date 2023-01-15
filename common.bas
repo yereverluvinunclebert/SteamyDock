@@ -820,51 +820,6 @@ End Function
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : confirmEachKill
-' Author    : beededea
-' Date      : 20/12/2022
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Function confirmEachKill(ByVal binaryName As String, ByVal procId As Long, ByVal processToKill As String, ByVal confirmEachProcessKill As Boolean, ByRef ExitCode As Long) As Boolean
-    Dim goAheadAndKill As Boolean: goAheadAndKill = False
-    Dim rmessage As String: rmessage = ""
-    Dim answer As VbMsgBoxResult: answer = vbNo
-
-    On Error GoTo confirmEachKill_Error
-
-    If confirmEachProcessKill = True Then
-        'SetForegroundWindow dock.hWnd
-        BringWindowToTop dock.hWnd
-        rmessage = "A matching process has been found. Kill this application? - " & binaryName & " with process ID " & procId
-        answer = MsgBox(rmessage, vbYesNo)
-        If answer = vbNo Then
-            goAheadAndKill = False
-        Else
-            goAheadAndKill = True
-        End If
-    Else
-        goAheadAndKill = True
-    End If
-    
-    If goAheadAndKill = True Then
-        confirmEachKill = TerminateProcess(processToKill, ExitCode)
-        Call CloseHandle(processToKill)
-    End If
-
-    On Error GoTo 0
-    Exit Function
-
-confirmEachKill_Error:
-
-    With Err
-         If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure confirmEachKill of Module common"
-            Resume Next
-          End If
-    End With
-End Function
-'---------------------------------------------------------------------------------------
 ' Procedure : GetExePathFromPID
 ' Author    : beededea
 ' Date      : 25/08/2020
@@ -2310,3 +2265,49 @@ toggleDebugging_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure toggleDebugging of Module mdlMain"
 
 End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : confirmEachKill
+' Author    : beededea
+' Date      : 20/12/2022
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function confirmEachKill(ByVal binaryName As String, ByVal procId As Long, ByVal processToKill As String, ByVal confirmEachProcessKill As Boolean, ByRef ExitCode As Long) As Boolean
+    Dim goAheadAndKill As Boolean: goAheadAndKill = False
+    Dim rmessage As String: rmessage = ""
+    Dim answer As VbMsgBoxResult: answer = vbNo
+    Dim a As Long
+
+    On Error GoTo confirmEachKill_Error
+
+    If confirmEachProcessKill = True Then
+        rmessage = "A matching process has been found. Kill this application? - " & binaryName & " with process ID " & procId
+        answer = MsgBox(rmessage, vbYesNo)
+        If answer = vbNo Then
+            goAheadAndKill = False
+        Else
+            goAheadAndKill = True
+        End If
+    Else
+        goAheadAndKill = True
+    End If
+    
+    If goAheadAndKill = True Then
+        confirmEachKill = TerminateProcess(processToKill, ExitCode)
+        Call CloseHandle(processToKill)
+    End If
+
+    On Error GoTo 0
+    Exit Function
+
+confirmEachKill_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure confirmEachKill of Module common"
+            Resume Next
+          End If
+    End With
+End Function

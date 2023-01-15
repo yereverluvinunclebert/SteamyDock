@@ -525,6 +525,8 @@ Attribute VB_Exposed = False
 ' Fixed the dragIcon to correspond to the latest use of the dictionaryArray, extract the correct image to drag.
 ' sShowCmd coerced into an integer causing problem on new folder icon bypassing strong typing, added a val().
 ' When doing a process kill for an application that has been brought to the front, the msgbox is underneath, dock/msgbox now to the front.
+' Created setWindowZorder subroutine and added it to each iconise type.
+' Added sDisabled option in settings.ini for all icons
 
 ' General Status
 ' ==============
@@ -557,9 +559,9 @@ Attribute VB_Exposed = False
 
 ' Drag and drop needs prettying, a gap
 
-' avoid strings in the animation routines - integers are quicker
+' TOP TIP: avoid strings in the animation routines - integers are quicker
 '
-' avoid public routines in the animation routines - private are quicker
+' TOP TIP: avoid public routines in the animation routines - private are quicker
 '
 ' When icon clicked and bouncing the dock should not animate when moving the cursor left/right - option to lock? - WIP when the animation is
 '   re-jigged and rewritten.
@@ -3482,11 +3484,10 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     Dim answer As VbMsgBoxResult: answer = vbNo
     Dim folderPath As String: folderPath = vbNullString
     Dim thisCommand As String: thisCommand = vbNullString
-    Dim processID As Long:  processID = 0
     Dim windowHwnd As Long:  windowHwnd = 0
-    Dim SetTopMostWindow As Long: SetTopMostWindow = 0
-    Dim CurrentForegroundThreadID As Long: CurrentForegroundThreadID = 0
-    Dim NewForegroundThreadID As Long: NewForegroundThreadID = 0
+    'Dim SetTopMostWindow As Long: SetTopMostWindow = 0
+'    Dim CurrentForegroundThreadID As Long: CurrentForegroundThreadID = 0
+'    Dim NewForegroundThreadID As Long: NewForegroundThreadID = 0
     Dim lngRetVal As Long: lngRetVal = 0
     Dim rmessage As String: rmessage = vbNullString ' .19 DAEB frmMain.frm 02/02/2021 added sArguments field to the confirmation dialog
     Dim hTray As Long: hTray = 0 ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
@@ -3534,8 +3535,8 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
         intShowCmd = 1
     End If
 
-    hTray = FindWindow_NotifyTray() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
-    hOverflow = FindWindow_NotifyOverflow() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+'    hTray = FindWindow_NotifyTray() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+'    hOverflow = FindWindow_NotifyOverflow() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
 
     ' bring an already running process to the fore and then exit
     If rDOpenRunning = "1" And forceRunNewAppFlag = False Or sOpenRunning = "1" Then
@@ -3546,126 +3547,11 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     ' we bypass the process checking of the array and do not add this application to the list of running apps.
     
         If selectedIconIndex <> 999 Then
-            If processCheckArray(selectedIconIndex) = True Or commandOverride <> vbNullString Then
-                'is the quick way to check process is already running
-                'but we need to run IsRunning again to get the process PID
-                If IsRunning(thisCommand, processID) Then ' it checks again that the process is still running, as the check process timer that populates the processCheckArray is too infrequent to be relied upon
-                    
-                    ' .22 DAEB frmMain.frm 08/02/2021 changes to replace old method of enumerating all windows with enumerate improved Windows function STARTS
-                    
-                    'windowHwnd = getWindowHWndForPid(processID) ' old method of enumerating all windows and find the associated pid of each, returning the hWnd of the window associated with the PID
-                    
-                    'The EnumWindows function is more reliable than calling the GetWindow function in a loop as we used to do.
-                    'ie. An application that calls GetWindow to perform this task risks being caught in an infinite
-                    'loop or referencing a handle to a window that has been destroyed.
-                    
-                    ' enumerate all windows and find the associated pid of each, returning the hWnd of the window associated with the given PID
-                    Call fEnumWindows(processID)
-                    windowHwnd = storeWindowHwnd
-                    
-                    ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas STARTS
-                    ' if the hwnd is zero then a matching process has not been found, in this case search the systray
-                    If windowHwnd = 0 Then
-    
-                        Me.Print "Tray Handle: 0x" & Hex(hTray)
-                        isSysTray hTray, processID, windowHwnd
-    
-                        Me.Print "Overflow Handle: 0x" & Hex(hOverflow)
-                        isSysTray hOverflow, processID, windowHwnd
-                    End If
-                    ' .33 DAEB 03/03/2021 frmMain.frm New systray code from DragokasENDS
-                    
-                     'GetWindowRect windowHwnd, pRect unused
-    
-                    ' Get the thread for the current window that is to fore now (the dock)
-                    CurrentForegroundThreadID = GetWindowThreadProcessId(GetForegroundWindow(), ByVal 0&)
-                    
-                    ' Get the thread ID for the window we are trying to bring to the fore
-                    NewForegroundThreadID = GetWindowThreadProcessId(windowHwnd, ByVal 0&)
+            Dim checki As Boolean
+            checki = checkProcessAndhandleWindowConditionAndZorder(thisCommand, selectedIconIndex, commandOverride, runAction)
+            If checki = True Then Exit Sub
             
-                    'AttachThreadInput is used to ensure SetForegroundWindow will work
-                    'even if our application isn't currently the foreground window
-                    
-                    '(e.g. a minimised application running in the background)
-                    If CurrentForegroundThreadID <> NewForegroundThreadID Then
-                        ' Attach shared keyboard input to the thread we are raising
-                        Call AttachThreadInput(CurrentForegroundThreadID, NewForegroundThreadID, True)
-                        ' Make the raised window the foreground window.
-                        
-                        
-                        If runAction = "back" Then
-                            ' .38 DAEB 18/03/2021 frmMain.frm utilised SetActiveWindow to give window focus without bringing it to fore
-                            
-                            '    The SetActiveWindow function activates a window, but not if the application is in the background.
-                            '    The window will be brought into the foreground (top of Z order) if the application is in the foreground when it sets the activation.
-                            lngRetVal = SetActiveWindow(windowHwnd)
-                        Else
-                            '     Brings the thread that created the specified window into the foreground and activates the window. Keyboard input is
-                            '     directed to the window, and various visual cues are changed for the user. The system assigns a slightly higher
-                            '     priority to the thread that created the foreground window than it does to other threads.
-                            lngRetVal = SetForegroundWindow(windowHwnd)
-                        End If
-                        
-                        ' break the thread's attachment to the newly raised window, breaking the association
-                        ' effectively passing control to the raised window.
-                        Call AttachThreadInput(CurrentForegroundThreadID, NewForegroundThreadID, False)
-                    Else
-                       lngRetVal = SetForegroundWindow(windowHwnd) ' bring window to the fore
-                    End If
-                    
-                    ' .22 DAEB frmMain.frm 08/02/2021 changes to replace old method of enumerating all windows with enumerate improved Windows function ENDS
-                    If lngRetVal <> 0 Then
-                                          
-                        If IsIconic(windowHwnd) Then
-                            Call ShowWindow(windowHwnd, SW_RESTORE) ' if a minimised window, bring to fore as a standard window
-                        ElseIf IsZoomed(windowHwnd) Then
-                            Call ShowWindow(windowHwnd, SW_MINIMIZE) ' if a full size window, minimise
-                        ElseIf (Not IsIconic(windowHwnd) And Not IsZoomed(windowHwnd)) Then ' a normal window
-                            
-                            ' .42 DAEB 03/03/2021 frmMain.frm To support new receive focus menu option
-                            If runAction = "focus" Then
-                                BringWindowToTop windowHwnd ' .39 DAEB 18/03/2021 frmMain.frm utilised BringWindowToTop instead of SetWindowPos & HWND_TOP as that was used by a C program that worked perfectly.
-                                'SetWindowPos windowHwnd, HWND_TOP, 0, 0, 0, 0, SWP_ACTIVATE Or SWP_SHOWWINDOW Or SWP_NOMOVE Or SWP_NOSIZE
-                            End If
-                            
-                            ' .42 DAEB 03/03/2021 frmMain.frm To support new receive focus menu option
-                            If runAction = "back" Then
-                                ' .40 DAEB 18/03/2021 frmMain.frm Added SWP_NOOWNERZORDER as an additional flag as that was used by a C program that worked perfectly, fixing the z-order position problems
-                                SetWindowPos windowHwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOOWNERZORDER
-                            End If
-                            
-                            If prevIconIndex <> selectedIconIndex Then ' .27 DAEB frmMain.frm 11/02/2021 now operates like the standard Windows dock on a click, minimising then restoring
-                                
-                                ' .34 DAEB frmMain.frm 08/02/2021  - commented out the extra unwanted ShowWindow(windowHwnd, SW_RESTORE)
-                                ' bringing this window to the fore, not needed, SetForegroundWindow does the job already - the showWindow causes a z-order problem if it is included.
-                                ''''Call ShowWindow(windowHwnd, SW_RESTORE) ' < do not comment back in, leave all the commands in this if...else section commented out
-                                
-                                ' lngRetVal = SetForegroundWindow(windowHwnd) ' trial bring window to the fore
-                                'SetWindowPos windowHwnd, HWND_TOPMOST, pRect.Left, pRect.Top, 0, 0, SWP_NOSIZE' trial bring window to the fore
-                                
-                            Else ' if the icon clicked is the same as the one before then
-                                If runAction <> "focus" And runAction <> "back" Then
-                                    'Call ShowWindow(windowHwnd, SW_MINIMIZE)   ' minimise the window
-                                    Call ShowWindowAsync(windowHwnd, SW_MINIMIZE) ' .41 DAEB 18/03/2021 frmMain.frm utilised ShowWindowAsync instead of ShowWindow as the C program utilised it and it seemed to make sense to do so too
-                                End If
-                            End If
-                            
-                            ' I was not able to obtain a handle of a window with focus as it never matched
-                            ' the selected window. It seems that you cannot check whether the chosen window already has focus as the
-                            ' second you click an icon on the dock, the dock itself
-                            ' seems to acquire focus.
-    
-                        ' .26 DAEB frmMain.frm 10/02/2021 added test to check window state and alter it accordingly
-     
-                        End If
-    
-                        prevIconIndex = selectedIconIndex ' .27 DAEB frmMain.frm 11/02/2021 now operates like the standard Windows dock on a click, minimising then restoring
-    
-                        Exit Sub ' if the app can be switched to successfully then do nothing else
-                    End If
-        
-                End If ' IsRunning(thisCommand, processID)
-            End If ' processCheckArray(selectedIconIndex)
+            'Exit Sub ' if the app can be switched to successfully then do nothing else
         End If ' 999
     End If ' rDOpenRunning = "1"
     
@@ -3874,44 +3760,7 @@ runCommand_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure runCommand of Form dock"
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : isSysTray
-' Author    : beededea
-' Date      : 20/02/2021
-' Purpose   : .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
-'---------------------------------------------------------------------------------------
-'
-Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As Long)
 
-    Dim Count As Long: Count = 0
-    Dim hIcon() As Long: 'hIcon() = 0
-    Dim i As Long: i = 0
-    Dim pid As Long: pid = 0
-
-    On Error GoTo isSysTray_Error
-
-    Count = GetIconCount(hTray)
-
-    If Count <> 0 Then
-        Call GetIconHandles(hTray, Count, hIcon)
-    End If
-
-    For i = 0 To Count - 1
-        pid = GetPidByWindow(hIcon(i))
-        'if the extracted pid matches the supplied processID then we have the window handle
-        If pid = processID Then
-            hWnd = hIcon(i)
-            Exit Function
-        End If
-    Next
-
-   On Error GoTo 0
-   Exit Function
-
-isSysTray_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure isSysTray of Form dock"
-End Function
 
 '---------------------------------------------------------------------------------------
 ' Procedure : shellExecuteWithDialog
