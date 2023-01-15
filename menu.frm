@@ -337,7 +337,7 @@ Private Sub mnuAddCache_Click()
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
 
-        Call menuAddSummat(iconImage, "Clear Cache", "C:\WINDOWS\system32\rundll32.exe", "advapi32.dll , ProcessIdleTasks", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Clear Cache", "C:\WINDOWS\system32\rundll32.exe", "advapi32.dll , ProcessIdleTasks", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Clear Cache")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -383,7 +383,7 @@ Private Sub mnuAddMyDocuments_Click()
        
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "My Documents")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -438,7 +438,7 @@ Private Sub mnuAddMyMusic_Click()
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' using the Special CLSID for the video folder this, in fact resolves to the my documents folder and not the video folder below.
         'Call menuAddSummat(iconImage, "My Music", "::{1CF1260C-4DD0-4ebb-811F-33C572699FDE}", vbNullString, vbNullString, vbNullString, vbNullString)
-        Call menuAddSummat(iconImage, "My Music", userprof & "\Documents\Music", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "My Music", userprof & "\Documents\Music", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "My Music")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -492,7 +492,7 @@ Private Sub mnuAddMyPictures_Click()
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         'Call menuAddSummat(iconImage, "My Pictures", "::{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call menuAddSummat(iconImage, "My Pictures", userprof & "\Documents\Pictures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "My Pictures", userprof & "\Documents\Pictures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "My Pictures")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -545,7 +545,7 @@ Private Sub mnuAddMyVideos_Click()
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         'Call menuAddSummat(iconImage, "My Videos", "::{A0953C92-50DC-43bf-BE83-3742FED03C9C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call menuAddSummat(iconImage, "My Videos", userprof & "\Documents\Videos", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "My Videos", userprof & "\Documents\Videos", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "My Videos")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -608,7 +608,7 @@ Private Sub mnuAddSleep_Click()
            
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Sleep", "C:\Windows\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Sleep", "C:\Windows\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Sleep")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -903,7 +903,7 @@ Private Sub mnuCloneIcon_Click()
     
     readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile
 
-    Call menuAddSummat(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch)
+    Call menuAddSummat(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
     Call menuForm.postAddIConTasks(sFilename, sTitle)
 
 
@@ -1645,7 +1645,7 @@ Private Sub menuAddBlank_Click()
     
     If FExists(iconImage) Then
         ' general tool to add an icon
-        Call menuAddSummat(iconImage, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, vbNullString)
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -1687,7 +1687,7 @@ Private Sub mnuAddShutdown_click()
            
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Shutdown", "C:\Windows\System32\shutdown.exe", "/s /t 00 /f /i", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Shutdown", "C:\Windows\System32\shutdown.exe", "/s /t 00 /f /i", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Shutdown")
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -1728,7 +1728,7 @@ Private Sub mnuAddRestart_click()
            
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Restart", "C:\Windows\System32\shutdown.exe", "/r", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Restart", "C:\Windows\System32\shutdown.exe", "/r", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Restart")
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -1770,7 +1770,7 @@ Private Sub mnuAddLog_click()
     
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Log Off", "frameProperties:\WINDOWS\system32\rundll32.exe", "user32.dll, LockWorkStation", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Log Off", "frameProperties:\WINDOWS\system32\rundll32.exe", "user32.dll, LockWorkStation", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Log Off")
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -1812,7 +1812,7 @@ Private Sub mnuAddNetwork_click()
     ' thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Network")
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -1853,7 +1853,7 @@ Private Sub mnuAddWorkgroup_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "WorkGroup", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "WorkGroup", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "WorkGroup")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -1893,7 +1893,7 @@ Private Sub mnuAddPrinters_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Printers", "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Printers", "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Printers")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -1935,7 +1935,7 @@ Private Sub mnuAddTask_click()
         ' if a 32 bit application on a 64bit o/s, regardless of the command, the o/s calls C:\Windows\SysWOW64\taskmgr.exe
         If FExists(iconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            Call menuAddSummat(iconImage, "Task Manager", Environ$("windir") & "\SysWOW64\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            Call menuAddSummat(iconImage, "Task Manager", Environ$("windir") & "\SysWOW64\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             Call postAddIConTasks(iconImage, "Task Manager")
         Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -1946,7 +1946,7 @@ Private Sub mnuAddTask_click()
         ' if a 32 bit application on a 32bit o/s, regardless of the o/s calls C:\Windows\System32\taskmgr.exe
         If FExists(iconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            Call menuAddSummat(iconImage, "Task Manager", Environ$("windir") & "\System32\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            Call menuAddSummat(iconImage, "Task Manager", Environ$("windir") & "\System32\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             Call postAddIConTasks(iconImage, "Task Manager")
         Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -1986,7 +1986,7 @@ Private Sub mnuAddControl_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Control panel", "control", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Control panel", "control", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Control panel")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -2026,7 +2026,7 @@ Private Sub mnuAddPrograms_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Programs and Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Programs and Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Programs and Features")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -2065,7 +2065,7 @@ Private Sub mnuAddDock_click()
 
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Dock Settings", "[Settings]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Dock Settings", "[Settings]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Dock Settings")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -2106,7 +2106,7 @@ Private Sub mnuAddAdministrative_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Administration Tools", "compmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Administration Tools", "compmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Administration Tools")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -2145,7 +2145,7 @@ Private Sub mnuAddRecycle_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Recycle Bin", "::{645ff040-5081-101b-9f08-00aa002f954e}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Recycle Bin", "::{645ff040-5081-101b-9f08-00aa002f954e}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Recycle Bin")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -2188,7 +2188,7 @@ Private Sub mnuAddQuit_click()
     
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Quit", "[Quit]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Quit", "[Quit]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Quit")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -2229,7 +2229,7 @@ Private Sub mnuAddProgramFiles_click()
 
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Program Files", "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Program Files", "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Program Files")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -2271,7 +2271,7 @@ Private Sub mnuAddSeparator_click()
         
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Separator", vbNullString, vbNullString, vbNullString, vbNullString, sIsSeparator, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Separator", vbNullString, vbNullString, vbNullString, vbNullString, sIsSeparator, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Separator")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -2324,7 +2324,7 @@ Private Sub mnuaddFolder_click()
    
         If FExists(iconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            Call menuAddSummat(iconImage, getFolder, getFolder, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            Call menuAddSummat(iconImage, getFolder, getFolder, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             Call postAddIConTasks(iconImage, getFolder)
         Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -2370,7 +2370,7 @@ Private Sub mnuAddMyComputer_click()
        
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "My Computer", "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "My Computer", "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "My Computer")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -2418,7 +2418,7 @@ Private Sub mnuAddEnhanced_click()
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
 
-        Call menuAddSummat(iconImage, "Enhanced Icon Settings", App.Path & "\iconsettings.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call menuAddSummat(iconImage, "Enhanced Icon Settings", App.Path & "\iconsettings.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call postAddIConTasks(iconImage, "Enhanced Icon Settings")
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form

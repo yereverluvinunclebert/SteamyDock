@@ -94,6 +94,7 @@ Public Sub readIconSettingsIni(location As String, ByVal iconNumberToRead As Int
         sQuickLaunch = GetINISetting(location, iconNumberToRead & "-QuickLaunch", settingsFile) ' .02 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
         sAutoHideDock = GetINISetting(location, iconNumberToRead & "-AutoHideDock", settingsFile)       ' .12 DAEB 20/05/2021 common3.bas Added new check box to allow autohide of the dock after launch of the chosen app
         sSecondApp = GetINISetting(location, iconNumberToRead & "-SecondApp", settingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+        sDisabled = GetINISetting(location, iconNumberToRead & "-Disabled", settingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
         
    On Error GoTo 0
    Exit Sub
@@ -164,7 +165,8 @@ Public Sub writeRegistryOnce(ByVal iconNumberToWrite As Integer)
     Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-QuickLaunch", sQuickLaunch) ' .02 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
     Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-AutoHideDock", sAutoHideDock) ' .12 DAEB 20/05/2021 common3.bas Added new check box to allow autohide of the dock after launch of the chosen app
     Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-SecondApp", sSecondApp)  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-      
+    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Disabled", sDisabled)  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+    
    On Error GoTo 0
    Exit Sub
 
@@ -550,7 +552,7 @@ End Function
 '---------------------------------------------------------------------------------------
 ' CREDIT http://www.vb-helper.com/howto_get_shortcut_info.html
 Public Function GetShellShortcutInfo(ByVal full_name As String, _
-    ByRef name As String, ByRef Path As String, ByVal descr _
+    ByRef Name As String, ByRef Path As String, ByVal descr _
     As String, ByRef working_dir As String, ByRef args As _
     String) As String
 
@@ -592,7 +594,7 @@ Public Function GetShellShortcutInfo(ByVal full_name As String, _
     Else
         ' Display the shortcut's information.
         Set lnk = folder_item.GetLink
-        name = folder_item.name
+        Name = folder_item.Name
         descr = lnk.Description
         Path = lnk.Path
         working_dir = lnk.WorkingDirectory

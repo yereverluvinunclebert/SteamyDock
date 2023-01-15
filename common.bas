@@ -178,6 +178,7 @@ Public sUseDialogAfter  As String ' .03 DAEB 31/01/2021 common.bas Added new che
 Public sQuickLaunch  As String ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
 Public sAutoHideDock  As String ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
 Public sSecondApp  As String ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+Public sDisabled  As String
 
 ' Rocketdock icon global variables END
 
@@ -276,7 +277,7 @@ Public Type tagMONITORINFO
 End Type
 
 Public Type UDTMonitor
-    Handle As Long
+    handle As Long
     Left As Long
     Right As Long
     Top As Long
@@ -833,7 +834,9 @@ Private Function confirmEachKill(ByVal binaryName As String, ByVal procId As Lon
     On Error GoTo confirmEachKill_Error
 
     If confirmEachProcessKill = True Then
-        rmessage = "Kill this application? - " & binaryName & " with process ID " & procId
+        'SetForegroundWindow dock.hWnd
+        BringWindowToTop dock.hWnd
+        rmessage = "A matching process has been found. Kill this application? - " & binaryName & " with process ID " & procId
         answer = MsgBox(rmessage, vbYesNo)
         If answer = vbNo Then
             goAheadAndKill = False
@@ -942,7 +945,7 @@ End Function
 Public Function Is64bit() As Boolean
     
     ' variables declared
-    Dim Handle As Long: Handle = 0
+    Dim handle As Long: handle = 0
     Dim bolFunc As Boolean: bolFunc = False
         
     ' Assume initially that this is not a Wow64 process
@@ -951,10 +954,10 @@ Public Function Is64bit() As Boolean
     bolFunc = False
 
     ' Now check to see if IsWow64Process function exists
-    Handle = GetProcAddress(GetModuleHandle("kernel32"), _
+    handle = GetProcAddress(GetModuleHandle("kernel32"), _
                    "IsWow64Process")
 
-    If Handle > 0 Then ' IsWow64Process function exists
+    If handle > 0 Then ' IsWow64Process function exists
         ' Now use the function to determine if
         ' we are running under Wow64
         IsWow64Process GetCurrentProcess(), bolFunc
@@ -1279,7 +1282,9 @@ Public Sub writeIconSettingsIni(ByVal location As String, ByVal iconNumberToWrit
         PutINISetting location, iconNumberToWrite & "-QuickLaunch", sQuickLaunch, settingsFile ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
         PutINISetting location, iconNumberToWrite & "-AutoHideDock", sAutoHideDock, settingsFile  ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
         PutINISetting location, iconNumberToWrite & "-SecondApp", sSecondApp, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-       
+        PutINISetting location, iconNumberToWrite & "-Disabled", sDisabled, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+        
+        
        On Error GoTo 0
    Exit Sub
 
@@ -1428,6 +1433,8 @@ Public Sub readRegistryIconValues(ByVal iconNumberToRead As Integer)
     sQuickLaunch = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-QuickLaunch") ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
     sAutoHideDock = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-AutoHideDock")   ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
     sSecondApp = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-SecondApp")   ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+    sDisabled = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Disabled")
+    
    On Error GoTo 0
    Exit Sub
 
@@ -1608,7 +1615,7 @@ Public Function monitorProperties(frm As Form, ByRef screenTwipsPerPixelX As Lon
     MONITORINFO.cbSize = Len(MONITORINFO)
     GetMonitorInfo hMonitor, MONITORINFO
     With monitorProperties
-        .Handle = hMonitor
+        .handle = hMonitor
         'convert all dimensions from pixels to twips
         .Left = MONITORINFO.rcMonitor.Left * screenTwipsPerPixelX
         .Right = MONITORINFO.rcMonitor.Right * screenTwipsPerPixelX

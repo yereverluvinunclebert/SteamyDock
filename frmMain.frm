@@ -524,6 +524,7 @@ Attribute VB_Exposed = False
 ' Fixed the ArrayUpperBound variables to prevent array errors.
 ' Fixed the dragIcon to correspond to the latest use of the dictionaryArray, extract the correct image to drag.
 ' sShowCmd coerced into an integer causing problem on new folder icon bypassing strong typing, added a val().
+' When doing a process kill for an application that has been brought to the front, the msgbox is underneath, dock/msgbox now to the front.
 
 ' General Status
 ' ==============
@@ -545,6 +546,11 @@ Attribute VB_Exposed = False
 ' Main Tasks:
 ' ============
 '
+' Adding a cog above a folder window for explorer.exe - we have code from Fafalone for this.
+'   Faf's code can list the running EXE windows
+'   checkTargetCommandValidity can check for valid folders and could also write to an isFolder array
+'   for each icon that is a folder we will check the contents of the openExplorerWindow array and place a cog above the explorere window
+
 ' An animation could be added to the addition of an icon.
 
 ' An animation could be added to the deletion of an icon.
@@ -625,12 +631,6 @@ Attribute VB_Exposed = False
 '   when bouncing should take into account the time in ms and not just the speed of the cpu to accomplish the bounce.
 '
 '   dock icon bounce new animation height, tweak and the timer interval too
-
-' Cogs
-' =====
-' Adding a cog above a folder window for explorer.exe - we have code from Fafalone for this.
-'
- ' If InStr(thisCommand, "::{") Then
 
 
 
@@ -1232,7 +1232,7 @@ Private Sub forceHideRevealTimer_Timer()
 forceHideRevealTimer_Timer_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure forceHideRevealTimer_Timer of Form dock"
-
+    
 End Sub
 
 
@@ -1745,7 +1745,7 @@ Public Sub fMouseUp(Button As Integer)
                     
                     selectedIconIndex = targetIconIndex ' reset the selectedIconIndex
                     thisFilename = sFilename
-                    Call menuAddSummat(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch)
+                    Call menuAddSummat(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
                     Call menuForm.postAddIConTasks(thisFilename, sTitle)
                     
                     'delete the old icon at its new location
@@ -2072,7 +2072,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         End If
         
         If FExists(iconImage) Then ' last check that the default ? image has not been deleted.
-            Call menuAddSummat(iconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            Call menuAddSummat(iconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             ' .51 DAEB 08/04/2021 frmMain.frm calls mnuIconSettings_Click to start up the icon settings tools and display the properties of the new icon.
             Call menuForm.postAddIConTasks(iconImage, iconTitle)
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
@@ -3522,6 +3522,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
         sUseDialog = "0"
         sUseDialogAfter = "0"
         sQuickLaunch = "0"
+        sDisabled = "0"
     End If
     
     If sIsSeparator = "1" Then
@@ -6579,7 +6580,7 @@ Private Sub checkTargetCommandValidity()
         ' instead of looping through all the command stored in the docksettings.ini file, we now store all the current commands in an array
         ' we loop through the array much quicker than looping through the temporary settings file and extracting the commands from each
 
-        ' if the array location is empty then use goto to jump to the next iteration, ' sorry! VB6 has no continue.
+        ' if the array location is empty then use GOTO to jump to the next iteration, ' sorry! VB6 has no continue.
         If sCommandArray(useloop) = vbNullString Then GoTo l_next_iteration
         thisCommand = sCommandArray(useloop)
 
@@ -6591,7 +6592,7 @@ Private Sub checkTargetCommandValidity()
             GoTo l_next_iteration
         End If
 
-        If InStr(thisCommand, "::{") Then
+        If InStr(thisCommand, "::{") Then      ' is it a folder?
             GoTo l_next_iteration
         End If
                         
@@ -6609,6 +6610,10 @@ Private Sub checkTargetCommandValidity()
             If FExists(thisCommand) Then
                 GoTo l_next_iteration
             End If
+        End If
+        
+        If DirExists(thisCommand) Then         ' is it a folder? for the second time
+            GoTo l_next_iteration
         End If
         
         ' Rocketdock commands compatibility
@@ -6660,7 +6665,7 @@ Private Sub checkTargetCommandValidity()
                 currentCommand = thisCommand
             End If
             
-            If FExists(currentCommand) Then ' if the file exists and is valid - run it
+            If FExists(currentCommand) Then ' if the file exists and is valid
                     GoTo l_next_iteration
             Else
                 For Each pathElement In pathArray

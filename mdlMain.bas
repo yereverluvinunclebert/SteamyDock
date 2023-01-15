@@ -89,7 +89,7 @@ Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal x As Long, By
 
 Public Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal pStream As Long, image As Long) As Long
 Public Declare Function GdipCreateFont Lib "gdiplus" (ByVal fontFamily As Long, ByVal emSize As Single, ByVal style As GDIPLUS_FONTSTYLE, ByVal Unit As GDIPLUS_UNIT, createdfont As Long) As Long
-Public Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal name As String, ByVal fontCollection As Long, fontFamily As Long) As Long
+Public Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal Name As String, ByVal fontCollection As Long, fontFamily As Long) As Long
 Public Declare Function GdipCreateFromHDC Lib "GdiPlus.dll" (ByVal hdc As Long, GpGraphics As Long) As Long
 Public Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal argb As Long, brush As Long) As Long
 Public Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As Long, ByVal language As Integer, StringFormat As Long) As Long
@@ -1339,7 +1339,9 @@ Public Sub menuAddSummat(ByVal thisFilename As String, ByVal thisTitle As String
     ByVal thisCommand As String, _
     ByVal thisArguments As String, ByVal thisWorkingDirectory As String, _
     ByVal thisShowCmd As String, ByVal thisOpenRunning As String, _
-    ByVal thisSeparator As String, ByVal thisDockletFile As String, ByVal thisUseContext As String, ByVal thisUseDialog As String, ByVal thisUseDialogAfter, ByVal thisQuickLaunch)
+    ByVal thisSeparator As String, ByVal thisDockletFile As String, _
+    ByVal thisUseContext As String, ByVal thisUseDialog As String, _
+    ByVal thisUseDialogAfter, ByVal thisQuickLaunch, ByVal thisDisabled As String)
     
     Dim useloop As Integer
     Dim thisIcon As Integer
@@ -1398,6 +1400,9 @@ Public Sub menuAddSummat(ByVal thisFilename As String, ByVal thisTitle As String
     sUseDialog = thisUseDialog
     sUseDialogAfter = thisUseDialogAfter
     sQuickLaunch = thisQuickLaunch ' .15 DAEB 20/05/2021 mdlMain.bas Added new check box to allow a quick launch of the chosen app
+    
+    sDisabled = thisDisabled
+    
     
     ' Call writeIconSettingsIni("Software\RocketDock\Icons", thisIcon, rdSettingsFile) ' interim
     Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", thisIcon, dockSettingsFile)
@@ -1680,7 +1685,7 @@ Public Sub addProgramDLLorEXE()
     
     dock.Refresh
     
-    Call menuAddSummat(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuAddSummat(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
     Call menuForm.postAddIConTasks(iconImage, retFileName)
     
     On Error GoTo 0
