@@ -28,7 +28,7 @@ Option Explicit
 
 
 'Public Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal Image As Long, ByVal filename As String, clsidEncoder As CLSID, encoderParams As Any) As GpStatus
-Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal image As Long, ByVal X As Single, ByVal Y As Single) As Long
+Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal image As Long, ByVal x As Single, ByVal y As Single) As Long
 'Public Declare Function GdipLoadImageFromFile Lib "GdiPlus.dll" (ByVal filename As Long, GpImage As Long) As Long
 'Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClassName As String, ByVal lpszWindowName As String) As Long
 
@@ -36,7 +36,7 @@ Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByV
 Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
 Private Declare Function GetSysColor Lib "user32.dll" (ByVal nIndex As Long) As Long
 Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, Src As Any, ByVal cb As Long) As Long
-Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hdc As Long, pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Any, ByVal Handle As Long, ByVal dw As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hdc As Long, pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Any, ByVal handle As Long, ByVal dw As Long) As Long
 
 ' Public APIs for useful functions START
 
@@ -49,7 +49,7 @@ Public Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInst
 Public Declare Function SelectObject Lib "gdi32.dll" (ByVal hdc As Long, ByVal hObject As Long) As Long
 Public Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
 Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Public Declare Function UpdateLayeredWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal hdcDst As Long, pptDst As Any, psize As Any, ByVal hdcSrc As Long, pptSrc As Any, ByVal crKey As Long, ByRef pblend As BLENDFUNCTION, ByVal dwFlags As Long) As Long
 Public Declare Function DrawIconEx Lib "user32" (ByVal hdc As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 ' API to obtain correct screen width (to correct VB6 bug)
@@ -83,7 +83,7 @@ Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As 
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, encoders As Any) As GpStatus
 ' APIs image cropping
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal image As Long, ByRef PixelFormat As Long) As Long
-Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long, ByVal PixelFormat As Long, ByVal srcBitmap As Long, dstBitmap As Long) As GpStatus
+Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long, ByVal PixelFormat As Long, ByVal srcBitmap As Long, dstBitmap As Long) As GpStatus
 
 'Public APIs for GDI+
 
@@ -99,7 +99,7 @@ Public Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal fontFamily As 
 Public Declare Function GdipDeleteGraphics Lib "GdiPlus.dll" (ByVal Graphics As Long) As Long
 Public Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal StringFormat As Long) As Long
 Public Declare Function GdipDisposeImage Lib "GdiPlus.dll" (ByVal image As Long) As Long
-Public Declare Function GdipDrawImageRectI Lib "GdiPlus.dll" (ByVal Graphics As Long, ByVal img As Long, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long) As Long
+Public Declare Function GdipDrawImageRectI Lib "GdiPlus.dll" (ByVal Graphics As Long, ByVal img As Long, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long) As Long
 Public Declare Function GdipDrawImageRectRect Lib "GdiPlus.dll" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal callbackData As Long) As Long
 Public Declare Function GdipDrawString Lib "gdiplus" (ByVal Graphics As Long, ByVal Str As String, ByVal Length As Long, ByVal thefont As Long, layoutRect As RECTF, ByVal StringFormat As Long, ByVal brush As Long) As Long
 Public Declare Function GdipGetImageHeight Lib "GdiPlus.dll" (ByVal image As Long, Height As Long) As Long
@@ -238,15 +238,15 @@ Public Type BLENDFUNCTION
 End Type
 
 Public Type GDIPLUS_STARTINPUT
-    GDIPlusVersion As Long
+    GdiplusVersion As Long
     DebugEventCallback As Long
     SuppressBackgroundThread As Long
     SuppressExternalCodecs As Long
 End Type
 
 Public Type POINTAPI
-    X As Long
-    Y As Long
+    x As Long
+    y As Long
 End Type
 
 Public Type RECTF
@@ -358,7 +358,7 @@ End Enum
 
 ' NOTE: Enums evaluate to a Long
 Public Enum GpStatus   ' aka Status
-   OK = 0
+   Ok = 0
    GenericError = 1
    InvalidParameter = 2
    OutOfMemory = 3
@@ -494,16 +494,21 @@ Public bounceCounter As Integer ' .14 DAEB 11/05/2021 mdlMain.bas new bounceCoun
 Public inc As Boolean
 Public bounceTimerRun As Integer
 Public fcount As Integer
+
 Public processCheckArray() As String
+Public fileNameArray() As String
 Public initiatedProcessArray() As String
+Public dictionaryLocationArray() As String
+Public namesListArray() As String ' the name assigned to each icon
+Public sCommandArray() As String ' the command assigned to each icon
+Public targetExistsArray() As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+
 Public WindowsVer As String
 Public rdIconMaximum As Integer
 Public theCount As Integer
 Public dockOpacity As Integer
 Public userLevel As String
-Public namesListArray() As String
-Public sCommandArray() As String
-Public targetExistsArray() As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+
 Public autoFadeOutTimerCount As Integer
 Public autoFadeInTimerCount As Integer ' .01 mdlmain.bas DAEB 24/01/2021 Added new parameter autoFadeInTimerCount for the new fade in timer
 Public autoSlideInTimerCount As Integer ' .nn DAEB 03/03/2021 new separate timer for the slide in feature
@@ -549,6 +554,7 @@ Public iconStoreBottomPixels() As Double ' 01/06/2021 DAEB frmMain.frm Added to 
 ' using iconStoreXxxxPixels we can derive all the rectangle's co-ordinates
 
 Public iconArrayUpperBound As Single
+Public dictionaryLocationArrayUpperBound As Single
 Public iconWidthPxls As Single
 
 '' collection objects
@@ -1341,8 +1347,8 @@ Public Sub menuAddSummat(ByVal thisFilename As String, ByVal thisTitle As String
     On Error GoTo menuAddSummat_Error
     'If debugflg = 1 Then debugLog "%" & "menuAddSummat"
 
-    'Note: we only write to the interim settings file
-    'the write to the actual settings or registry happens when the user "saves & restarts"
+    
+   
     
     ' starting at the end of the steamydock map, scroll backward and increment the number
     ' until we reach the current position.
@@ -1364,6 +1370,7 @@ Public Sub menuAddSummat(ByVal thisFilename As String, ByVal thisTitle As String
     'increment the new icon count
     theCount = theCount + 1
     rdIconMaximum = rdIconMaximum + 1 '
+    iconArrayUpperBound = rdIconMaximum
     
     'amend the count in the alternative rdSettings.ini
     'PutINISetting "Software\RocketDock\Icons", "count", theCount, rdSettingsFile
@@ -1708,8 +1715,8 @@ End Sub
 '
 '    itemName = namesListArray(selectedIconIndex)
 '
-'    'Note: we only write to the interim settings file
-'    'the write to the actual settings or registry happens when the user "saves & restarts"
+'
+'
 '
 '    If selectedIconIndex < rdIconMaximum Then 'if not the top icon loop through them all and reassign the values
 '
@@ -1802,26 +1809,38 @@ Public Sub deleteThisIcon()
     
     dragInsideDockOperating = False '.nn new check for dragInsideDockOperating '.nn reset
     
-        'Note: we only write to the interim settings file
-    'the write to the actual settings or registry happens when the user "saves & restarts"
-    
     If selectedIconIndex < rdIconMaximum Then 'if not the top icon loop through them all and reassign the values
-        'notQuiteTheTop = rdIconMaximum
+        ' read the steamyDock settings one item up in the list
+        ' then write the the new item at the current location effectively overwriting it
         For useloop = selectedIconIndex + 1 To rdIconMaximum
-            
-            ' read the rocketdock alternative rdsettings.ini one item up in the list
-            'readIconSettingsIni (useloop + 1) ' the alternative rdsettings.ini only exists when RD is set to use it
-            
-            'readIconSettingsIni "Software\RocketDock\Icons", useloop, rdSettingsFile
             Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile)
-
-            'write the the new item at the current location effectively overwriting it
-            'Call writeIconSettingsIni("Software\RocketDock\Icons", useloop - 1, rdSettingsFile)
             Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop - 1, dockSettingsFile)
-        
+        Next useloop
+            
+        ' then re-read the config and
+        For useloop = selectedIconIndex To rdIconMaximum
+            Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile)
+            
+            ' read the two main icon variables into arrays, one for each
+            fileNameArray(useloop) = sFilename
+            namesListArray(useloop) = sTitle
+            sCommandArray(useloop) = sCommand
+            targetExistsArray(useloop) = 0
+            
+            ' check to see if each process is running and store the result away
+            processCheckArray(useloop) = IsRunning(sCommand, vbNull)
+            
+            ' then copy the other critical array contents one location down
+            If useloop + 1 < rdIconMaximum Then
+                dictionaryLocationArray(useloop) = dictionaryLocationArray(useloop + 1)
+                iconStoreLeftPixels(useloop) = iconStoreLeftPixels(useloop + 1)
+                iconStoreRightPixels(useloop) = iconStoreRightPixels(useloop + 1)
+                iconStoreTopPixels(useloop) = iconStoreTopPixels(useloop + 1)
+                iconStoreBottomPixels(useloop) = iconStoreBottomPixels(useloop + 1)
+            End If
         Next useloop
     End If
-    
+        
     ' to tidy up we need to overwrite the final data from the rdsettings.ini, we will write sweet nothings to it
     removeSettingsIni (rdIconMaximum)
         
@@ -1836,9 +1855,18 @@ Public Sub deleteThisIcon()
 
     If selectedIconIndex > rdIconMaximum Then selectedIconIndex = rdIconMaximum
 
-    'Call saveIconConfigurationToSource
-
-    Call removeImageFromDictionary
+    'Call removeImageFromDictionary(selectedIconIndex) ' no longer needed
+    
+    'resize all arrays used for storing icon information
+    ReDim Preserve fileNameArray(rdIconMaximum) As String ' the file location of the original icons
+    ReDim Preserve dictionaryLocationArray(rdIconMaximum) As String ' the dictionary location of the original icons
+    ReDim Preserve namesListArray(rdIconMaximum) As String ' the name assigned to each icon
+    ReDim Preserve sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
+    ReDim Preserve targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+    ReDim Preserve processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
+    ReDim Preserve initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
+    
+    iconArrayUpperBound = rdIconMaximum
     
     Call dockProcessTimer ' trigger a test of running processes in half a second
     
@@ -1856,101 +1884,103 @@ deleteThisIcon_Error:
 End Sub
 
 
-' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-'---------------------------------------------------------------------------------------
-' Procedure : removeImageFromDictionary
-' Author    : beededea
-' Date      : 18/06/2020
-' Purpose   : only used when a single icon is to be added to the dock
-'             this routine is a workaround to the memory leakage problem in resizeAndLoadImgToDict
-'             where if run twice the RAM usage doubled as the vars are not clearing their contents when
-'             the routine ends
+'' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
+''---------------------------------------------------------------------------------------
+'' Procedure : removeImageFromDictionary
+'' Author    : beededea
+'' Date      : 18/06/2020
+'' Purpose   : only used when a single icon is to be added to the dock
+''             this routine is a workaround to the memory leakage problem in resizeAndLoadImgToDict
+''             where if run twice the RAM usage doubled as the vars are not clearing their contents when
+''             the routine ends
+''
+'' When an icon is added it should no longer call the routine to recreate the arrays and collections
+'' instead it calls this routine, previously there was one dictionary.
+''
+'' there is now a separate dictionary for the smaller icons
+'' there is another dictionary for the larger icons
+'' there is a third temporary dictionary that is used as temporary storage whilst resizing the above
+'' when a new icon is added to the dock
+''
+'' we use the existing resizeAndLoadImgToDict to read the larger icon format
+'' the icons to the left are written to the 3rd temporary dictionary with existing keys, the new icon is then written using the current location as part of the key
+'' the icons to the right are then read from the old dictionary and then written to the new temporary dictionary with updated keys
+'' the larger image dictionary is cleared down readied for population
+'' the temporary dictionary is used to repopulate the larger image dictionary, a clone
+'' the temporary dictionary is cleared down, ready for re-use
 '
-' When an icon is added it should no longer call the routine to recreate the arrays and collections
-' instead it calls this routine, previously there was one dictionary.
+'' then we do the same for the smaller icon format images
+''---------------------------------------------------------------------------------------
+''
+'Public Sub oldRemoveImageFromDictionary()
 '
-' there is now a separate dictionary for the smaller icons
-' there is another dictionary for the larger icons
-' there is a third temporary dictionary that is used as temporary storage whilst resizing the above
-' when a new icon is added to the dock
+'    Dim useloop As Integer
+'    Dim thiskey As String
+'    Dim newKey As String
 '
-' we use the existing resizeAndLoadImgToDict to read the larger icon format
-' the icons to the left are written to the 3rd temporary dictionary with existing keys, the new icon is then written using the current location as part of the key
-' the icons to the right are then read from the old dictionary and then written to the new temporary dictionary with updated keys
-' the larger image dictionary is cleared down readied for population
-' the temporary dictionary is used to repopulate the larger image dictionary, a clone
-' the temporary dictionary is cleared down, ready for re-use
-
-' then we do the same for the smaller icon format images
-'---------------------------------------------------------------------------------------
+'    On Error GoTo removeImageFromDictionary_Error
 '
-Public Sub removeImageFromDictionary()
+''    If debugflg = 1 Then debugLog "%" & "removeImageFromDictionary"
+'
+'    'resize all arrays used for storing icon information
+'    ReDim fileNameArray(rdIconMaximum) As String ' the file location of the original icons
+'    ReDim namesListArray(rdIconMaximum) As String ' the name assigned to each icon
+'    ReDim sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
+'    ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+'    ReDim processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
+'    ReDim initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
+'                                                         ' but I feel that it does not really matter so I am going to not bother at the moment, this is something that could be done later!
+'
+'    ' assuming that the details have already been written to the configuration file
+'    ' extract filenames from Rocketdock registry, settings.ini or user data area
+'    ' we reload the arrays that store pertinent icon information
+'    For useloop = 0 To rdIconMaximum
+'        'readIconData (useloop)
+'        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
+'        ' read the two main icon variables into arrays, one for each
+'        fileNameArray(useloop) = sFilename
+'        namesListArray(useloop) = sTitle
+'        sCommandArray(useloop) = sCommand
+'        targetExistsArray(useloop) = 0
+'
+'        ' check to see if each process is running and store the result away
+'        'processCheckArray(useloop) = isProcessInTaskList(sCommand)
+'        processCheckArray(useloop) = IsRunning(sCommand, vbNull)
+'
+'    Next useloop
+'
+'    'redimension the array that is used to store all of the icon current positions in pixels
+'    ' preserves the data in the existing array when changing the size of only the last dimension.
+'    ReDim Preserve iconStoreLeftPixels(rdIconMaximum + 1) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'    ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
+'    ReDim Preserve iconStoreRightPixels(rdIconMaximum + 1) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'    ReDim Preserve iconStoreTopPixels(rdIconMaximum + 1) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
+'    ReDim Preserve iconStoreBottomPixels(rdIconMaximum + 1) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'
+'
+'    iconArrayUpperBound = rdIconMaximum '<*
+'
+'    ' populate the array element containing the final icon position
+'    'iconPosLeftTwips(rdIconMaximum) = iconPosLeftTwips(rdIconMaximum - 1) + (iconWidthPxls * screenTwipsPerPixelX) '< this may need revisiting if you add left and right positions
+'
+'    ' re-order the large icons in the collLargeIcons dictionary collection
+'    Call decrementCollection(collLargeIcons, iconSizeLargePxls)
+'
+'    ' re-order the small icons in the collSmallIcons dictionary collection
+'    Call decrementCollection(collSmallIcons, iconSizeSmallPxls)
+'
+'    Call loadAdditionalImagestoDictionary ' the additional images need to be re-added back to the dictionary
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'removeImageFromDictionary_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure removeImageFromDictionary of module mdlMain.bas"
+'
+'End Sub
 
-    Dim useloop As Integer
-    Dim thiskey As String
-    Dim newKey As String
 
-    On Error GoTo removeImageFromDictionary_Error
-    
-'    If debugflg = 1 Then debugLog "%" & "removeImageFromDictionary"
-    
-    'resize all arrays used for storing icon information
-    ReDim fileNameArray(rdIconMaximum) As String ' the file location of the original icons
-    ReDim namesListArray(rdIconMaximum) As String ' the name assigned to each icon
-    ReDim sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
-    ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-    ReDim processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
-    ReDim initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
-                                                         ' but I feel that it does not really matter so I am going to not bother at the moment, this is something that could be done later!
-        
-    ' assuming that the details have already been written to the configuration file
-    ' extract filenames from Rocketdock registry, settings.ini or user data area
-    ' we reload the arrays that store pertinent icon information
-    For useloop = 0 To rdIconMaximum
-        'readIconData (useloop)
-        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
-        ' read the two main icon variables into arrays, one for each
-        fileNameArray(useloop) = sFilename
-        namesListArray(useloop) = sTitle
-        sCommandArray(useloop) = sCommand
-        targetExistsArray(useloop) = 0
-        
-        ' check to see if each process is running and store the result away
-        'processCheckArray(useloop) = isProcessInTaskList(sCommand)
-        processCheckArray(useloop) = IsRunning(sCommand, vbNull)
-
-    Next useloop
-    
-    'redimension the array that is used to store all of the icon current positions in pixels
-    ' preserves the data in the existing array when changing the size of only the last dimension.
-    ReDim Preserve iconStoreLeftPixels(rdIconMaximum + 1) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-    ReDim Preserve iconStoreRightPixels(rdIconMaximum + 1) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    ReDim Preserve iconStoreTopPixels(rdIconMaximum + 1) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-    ReDim Preserve iconStoreBottomPixels(rdIconMaximum + 1) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-    
-    
-    iconArrayUpperBound = rdIconMaximum '<*
-    
-    ' populate the array element containing the final icon position
-    'iconPosLeftTwips(rdIconMaximum) = iconPosLeftTwips(rdIconMaximum - 1) + (iconWidthPxls * screenTwipsPerPixelX) '< this may need revisiting if you add left and right positions
-
-    ' re-order the large icons in the collLargeIcons dictionary collection
-    Call decrementCollection(collLargeIcons, iconSizeLargePxls)
-    
-    ' re-order the small icons in the collSmallIcons dictionary collection
-    Call decrementCollection(collSmallIcons, iconSizeSmallPxls)
-
-    Call loadAdditionalImagestoDictionary ' the additional images need to be re-added back to the dictionary
-
-   On Error GoTo 0
-   Exit Sub
-
-removeImageFromDictionary_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure removeImageFromDictionary of module mdlMain.bas"
-
-End Sub
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
 '---------------------------------------------------------------------------------------
 ' Procedure : loadAdditionalImagestoDictionary
@@ -1981,8 +2011,6 @@ Public Sub loadAdditionalImagestoDictionary()
         If FExists(themeName) Then
             resizeAndLoadImgToDict collLargeIcons, "sDSkinMid", themeName, "sDSkinMid.png", (0), (0), sDSkinSize, sDSkinSize
         End If
-
-
 
     '    ' load the theme background image into the collection sDSkinRight is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDright.png"
@@ -2047,7 +2075,103 @@ loadAdditionalImagestoDictionary_Error:
     
 End Sub
 
-' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
+'' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
+''---------------------------------------------------------------------------------------
+'' Procedure : addNewImageFromDictionary
+'' Author    : beededea
+'' Date      : 18/06/2020
+'' Purpose   : only used when a single icon is to be added to the dock
+''             this routine is a workaround to the memory leakage problem in resizeAndLoadImgToDict
+''             where if run twice the RAM usage doubled as the vars are not clearing their contents when the routine ends
+''
+'' When an icon is added it should no longer call the routine to recreate the arrays and collections
+'' instead it calls this routine, previously there was one dictionary.
+''
+'' there is now a separate dictionary for the smaller icons
+'' there is another dictionary for the larger icons
+'' there is a third temporary dictionary that is used as temporary storage whilst resizing the above
+'' when a new icon is added to the dock
+''
+'' we use the existing resizeAndLoadImgToDict to read the larger icon format
+'' the icons to the left are written to the 3rd temporary dictionary with existing keys, the new icon is then written using the current location as part of the key
+'' the icons to the right are then read from the old dictionary and then written to the new temporary dictionary with updated keys
+'' the larger image dictionary is cleared down readied for population
+'' the temporary dictionary is used to repopulate the larger image dictionary, a clone
+'' the temporary dictionary is cleared down, ready for re-use
+'
+'' then we do the same for the smaller icon format images
+''---------------------------------------------------------------------------------------
+''
+'Public Sub oldAddNewImageToDictionary(ByVal newFileName As String, ByVal newName As String)
+'
+'    Dim useloop As Integer
+'    Dim thiskey As String
+'    Dim newKey As String
+'
+'    On Error GoTo addNewImageToDictionary_Error
+'
+''    If debugflg = 1 Then debugLog "%" & "addNewImageToDictionary "
+'
+'    'resize all arrays used for storing icon information
+'    ReDim fileNameArray(rdIconMaximum) As String ' the file location of the original icons
+'    ReDim dictionaryLocationArray(rdIconMaximum) As String ' the file location of the original icons
+'    ReDim namesListArray(rdIconMaximum) As String ' the name assigned to each icon
+'    ReDim sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
+'    ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+'    ReDim processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
+'    ReDim initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
+'                                                         ' but I feel that it does not really matter so I am going to not bother at the moment, this is something that could be done later!
+'
+'    ' assuming that the details have already been written to the configuration file
+'    ' extract filenames from steamydock registry, settings.ini or user data area
+'    ' we reload the arrays that store pertinent icon information
+'    For useloop = 0 To rdIconMaximum
+'        'readIconData (useloop)
+'        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
+'
+'        ' read the two main icon variables into arrays, one for each
+'        fileNameArray(useloop) = sFilename
+'        namesListArray(useloop) = sTitle
+'        sCommandArray(useloop) = sCommand
+'        targetExistsArray(useloop) = 0
+'
+'        ' check to see if each process is running and store the result away
+'        'processCheckArray(useloop) = isProcessInTaskList(sCommand)
+'        processCheckArray(useloop) = IsRunning(sCommand, vbNull)
+'
+'    Next useloop
+'
+'    'redimension the array that is used to store all of the icon current positions in twips
+'    ReDim Preserve iconStoreLeftPixels(theCount) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'    ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
+'    ReDim Preserve iconStoreRightPixels(theCount) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'    ReDim Preserve iconStoreTopPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
+'    ReDim Preserve iconStoreBottomPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'
+'    iconArrayUpperBound = rdIconMaximum '<*
+'
+'    ' populate the array element containing the final icon position - 31/05/2021 removed unnecessary code
+''    iconStoreLeftPixels(rdIconMaximum) = iconStoreLeftPixels(rdIconMaximum - 1) + (iconWidthPxls) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+''    iconStoreRightPixels(rdIconMaximum) = iconStoreLeftPixels(rdIconMaximum) + (iconWidthPxls)   '.nn
+''    iconStoreTopPixels(rdIconMaximum) =
+''    iconStoreBottomPixels(rdIconMaximum) =
+'
+'    ' re-order the large icons in the collLargeIcons dictionary collection
+'    Call incrementCollection(collLargeIcons, iconSizeLargePxls, newFileName, newName)
+'
+'    ' re-order the small icons in the collSmallIcons dictionary collection
+'    Call incrementCollection(collSmallIcons, iconSizeSmallPxls, newFileName, newName)
+'
+'    Call loadAdditionalImagestoDictionary ' the additional images need to be re-added back to the dictionary
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'addNewImageToDictionary_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addNewImageToDictionary of module mdlMain.bas"
+'
+'End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : addNewImageFromDictionary
 ' Author    : beededea
@@ -2079,47 +2203,79 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
     Dim useloop As Integer
     Dim thiskey As String
     Dim newKey As String
+    Dim strKey As String
 
     On Error GoTo addNewImageToDictionary_Error
     
-'    If debugflg = 1 Then debugLog "%" & "addNewImageToDictionary "
+    dictionaryLocationArrayUpperBound = dictionaryLocationArrayUpperBound + 1
 
     'resize all arrays used for storing icon information
-    ReDim fileNameArray(rdIconMaximum) As String ' the file location of the original icons
-    ReDim namesListArray(rdIconMaximum) As String ' the name assigned to each icon
-    ReDim sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
-    ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-    ReDim processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
-    ReDim initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
-                                                         ' but I feel that it does not really matter so I am going to not bother at the moment, this is something that could be done later!
+    ReDim Preserve fileNameArray(rdIconMaximum) As String ' the file location of the original icons
+    ReDim Preserve dictionaryLocationArray(dictionaryLocationArrayUpperBound) As String ' the dictionary location of the original icons
+    ReDim Preserve namesListArray(rdIconMaximum) As String ' the name assigned to each icon
+    ReDim Preserve sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
+    ReDim Preserve targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+    ReDim Preserve processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
+    ReDim Preserve initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
     
-    ' assuming that the details have already been written to the configuration file
-    ' extract filenames from steamydock registry, settings.ini or user data area
-    ' we reload the arrays that store pertinent icon information
-    For useloop = 0 To rdIconMaximum
-        'readIconData (useloop)
-        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
-        
-        ' read the two main icon variables into arrays, one for each
-        fileNameArray(useloop) = sFilename
-        namesListArray(useloop) = sTitle
-        sCommandArray(useloop) = sCommand
-        targetExistsArray(useloop) = 0
-        
-        ' check to see if each process is running and store the result away
-        'processCheckArray(useloop) = isProcessInTaskList(sCommand)
-        processCheckArray(useloop) = IsRunning(sCommand, vbNull)
-    
-    Next useloop
-
-    'redimension the array that is used to store all of the icon current positions in twips
-    ReDim Preserve iconStoreLeftPixels(theCount) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    ReDim Preserve iconStoreLeftPixels(rdIconMaximum) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-    ReDim Preserve iconStoreRightPixels(theCount) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    ReDim Preserve iconStoreTopPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-    ReDim Preserve iconStoreBottomPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+    ReDim Preserve iconStoreRightPixels(rdIconMaximum) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    ReDim Preserve iconStoreTopPixels(rdIconMaximum) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
+    ReDim Preserve iconStoreBottomPixels(rdIconMaximum) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+
+'    If debugflg = 1 Then debugLog "%" & "addNewImageToDictionary "
+
+    'now we add the new icon to the current position in the dictionary
+    strKey = LTrim$(Str$(dictionaryLocationArrayUpperBound))
+    If FExists(newFileName) Then
+        ' we use the existing resizeAndLoadImgToDict to read the icon format
+         resizeAndLoadImgToDict collLargeIcons, strKey, newFileName, newName, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls)
+         resizeAndLoadImgToDict collSmallIcons, strKey, newFileName, newName, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls)
+    End If
+  
+'    If selectedIconIndex < rdIconMaximum Then 'if not the top icon loop through them all and reassign the values
+        ' read the steamyDock settings one item up in the list
+        ' then write the the new item at the current location effectively overwriting it
+        For useloop = rdIconMaximum To (selectedIconIndex + 1) Step -1
+            ' copy the critical array contents one location down
+            If useloop + 1 < rdIconMaximum Then
+                dictionaryLocationArray(useloop) = dictionaryLocationArray(useloop - 1)
+'                iconStoreLeftPixels(useloop) = iconStoreLeftPixels(useloop - 1)
+'                iconStoreRightPixels(useloop) = iconStoreRightPixels(useloop - 1)
+'                iconStoreTopPixels(useloop) = iconStoreTopPixels(useloop - 1)
+'                iconStoreBottomPixels(useloop) = iconStoreBottomPixels(useloop - 1)
+            End If
+        Next useloop
+                                
+        ' then re-read the config
+        For useloop = selectedIconIndex To rdIconMaximum
+            Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile)
+            
+            ' read the two main icon variables into arrays, one for each
+            fileNameArray(useloop) = sFilename
+            namesListArray(useloop) = sTitle
+            sCommandArray(useloop) = sCommand
+            targetExistsArray(useloop) = 0
+            
+            ' check to see if each process is running and store the result away
+            processCheckArray(useloop) = IsRunning(sCommand, vbNull)
+        Next useloop
+        
+        dictionaryLocationArray(selectedIconIndex) = dictionaryLocationArrayUpperBound
+
+'    End If
     
-    iconArrayUpperBound = rdIconMaximum '<*
+    ' reads from the last icon to the current one and for each it writes it one step up
+'    For useloop = rdIconMaximum To selectedIconIndex Step -1
+'        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
+'        newKey = useloop + 1 & "ResizedImg" & LTrim$(Str$(thisByteSize))
+'        If thisCollection.Exists(thiskey) Then
+'            thisCollection(newKey) = thisCollection(thiskey)
+'        End If
+'    Next useloop
+    
+
     
     ' populate the array element containing the final icon position - 31/05/2021 removed unnecessary code
 '    iconStoreLeftPixels(rdIconMaximum) = iconStoreLeftPixels(rdIconMaximum - 1) + (iconWidthPxls) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
@@ -2128,12 +2284,12 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
 '    iconStoreBottomPixels(rdIconMaximum) =
 
     ' re-order the large icons in the collLargeIcons dictionary collection
-    Call incrementCollection(collLargeIcons, iconSizeLargePxls, newFileName, newName)
-    
-    ' re-order the small icons in the collSmallIcons dictionary collection
-    Call incrementCollection(collSmallIcons, iconSizeSmallPxls, newFileName, newName)
-
-    Call loadAdditionalImagestoDictionary ' the additional images need to be re-added back to the dictionary
+'    Call incrementCollection(collLargeIcons, iconSizeLargePxls, newFileName, newName)
+'
+'    ' re-order the small icons in the collSmallIcons dictionary collection
+'    Call incrementCollection(collSmallIcons, iconSizeSmallPxls, newFileName, newName)
+'
+'    Call loadAdditionalImagestoDictionary ' the additional images need to be re-added back to the dictionary
 
    On Error GoTo 0
    Exit Sub
@@ -2675,12 +2831,12 @@ Public Function setWindowCharacteristics()
     End If
     
     ' point structure that specifies the location of the layer updated in UpdateLayeredWindow
-    apiPoint.X = 0
-    apiPoint.Y = 0
+    apiPoint.x = 0
+    apiPoint.y = 0
     
     ' point structure that specifies the size of the window in pixels
-    apiWindow.X = screenWidthPixels ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    apiWindow.Y = screenHeightPixels  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    apiWindow.x = screenWidthPixels ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    apiWindow.y = screenHeightPixels  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     
     ' the third parameter to UpdateLayeredWindow is a pointer to a structure that specifies the new screen position of the layered window.
     ' If the current position is not changing, pptDst can be NULL. It is null.

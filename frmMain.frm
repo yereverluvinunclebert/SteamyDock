@@ -360,6 +360,9 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+
+
+
 ' =====================================
 ' Functional changes since last release
 ' =====================================
@@ -384,7 +387,12 @@ Attribute VB_Exposed = False
 ' Added menu option to clone current item
 ' A misconfigured or non-existent target shows a red X over the icon
 ' Allows you to set a secondary app to run.
-' Confirms when deleting multiple instances of a program
+' Confirms when deleting multiple instances of a program.
+' Deletion and addition of icons is now much faster.
+' Add a sound option when initiating an icon mouseDown.
+' Improved some drag/drop animations.
+' No longer takes a long time for the dock to fully close.
+' Fixed memory Leaks causing usage of memory to climb.
 
 '========================================================================================================
 ' Change History
@@ -509,6 +517,13 @@ Attribute VB_Exposed = False
 ' Added logic to only call the three current animation types when the bubble animation is selected
 ' Prevented the general hang when SD was closed using the Quit command (unloading all forms in a loop).
 ' common3 module - byval/byref
+' Fixed the slow update of the dock after deletion by creating an array and monitoring the icon to be shown.
+' Fixed the slow update of the dock after adding an icon by creating an array and monitoring the icon to be shown.
+' Fixed the slow update of the dock after re-ordering of the icons as it uses adding/deletion by default.
+' Add the steamy dock project to Github.
+' Fixed the ArrayUpperBound variables to prevent array errors.
+' Fixed the dragIcon to correspond to the latest use of the dictionaryArray, extract the correct image to drag.
+' sShowCmd coerced into an integer causing problem on new folder icon bypassing strong typing, added a val().
 
 ' General Status
 ' ==============
@@ -517,22 +532,34 @@ Attribute VB_Exposed = False
 '     2. WIP the initiation point of the dock when the cursor enters
 '     3. converted the slide out routine to two separate routines WIP
 '     4. find the bug in the logic that causes the slide out to cycle up and down WIP
-'     5. creating new icons WIP <-----
+'     5. creating new icons WIP <----- REBOOT ICON
 '     6. Creation of a default DockSettings.ini for a new user of the dock where the application has never been run before.
 '     8. Add known identifers to the known apps list WIP <----- list growing
-'     9. The rotating hourglass timer could be added to the deletion and addition of an icon.
-'    10. Drag and drop needs prettying though.
-'    12.
-'    13.
-
+'     9.
+'    10.
+'    11.
+'    12. WIP - Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser
+'    13. Add disable icon option
+'    14. WIP - Adding a cog above a folder window for explorer.exe
 
 ' Main Tasks:
 ' ============
 '
-' when icon clicked and bouncing the dock should not animate when moving the cursor left/right - option to lock? - WIP when the animation is
+' An animation could be added to the addition of an icon.
+
+' An animation could be added to the deletion of an icon.
+
+' Drag and drop needs prettying, a gap
+
+' avoid strings in the animation routines - integers are quicker
+'
+' avoid public routines in the animation routines - private are quicker
+'
+' When icon clicked and bouncing the dock should not animate when moving the cursor left/right - option to lock? - WIP when the animation is
 '   re-jigged and rewritten.
 
 ' when dragging from the dock the main icons should not animate when dragging - option to lock? - WIP when the animation is
+' a separate animation?
 '   re-jigged and rewritten.
 '   use smallicon sub?
 
@@ -543,10 +570,6 @@ Attribute VB_Exposed = False
 '  when the fade timers are running, the clicking is disabled
 
 ' the iconsettings tool should have some separate code that allows migration from RD to SD but the rest should use SdSettings
-
-
-
-' Add the project to Github
 
 ' finish the icons
 '   reboot icon boot and candlestick
@@ -589,13 +612,11 @@ Attribute VB_Exposed = False
 '
 ' create a zipped icon
 
-
-
 ' change to shellExecuteWithDialog to allow apps to run unelevated: CREDIT - fafalone
 '
 ' reorganise windows menu option? send all windows to front/back
 
-'   A Disable Icon option
+'   A Disable Icon option - perhaps change opacity?
 '
 '   Messagebox msgBoxA module - ship the code to FCW to replace the native msgboxes.
 '
@@ -607,16 +628,11 @@ Attribute VB_Exposed = False
 
 ' Cogs
 ' =====
-' Adding a cog above a folder window for explorer.exe
-' when the program is determining whether a program is already loaded (to show the cog)
-' it could test to see if explorer is running and whether the currently open folder matches
-' the one in the dock's target folder. If so, then it shows the cog there also.
-' When an icon is clicked,  if it is explorer then it tests the open folder's current directory
-' and if it matches then it opens the existing folder instance (which is what it does now)
-' if the two do not match then the option should exist on a right click to open a new instance
+' Adding a cog above a folder window for explorer.exe - we have code from Fafalone for this.
 '
-' the current folder path can be obtained using Faf's code here:
-' https://www.vbforums.com/showthread.php?898235-VB6-twinBASIC-Code-snippet-Close-Explorer-window-by-path
+ ' If InStr(thisCommand, "::{") Then
+
+
 
 ' Bugs and Regressions
 ' =====================
@@ -684,8 +700,8 @@ Attribute VB_Exposed = False
 ' top and bottom. Storage for those have been added but we still need to populate those values during the icon drawing
 ' routines:
 
-    ' drawSmallStaticIcons - quick and simple routine using little cpu that keeps the dock on screen in small mode
-    ' drawDockByCursorEntryPosition - calculates and draws once using the initial dock position from the cursor entry point
+    ' drawSmallStaticIcons - quick and simple routine using little cpu that keeps the dock on screen in small mode at a reduced interval
+    ' drawDockByCursorEntryPosition - calculates and draws ONCE using the initial dock position from the cursor entry point
     ' sequentialBubbleAnimation - performs the regular animation of the central three icons.
 
 ' animating the entry of the cursor into the dock
@@ -705,8 +721,12 @@ Attribute VB_Exposed = False
 
 ' Displaying a particular icon with a varied opacity
 '======================================================
-
+' Why? perhaps to show an icon is disabled?
 ' should be possible using a matrix and an opacity setting
+' we have that already and we use it for the overall opacity of the whole dock. Each icon is faded
+' using the reduced opacity setting. We would check the disabled flag value stored in an array and then set the opacity
+' dynamically for each affected icon.
+
 ' you have to create a colour matrix, creat a structure to store the attributes, set them and then draw using those attributes
 ' it does what I want but it does not scale the image output like the first option
 ' the image size is shrunk but the image within is simply translated into that box without being scaled
@@ -795,14 +815,10 @@ Attribute VB_Exposed = False
 ' Extracting embedded icons from DLLs and EXEs
 ' ==============================================
 
-' Status - We area able to extract icons using privateExtractIcon and assign them to a picture box. This
-' is what we do in iconSettings and it works.
+' Status - Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser
 '
-' We need to interface between the extracted icon and GDI+
-'
-' See Cintanotes GDI+Icons
+' See  GDI+Icons Cintanotes
 
-' GDIIcons
 
 '
 ' Other
@@ -903,6 +919,10 @@ Attribute VB_Exposed = False
 
 ' Jacques Lebrun    Function to Provide resolution of shortcuts
 ' https://www.vbforums.com/showthread.php?445574-Reading-shortcut-information
+
+' the current folder path can be obtained using Faf's code here:
+' https://www.vbforums.com/showthread.php?898235-VB6-twinBASIC-Code-snippet-Close-Explorer-window-by-path
+
 '
 ' Dragokas systray code
 '
@@ -1094,7 +1114,6 @@ Private savApIMouseY As Long
 Private cHandle As Boolean
 
 'general vars
-Private fileNameArray() As String
 Private normalDockWidthPxls As Long
 Private expandedDockWidth As Long
 Private leftIconSize As Long
@@ -1110,14 +1129,14 @@ Private sDBounceStep As Integer ' add to configuration later
 Private sDBounceInterval As Integer
 Private b1 As Double 'not all used yet
 Private b2 As Double
-Private b3 As Double
+Private B3 As Double
 Private b4 As Double
 Private b5 As Double
 Private b6 As Double
 Private b7 As Double
 Private b8 As Double
 Private b9 As Double
-Private b0 As Double
+Private B0 As Double
 
 ' theme variables
 Private rDThemeImage As String
@@ -1225,7 +1244,7 @@ End Sub
 ' Purpose   : We handle the mouse events during mouseUp, we only set some states here
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     On Error GoTo Form_MouseDown_Error
     
@@ -1235,7 +1254,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
     
     ' .75 DAEB 12/05/2021 frmMain.frm Changed Form_MouseMove to act as the correct event to a drag and drop operating from the dock
     selectedIconIndex = iconIndex ' this is the icon we will be bouncing
-    dragImageToDisplay = selectedIconIndex & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
+    dragImageToDisplay = dictionaryLocationArray(selectedIconIndex) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
     
 '    dock.animateTimer.Enabled = False
 '    dock.responseTimer.Enabled = False
@@ -1256,7 +1275,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim timeDiff As Integer: timeDiff = 0
     Dim tickCount As Long: tickCount = 0
     
@@ -1609,7 +1628,7 @@ End Sub
 ' Purpose   : this is the equivalent of an icon MouseUp event, a click anywhere on the form
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 
    On Error GoTo Form_MouseUp_Error
 
@@ -1810,7 +1829,7 @@ End Sub
     'Files = 15 (vbCFFiles)
     'RTF = -16639
     '
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
    
     Dim suffix As String: suffix = vbNullString
     Dim Filename As String: Filename = vbNullString
@@ -2094,7 +2113,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
    On Error GoTo Form_OLEDragOver_Error
 
     If rDLockIcons = 0 Then
@@ -2344,25 +2363,13 @@ End Function
 Private Sub tuneResponseTimerInterval()
     
     ' .18 STARTS DAEB frmMain.frm 31/01/2021 reinstated checks of fade out and slide timers to set a more frequent response timer to improve animation
-    On Error GoTo tuneResponseTimerInterval_Error
 
     If animatedIconsRaised = True Or autoFadeOutTimer.Enabled = True Or autoSlideOutTimer.Enabled = True Then ' logic to test on states needs to be refined
-        responseTimer.Interval = 5 ' tests the mouse position more regularly, making dock much more responsive and fadeouts smoother
+        responseTimer.Interval = 4 ' tests the mouse position more regularly, making dock much more responsive and fadeouts smoother
     Else
-        responseTimer.Interval = 200 ' reduced to 5 times per second
+        responseTimer.Interval = 100 ' reduced to 5 times per second
     End If
 
-    On Error GoTo 0
-    Exit Sub
-
-tuneResponseTimerInterval_Error:
-
-    With Err
-         If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure tuneResponseTimerInterval of Form dock"
-            Resume Next
-          End If
-    End With
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -2379,23 +2386,10 @@ Private Sub defineDockEntranceLocation(ByVal dockHeightPxls As Long)
     ' And Val(sDAutoHideType) <> 0
     
     ' .11 DAEB changed the setting of the dock top to a better place
-    On Error GoTo defineDockEntranceLocation_Error
 
     If Not (rDAutoHide = "1" And dockHidden = True) Then
         currentDockTopPxls = (Me.Height / screenTwipsPerPixelY) - dockHeightPxls  ' sets the dock top to normal position
     End If
-
-    On Error GoTo 0
-    Exit Sub
-
-defineDockEntranceLocation_Error:
-
-    With Err
-         If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure defineDockEntranceLocation of Form dock"
-            Resume Next
-          End If
-    End With
     
 End Sub
 
@@ -2408,32 +2402,19 @@ End Sub
 '
 Private Function fTestCursorWithinDockYPosition(ByVal dockHeightPxls As Long) As Boolean
     Dim outsideDock  As Boolean
-    On Error GoTo fTestCursorWithinDockYPosition_Error
 
     outsideDock = False
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
     If dockPosition = vbbottom Then
-        outsideDock = apiMouse.Y < currentDockTopPxls Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels))    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.y < currentDockTopPxls Or apiMouse.x < iconLeftmostPointPxls Or apiMouse.x > iconStoreLeftPixels(UBound(iconStoreLeftPixels))    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     End If
     If dockPosition = vbtop Then
-        outsideDock = apiMouse.Y > dockHeightPxls Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.y > dockHeightPxls Or apiMouse.x < iconLeftmostPointPxls Or apiMouse.x > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     End If
     
     fTestCursorWithinDockYPosition = outsideDock ' return
 
-    On Error GoTo 0
-    Exit Function
-
-fTestCursorWithinDockYPosition_Error:
-
-    With Err
-         If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fTestCursorWithinDockYPosition of Form dock"
-            Resume Next
-          End If
-    End With
-    
 End Function
 
 '---------------------------------------------------------------------------------------
@@ -2596,17 +2577,17 @@ Private Sub animateTimer_Timer()
         ' carry on as usual and animate when any animation timers are running
     Else ' we are only interested in analysing if there is any Y axis movement
         ' however, if the animate timers are not running and the cursor position is static then do no animation - just exit, saving CPU '
-        If savApIMouseX = apiMouse.X And savApIMouseY = apiMouse.Y Then
+        If savApIMouseX = apiMouse.x And savApIMouseY = apiMouse.y Then
             animateTimer.Enabled = False
             'animateTimer.Interval = 200
             'responseTimer.Interval = 200 ' nn
             Exit Sub             ' if the timer that does the bouncing is running then we need to animate even if the mouse is stationary...
         End If
-        If savApIMouseX = apiMouse.X And savApIMouseY <> apiMouse.Y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
+        If savApIMouseX = apiMouse.x And savApIMouseY <> apiMouse.y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
     End If
 
-    savApIMouseY = apiMouse.Y
-    savApIMouseX = apiMouse.X
+    savApIMouseY = apiMouse.y
+    savApIMouseX = apiMouse.x
     
     showsmall = True
     bDrawn = False
@@ -2615,7 +2596,7 @@ Private Sub animateTimer_Timer()
     ' determines if and where exactly the mouse is in the < horizontal > icon hover area and if so, determine the icon index
     For useloop = 0 To iconArrayUpperBound
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-        insideDock = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
+        insideDock = apiMouse.x >= iconStoreLeftPixels(useloop) And apiMouse.x <= iconStoreRightPixels(useloop)
     
         If insideDock Then
                 iconIndex = useloop ' this is the current icon number being hovered over
@@ -2754,7 +2735,7 @@ Private Sub sequentialBubbleAnimation()
     bumpFactor = 1.2 ' this determines the bumpiness of the animation, change at your peril
     If usedMenuFlag = False Then ' only recalculate sizeModifierPxls for the bump animation when the menu has not recently been used
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-        sizeModifierPxls = ((apiMouse.X) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
+        sizeModifierPxls = ((apiMouse.x) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
     Else
         usedMenuFlag = False ' the menu causes the mouse to move far away from the icon centre and so icon sizing was massive
     End If
@@ -2799,7 +2780,7 @@ Private Sub sequentialBubbleAnimation()
     ' .nn Changed or added as part of the drag and drop functionality
     ' 12/05/2021 .nn DAEB Displays a smaller size icon at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
-        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplay, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
+        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplay, (apiMouse.x - iconSizeLargePxls / 2), (apiMouse.y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
     End If
     
     Call updateGDIPlus
@@ -3095,10 +3076,18 @@ Private Sub sizeEachSmallIconToRight(ByVal useloop As Integer, ByVal rightmostRe
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : showSmallIcon
+' Author    : beededea
+' Date      : 14/01/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub showSmallIcon(ByVal useloop As Integer)
     Dim thiskey As String: thiskey = ""
-        
-    thiskey = useloop & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
+    
+    'thiskey = useloop & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
+    thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
     updateDisplayFromDictionary collSmallIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     If rDShowRunning = "1" Then
         If processCheckArray(useloop) = True Then
@@ -3116,8 +3105,9 @@ End Sub
 
 Private Sub showLargeIconTypes(ByVal useloop As Integer)
     Dim thiskey As String: thiskey = ""
-         
-    thiskey = useloop & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
+    
+    'thiskey = useloop & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
+    thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
     ' add a 1% opaque background to the expanded image to catch click-throughs, blankresizedImg128 is the key name
     updateDisplayFromDictionary collLargeIcons, vbNullString, "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (128), (128)
 
@@ -3538,7 +3528,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
         Exit Sub
     End If
     
-    intShowCmd = sShowCmd
+    intShowCmd = Val(sShowCmd) 'View mode application window (normal=1, hide=0, 2=Min, 3=max, 4=restore, 5=current, 7=min/inactive, 10=default)
     If sShowCmd = "0" Then
         intShowCmd = 1
     End If
@@ -4169,7 +4159,7 @@ Private Sub runTimer_Timer()
    On Error GoTo runTimer_Error
     
     runTimer.Enabled = False
-    Call runCommand("run", "") ' added new parameter to allow override ref: .68
+    Call runCommand("run", "")  ' added new parameter to allow override ref: .68
 
     If sSecondApp <> vbNullString Then
     
@@ -4661,49 +4651,47 @@ End Function
 '             you pass the name of the picbox you require and the image is displayed there
 '             it should return all and not only the 16 and 32 bit icons
 '
-'             I may not have coded this particularly well - but it works.
 '---------------------------------------------------------------------------------------
 '
 Public Sub displayEmbeddedIcons(ByVal key As String, ByVal Filename As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
     
-    Dim sExeName As String: sExeName = vbNullString
-    Dim lIconIndex As Long: lIconIndex = 0
-    Dim xSize As Long: xSize = 0
-    Dim ySize As Long: ySize = 0
-    Dim hIcon() As Long: 'hIcon() = 0  cannot initialise
-    Dim hIconID() As Long: 'hIconID() = 0  cannot initialise
-    Dim nIcons As Long: nIcons = 0
-    Dim Result As Long: Result = 0
-    Dim flags As Long: flags = 0
-    Dim i As Long: i = 0
-    Dim pic As IPicture: 'pic cannot initialise
-    Dim thiskey As String: thiskey = vbNullString
-    Dim bytesFromFile() As Byte
-    Dim Strm As stdole.IUnknown '  cannot initialise
-    Dim img As Long: img = 0
-    Dim dx As Long: dx = 0
-    Dim dy As Long: dy = 0
-    Dim strFilename As String: strFilename = vbNullString
-    Dim opacity As String: opacity = vbNullString
-
-    
-    On Error Resume Next
-
-    sExeName = Filename
-    lIconIndex = 0
-    strFilename = App.Path & "\tmp.bmp"
-    
-    i = 2 ' need some experimentation here
-    
-    'the boundaries of the icons you wish to extract, can be set to somethink like 256, 256 but that is all
-    ' you will extract, just the one icon
-    xSize = make32BitLong(CInt("256"), CInt("16"))
-    ySize = make32BitLong(CInt("256"), CInt("16"))
-    
-    flags = LR_LOADFROMFILE
-
-    ' Get the total number of Icons in the file.
-    Result = PrivateExtractIcons(sExeName, lIconIndex, xSize, ySize, ByVal 0&, ByVal 0&, 0&, 0&)
+'    Dim sExeName As String: sExeName = vbNullString
+'    Dim lIconIndex As Long: lIconIndex = 0
+'    Dim xSize As Long: xSize = 0
+'    Dim ySize As Long: ySize = 0
+'    Dim hIcon() As Long: 'hIcon() = 0  cannot initialise
+'    Dim hIconID() As Long: 'hIconID() = 0  cannot initialise
+'    Dim nIcons As Long: nIcons = 0
+'    Dim Result As Long: Result = 0
+'    Dim flags As Long: flags = 0
+'    Dim i As Long: i = 0
+'    Dim pic As IPicture: 'pic cannot initialise
+'    Dim thiskey As String: thiskey = vbNullString
+'    Dim bytesFromFile() As Byte
+'    Dim Strm As stdole.IUnknown '  cannot initialise
+'    Dim img As Long: img = 0
+'    Dim dx As Long: dx = 0
+'    Dim dy As Long: dy = 0
+'    Dim strFilename As String: strFilename = vbNullString
+'    Dim opacity As String: opacity = vbNullString
+'
+'
+'    On Error Resume Next
+'
+'    sExeName = Filename
+'    lIconIndex = 0
+'
+'    i = 2 ' need some experimentation here
+'
+'    'the boundaries of the icons you wish to extract, can be set to somethink like 256, 256 but that is all
+'    ' you will extract, just the one icon
+'    xSize = make32BitLong(CInt("256"), CInt("16"))
+'    ySize = make32BitLong(CInt("256"), CInt("16"))
+'
+'    flags = LR_LOADFROMFILE
+'
+'    ' Get the total number of Icons in the file.
+'    Result = PrivateExtractIcons(sExeName, lIconIndex, xSize, ySize, ByVal 0&, ByVal 0&, 0&, 0&)
     
     ' The sExeName is the resource string/filepath.
     ' lIconIndex Index is the index.
@@ -4730,11 +4718,11 @@ Public Sub displayEmbeddedIcons(ByVal key As String, ByVal Filename As String, B
     ' eg. PrivateExtractIcons ('C:\Users\Public\Documents\RAD Studio\Projects\2010\Aero Colorizer\AeroColorizer.exe', 0, 128, 128, @hIcon, @nIconId, 1, LR_LOADFROMFILE)
     ' PrivateExtractIcons(sExeName, nIcon, cxIcon, cyIcon, phicon, piconid, nicons, 0)
 
-    nIcons = 2 ' Result
-    
-    ' Dimension the arrays to the number of icons.
-    ReDim hIcon(lIconIndex To lIconIndex + nIcons * 2 - 1)
-    ReDim hIconID(lIconIndex To lIconIndex + nIcons * 2 - 1)
+'    nIcons = 2 ' Result
+'
+'    ' Dimension the arrays to the number of icons.
+'    ReDim hIcon(lIconIndex To lIconIndex + nIcons * 2 - 1)
+'    ReDim hIconID(lIconIndex To lIconIndex + nIcons * 2 - 1)
 
 '  Rocketdock always uses the same ID for the same exe
 
@@ -4748,156 +4736,45 @@ Public Sub displayEmbeddedIcons(ByVal key As String, ByVal Filename As String, B
 ' in this case we just need to note the ? and then query the binary for an embedded icon and compare it to the id that RD has given it.
         
     ' use the undocumented PrivateExtractIcons to extract the icons we require
-    Result = PrivateExtractIcons(sExeName, lIconIndex, xSize, _
-                            ySize, hIcon(LBound(hIcon)), _
-                            hIconID(LBound(hIconID)), _
-                            nIcons * 2, flags)
-        
-    ' create an icon with a handle so we can test the result
-    'pic = CreateIcon(hIcon(LBound(hIcon)))
-    
-    ' Creates a GDI+ Image object based on the stream, Olaf Schmidt
-'    GdipLoadImageFromStream ObjPtr(Strm), img
-'    If img = 0 Then MsgBox "Could not load image with GDIPlus"
+'    Result = PrivateExtractIcons(sExeName, lIconIndex, xSize, _
+'                            ySize, hIcon(LBound(hIcon)), _
+'                            hIconID(LBound(hIconID)), _
+'                            nIcons * 2, flags)
 '
-'    'GDI+ API to determine image dimensions, Olaf Schmidt
-'    GdipGetImageWidth pic, dx
-'    GdipGetImageHeight pic, dy
+'    ' create an icon with a handle so we can test the result
+'    Set pic = CreateIcon(hIcon(i + lIconIndex - 1))
 '
-'    ' uses a function extracted from Olaf Schmidt's code in gdiPlusCacheCls to create and resize the image
-'    lngBitmap = CreateScaledImg(pic, dx, dy, IconSize, IconSize, opacity)
+'    ' Draw the icon as normal
+'    lRet = DrawIconEx(.hdc, 0, 0, hIcon(LBound(hIcon)), IconSize, IconSize, 0, 0, DI_NORMAL)  '
 '
-'    ' create a unique key string
-'    thiskey = key & "ResizedImg" & LTrim$(str$(IconSize))
-'
-'    ' add the bitmap to the dictionary collection
-'    collLargeIcons.Add thiskey, lngBitmap
-'
-'   ' get rid of the icon we created
+'    ' get rid of the icons we created
 '    Call DestroyIcon(hIcon(i + lIconIndex - 1))
-            
-    
-    
-    
-    
-    'MsgBox hIcon(LBound(hIcon))
-    
-    ' Draw the icon to a hidden picturebox control.
-    ' this is a bit of a temporary kludge just seeing how to extract the embedded icon from the exe to a GDI+ image
-    If Not (pic Is Nothing) Then
-        With targetPicBox
-        
-            .Width = IconSize * screenTwipsPerPixelX
-            .Height = IconSize * screenTwipsPerPixelX
+    'Call DestroyIcon(hIcon(LBound(hIcon))
 
-            'ensure the picbox is empty first
-            Set .Picture = LoadPicture(vbNullString)
-            .AutoRedraw = True
+    ' create a bitmap
+    ' GdipCreateBitmapFromHICON - loses transparency
+    
+'Public Sub CreateFromHICON(ByVal HICON As Long)
+'    Dim bm As Long
+'    Dispose
+'    SetStatus GdipCreateBitmapFromHICON(HICON, bm)
+'    m_img.fInit bm, m_lastResult
+'End Sub
+    
+'1. Build an icon parser.
+'-- All icons (except embedded PNGs) are in DIB format within the icon format.
+'2. Create a 32bpp DIB section
+'3. Transfer the 32bpp icon bits to the DIB section
+'4. Destroy the icon, have GDI+ load DIB via GdipCreateBitmapFromScan0
+'5. Don't destroy the DIB till you use gdipDisposeImage on the gdi+ bitmap
 
-            Call DrawIconEx(.hdc, 0, 0, hIcon(LBound(hIcon)), IconSize, IconSize, 0, 0, DI_NORMAL)
-            .Refresh
-            
-            SavePicture .image, strFilename
-        
-            'hiddenForm.Show ' uses a hidden form to host the picbox so we can see the icon if needs be.
-        
-            ' uses an extracted function from Olaf Schmidt's code from gdiPlusCacheCls to read the file as a series of bytes
-            bytesFromFile = ReadBytesFromFile(strFilename)
-        
-            ' creates a stream object stored in global memory using the location address of the variable where the data resides, Olaf Schmidt
-            CreateStreamOnHGlobal VarPtr(bytesFromFile(0)), 0, Strm
-        
-            ' Creates a GDI+ Image object based on the stream, Olaf Schmidt
-            Call GdipLoadImageFromStream(ObjPtr(Strm), img)
-            If img = 0 Then MsgBox "Could not load image with GDIPlus"
-        
-            'GDI+ API to determine image dimensions, Olaf Schmidt
-            Call GdipGetImageWidth(img, dx)
-            Call GdipGetImageHeight(img, dy)
-        
-            ' uses a function extracted from Olaf Schmidt's code in gdiPlusCacheCls to create and resize the image
-            lngBitmap = CreateScaledImg(img, dx, dy, IconSize, IconSize, opacity)
-        
-            ' create a unique key string
-            thiskey = key & "ResizedImg" & LTrim$(Str$(IconSize))
-        
-            ' add the bitmap to the dictionary collection
-            collLargeIcons.Add thiskey, lngBitmap
-        
-           ' get rid of the icon we created
-            Call DestroyIcon(hIcon(i + lIconIndex - 1))
-            
-            Kill strFilename
-        
-        End With
-    End If
+' If the icon is 32bpp, you have access to the bits right after the bitmapinfo structure. You can literally copy the bytes to the DIB via CopyMemory, then load DIB into GDI+
+    
+
+
+
 End Sub
 
-
-'---------------------------------------------------------------------------------------
-' Procedure : CreateIcon
-' Author    : beededea
-' Date      : 14/07/2019
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Function CreateIcon(ByVal hImage As Long) As IPicture
-    ' This method creates an icon based on a handle
-    Dim pic As IPicture
-    Dim dsc As PictDesc
-    Dim iid(0 To 15) As Byte
-    Dim Result As Long: Result = 0
-    
-   On Error GoTo CreateIcon_Error
-
-    Set CreateIcon = Nothing
-    If hImage <> 0 Then
-        With dsc
-           .cbSizeofStruct = Len(dsc)
-           .hImage = hImage
-           .PicType = VBRUN.PictureTypeConstants.vbPicTypeIcon
-        End With
-        
-        Result = OLE_CLSIDFromString(StrPtr(IID_IPicture), _
-                                                        VarPtr(iid(0)))
-                                                    
-        If (Result = OLE_ERROR_CODES.S_OK) Then
-            Result = Ole_CreatePic(dsc, VarPtr(iid(0)), True, pic)
-            
-            If (Result = OLE_ERROR_CODES.S_OK) Then
-                Set CreateIcon = pic
-            End If
-        End If
-    End If
-
-   On Error GoTo 0
-   Exit Function
-
-CreateIcon_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure CreateIcon of Module Module1"
-End Function
-
-'---------------------------------------------------------------------------------------
-' Procedure : make32BitLong
-' Author    : beededea
-' Date      : 20/11/2019
-' Purpose   : packing variables into a 32bit LONG for an API call
-'---------------------------------------------------------------------------------------
-'
-Private Function make32BitLong(ByVal LoWord As Integer, Optional ByVal HiWord As Integer = 0) As Long
-   On Error GoTo make32BitLong_Error
-   'If debugflg = 1 Then debugLog "%make32BitLong"
-
-    make32BitLong = CLng(HiWord) * CLng(&H10000) + CLng(LoWord)
-
-   On Error GoTo 0
-   Exit Function
-
-make32BitLong_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure make32BitLong of Module Module1"
-End Function
 
 
 '---------------------------------------------------------------------------------------
@@ -5100,6 +4977,7 @@ Public Sub prepareArraysAndCollections()
     If debugflg = 1 Then debugLog "% sub prepareArraysAndCollections"
 
     ReDim fileNameArray(rdIconMaximum) As String ' the file location of the original icons
+    ReDim dictionaryLocationArray(rdIconMaximum) As String ' the file location of the original icons
     ReDim namesListArray(rdIconMaximum) As String ' the name assigned to each icon
     ReDim sCommandArray(rdIconMaximum) As String ' the Windows command or exe assigned to each icon
     ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
@@ -5116,6 +4994,7 @@ Public Sub prepareArraysAndCollections()
         strKey = LTrim$(Str$(a))
         ' read the two main icon variables into arrays, one for each
         fileNameArray(a) = sFilename
+        dictionaryLocationArray(a) = a
         namesListArray(a) = sTitle
         sCommandArray(a) = sCommand
         
@@ -5151,6 +5030,7 @@ Public Sub prepareArraysAndCollections()
 
     
     iconArrayUpperBound = rdIconMaximum
+    dictionaryLocationArrayUpperBound = rdIconMaximum
 
    On Error GoTo 0
    Exit Sub
@@ -5655,7 +5535,7 @@ Private Sub initialiseGDIStartup()
    
     If debugflg = 1 Then debugLog "% sub initialiseGDIStartup"
 
-    gdipInit.GDIPlusVersion = 1
+    gdipInit.GdiplusVersion = 1
     If GdiplusStartup(lngGDI, gdipInit, ByVal 0&) <> 0 Then
         MsgBox "Error loading GDI+", vbCritical
         Unload Me
