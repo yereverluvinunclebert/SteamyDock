@@ -128,6 +128,9 @@ Begin VB.Form menuForm
       Begin VB.Menu mnuCloneIcon 
          Caption         =   "Clone Current Icon"
       End
+      Begin VB.Menu mnuDisableIcon 
+         Caption         =   "Disable This Icon"
+      End
       Begin VB.Menu mnuAppFolder 
          Caption         =   "Open App Folder for this Icon"
       End
@@ -839,7 +842,7 @@ Private Sub mnuCloseApp_Click()
 
     'NameProcess = GetFileNameFromPath(sCommandArray(selectedIconIndex))
     NameProcess = sCommandArray(selectedIconIndex)
-    If checkAndKill(NameProcess, True, True) = True Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
+    If checkAndKillPutWindowBehind(NameProcess, True, True) = True Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
     
         Sleep 200 ' this ESSENTIAL small delay is required as it may take a moment or two for the system list to be updated.
 
@@ -913,6 +916,42 @@ Private Sub mnuCloneIcon_Click()
 mnuCloneIcon_Click_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuCloneIcon_Click of Form menuForm"
+End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : mnuDisableIcon_Click
+' Author    : beededea
+' Date      : 07/04/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuDisableIcon_Click()
+        
+    dock.Refresh
+        
+    Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile)
+    
+    If sDisabled = "1" Then
+        sDisabled = "0"
+        menuForm.mnuDisableIcon.Caption = "Disable This Icon"
+        menuForm.mnuDisableIcon.Checked = False
+    Else
+        sDisabled = "1"
+        menuForm.mnuDisableIcon.Caption = "Enable This Icon"
+        menuForm.mnuDisableIcon.Checked = True
+    End If
+    
+
+    
+    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile)
+
+   On Error GoTo 0
+   Exit Sub
+
+mnuDisableIcon_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuDisableIcon_Click of Form menuForm"
 End Sub
 
 '---------------------------------------------------------------------------------------

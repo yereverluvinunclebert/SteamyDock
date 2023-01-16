@@ -25,7 +25,36 @@ Option Explicit
 '
 '
 '------------------------------------------------------------
+
+' APIs and variables for querying processes START
+Type PROCESSENTRY32
+    dwSize As Long
+    cntUsage As Long
+    th32ProcessID As Long
+    th32DefaultHeapID As Long
+    th32ModuleID As Long
+    cntThreads As Long
+    th32ParentProcessID As Long
+    pcPriClassBase As Long
+    dwFlags As Long
+    szexeFile As String * 260
+End Type
+
+Private Const PROCESS_ALL_ACCESS = &H1F0FFF
+Private Const TH32CS_SNAPPROCESS As Long = 2&
+Private uProcess   As PROCESSENTRY32
+Private hSnapshot As Long
+
+Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
+Private Declare Function ProcessFirst Lib "kernel32.dll" Alias "Process32First" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long
+Private Declare Function ProcessNext Lib "kernel32.dll" Alias "Process32Next" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long
+Private Declare Function CreateToolhelpSnapshot Lib "kernel32.dll" (ByVal lFlags As Long, ByRef lProcessID As Long) As Long ' Alias "CreateToolhelp32Snapshot"
+Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long
 Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
+Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
+Private Declare Function GetCurrentProcess Lib "kernel32" () As Long
+Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
+' APIs for querying processes END
 
 'Public Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal Image As Long, ByVal filename As String, clsidEncoder As CLSID, encoderParams As Any) As GpStatus
 Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal image As Long, ByVal x As Single, ByVal y As Single) As Long
@@ -1314,7 +1343,7 @@ Public Sub testDockRunning()
     AppExists = App.PrevInstance
     If AppExists = True Then
         NameProcess = "steamydock.exe"
-        checkAndKill NameProcess, False, True
+        checkAndKillPutWindowBehind NameProcess, False, True
     End If
 
    On Error GoTo 0
@@ -3114,4 +3143,89 @@ confirmEachKillPutWindowBehind_Error:
             Resume Next
           End If
     End With
+End Function
+
+'---------------------------------------------------------------------------------------
+' Procedure : checkAndKillPutWindowBehind
+' Author    : beededea
+' Date      : 21/09/2019
+' Purpose   : Find and kill any given process name
+'---------------------------------------------------------------------------------------
+'
+Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal checkForFolder As Boolean, ByVal confirmEachProcessKill As Boolean) As Boolean
+
+    ' variables declared
+    Dim AppCount As Integer: AppCount = 0
+    Dim RProcessFound As Long: RProcessFound = 0
+    Dim SzExename As String: SzExename = vbNullString
+    Dim MyProcess As Long: MyProcess = 0
+    Dim i As Integer: i = 0
+    Dim binaryName As String: binaryName = vbNullString
+    Dim folderName As String: folderName = vbNullString
+    Dim procId As Long: procId = 0
+    Dim runningProcessFolder As String: runningProcessFolder = vbNullString
+    Dim processToKill As Long: processToKill = 0
+    Dim ExitCode As Long: ExitCode = 0
+    
+    On Error GoTo checkAndKillPutWindowBehind_Error
+    'If debugflg = 1 Then debugLog "%checkAndKillPutWindowBehind"
+
+    MyProcess = GetCurrentProcessId()
+    
+    If NameProcess <> vbNullString Then
+          AppCount = 0
+          
+          binaryName = GetFileNameFromPath(NameProcess)
+          folderName = GetDirectory(NameProcess)
+          
+          uProcess.dwSize = Len(uProcess)
+          hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
+
+          'hSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
+          RProcessFound = ProcessFirst(hSnapshot, uProcess)
+          Do
+            i = InStr(1, uProcess.szexeFile, Chr(0))
+            SzExename = LCase$(Left$(uProcess.szexeFile, i - 1))
+            'WinDirEnv = Environ("Windir") + "\"
+            'WinDirEnv = LCase$(WinDirEnv)
+
+            If Right$(SzExename, Len(binaryName)) = LCase$(binaryName) Then
+
+                    AppCount = AppCount + 1
+                    processToKill = OpenProcess(PROCESS_ALL_ACCESS, False, uProcess.th32ProcessID)
+                    If uProcess.th32ProcessID = MyProcess Then
+                       'MsgBox "hmmm" & MyProcess ' we never want to kill our own process...
+                    Else
+                        If checkForFolder = True Then ' only check the process actual run folder when killing an app from the dock
+                            procId = uProcess.th32ProcessID ' actual PID
+                            runningProcessFolder = GetDirectory(GetExePathFromPID(procId))
+                            If LCase$(runningProcessFolder) = LCase$(folderName) Then
+                                ' checkAndKillPutWindowBehind = TerminateProcess(processToKill, ExitCode)
+                                ' Call CloseHandle(processToKill)
+'                                If App.Title = "SteamyDock" Then
+'                                    checkAndKillPutWindowBehind = confirmEachKillPutWindowBehind(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode)
+'                                Else
+                                checkAndKillPutWindowBehind = confirmEachKillPutWindowBehind(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode)
+                            End If
+                        Else ' just go ahead and kill whatever process I say must go
+                            ' checkAndKillPutWindowBehind = TerminateProcess(processToKill, ExitCode)
+                            ' Call CloseHandle(processToKill)
+                            checkAndKillPutWindowBehind = confirmEachKillPutWindowBehind(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode)
+                        End If
+                    End If
+            End If
+            RProcessFound = ProcessNext(hSnapshot, uProcess)
+            
+          Loop While RProcessFound
+          Call CloseHandle(hSnapshot)
+    End If
+
+
+   On Error GoTo 0
+   Exit Function
+
+checkAndKillPutWindowBehind_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure checkAndKillPutWindowBehind of Module Common"
+
 End Function

@@ -1688,7 +1688,14 @@ Public Sub fMouseUp(Button As Integer)
             animateTimer.Enabled = False ' stops the animation
             responseTimer.Enabled = False ' stops the assessment of the mouse position
         End If
-        
+            
+        If sDisabled <> "1" Then
+            menuForm.mnuDisableIcon.Caption = "Disable This Icon"
+            menuForm.mnuDisableIcon.Checked = False
+        Else
+            menuForm.mnuDisableIcon.Caption = "Enable This Icon"
+            menuForm.mnuDisableIcon.Checked = True
+        End If
         
         ' check the current process is running by looking into the array that contains a list of running processes using selectedIconIndex
         If processCheckArray(selectedIconIndex) = "False" Then
@@ -3556,6 +3563,13 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     End If ' rDOpenRunning = "1"
     
     forceRunNewAppFlag = False
+    
+    If sDisabled = "1" Then
+        rmessage = "This command is currently disabled " & vbCr & thisCommand
+        If sArguments <> vbNullString Then rmessage = rmessage & " " & sArguments
+        answer = MsgBox(rmessage, vbOKOnly)
+        Exit Sub
+    End If
     
     ' run the selected program
     If sUseDialog = "1" Then
