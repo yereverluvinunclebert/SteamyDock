@@ -360,7 +360,7 @@ Public windowsVersionString As String
 '---------------------------------------------------------------------------------------
 '
 Public Sub checkLicenceState()
-    Dim slicence As Integer: slicence = 0
+    Dim slicence As String: slicence = "0"
 
     On Error GoTo checkLicenceState_Error
     If debugflg = 1 Then debugLog "%" & " sub checkLicenceState"
@@ -370,7 +370,8 @@ Public Sub checkLicenceState()
     If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
         slicence = GetINISetting("Software\SteamyDockSettings", "Licence", toolSettingsFile)
         ' if the licence state is not already accepted then display the licence form
-        If slicence = 0 Then
+        
+        If slicence = "0" Then
             Call LoadFileToTB(licence.txtLicenceTextBox, App.Path & "\licence.txt", False)
             
             licence.Show vbModal ' show the licence screen in VB modal mode (ie. on its own)
@@ -741,6 +742,10 @@ End Function
 ' Author    : beededea
 ' Date      : 21/09/2019
 ' Purpose   : Find and kill any given process name
+'           : This routine is an analog of checkAndKillPutWindowBehind. It is more or less identical and you should keep them in synch.
+'             This version does NOT have calls to routines that require additional API calls
+'             I could have used compile time references (#) to bypass these but it seemed more appropriate to create
+'             separate copy for DockSettings and Enhance Icon Settings to run that it would not share with the other utilities.
 '---------------------------------------------------------------------------------------
 '
 Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder As Boolean, ByVal confirmEachProcessKill As Boolean) As Boolean
@@ -766,8 +771,8 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
     If NameProcess <> vbNullString Then
           AppCount = 0
           
-          binaryName = GetFileNameFromPath(NameProcess)
-          folderName = GetDirectory(NameProcess)
+          binaryName = getFileNameFromPath(NameProcess)
+          folderName = extractDirectoryFromPath(NameProcess)
           
           uProcess.dwSize = Len(uProcess)
           hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
@@ -789,7 +794,7 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
                     Else
                         If checkForFolder = True Then ' only check the process actual run folder when killing an app from the dock
                             procId = uProcess.th32ProcessID ' actual PID
-                            runningProcessFolder = GetDirectory(GetExePathFromPID(procId))
+                            runningProcessFolder = extractDirectoryFromPath(getExePathFromPID(procId))
                             If LCase$(runningProcessFolder) = LCase$(folderName) Then
                                 ' checkAndKill = TerminateProcess(processToKill, ExitCode)
                                 ' Call CloseHandle(processToKill)
@@ -820,19 +825,19 @@ End Function
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : GetExePathFromPID
+' Procedure : getExePathFromPID
 ' Author    : beededea
 ' Date      : 25/08/2020
 ' Purpose   : getting the full path of a running process is not as easy as you'd expect
 '---------------------------------------------------------------------------------------
 '
-Public Function GetExePathFromPID(ByVal idProc As Long) As String
+Public Function getExePathFromPID(ByVal idProc As Long) As String
     Dim sBuf As String:  sBuf = vbNullString
     Dim sChar As Long: sChar = 0
     Dim useloop As Integer: useloop = 0
     Dim hProcess As Long: hProcess = 0
     
-    On Error GoTo GetExePathFromPID_Error
+    On Error GoTo getExePathFromPID_Error
 
     hProcess = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0, idProc)
     If hProcess Then
@@ -847,7 +852,7 @@ Public Function GetExePathFromPID(ByVal idProc As Long) As String
                     Exit For
                 End If
             Next useloop
-            GetExePathFromPID = sBuf
+            getExePathFromPID = sBuf
         End If
         CloseHandle hProcess
     End If
@@ -855,9 +860,9 @@ Public Function GetExePathFromPID(ByVal idProc As Long) As String
    On Error GoTo 0
    Exit Function
 
-GetExePathFromPID_Error:
+getExePathFromPID_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetExePathFromPID of Module common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getExePathFromPID of Module common"
 End Function
 
 '---------------------------------------------------------------------------------------
@@ -932,29 +937,29 @@ End Function
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : GetDirectory
+' Procedure : extractDirectoryFromPath
 ' Author    : beededea
 ' Date      : 11/07/2019
 ' Purpose   : get the folder or directory path as a string not including the last backslash
 '---------------------------------------------------------------------------------------
 '
-Public Function GetDirectory(ByRef Path As String) As String
+Public Function extractDirectoryFromPath(ByRef Path As String) As String
 
-   On Error GoTo GetDirectory_Error
-   'If debugflg = 1 Then debugLog "%" & "GetDirectory"
+   On Error GoTo extractDirectoryFromPath_Error
+   'If debugflg = 1 Then debugLog "%" & "extractDirectoryFromPath"
 
     If InStrRev(Path, "\") = 0 Then
-        GetDirectory = vbNullString
+        extractDirectoryFromPath = vbNullString
         Exit Function
     End If
-    GetDirectory = Left$(Path, InStrRev(Path, "\") - 1)
+    extractDirectoryFromPath = Left$(Path, InStrRev(Path, "\") - 1)
 
    On Error GoTo 0
    Exit Function
 
-GetDirectory_Error:
+extractDirectoryFromPath_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetDirectory of Module Common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure extractDirectoryFromPath of Module Common"
 End Function
 
 
@@ -1003,24 +1008,24 @@ End Function
 
 '
 '---------------------------------------------------------------------------------------
-' Procedure : GetFileNameFromPath
+' Procedure : getFileNameFromPath
 ' Author    : beededea
 ' Date      : 01/06/2019
-' Purpose   : A function to GetFileNameFromPath
+' Purpose   : A function to getFileNameFromPath
 '---------------------------------------------------------------------------------------
 '
-Public Function GetFileNameFromPath(ByRef strFullPath As String) As String
-   On Error GoTo GetFileNameFromPath_Error
-   'If debugflg = 1 Then debugLog "%" & "GetFileNameFromPath"
+Public Function getFileNameFromPath(ByRef strFullPath As String) As String
+   On Error GoTo getFileNameFromPath_Error
+   'If debugflg = 1 Then debugLog "%" & "getFileNameFromPath"
    
-   GetFileNameFromPath = Right$(strFullPath, Len(strFullPath) - InStrRev(strFullPath, "\"))
+   getFileNameFromPath = Right$(strFullPath, Len(strFullPath) - InStrRev(strFullPath, "\"))
 
    On Error GoTo 0
    Exit Function
 
-GetFileNameFromPath_Error:
+getFileNameFromPath_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetFileNameFromPath of Module Common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFileNameFromPath of Module Common"
 End Function
 
 '---------------------------------------------------------------------------------------
@@ -1693,8 +1698,8 @@ Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) 
 
     If NameProcess <> vbNullString Then
           AppCount = 0
-          binaryName = GetFileNameFromPath(NameProcess)
-          folderName = GetDirectory(NameProcess) ' folder name of the binary in the stored process array
+          binaryName = getFileNameFromPath(NameProcess)
+          folderName = extractDirectoryFromPath(NameProcess) ' folder name of the binary in the stored process array
           uProcess.dwSize = Len(uProcess)
           hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
           RProcessFound = ProcessFirst(hSnapshot, uProcess)
@@ -1708,7 +1713,7 @@ Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) 
 
                     AppCount = AppCount + 1
                     procId = uProcess.th32ProcessID
-                    runningProcessFolder = GetDirectory(GetExePathFromPID(procId))
+                    runningProcessFolder = extractDirectoryFromPath(getExePathFromPID(procId))
                     If LCase$(runningProcessFolder) = LCase$(folderName) Then
                         IsRunning = True
                         processID = procId
@@ -2271,7 +2276,10 @@ End Sub
 ' Procedure : confirmEachKill
 ' Author    : beededea
 ' Date      : 20/12/2022
-' Purpose   :
+' Purpose   : This routine is an analog of confirmEachKillPutWindowBehind. It is more or less identical and you should keep them in synch.
+'             This version does NOT have calls to routines that require additional API calls
+'             I could have used compile time references (#) to bypass these but it seemed more appropriate to create
+'             separate copy for DockSettings and Enhance Icon Settings to run that it would not share with the other utilities.
 '---------------------------------------------------------------------------------------
 '
 Public Function confirmEachKill(ByVal binaryName As String, ByVal procId As Long, ByVal processToKill As String, ByVal confirmEachProcessKill As Boolean, ByRef ExitCode As Long) As Boolean

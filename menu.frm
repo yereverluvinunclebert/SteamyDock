@@ -76,8 +76,8 @@ Begin VB.Form menuForm
          Begin VB.Menu mnuAddShutdown 
             Caption         =   "Add Shutdown"
          End
-         Begin VB.Menu mnuAddRestart 
-            Caption         =   "Add Restart"
+         Begin VB.Menu mnuAddReboot 
+            Caption         =   "Add Reboot"
          End
          Begin VB.Menu mnuAddSleep 
             Caption         =   "Add Sleep"
@@ -228,9 +228,7 @@ Begin VB.Form menuForm
          End
       End
       Begin VB.Menu menuRestart 
-         Caption         =   "Restart"
-         Enabled         =   0   'False
-         Visible         =   0   'False
+         Caption         =   "Restart Steamydock"
       End
       Begin VB.Menu mnuQuit 
          Caption         =   "Quit"
@@ -297,14 +295,19 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub menuRestart_Click()
-' it is NOT possible to reclaim the memory taken by a collection that has been emptied - so don't use this
-   On Error GoTo menuRestart_Click_Error
+    Dim thisCommand As String: thisCommand = vbNullString
     
+    On Error GoTo menuRestart_Click_Error
 
-    dock.fInitialise
+    thisCommand = App.Path & "\restartSteamyDock.exe"
     
-    dock.clearCollections
-
+    If FExists(thisCommand) Then
+        If userLevel <> "runas" Then userLevel = "open"
+        Call dock.runCommand("focus", thisCommand)
+    Else
+         MessageBox Me.hWnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+    End If
+    
    On Error GoTo 0
    Exit Sub
 
@@ -588,6 +591,8 @@ mnuAddProgram_Click_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddProgram_Click of Form menuForm"
 End Sub
 
+
+
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuAddSleep_Click
 ' Author    : beededea
@@ -670,7 +675,7 @@ Private Sub mnuAppFolder_Click()
         If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
     Else
         'obtain the folder from the scommand
-        folderPath = GetDirectory(sCommand)  ' extract the default folder from the batch full path
+        folderPath = extractDirectoryFromPath(sCommand)  ' extract the default folder from the batch full path
         If DirExists(folderPath) Then
             'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
             execStatus = ShellExecute(hWnd, "open", folderPath, sArguments, vbNullString, 1)
@@ -1201,7 +1206,7 @@ End Sub
 '
 Public Sub mnuDockSettings_Click()
     Dim thisCommand As String
-   On Error GoTo mnuDockSettings_Click_Error
+    On Error GoTo mnuDockSettings_Click_Error
 
     thisCommand = App.Path & "\dockSettings\dockSettings.exe"
     
@@ -1743,22 +1748,22 @@ mnuAddShutdown_click_Error:
     
 End Sub
 '---------------------------------------------------------------------------------------
-' Procedure : mnuAddRestart_click
+' Procedure : mnuAddReboot_click
 ' Author    : beededea
 ' Date      : 18/08/2019
-' Purpose   : Add a Restart icon on an Icon map right click.
+' Purpose   : Add a Reboot icon on an Icon map right click.
 '---------------------------------------------------------------------------------------
 '
-Private Sub mnuAddRestart_click()
+Private Sub mnuAddReboot_click()
     Dim iconImage As String
     Dim iconFileName As String
     
-   On Error GoTo mnuAddRestart_click_Error
-      'If debugflg = 1 Then debugLog "%" & "mnuAddRestart_click"
+   On Error GoTo mnuAddReboot_click_Error
+      'If debugflg = 1 Then debugLog "%" & "mnuAddReboot_click"
    
    
     ' check the icon exists
-    iconFileName = App.Path & "\iconSettings\my collection" & "\Restart.png"
+    iconFileName = App.Path & "\iconSettings\my collection" & "\Reboot.png"
     If FExists(iconFileName) Then
         iconImage = iconFileName
     Else
@@ -1767,20 +1772,20 @@ Private Sub mnuAddRestart_click()
            
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Restart", "C:\Windows\System32\shutdown.exe", "/r", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Restart")
+        Call menuAddSummat(iconImage, "Reboot", "C:\Windows\System32\shutdown.exe", "/r", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, "1", vbNullString, vbNullString, vbNullString)
+        Call postAddIConTasks(iconImage, "Reboot")
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add Restart image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-         '        MsgBox "Unable to add Restart image as it does not exist"
+         MessageBox Me.hWnd, "Unable to add Reboot image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         '        MsgBox "Unable to add Reboot image as it does not exist"
     End If
        
     On Error GoTo 0
    Exit Sub
 
-mnuAddRestart_click_Error:
+mnuAddReboot_click_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddRestart_click of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddReboot_click of Form rDIconConfigForm"
     
 End Sub
 '---------------------------------------------------------------------------------------

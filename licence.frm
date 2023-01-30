@@ -112,7 +112,7 @@ Option Explicit
 '
 Private Sub declineLabel_Click()
     Dim ofrm As Form
-    Dim slicence As Integer
+    Dim slicence As String
     
     
    On Error GoTo declineLabel_Click_Error
@@ -122,7 +122,7 @@ Private Sub declineLabel_Click()
     For Each ofrm In Forms
         Unload ofrm
     Next
-    slicence = 0
+    slicence = "0"
     
     PutINISetting "Software\SteamyDockSettings", "Licence", slicence, toolSettingsFile
     End
@@ -143,12 +143,12 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub Label2_Click()
-    Dim slicence As Integer
+    Dim slicence As String
 
    On Error GoTo Label2_Click_Error
 
     licence.Hide
-    slicence = 1
+    slicence = "1"
     
     PutINISetting "Software\SteamyDockSettings", "Licence", slicence, toolSettingsFile
 

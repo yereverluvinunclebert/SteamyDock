@@ -612,61 +612,6 @@ Public smallDockBeenDrawn As Boolean
 '---------------------------------------------------------------------------------------
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : initialiseGlobalVars
-' Author    : beededea
-' Date      : 23/04/2021
-' Purpose   : called at form load for initialisation of global variables
-'---------------------------------------------------------------------------------------
-'
-Public Sub initialiseGlobalVars()
-
-    On Error GoTo initialiseGlobalVars_Error
-
-    rdThemeSkinFile = vbNullString
-    rdThemeSeparatorFile = vbNullString
-    validTheme = False
-    animatedIconsRaised = False
-    selectedIconIndex = 0
-    prevIconIndex = 0
-    bounceHeight = 0
-    bounceCounter = 0
-    
-    inc = False
-    bounceTimerRun = 0
-    fcount = 0
-    'processCheckArray() = vbNullString ' cannot initialise an unsized array in VB6
-    'initiatedProcessArray() = vbNullString ' cannot initialise an unsizedarray in VB6
-    WindowsVer = vbNullString
-    rdIconMaximum = 0
-    theCount = 0
-    dockOpacity = 0
-    userLevel = vbNullString
-    'namesListArray() = vbNullString' cannot initialise an unsized array in VB6
-    'sCommandArray() = vbNullString' cannot initialise an unsized array in VB6
-    autoFadeOutTimerCount = 0
-    autoFadeInTimerCount = 0
-    autoSlideInTimerCount = 0
-    autoSlideOutTimerCount = 0
-    autoHideRevealTimerCount = 0
-    animationFlg = False
-    dockLoweredTime = Now
-    dockHidden = False
-    debugflg = 0
-    readEmbeddedIcons = False
-    dragToDockOperating = False
-    hideDockForNMinutes = False
-    forceRunNewAppFlag = False
-    bounceZone = 0 ' .16 DAEB 12/07/2021 mdlMain.bas Add the BounceZone as a configurable variable.
-
-    On Error GoTo 0
-    
-    Exit Sub
-
-initialiseGlobalVars_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure initialiseGlobalVars of Module mdlMain"
-End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : GetEncoderClsid
@@ -1378,8 +1323,11 @@ Public Sub menuAddSummat(ByVal thisFilename As String, ByVal thisTitle As String
     On Error GoTo menuAddSummat_Error
     'If debugflg = 1 Then debugLog "%" & "menuAddSummat"
 
-    
-   
+    ' instead of reordering the images within the dictionary, which is difficult as you can't just add and
+    ' replace objects into an existing collection, also, it does not release memory. So, instead we simply
+    ' add a new icon reference to the settings file, add a new image to the end of the collection. Then we
+    ' manipulate the index numbers indicating which image in the collection to use. This persists until the
+    ' dock is restarted.
     
     ' starting at the end of the steamydock map, scroll backward and increment the number
     ' until we reach the current position.
@@ -1889,7 +1837,12 @@ Public Sub deleteThisIcon()
 
     If selectedIconIndex > rdIconMaximum Then selectedIconIndex = rdIconMaximum
 
-    'Call removeImageFromDictionary(selectedIconIndex) ' no longer needed
+    ' Call removeImageFromDictionary(selectedIconIndex) ' no longer needed
+    
+    ' instead of reordering the images within the dictionary, which is difficult as you can't just add and
+    ' replace objects into an existing collection, also it does not release memory. So, instead we simply
+    ' remove the icon reference from the settings file, leave the collection alone and manipulate the index number
+    ' indicating which image in the collection to use.
     
     'resize all arrays used for storing icon information
     ReDim Preserve fileNameArray(rdIconMaximum) As String ' the file location of the original icons
@@ -2037,19 +1990,19 @@ Public Sub loadAdditionalImagestoDictionary()
         ' load the theme background image into the collection sDSkinLeft is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDleft.png"
         If FExists(themeName) Then
-            resizeAndLoadImgToDict collLargeIcons, "sDSkinLeft", themeName, vbNullString, (0), (0), sDSkinSize, sDSkinSize
+            resizeAndLoadImgToDict collLargeIcons, "sDSkinLeft", themeName, vbNullString, sDisabled, (0), (0), sDSkinSize, sDSkinSize
         End If
     '
     '    ' load the theme background image into the collection sDSkinMid is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDmiddle.png"
         If FExists(themeName) Then
-            resizeAndLoadImgToDict collLargeIcons, "sDSkinMid", themeName, "sDSkinMid.png", (0), (0), sDSkinSize, sDSkinSize
+            resizeAndLoadImgToDict collLargeIcons, "sDSkinMid", themeName, "sDSkinMid.png", sDisabled, (0), (0), sDSkinSize, sDSkinSize
         End If
 
     '    ' load the theme background image into the collection sDSkinRight is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDright.png"
         If FExists(themeName) Then
-            resizeAndLoadImgToDict collLargeIcons, "sDSkinRight", themeName, vbNullString, (0), (0), sDSkinSize, sDSkinSize
+            resizeAndLoadImgToDict collLargeIcons, "sDSkinRight", themeName, vbNullString, sDisabled, (0), (0), sDSkinSize, sDSkinSize
         End If
         
         ' load the theme separator image into the collection sDSeparator is the unique key
@@ -2061,42 +2014,42 @@ Public Sub loadAdditionalImagestoDictionary()
     
     ' load a transparent 128 x 128 image into the collection, used to stop click-throughs
     If FExists(App.Path & "\blank.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "blank", App.Path & "\blank.png", vbNullString, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "blank", App.Path & "\blank.png", vbNullString, sDisabled, (0), (0), (128), (128)
     End If
     
     ' .11 DAEB 01/05/2021 mdlMain.bas load a transparent 128 x 128 image into the collection, used to highlight the position of a drag/drop
     If FExists(App.Path & "\red.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "red", App.Path & "\red.png", vbNullString, (0), (0), (256), (256)
+        resizeAndLoadImgToDict collLargeIcons, "red", App.Path & "\red.png", vbNullString, sDisabled, (0), (0), (256), (256)
     End If
     
     ' load a small circle image into the collection, used to signify running process
     If FExists(App.Path & "\tinyCircle.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", vbNullString, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", sDisabled, (0), (0), (128), (128)
     End If
     
     ' load a small circle image into the collection, used to signify running process
     If FExists(App.Path & "\red-X.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "redx", App.Path & "\red-X.png", vbNullString, (0), (0), (64), (64)
+        resizeAndLoadImgToDict collLargeIcons, "redx", App.Path & "\red-X.png", sDisabled, (0), (0), (64), (64)
     End If
     
     ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
     If FExists(App.Path & "\busy-F1-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass1", App.Path & "\busy-F1-32x32x24.png", vbNullString, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass1", App.Path & "\busy-F1-32x32x24.png", sDisabled, (0), (0), (128), (128)
     End If
     If FExists(App.Path & "\busy-F2-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass2", App.Path & "\busy-F2-32x32x24.png", vbNullString, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass2", App.Path & "\busy-F2-32x32x24.png", sDisabled, (0), (0), (128), (128)
     End If
     If FExists(App.Path & "\busy-F3-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass3", App.Path & "\busy-F3-32x32x24.png", vbNullString, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass3", App.Path & "\busy-F3-32x32x24.png", sDisabled, (0), (0), (128), (128)
     End If
     If FExists(App.Path & "\busy-F4-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass4", App.Path & "\busy-F4-32x32x24.png", vbNullString, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass4", App.Path & "\busy-F4-32x32x24.png", sDisabled, (0), (0), (128), (128)
     End If
     If FExists(App.Path & "\busy-F5-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass5", App.Path & "\busy-F5-32x32x24.png", vbNullString, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass5", App.Path & "\busy-F5-32x32x24.png", sDisabled, (0), (0), (128), (128)
     End If
     If FExists(App.Path & "\busy-F6-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass6", App.Path & "\busy-F6-32x32x24.png", vbNullString, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass6", App.Path & "\busy-F6-32x32x24.png", sDisabled, (0), (0), (128), (128)
     End If
 
     
@@ -2264,8 +2217,8 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
     strKey = LTrim$(Str$(dictionaryLocationArrayUpperBound))
     If FExists(newFileName) Then
         ' we use the existing resizeAndLoadImgToDict to read the icon format
-         resizeAndLoadImgToDict collLargeIcons, strKey, newFileName, newName, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls)
-         resizeAndLoadImgToDict collSmallIcons, strKey, newFileName, newName, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls)
+         resizeAndLoadImgToDict collLargeIcons, strKey, newFileName, newName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls)
+         resizeAndLoadImgToDict collSmallIcons, strKey, newFileName, newName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls)
     End If
   
 '    If selectedIconIndex < rdIconMaximum Then 'if not the top icon loop through them all and reassign the values
@@ -2366,7 +2319,7 @@ Private Sub incrementCollection(ByRef thisCollection As Object, ByVal thisByteSi
     strKey = LTrim$(Str$(selectedIconIndex))
     If FExists(newFileName) Then
         ' we use the existing resizeAndLoadImgToDict to read the icon format
-         resizeAndLoadImgToDict thisCollection, strKey, newFileName, newName, (0), (0), (thisByteSize), (thisByteSize)
+         resizeAndLoadImgToDict thisCollection, strKey, newFileName, newName, sDisabled, (0), (0), (thisByteSize), (thisByteSize)
     End If
 
 
@@ -2505,7 +2458,7 @@ End Sub
 
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key As String, ByVal strFilename As String, ByVal strName As String, Optional ByVal Left As Long = 0, Optional ByVal Top As Long = 0, Optional ByVal Width As Long = -1, Optional ByVal Height As Long = -1) As Long
+Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key As String, ByVal strFilename As String, ByVal strName As String, ByVal thisDisabled As String, Optional ByVal Left As Long = 0, Optional ByVal Top As Long = 0, Optional ByVal Width As Long = -1, Optional ByVal Height As Long = -1) As Long
 
     Dim thiskey As String
     Dim saveStatus As Boolean
@@ -2555,6 +2508,11 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
         opacity = rDThemeOpacity
     Else
         opacity = rDIconOpacity
+        ' check if the icon is disabled
+        If thisDisabled = "1" Then
+            ' if so reduce the opacity by 50%
+            opacity = opacity / 4
+        End If
     End If
     
     If key = "sDSkinMid" Then
@@ -2761,7 +2719,6 @@ Public Function updateDisplayFromDictionary(thisCollection As Object, strFilenam
         Call GdipGetImageWidth(lngBitmap, Width)
     End If
 
-
     Dim opacity As String
     opacity = "100"
     If opacity <> "100" Then
@@ -2777,17 +2734,18 @@ Public Function updateDisplayFromDictionary(thisCollection As Object, strFilenam
         clrMatrix.m(2, 2) = 1
         clrMatrix.m(3, 3) = 1 * Val(opacity) / 100 ' 0.5 'Alpha transform (50%)
         clrMatrix.m(4, 4) = 1
-    '    Dim lngBitmap2 As Long
-                        
-    '        'Create storage for the image attributes struct used below
-            Call GdipCreateImageAttributes(imgAttr)
-    '
-    '        'Setup the image attributes using the color matrix  'ColorAdjustTypeDefault
-            Call GdipSetImageAttributesColorMatrix(imgAttr, ColorAdjustTypeBitmap, 1, clrMatrix, graMatrix, ColorMatrixFlagsDefault)
-    '
-            Call GdipDrawImageRectRect(lngImage, lngBitmap, Left, Top, Width, Height, 0, 0, Width, Height, 2, imgAttr, 0, 0)
+    
+'       Dim lngBitmap2 As Long
+
+'       'Create storage for the image attributes struct used below
+        Call GdipCreateImageAttributes(imgAttr)
+'
+'       'Setup the image attributes using the color matrix  'ColorAdjustTypeDefault
+        Call GdipSetImageAttributesColorMatrix(imgAttr, ColorAdjustTypeBitmap, 1, clrMatrix, graMatrix, ColorMatrixFlagsDefault)
+'
+        Call GdipDrawImageRectRect(lngImage, lngBitmap, Left, Top, Width, Height, 0, 0, Width, Height, 2, imgAttr, 0, 0)
     Else
-       Call GdipDrawImageRectI(lngImage, lngBitmap, Left, Top, Width, Height)  ' shrinks the bitmap into the image object
+        Call GdipDrawImageRectI(lngImage, lngBitmap, Left, Top, Width, Height)  ' shrinks the bitmap into the image object
     End If
     
    Exit Function
@@ -2904,7 +2862,14 @@ End Function
 
 
 
-Public Function checkProcessAndhandleWindowConditionAndZorder(ByVal thisCommand As String, ByVal selectedIconIndex As Integer, ByVal commandOverride As String, ByVal runAction As String) As Boolean
+'---------------------------------------------------------------------------------------
+' Procedure : checkWindowIconisationZorder
+' Author    : beededea
+' Date      : 19/01/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function checkWindowIconisationZorder(ByVal thisCommand As String, ByVal selectedIconIndex As Integer, ByVal commandOverride As String, ByVal runAction As String) As Boolean
     Dim processID As Long:  processID = 0
     Dim lngRetVal As Long: lngRetVal = 0
 
@@ -2914,7 +2879,8 @@ Public Function checkProcessAndhandleWindowConditionAndZorder(ByVal thisCommand 
         If IsRunning(thisCommand, processID) Then ' it checks again that the process is still running, as the check process timer that populates the processCheckArray is too infrequent to be relied upon
             
             lngRetVal = handleWindowConditionAndZorder(processID, runAction)
-            checkProcessAndhandleWindowConditionAndZorder = True
+            checkWindowIconisationZorder = True ' return
+            Exit Function
             'If lngRetVal = 0 Then
 
         End If ' IsRunning(thisCommand, processID)
@@ -3100,7 +3066,11 @@ End Function
 ' Procedure : confirmEachKillPutWindowBehind
 ' Author    : beededea
 ' Date      : 20/12/2022
-' Purpose   :
+' Purpose   : This routine is an analog of confirmEachKill. It is more or less identical and you should keep them in synch.
+'             This version has calls to routines that require additional API calls bringing Windows to front/back.
+'             I could have used compile time references (#) to bypass these but it seemed more appropriate to create
+'             separate copy for SteamyDock to run that it would not share with the other utilities.
+'
 '---------------------------------------------------------------------------------------
 '
 Public Function confirmEachKillPutWindowBehind(ByVal binaryName As String, ByVal procId As Long, ByVal processToKill As String, ByVal confirmEachProcessKill As Boolean, ByRef ExitCode As Long) As Boolean
@@ -3150,6 +3120,10 @@ End Function
 ' Author    : beededea
 ' Date      : 21/09/2019
 ' Purpose   : Find and kill any given process name
+'           : This routine is an analog of checkAndKill. It is more or less identical and you should keep them in synch.
+'             This version has calls to routines that require additional API calls bringing Windows to front/back.
+'             I could have used compile time references (#) to bypass these but it seemed more appropriate to create
+'             separate copy for SteamyDock to run that it would not share with the other utilities.
 '---------------------------------------------------------------------------------------
 '
 Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal checkForFolder As Boolean, ByVal confirmEachProcessKill As Boolean) As Boolean
@@ -3175,8 +3149,8 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
     If NameProcess <> vbNullString Then
           AppCount = 0
           
-          binaryName = GetFileNameFromPath(NameProcess)
-          folderName = GetDirectory(NameProcess)
+          binaryName = getFileNameFromPath(NameProcess)
+          folderName = extractDirectoryFromPath(NameProcess)
           
           uProcess.dwSize = Len(uProcess)
           hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
@@ -3198,7 +3172,7 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
                     Else
                         If checkForFolder = True Then ' only check the process actual run folder when killing an app from the dock
                             procId = uProcess.th32ProcessID ' actual PID
-                            runningProcessFolder = GetDirectory(GetExePathFromPID(procId))
+                            runningProcessFolder = extractDirectoryFromPath(getExePathFromPID(procId))
                             If LCase$(runningProcessFolder) = LCase$(folderName) Then
                                 ' checkAndKillPutWindowBehind = TerminateProcess(processToKill, ExitCode)
                                 ' Call CloseHandle(processToKill)

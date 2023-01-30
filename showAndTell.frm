@@ -1,15 +1,19 @@
 VERSION 5.00
 Begin VB.Form showAndTell 
+   BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Show and Tell..."
    ClientHeight    =   6480
-   ClientLeft      =   60
-   ClientTop       =   345
+   ClientLeft      =   45
+   ClientTop       =   330
    ClientWidth     =   11880
    Icon            =   "showAndTell.frx":0000
    LinkTopic       =   "Form1"
+   MaxButton       =   0   'False
+   MinButton       =   0   'False
    Moveable        =   0   'False
    ScaleHeight     =   6480
    ScaleWidth      =   11880
+   ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Begin VB.CommandButton btnCloseBox 
       Caption         =   "Close"
@@ -102,15 +106,17 @@ Private Sub Form_Load()
     Textbox.Text = Textbox.Text + "* Added quick launch functionality to run an app more quickly half way through the bounce animation." & vbCrLf
     Textbox.Text = Textbox.Text + "* Added dock automatic hiding for apps such as games that require full screen access" & vbCrLf
     Textbox.Text = Textbox.Text + "* Steamydock can fire up a secondary program if required" & vbCrLf
+    Textbox.Text = Textbox.Text + "* SteamyDock can now auto-hide the dock after running a app" & vbCrLf
+    Textbox.Text = Textbox.Text + "* Has a menu option to clone current item" & vbCrLf
+    Textbox.Text = Textbox.Text + "* Adds a sound option when initiating an icon mouseDown." & vbCrLf
     Textbox.Text = Textbox.Text + "* New functions being added all the time." & vbCrLf
     
     Textbox.Text = Textbox.Text + "* " & vbCrLf & vbCrLf
     Textbox.Text = Textbox.Text + "Things SteamyDock can't yet do:." & vbCrLf & vbCrLf
     Textbox.Text = Textbox.Text + "  " & vbCrLf
-    Textbox.Text = Textbox.Text + "* Animations are missing on auto-hide and icon deletion, these will be done in the future." & vbCrLf
-    Textbox.Text = Textbox.Text + "* Animations are missing on drag and drop into the dock, some of that functionality is coming." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Animations are missing on icon deletion, these will be done in the future." & vbCrLf
     Textbox.Text = Textbox.Text + "* Cannot yet extract embedded icons from EXEs and display them with transparent backgrounds - this is tricky as VB6 has no native PNG support. WIP," & vbCrLf
-    Textbox.Text = Textbox.Text + "* Right/left dock positions will not be implemented." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Right/left dock positions are not yet implemented." & vbCrLf
     Textbox.Text = Textbox.Text + "* The additional right click context menu is not implemented as Steamydock already has a full and useful context menu of its own." & vbCrLf
     Textbox.Text = Textbox.Text + "* Only one dock animation type currently implemented - this will be implemented." & vbCrLf
     Textbox.Text = Textbox.Text + "* SteamyDock is not aware of any other language except for English. Fairly sure this will never happen! Too many languages and too much text to translate." & vbCrLf

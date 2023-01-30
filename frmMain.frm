@@ -527,6 +527,12 @@ Attribute VB_Exposed = False
 ' When doing a process kill for an application that has been brought to the front, the msgbox is underneath, dock/msgbox now to the front.
 ' Created setWindowZorder subroutine and added it to each iconise type.
 ' Added sDisabled option in settings.ini for all icons
+' Added right click code to test for opacity and set the menu options, caption and check state. runCommand modified to exit when disabled.
+' Created new duplicate routines to checkAndKill processes whilst bringing windows to front/back specifically for SD, non-shared.
+' Created a reboot icon and modified the code to use that as default image.
+' Created a menu option and utility to kill and restart steamydock - required to operate under the SD menu.
+' Added disable icon option.
+' Added change of the opacity of the disabled icons on startup.
 
 ' General Status
 ' ==============
@@ -535,18 +541,33 @@ Attribute VB_Exposed = False
 '     2. WIP the initiation point of the dock when the cursor enters
 '     3. converted the slide out routine to two separate routines WIP
 '     4. find the bug in the logic that causes the slide out to cycle up and down WIP
-'     5. creating new icons WIP <----- REBOOT ICON
+'     5. creating new icons WIP
 '     6. Creation of a default DockSettings.ini for a new user of the dock where the application has never been run before.
 '     8. Add known identifers to the known apps list WIP <----- list growing
 '     9.
 '    10.
 '    11.
 '    12. WIP - Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser
-'    13. Add disable icon option
+'    13.  -
 '    14. WIP - Adding a cog above a folder window for explorer.exe
 
 ' Main Tasks:
 ' ============
+'
+' Disable Icon  change opacity dynamically?
+'
+' you cannot modify the current icon in the dictionary
+' what I will do is to create a transparent version of the icon on the fly
+' and store that as an additional icon in the collection and point to that instead
+' I'll need to do it for both the small and large icons
+'
+'  cpl files nacp.cpl
+'
+'  Drag and drop to the dock in Windows 10/11
+'
+' test on e5400
+'
+'  How to create a desktop shortcut with a good quality icon.
 '
 ' Adding a cog above a folder window for explorer.exe - we have code from Fafalone for this.
 '   Faf's code can list the running EXE windows
@@ -578,7 +599,10 @@ Attribute VB_Exposed = False
 '  when the fade timers are running, the clicking is disabled
 
 ' the iconsettings tool should have some separate code that allows migration from RD to SD but the rest should use SdSettings
-
+'
+' icons - add icon references to the resource file and code to show on the forms themselves.
+'   http://www.vbaccelerator.com/home/VB/Tips/Setting_the_App_Icon_Correctly/article.asp
+'
 ' finish the icons
 '   reboot icon boot and candlestick
     ' droptypes to deal with by having an associated document
@@ -624,7 +648,7 @@ Attribute VB_Exposed = False
 '
 ' reorganise windows menu option? send all windows to front/back
 
-'   A Disable Icon option - perhaps change opacity?
+
 '
 '   Messagebox msgBoxA module - ship the code to FCW to replace the native msgboxes.
 '
@@ -640,6 +664,8 @@ Attribute VB_Exposed = False
 ' =====================
 
 ' see the separate bug/task list provided by vBAdvance
+
+' We need to selectively add tops and tails to all recently created routines and take into account the potential effect on any animations
 
 
 ' Detail of General Status
@@ -713,12 +739,13 @@ Attribute VB_Exposed = False
     ' this will cause the icon size of the current icon to grow and not just appear instantly
     ' the same growth value will be applied to the icons to two the left and right
     ' probably as a percentage of growth
-    ' we should modify sizeModifierPxls for this to work using the current animateTimer
-    ' the concept is that the animate timer is animating according to the horizontal diffference using sizeModifierPxls
-    ' so it should be able to animate the vertical aspect too, all we need to do is to increase sizeModifierPxls
+    ' we should modify dynamicSizeModifierPxls for this to work using the current animateTimer
+    ' the concept is that the animate timer is animating according to the horizontal diffference using dynamicSizeModifierPxls
+    ' so it should be able to animate the vertical aspect too, all we need to do is to increase dynamicSizeModifierPxls
     ' rocketdock only grows the selected icon when when the small icons have been entered
 
 ' the bounce animation is much slower in Rocketdock
+
 
 
 ' Displaying a particular icon with a varied opacity
@@ -1086,12 +1113,12 @@ End Enum
 Private Const HORZRES = 8
 Private Const VERTRES = 10
 
-Private lngHeight As Long
-Private lngWidth As Long
+'Private lngHeight As Long
+'Private lngWidth As Long
 Private lngCursor As Long
 Private iconIndex As Single
 
-Private sizeModifierPxls As Double
+Private dynamicSizeModifierPxls As Double
 Private differenceFromLeftMostResizedIconPxls As Double
 Private animateStep As Single
 Private dockUpperMostPxls As Single
@@ -1113,7 +1140,6 @@ Private screenBottomPxls As Single
 Private bDrawn As Boolean
 Private savApIMouseX As Long
 Private savApIMouseY As Long
-Private cHandle As Boolean
 
 'general vars
 Private normalDockWidthPxls As Long
@@ -1173,9 +1199,7 @@ Public lPressed As Long '.nn
 
 Private dockZorder As String '.nn
 ' .58 DAEB 21/04/2021 frmMain.frm added timer and vars to check to see if the system has just emerged from sleep
-Dim strTimeThen As String
-
-
+Private strTimeThen As String
 
 ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
 Private hourglassimage As String
@@ -1187,225 +1211,22 @@ Private mouseDownTime As Long
 
 ' .84 DAEB 20/07/2021 frmMain.frm Added prevention of the dock returning until the hiding application is no longer running.
 Private autoHideProcessName As String
-
-
 Private soundtoplay As String
 Private delayRunTimerCount As Integer
+Private bumpFactor As Single
+' We initialise all the above vars during the form_initialise phase
 
-   
 
 
-
-' .nn DAEB 16/04/2022 frmMain.frm new timer to force reveal the dock when the hiding process has ended
 '---------------------------------------------------------------------------------------
-' Procedure : forceHideRevealTimer_Timer
-' DateTime  : 16/04/2022 12:59
+' Procedure : Form_Load
 ' Author    : beededea
-' Purpose   : Reveals the dock 0 - 1.5 secs after the hiding process has ended
-'---------------------------------------------------------------------------------------
-'
-Private Sub forceHideRevealTimer_Timer()
-    Dim itIs As Boolean: itIs = False
-
-   On Error GoTo forceHideRevealTimer_Timer_Error
-
-        'if the dock has been manually revealed by the user and another app has been run in the meantime
-        ' then the autoHideProcessName will be blank
-        If autoHideProcessName = vbNullString Then
-            forceHideRevealTimer.Enabled = False
-            Exit Sub
-        End If
-        
-        ' check to see if the process that hid the dock is still running
-        ' the dock will not automatically appear until the process that hid it has finished (full screen games)
-        itIs = IsRunning(autoHideProcessName, vbNull)
-        If itIs = True Then
-            ' the timer will continue to run
-            Exit Sub
-        Else
-            autoHideProcessName = vbNullString
-            forceHideRevealTimer.Enabled = False
-            Call ShowDockNow
-        End If
-
-   On Error GoTo 0
-   Exit Sub
-
-forceHideRevealTimer_Timer_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure forceHideRevealTimer_Timer of Form dock"
-    
-End Sub
-
-
-
-'---------------------------------------------------------------------------------------
-' Procedure : Form_MouseDown
-' Author    : beededea
-' Date      : 01/05/2021
-' Purpose   : We handle the mouse events during mouseUp, we only set some states here
-'---------------------------------------------------------------------------------------
-'
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
-
-    On Error GoTo Form_MouseDown_Error
-    
-    ' .65 DAEB 30/04/2021 frmMain.frm Added mouseDown event to capture the time of first press and code to simulate a drag and drop of an icon from the dock
-    dragFromDockOperating = False
-    mouseDownTime = GetTickCount 'we do not use TimeValue(Now) as it does not count milliseconds
-    
-    ' .75 DAEB 12/05/2021 frmMain.frm Changed Form_MouseMove to act as the correct event to a drag and drop operating from the dock
-    selectedIconIndex = iconIndex ' this is the icon we will be bouncing
-    dragImageToDisplay = dictionaryLocationArray(selectedIconIndex) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
-    
-'    dock.animateTimer.Enabled = False
-'    dock.responseTimer.Enabled = False
-
-    On Error GoTo 0
-    Exit Sub
-
-Form_MouseDown_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_MouseDown of Form dock"
-End Sub
-
-' .75 DAEB 12/05/2021 frmMain.frm Changed Form_MouseMove to act as the correct event to measure a drag and drop operating from the dock
-'---------------------------------------------------------------------------------------
-' Procedure : Form_MouseMove
-' Author    : beededea
-' Date      : 12/05/2021
+' Date      : 30/01/2023
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
-    Dim timeDiff As Integer: timeDiff = 0
-    Dim tickCount As Long: tickCount = 0
-    
-    On Error GoTo Form_MouseMove_Error
+Private Sub Form_Load()
 
-    If mouseDownTime = "0" Then Exit Sub
-
-    ' calculates the time since the mouseDown and if no mouseup within 1/4 of a second assume it is a drag from the dock
-    If mouseDownTime <> "0" Then ' time since the mouseDown event occurred
-            tickCount = GetTickCount
-            timeDiff = tickCount - mouseDownTime
-            If Val(rDLockIcons) = 0 And timeDiff > 250 Then
-                mouseDownTime = "0" ' reset
-                dragFromDockOperating = True
-                dragToDockOperating = True
-                hourGlassTimer.Enabled = True
-            End If
-        End If
-
-    On Error GoTo 0
-    Exit Sub
-
-Form_MouseMove_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_MouseMove of Form dock"
-
-End Sub
-
-
-
-'---------------------------------------------------------------------------------------
-' Procedure : Form_Initialize
-' Author    : beededea
-' Date      : 28/03/2020
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Sub Form_Initialize()
-     fInitialise ' we can call this routine from elsewhere whereas we can't easily call Form_Initialize during our program
-End Sub
-    
-
-
-    
-'---------------------------------------------------------------------------------------
-' Procedure : fInitialise
-' Author    : beededea
-' Date      : 15/04/2020
-' Purpose   : All the form initialisation code moved to here so we can call this routine
-'             from elsewhere whereas we can't call Form_Initialize directly
-'---------------------------------------------------------------------------------------
-
-Public Sub fInitialise()
-
-   On Error GoTo fInitialise_Error
-
-    Call initialiseGlobalVars
-    
-    ' local variables declared
-
-    Dim thiskey As String: thiskey = vbNullString
-    Dim a As Integer: a = 0
-    Dim strKey As String: strKey = vbNullString
-
-    ' other global variable assignments
-    
-    debugflg = 0
-    animationFlg = False
-    dockHidden = False
-    dockOpacity = 100
-    
-    screenWidthTwips = 0
-    screenHeightTwips = 0
-    screenWidthPixels = 0
-    screenHeightPixels = 0
-    
-    ' animation timers
-    selectedIconIndex = 999 ' sets the icon to bounce index to something that will never occur
-    bounceTimerRun = 1
-    sDBounceStep = 4 ' we can add a slider for this in the dockSettings later
-    sDBounceInterval = 5
-    'bounceUpTimer.Interval = sDBounceInterval * 3
-    'bounceDownTimer.Interval = sDBounceInterval * 3
-    
-    
-    autoFadeOutTimerCount = 0
-    autoFadeInTimerCount = 0 ' .01 DAEB 24/01/2021 Added new parameter autoFadeInTimerCount for the new fade in timer
-    autoSlideOutTimerCount = 0 ' .28 DAEB frmMain.frm 16/02/2021 Seperated the autoSlide Timers to in and out versions
-    autoSlideInTimerCount = 0 ' .28 DAEB frmMain.frm 16/02/2021 Seperated the autoSlide Timers to in and out versions
-    autoHideRevealTimerCount = 0
-    
-    'other vars
-    iconCurrentTopPxls = 0
-    iconCurrentBottomPxls = 0 ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-    
-    dockUpperMostPxls = 0
-    rdDefaultYPos = 6
-    readEmbeddedIcons = False
-    dockJustEntered = True
-
-    sixtyFourBit = False
-    
-    ' useful global variable set
-    sixtyFourBit = Is64bit()
-    
-    xAxisModifier = 0 ' .57 DAEB 19/04/2021 frmMain.frm modifedAmountToSlide renamed to xAxisModifier for clarity's sake
-    yAxisModifier = 0 '.nn
-    
-    autoHideMode = "fadeout"
-    'autoSlideMode = "slideout" ' .47 DAEB 01/04/2021 frmMain.frm autoSlideMode is now undefined at startup - this allowed the top position to operate as expected
-    autoSlideMode = vbNullString
-    slideOutFlag = False
-    
-    nMinuteExposeTimerCount = 0
-    autoHideProcessName = vbNullString
-    
-    hourglassimage = vbNullString ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
-    hourglassTimerCount = 1
-    strTimeThen = Now
-    
-    bounceZone = 75 ' .82 DAEB 12/07/2021 frmMain.frm Add the BounceZone as a configurable variable.
-
-
-    msgBoxOut = True
-    msgLogOut = True
-    
-    delayRunTimerCount = 0
-    
     ' .06 DAEB 03/03/2021 mdlMain.bas  removed the appSystrayTypes feature, no longer needed to access the systray apps
     ' .05 DAEB frmMain.frm 10/02/2021 changes to handle invisible windows that exist in the known apps systray list
     'appSystrayTypes = "GPU-Z|XWidget|Lasso|Open Hardware Monitor|CintaNotes" ' systray apps list, add to the list those apps you find that can be minimised to the systray
@@ -1415,12 +1236,21 @@ Public Sub fInitialise()
     '=========================================
     
     ' comment the following function back in only when debugging
+    On Error GoTo Form_Load_Error
+    
+    ' set some variable values ready for operation
+    Call setSomeValues
+    
+    ' set debugging if required
     Call toggleDebugging
         
     ' write to the debuglog to log
     debugLog "*****************************"
     debugLog "% SteamyDock program started."
     debugLog "*****************************"
+    
+    ' checks whether the system is 32bit or 64bit
+    sixtyFourBit = Is64bit()
     
     ' extracts all the known drive names using Windows APIs to a useful global var
     Call getAllDriveNames(sAllDrives)
@@ -1447,6 +1277,7 @@ Public Sub fInitialise()
     If fValidateComponents = False Then
         ' at the moment if components are missing we do nothing, just let SD attempt to start,
     End If
+    
     ' get the location of the dock's new settings file
     Call locateDockSettingsFile
 
@@ -1526,28 +1357,258 @@ Public Sub fInitialise()
     ' Checks each target command for validity and sets a flag in an array to place a red X on the icon.
     Call checkTargetCommandValidity
     
-    
-    If rDSoundSelection = "0" Then
-        soundtoplay = vbNullString
-    ElseIf rDSoundSelection = "1" Then
-        soundtoplay = sdAppPath & "\sounds\ting.wav"
-    ElseIf rDSoundSelection = "2" Then
-        soundtoplay = sdAppPath & "\sounds\click.wav"
-    End If
+    ' set the sound selection for any mouse click
+    Call setSounds
     
     debugLog "******************************"
     debugLog "% SteamyDock startup complete."
     debugLog "******************************"
-    
-    
-   On Error GoTo 0
-   Exit Sub
 
-fInitialise_Error:
+    On Error GoTo 0
+    Exit Sub
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fInitialise of Form dock"
+Form_Load_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Load of Form dock"
+            Resume Next
+          End If
+    End With
+    
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : Form_MouseDown
+' Author    : beededea
+' Date      : 01/05/2021
+' Purpose   : We handle the mouse events during mouseUp, we only set some states here
+'---------------------------------------------------------------------------------------
+'
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+
+    On Error GoTo Form_MouseDown_Error
+    
+    ' .65 DAEB 30/04/2021 frmMain.frm Added mouseDown event to capture the time of first press and code to simulate a drag and drop of an icon from the dock
+    dragFromDockOperating = False
+    mouseDownTime = GetTickCount 'we do not use TimeValue(Now) as it does not count milliseconds
+    
+    ' .75 DAEB 12/05/2021 frmMain.frm Changed Form_MouseMove to act as the correct event to a drag and drop operating from the dock
+    selectedIconIndex = iconIndex ' this is the icon we will be bouncing
+    dragImageToDisplay = dictionaryLocationArray(selectedIconIndex) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
+    
+'    dock.animateTimer.Enabled = False
+'    dock.responseTimer.Enabled = False
+
+    On Error GoTo 0
+    Exit Sub
+
+Form_MouseDown_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_MouseDown of Form dock"
+End Sub
+
+' .75 DAEB 12/05/2021 frmMain.frm Changed Form_MouseMove to act as the correct event to measure a drag and drop operating from the dock
+'---------------------------------------------------------------------------------------
+' Procedure : Form_MouseMove
+' Author    : beededea
+' Date      : 12/05/2021
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+    Dim timeDiff As Integer: timeDiff = 0
+    Dim tickCount As Long: tickCount = 0
+    
+    On Error GoTo Form_MouseMove_Error
+
+    If mouseDownTime = 0 Then Exit Sub
+
+    ' calculates the time since the mouseDown and if no mouseup within 1/4 of a second assume it is a drag from the dock
+    If mouseDownTime <> 0 Then ' time since the mouseDown event occurred
+            tickCount = GetTickCount
+            timeDiff = tickCount - mouseDownTime
+            If Val(rDLockIcons) = 0 And timeDiff > 250 Then
+                mouseDownTime = 0 ' reset
+                dragFromDockOperating = True
+                dragToDockOperating = True
+                hourGlassTimer.Enabled = True
+            End If
+        End If
+
+    On Error GoTo 0
+    Exit Sub
+
+Form_MouseMove_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_MouseMove of Form dock"
 
 End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : Form_Initialize
+' Author    : beededea
+' Date      : 28/03/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub Form_Initialize()
+     Call initialiseGlobalVars ' we can call this routine from elsewhere whereas we can't easily call Form_Initialize during our program
+End Sub
+    
+
+'---------------------------------------------------------------------------------------
+' Procedure : initialiseGlobalVars
+' Author    : beededea
+' Date      : 23/04/2021
+' Purpose   : All the form variable initialisation code moved to here so we can call this routine
+'             from elsewhere whereas we can't call Form_Initialize directly
+'---------------------------------------------------------------------------------------
+'
+Public Sub initialiseGlobalVars()
+
+    On Error GoTo initialiseGlobalVars_Error
+    
+    ' theme variables
+    rdThemeSkinFile = vbNullString
+    rdThemeSeparatorFile = vbNullString
+    validTheme = False
+    dockHidden = False
+    dockOpacity = 0
+    rDThemeImage = vbNullString
+    rDThemeLeftMargin = 0
+    rDThemeTopMargin = 0
+    rDThemeRightMargin = 0
+    rDThemeBottomMargin = 0
+    rDThemeOutsideLeftMargin = 0
+    rDThemeOutsideTopMargin = 0
+    rDThemeOutsideRightMargin = 0
+    rDThemeOutsideBottomMargin = 0
+    rDSeparatorImage = vbNullString
+    rDSeparatorTopMargin = 0
+    rDSeparatorBottomMargin = 0
+    dockZorder = vbNullString '.nn
+    
+    ' other global variable assignments
+    debugflg = 0
+    screenWidthTwips = 0
+    screenHeightTwips = 0
+    screenWidthPixels = 0
+    screenHeightPixels = 0
+    inc = False
+    fcount = 0
+    rdIconMaximum = 0
+    theCount = 0
+    debugflg = 0
+    readEmbeddedIcons = False
+    hideDockForNMinutes = False
+    forceRunNewAppFlag = False
+    
+    ' animation timers
+    selectedIconIndex = 0 ' sets the icon to bounce index to something that will never occur
+    bounceTimerRun = 0
+    sDBounceStep = 0 ' we can add a slider for this in the dockSettings later
+    sDBounceInterval = 0
+    autoFadeOutTimerCount = 0
+    autoFadeInTimerCount = 0 ' .01 DAEB 24/01/2021 Added new parameter autoFadeInTimerCount for the new fade in timer
+    autoSlideOutTimerCount = 0 ' .28 DAEB frmMain.frm 16/02/2021 Seperated the autoSlide Timers to in and out versions
+    autoSlideInTimerCount = 0 ' .28 DAEB frmMain.frm 16/02/2021 Seperated the autoSlide Timers to in and out versions
+    autoHideRevealTimerCount = 0
+    bounceTimerRun = 0
+    animatedIconsRaised = False
+    hourglassimage = vbNullString ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
+    hourglassTimerCount = 1
+        
+    ' bounce variables
+    sDBounceStep = 0 ' add to configuration later
+    sDBounceInterval = 0
+    b1 = 0 'not all used yet
+    b2 = 0
+    B3 = 0
+    b4 = 0
+    b5 = 0
+    b6 = 0
+    b7 = 0
+    b8 = 0
+    b9 = 0
+    B0 = 0
+    
+    'animation and positioning vars
+    animationFlg = False
+    animationFlg = False
+    dragToDockOperating = False
+    bDrawn = False
+    savApIMouseX = 0
+    savApIMouseY = 0
+    bounceHeight = 0
+    bounceCounter = 0
+    bumpFactor = 0
+    bounceZone = 0 ' .16 DAEB 12/07/2021 mdlMain.bas Add the BounceZone as a configurable variable.
+    xAxisModifier = 0 ' .57 DAEB 19/04/2021 frmMain.frm modifedAmountToSlide renamed to xAxisModifier for clarity's sake
+    yAxisModifier = 0 '.nn
+    dynamicSizeModifierPxls = 0
+    autoHideMode = ""
+    autoSlideMode = vbNullString
+    slideOutFlag = False
+    animateStep = 0
+    
+    'animation and positioning vars
+    iconHeightPxls = 0
+    iconPosLeftPxls = 0
+    iconCurrentTopPxls = 0
+    iconCurrentBottomPxls = 0 ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+    screenBottomPxls = 0
+    dockUpperMostPxls = 0
+    iconLeftmostPointPxls = 0
+    currentDockTopPxls = 0
+    differenceFromLeftMostResizedIconPxls = 0
+    normalDockWidthPxls = 0
+    expandedDockWidth = 0
+    leftIconSize = 0
+    dockJustEntered = False
+    rdDefaultYPos = 0
+    saveStartLeftPxls = 0 ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    
+    ' icon selection vars
+    iconIndex = 0
+    prevIconIndex = 0
+    
+    ' environment vars
+    readEmbeddedIcons = False
+    WindowsVer = vbNullString
+    sixtyFourBit = False
+    nMinuteExposeTimerCount = 0
+    delayRunTimerCount = 0
+    autoHideProcessName = vbNullString
+    userLevel = vbNullString
+    strTimeThen = vbNullString
+    nMinuteExposeTimerCount = 0
+    msgBoxOut = False
+    msgLogOut = False
+    lHotKey = 0
+    lPressed = 0 '.nn
+    mouseDownTime = 0
+    soundtoplay = vbNullString
+            
+    lngCursor = 0
+    lngFont = 0
+    lngBrush = 0
+    lngFontFamily = 0
+    lngCurrentFont = 0
+    lngFormat = 0
+
+    On Error GoTo 0
+    
+    Exit Sub
+
+initialiseGlobalVars_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure initialiseGlobalVars of Module mdlMain"
+End Sub
+
+    
 ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
 '---------------------------------------------------------------------------------------
 'Procedure:   setUserHotKey
@@ -1661,15 +1722,15 @@ End Sub
 Public Sub fMouseUp(Button As Integer)
    On Error GoTo fMouseUp_Error
    
-    Dim timeDiff As Integer:  timeDiff = 0
-    Dim tickCount As Long: tickCount = 0
-    Dim answer As VbMsgBoxResult: answer = vbNo
+    'Dim timeDiff As Integer:  timeDiff = 0
+    'Dim tickCount As Long: tickCount = 0
+    'Dim answer As VbMsgBoxResult: answer = vbNo
     Dim thisFilename As String: thisFilename = vbNullString
     
     Dim sourceIconIndex As Integer: sourceIconIndex = 0
     Dim targetIconIndex As Integer: targetIconIndex = 0
-        
-    mouseDownTime = "0"
+            
+    mouseDownTime = 0
     
     '.76 DAEB 12/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
     Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile)
@@ -1680,6 +1741,7 @@ Public Sub fMouseUp(Button As Integer)
     End If
     
     If Button = 2 Then 'right click to display a menu
+
         dragFromDockOperating = False
         
         If dragToDockOperating = True Then
@@ -1693,7 +1755,7 @@ Public Sub fMouseUp(Button As Integer)
             menuForm.mnuDisableIcon.Caption = "Disable This Icon"
             menuForm.mnuDisableIcon.Checked = False
         Else
-            menuForm.mnuDisableIcon.Caption = "Enable This Icon"
+            menuForm.mnuDisableIcon.Caption = "Re-enable This Icon"
             menuForm.mnuDisableIcon.Checked = True
         End If
         
@@ -1726,7 +1788,7 @@ Public Sub fMouseUp(Button As Integer)
         usedMenuFlag = True ' essential
         
     Else  'any normal left button click
-    
+                
         ' .79 DAEB 21/05/2021 frmMain.frm Disable any currently active bounce up or down
         bounceCounter = 0
         bounceUpTimer.Enabled = False
@@ -1754,7 +1816,9 @@ Public Sub fMouseUp(Button As Integer)
                     
                     selectedIconIndex = targetIconIndex ' reset the selectedIconIndex
                     thisFilename = sFilename
+                    
                     Call menuAddSummat(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
+                               
                     Call menuForm.postAddIConTasks(thisFilename, sTitle)
                     
                     'delete the old icon at its new location
@@ -1779,7 +1843,7 @@ Public Sub fMouseUp(Button As Integer)
             End If
         End If
         
-        
+
         ' check the current process is running by looking into the array that contains a list of running processes using selectedIconIndex
         If processCheckArray(selectedIconIndex) = "False" Then
             ' it would be nice to lock the x axis during the bounce animation
@@ -1796,10 +1860,11 @@ Public Sub fMouseUp(Button As Integer)
             Call runCommand("run", "") ' added new parameter to allow override .68
         End If
         
-        If FExists(soundtoplay) And rDSoundSelection <> 0 Then PlaySound soundtoplay, ByVal 0&, SND_FILENAME Or SND_ASYNC
-        
+        If FExists(soundtoplay) And rDSoundSelection <> "0" Then
+            PlaySound soundtoplay, ByVal 0&, SND_FILENAME Or SND_ASYNC
+        End If
+              
     End If
-
 
    On Error GoTo 0
    Exit Sub
@@ -1977,7 +2042,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 
                         Call GetShortcutInfo(iconCommand, thisShortcut) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                                        
-                        iconTitle = GetFileNameFromPath(thisShortcut.Filename)
+                        iconTitle = getFileNameFromPath(thisShortcut.Filename)
                         
                         If Not thisShortcut.Filename = vbNullString Then
                             iconCommand = LCase(thisShortcut.Filename)
@@ -2341,9 +2406,9 @@ Private Function fSetDockUpperHeightLimit() As Long
     dockHeightPxls = 0
     ' 22/10/2020 .01 frmMain.frm responsetimer fix the incorrect check of the timer state to determine the dock upper limit when entering and triggering the main animation
     If animatedIconsRaised = True Then
-        dockHeightPxls = iconSizeLargePxls + rDvOffset + rdDefaultYPos
+        dockHeightPxls = iconSizeLargePxls + Val(rDvOffset) + rdDefaultYPos
     Else
-        dockHeightPxls = iconSizeSmallPxls + rDvOffset + rdDefaultYPos
+        dockHeightPxls = iconSizeSmallPxls + Val(rDvOffset) + rdDefaultYPos
     End If
     
     fSetDockUpperHeightLimit = dockHeightPxls
@@ -2601,7 +2666,7 @@ Private Sub animateTimer_Timer()
     showsmall = True
     bDrawn = False
     expandedDockWidth = 0
-        
+    
     ' determines if and where exactly the mouse is in the < horizontal > icon hover area and if so, determine the icon index
     For useloop = 0 To iconArrayUpperBound
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
@@ -2614,16 +2679,6 @@ Private Sub animateTimer_Timer()
     Next useloop
     
     iconPosLeftPxls = iconLeftmostPointPxls ' put starting left position back again for the dock bg
-    
-' .61 DAEB 26/04/2021 frmMain.frm size modifier moved to the sequential bump animation
-'    If usedMenuFlag = False Then ' only recalculate sizeModifierPxls for the bump animation when the menu has not recently been used
-'        'sizeModifierPxls is the variance from one side of the 'main' icon to the cursor point that is applied to the icons either side in order to resize them
-'         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'        sizeModifierPxls = ((apiMouse.x) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
-'        'sizeModifierPxls = ((apiMouse.x * screenTwipsPerPixelX) - iconPosLeftTwips(iconIndex)) / (bumpFactor * screenTwipsPerPixelX)
-'    Else
-'        usedMenuFlag = False ' the menu causes the mouse to move far away from the icon centre and so icon sizing was massive
-'    End If
     
         
     ' NOTE:
@@ -2724,10 +2779,10 @@ Private Sub sequentialBubbleAnimation()
     Dim dockSkinStart As Long: dockSkinStart = 0
     Dim dockSkinWidth As Long: dockSkinWidth = 0
     Dim leftGrpMember As Integer: leftGrpMember = 0
+        
     Dim leftmostResizedIcon As Integer: leftmostResizedIcon = 0
     Dim rightmostResizedIcon As Integer: rightmostResizedIcon = 0
-    Dim bumpFactor As Single: bumpFactor = 0
-    
+
     On Error GoTo sequentialBubbleAnimation_Error
     
     DeleteObject bmpMemory ' the bitmap deleted
@@ -2738,24 +2793,24 @@ Private Sub sequentialBubbleAnimation()
 
     If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth)
     
-    Call determineIconRangeToAnimate(leftmostResizedIcon, rightmostResizedIcon)
+    Call determineDynamicIconRangeToAnimate(leftmostResizedIcon, rightmostResizedIcon)
     
     ' .61 DAEB 26/04/2021 frmMain.frm size modifier moved to the sequential bump animation
-    bumpFactor = 1.2 ' this determines the bumpiness of the animation, change at your peril
-    If usedMenuFlag = False Then ' only recalculate sizeModifierPxls for the bump animation when the menu has not recently been used
+    bumpFactor = 1.2 ' this determines the 'bumpiness' of the transition of switching from one icon to the next
+    If usedMenuFlag = False Then ' only recalculate dynamicSizeModifierPxls for the bump animation when the menu has not recently been used
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-        sizeModifierPxls = ((apiMouse.x) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
+        dynamicSizeModifierPxls = ((apiMouse.x) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
     Else
         usedMenuFlag = False ' the menu causes the mouse to move far away from the icon centre and so icon sizing was massive
     End If
-
+            
     For useloop = 0 To iconArrayUpperBound ' loop through all the icons one by one
-        'size icon 0 to very small
         
         'Call sizePositionZero(useloop, showsmall)
+    
         
-        ' small icons to the left shown in small mode
-        Call sizeEachSmallIconToLeft(useloop, leftmostResizedIcon, showsmall)
+        ' small icons to the left shown in small mode, do it just once, all the other icons will take that same size without recalculating
+        If useloop = 0 Then Call sizeEachSmallIconToLeft(useloop, leftmostResizedIcon, showsmall)
 
         ' the group of icons to the left of the main icon, resized dynamically
         Call sizeEachResizedIconToLeft(useloop, leftmostResizedIcon, showsmall)
@@ -2766,9 +2821,9 @@ Private Sub sequentialBubbleAnimation()
         ' the group of icons to the right of the main icon, resized dynamically
         Call sizeEachResizedIconToRight(useloop, rightmostResizedIcon, showsmall)
 
-        ' small icons to the right shown in small mode
-        Call sizeEachSmallIconToRight(useloop, rightmostResizedIcon, showsmall)
-       
+        ' small icons to the right shown in small mode, do it just once, all the other icons will take that same size without recalculating
+        If useloop = rightmostResizedIcon + 1 Then Call sizeEachSmallIconToRight(useloop, rightmostResizedIcon, showsmall)
+               
         ' display the icon in the dock
         If showsmall = True Then ' display the small size icon or the red X if icon missing
             Call showSmallIcon(useloop)
@@ -2808,7 +2863,7 @@ sequentialBubbleAnimation_Error:
 End Sub
 
 
-Private Sub determineIconRangeToAnimate(ByRef leftmostResizedIcon As Integer, ByRef rightmostResizedIcon As Integer)
+Private Sub determineDynamicIconRangeToAnimate(ByRef leftmostResizedIcon As Integer, ByRef rightmostResizedIcon As Integer)
     
     rDZoomWidth = 2 'override until the animation takes this into account
     If CBool(rDZoomWidth And 1) = False Then
@@ -2915,30 +2970,29 @@ End Sub
 Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostResizedIcon As Integer, ByRef showsmall As Boolean)
 
     Dim useloop2 As Integer: useloop2 = 0
-    Dim resizeProportion As Double: resizeProportion = 0
+'    Dim resizeProportion As Double: resizeProportion = 0
         
     ' the group of icons to the left of the main icon, resized dynamically
     If useloop < iconIndex And useloop >= leftmostResizedIcon Then
        For useloop2 = leftmostResizedIcon To (iconIndex - 1)
-            resizeProportion = 1 / ((rDZoomWidth - 1) / 2) ' 33, .50 &c
-            resizeProportion = 1
+'            resizeProportion = 1 / ((rDZoomWidth - 1) / 2) ' 33, .50 &c
+'            resizeProportion = 1 ' override
             
 '            If useloop = 0 Then
-'                iconHeightPxls = iconSizeSmallPxls - (sizeModifierPxls * resizeProportion) 'sizeModifierPxls is the difference from the midpoint of the current icon in the x axis
-'                iconWidthPxls = iconSizeSmallPxls - (sizeModifierPxls * resizeProportion)
+'                iconHeightPxls = iconSizeSmallPxls - (dynamicSizeModifierPxls * resizeProportion) 'dynamicSizeModifierPxls is the difference from the midpoint of the current icon in the x axis
+'                iconWidthPxls = iconSizeSmallPxls - (dynamicSizeModifierPxls * resizeProportion)
 '            Else
-                iconHeightPxls = iconSizeLargePxls - (sizeModifierPxls * resizeProportion) 'sizeModifierPxls is the difference from the midpoint of the current icon in the x axis
-                iconWidthPxls = iconSizeLargePxls - (sizeModifierPxls * resizeProportion)
+                iconHeightPxls = iconSizeLargePxls - (dynamicSizeModifierPxls) '* resizeProportion) 'dynamicSizeModifierPxls is the difference from the midpoint of the current icon in the x axis
+                iconWidthPxls = iconSizeLargePxls - (dynamicSizeModifierPxls) ' * resizeProportion)
 '            End If
               
              If dockPosition = vbbottom Then
-                
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = (dockUpperMostPxls + sizeModifierPxls) + xAxisModifier '.nn
+                    iconCurrentTopPxls = (dockUpperMostPxls + dynamicSizeModifierPxls) + xAxisModifier '.nn
                 ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = (dockUpperMostPxls + sizeModifierPxls) - xAxisModifier '.nn
+                    iconCurrentTopPxls = (dockUpperMostPxls + dynamicSizeModifierPxls) - xAxisModifier '.nn
                 Else
-                    iconCurrentTopPxls = (dockUpperMostPxls + sizeModifierPxls) '.nn
+                    iconCurrentTopPxls = (dockUpperMostPxls + dynamicSizeModifierPxls) '.nn
                 End If
              End If
              
@@ -2952,7 +3006,7 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
                 End If
             End If
             
-             'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeLargePxls - sizeModifierPxls)
+             'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeLargePxls - dynamicSizeModifierPxls)
             
              expandedDockWidth = expandedDockWidth + iconWidthPxls
              showsmall = False
@@ -2966,6 +3020,7 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
          ' the main fullsize icon
                      
         If useloop = iconIndex Then
+
 '            If useloop = 0 Then
 '                iconHeightPxls = iconSizeSmallPxls
 '                iconWidthPxls = iconSizeSmallPxls
@@ -3013,19 +3068,20 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
 End Sub
 Private Sub sizeEachResizedIconToRight(ByVal useloop As Integer, ByVal rightmostResizedIcon As Integer, ByRef showsmall As Boolean)
     If useloop > iconIndex And useloop <= rightmostResizedIcon Then
+
     
-        iconHeightPxls = iconSizeSmallPxls + sizeModifierPxls
-        iconWidthPxls = iconSizeSmallPxls + sizeModifierPxls
+        iconHeightPxls = iconSizeSmallPxls + dynamicSizeModifierPxls
+        iconWidthPxls = iconSizeSmallPxls + dynamicSizeModifierPxls
     
         If dockPosition = vbbottom Then
             
             If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls + sizeModifierPxls)) + xAxisModifier
+                iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)) + xAxisModifier
             ElseIf autoSlideMode = "slidein" Then
-                iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls + sizeModifierPxls)) - xAxisModifier
+                iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)) - xAxisModifier
             Else
                 ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-                iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls + sizeModifierPxls))
+                iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls))
             End If
             'If selectedIconIndex = iconIndex + 1 Then iconCurrentTopPxls = iconCurrentTopPxls - bounceHeight
         End If
@@ -3042,7 +3098,7 @@ Private Sub sizeEachResizedIconToRight(ByVal useloop As Integer, ByVal rightmost
             End If
         End If
         
-        'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeSmallPxls + sizeModifierPxls)
+        'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)
         expandedDockWidth = expandedDockWidth + iconWidthPxls
         showsmall = False
     End If
@@ -3051,6 +3107,7 @@ End Sub
 Private Sub sizeEachSmallIconToRight(ByVal useloop As Integer, ByVal rightmostResizedIcon As Integer, ByRef showsmall As Boolean)
             
         If useloop > rightmostResizedIcon Then 'small icons to the right
+
             iconHeightPxls = iconSizeSmallPxls
             iconWidthPxls = iconSizeSmallPxls
 
@@ -3115,35 +3172,35 @@ End Sub
 Private Sub showLargeIconTypes(ByVal useloop As Integer)
     Dim thiskey As String: thiskey = ""
     
-    'thiskey = useloop & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
+    ' build the keyname
     thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
+    
     ' add a 1% opaque background to the expanded image to catch click-throughs, blankresizedImg128 is the key name
     updateDisplayFromDictionary collLargeIcons, vbNullString, "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (128), (128)
 
-    ' .56 DAEB 19/04/2021 frmMain.frm Added a faded red background to the current image when the drag and drop is in operation.
+    ' Added a faded red background when dragged .56 DAEB 19/04/2021 frmMain.frm Added a faded red background to the current image when the drag and drop is in operation.
     If dragToDockOperating = True And useloop = iconIndex Then
         updateDisplayFromDictionary collLargeIcons, vbNullString, "redresizedImg256", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     End If
     
-    ' the current image itself always displays
+    ' show the icon image itself
     updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
                          
-    ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
+    ' a small rotating hourglass for 'running' actions ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
     If dragToDockOperating = True And useloop = iconIndex Then
         If hourglassimage = vbNullString Then hourglassimage = "hourglass1resizedImg128"
         updateDisplayFromDictionary collLargeIcons, vbNullString, hourglassimage, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     End If
     
+    ' add the small white cog to indicate a running process
     If rDShowRunning = "1" Then
         If processCheckArray(useloop) = True Then
-            '                                                           thisCollection, strFilename,  key,                       Left,                                            Top,                                             Width,               Height
             If dockPosition = vbbottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls), (iconHeightPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
             If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 5)), (iconWidthPxls), (iconHeightPxls)
-            
-            'updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconSizeLargePxls), (iconSizeLargePxls)
         End If
     End If
-    ' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
+    
+    ' add a red X for invalid command ' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
     If targetExistsArray(useloop) = 1 Then ' redxResizedImg64
             If dockPosition = vbbottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
             If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2)
@@ -3209,7 +3266,7 @@ Private Sub drawDockByCursorEntryPosition()
     
     If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth)
     
-    Call determineIconRangeToAnimate(leftmostResizedIcon, rightmostResizedIcon)
+    Call determineDynamicIconRangeToAnimate(leftmostResizedIcon, rightmostResizedIcon)
 
     ' the main fullsize icon
     Call sizeAndShowFullSizeIconByCEP(iconIndex, showsmall)
@@ -3309,7 +3366,7 @@ Private Sub sizeAndShowSingleMainIconToRightByCEP(ByVal thisIconIndex As Integer
         rightIconWidthPxls = iconWidthPxls
          
         If dockPosition = vbbottom Then
-            iconCurrentTopPxls = dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls) '.nn removal of sizeModifierPxls
+            iconCurrentTopPxls = dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls) '.nn removal of dynamicSizeModifierPxls
         End If
 
         If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
@@ -3491,16 +3548,17 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     Dim answer As VbMsgBoxResult: answer = vbNo
     Dim folderPath As String: folderPath = vbNullString
     Dim thisCommand As String: thisCommand = vbNullString
-    Dim windowHwnd As Long:  windowHwnd = 0
+    ' Dim windowHwnd As Long:  windowHwnd = 0
     'Dim SetTopMostWindow As Long: SetTopMostWindow = 0
 '    Dim CurrentForegroundThreadID As Long: CurrentForegroundThreadID = 0
 '    Dim NewForegroundThreadID As Long: NewForegroundThreadID = 0
-    Dim lngRetVal As Long: lngRetVal = 0
+    ' Dim lngRetVal As Long: lngRetVal = 0
     Dim rmessage As String: rmessage = vbNullString ' .19 DAEB frmMain.frm 02/02/2021 added sArguments field to the confirmation dialog
-    Dim hTray As Long: hTray = 0 ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
-    Dim hOverflow As Long: hOverflow = 0 ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+    'Dim hTray As Long: hTray = 0 ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+    'Dim hOverflow As Long: hOverflow = 0 ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
     Dim userprof As String: userprof = vbNullString
     Dim intShowCmd As Integer: intShowCmd = 0
+    Dim checki As Boolean
 
     On Error GoTo runCommand_Error
     'If debugflg = 1 Then debugLog "%runCommand"
@@ -3554,8 +3612,8 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     ' we bypass the process checking of the array and do not add this application to the list of running apps.
     
         If selectedIconIndex <> 999 Then
-            Dim checki As Boolean
-            checki = checkProcessAndhandleWindowConditionAndZorder(thisCommand, selectedIconIndex, commandOverride, runAction)
+            
+            checki = checkWindowIconisationZorder(thisCommand, selectedIconIndex, commandOverride, runAction)
             If checki = True Then Exit Sub
             
             'Exit Sub ' if the app can be switched to successfully then do nothing else
@@ -3643,7 +3701,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     End If
     ' Rocketdock settings compatibility
     If thisCommand = "[Icons]" Then
-        'Call menuForm.mnuIconSettings_Click
+        Call menuForm.mnuIconSettings_Click
         Exit Sub
     End If
     
@@ -3701,7 +3759,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, vbNullString, intShowCmd)
             Exit Sub ' .89 DAEB 08/12/2022 frmMain.frm Fixed duplicate run of .msc files.
         Else
-            folderPath = GetDirectory(thisCommand)  ' extract the default folder from the full path
+            folderPath = extractDirectoryFromPath(thisCommand)  ' extract the default folder from the full path
             
             ' .45 DAEB 01/04/2021 frmMain.frm Changed the logic to remove the code around a folder path existing...
             If Not DirExists(folderPath) Then
@@ -3711,7 +3769,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
                 Exit Sub
 tryMSCFullPAth:
                 On Error GoTo runCommand_Error
-                Call shellExecuteWithDialog(userLevel, Environ$("windir") & "\SYSTEM32\" & GetFileNameFromPath(thisCommand), sArguments, sWorkingDirectory, intShowCmd)
+                Call shellExecuteWithDialog(userLevel, Environ$("windir") & "\SYSTEM32\" & getFileNameFromPath(thisCommand), sArguments, sWorkingDirectory, intShowCmd)
                 Exit Sub
             End If
             
@@ -3727,7 +3785,7 @@ tryMSCFullPAth:
     End If
     
     ' RocketdockEnhancedSettings.exe (the .NET version of this program)
-    If GetFileNameFromPath(thisCommand) = "RocketdockEnhancedSettings.exe" Then
+    If getFileNameFromPath(thisCommand) = "RocketdockEnhancedSettings.exe" Then
         Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
          Exit Sub
     End If
@@ -3736,7 +3794,7 @@ tryMSCFullPAth:
     If ExtractSuffixWithDot(UCase$(thisCommand)) = ".BAT" Then
         'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
         thisCommand = """" & sCommand & """" ' put the command in quotes so it handles spaces in the path
-        folderPath = GetDirectory(thisCommand)  ' extract the default folder from the batch full path
+        folderPath = extractDirectoryFromPath(thisCommand)  ' extract the default folder from the batch full path
         If FExists(sCommand) Then
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
         Else
@@ -4294,7 +4352,7 @@ Private Sub setInitialStartPoint()
             ' the dock at the bottom of the screen taking into account the largest icons size
             dockUpperMostPxls = (Me.Height / screenTwipsPerPixelX) - iconSizeLargePxls
             ' the dock uppermost position now taking into account the dock vertical offset as defined by the user
-            dockUpperMostPxls = dockUpperMostPxls - rDvOffset - rdDefaultYPos
+            dockUpperMostPxls = dockUpperMostPxls - Val(rDvOffset) - rdDefaultYPos
         End If
 
     End If
@@ -4306,7 +4364,7 @@ Private Sub setInitialStartPoint()
             dockUpperMostPxls = 10
         Else
 '           ' the dock uppermost position at the top of the screen taking into account the dock vertical offset as defined by the user
-            dockUpperMostPxls = rDvOffset + rdDefaultYPos '.nn
+            dockUpperMostPxls = Val(rDvOffset) + rdDefaultYPos '.nn
         End If
          ' .nn ENDS
     End If
@@ -4679,7 +4737,7 @@ Public Sub drawSmallStaticIcons()
             
             'Call sizePositionZero(useloop, showsmall)
 
-            Call sizeEachSmallIconToLeft(useloop, rdIconMaximum, True)
+            If useloop = 0 Then Call sizeEachSmallIconToLeft(useloop, rdIconMaximum, True)
             
             ' display the small size icons
             Call showSmallIcon(useloop)
@@ -4864,20 +4922,20 @@ Public Sub prepareArraysAndCollections()
         
         ' here is the code to cache the images to the collection at a small size
         If FExists(sFilename) Then
-            resizeAndLoadImgToDict collSmallIcons, strKey, fileNameArray(a), namesListArray(a), (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls)
+            resizeAndLoadImgToDict collSmallIcons, strKey, fileNameArray(a), namesListArray(a), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls)
         ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
             checkQuestionMark strKey, fileNameArray(a), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
         Else ' if the image is not found display an 'x'
-            resizeAndLoadImgToDict collSmallIcons, strKey, App.Path & "\red-X.png", "buggered", (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls)
+            resizeAndLoadImgToDict collSmallIcons, strKey, App.Path & "\red-X.png", "buggered", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls)
         End If
         
         ' now cache all the images to the collection at the larger size
         If FExists(sFilename) Then
-            resizeAndLoadImgToDict collLargeIcons, strKey, fileNameArray(a), namesListArray(a), (0), (0), (iconSizeLargePxls), (iconSizeLargePxls)
+            resizeAndLoadImgToDict collLargeIcons, strKey, fileNameArray(a), namesListArray(a), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls)
         ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then  ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
             checkQuestionMark strKey, fileNameArray(a), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
         Else
-            resizeAndLoadImgToDict collLargeIcons, strKey, App.Path & "\red-X.png", "buggered", (0), (0), (iconSizeLargePxls), (iconSizeLargePxls)
+            resizeAndLoadImgToDict collLargeIcons, strKey, App.Path & "\red-X.png", "buggered", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls)
         End If
         
         ' check to see if each process is running and store the result away - this is also run on a 10s timer
@@ -6804,495 +6862,73 @@ End Sub
 
 
 
+' .nn DAEB 16/04/2022 frmMain.frm new timer to force reveal the dock when the hiding process has ended
+'---------------------------------------------------------------------------------------
+' Procedure : forceHideRevealTimer_Timer
+' DateTime  : 16/04/2022 12:59
+' Author    : beededea
+' Purpose   : Reveals the dock 0 - 1.5 secs after the hiding process has ended
+'---------------------------------------------------------------------------------------
+'
+Private Sub forceHideRevealTimer_Timer()
+    Dim itIs As Boolean: itIs = False
+
+   On Error GoTo forceHideRevealTimer_Timer_Error
+
+        'if the dock has been manually revealed by the user and another app has been run in the meantime
+        ' then the autoHideProcessName will be blank
+        If autoHideProcessName = vbNullString Then
+            forceHideRevealTimer.Enabled = False
+            Exit Sub
+        End If
+        
+        ' check to see if the process that hid the dock is still running
+        ' the dock will not automatically appear until the process that hid it has finished (full screen games)
+        itIs = IsRunning(autoHideProcessName, vbNull)
+        If itIs = True Then
+            ' the timer will continue to run
+            Exit Sub
+        Else
+            autoHideProcessName = vbNullString
+            forceHideRevealTimer.Enabled = False
+            Call ShowDockNow
+        End If
+
+   On Error GoTo 0
+   Exit Sub
+
+forceHideRevealTimer_Timer_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure forceHideRevealTimer_Timer of Form dock"
+    
+End Sub
 
 
-
-' change to shellExecuteWithDialog to allow apps to run unelevated: CREDIT - fafalone
-' Requires oleexp.tlb (only for the IDE, compiled apps don't need it) and mIID.bas that's included with oleexp.
-
-'Private Sub LaunchUnelevated(sPath As String)
-'    Dim pShWin As ShellWindows
-'    Set pShWin = New ShellWindows
-'
-'    Dim pDispView As oleexp.IDispatch 'Can't use the built-in VB6 version, need to specify our unrestricted implementation
-'    Dim pServ As IServiceProvider
-'    Dim pSB As IShellBrowser
-'    Dim pDual As IShellFolderViewDual
-'    Dim pView As IShellView
-'
-'    Dim vrEmpty As Variant
-'    Dim hwnd As Long
-'
-'    Set pServ = pShWin.FindWindowSW(CVar(CSIDL_DESKTOP), vrEmpty, SWC_DESKTOP, hwnd, SWFO_NEEDDISPATCH)
-'
-'    pServ.QueryService SID_STopLevelBrowser, IID_IShellBrowser, pSB
-'
-'    pSB.QueryActiveShellView pView
-'
-'    pView.GetItemObject SVGIO_BACKGROUND, IID_IDispatch, pDispView
-'    Set pDual = pDispView
-'
-'    Dim pDispShell As IShellDispatch2
-'    Set pDispShell = pDual.Application
-'
-'    pDispShell.ShellExecute sPath
-'End Sub
+Private Sub setSounds()
+    
+    If rDSoundSelection = "0" Then
+        soundtoplay = vbNullString
+    ElseIf rDSoundSelection = "1" Then
+        soundtoplay = sdAppPath & "\sounds\ting.wav"
+    ElseIf rDSoundSelection = "2" Then
+        soundtoplay = sdAppPath & "\sounds\click.wav"
+    End If
+End Sub
 
 
-
-
-'        If useloop < leftmostResizedIcon Then  'small icons to the left shown in small mode
-'            iconHeightPxls = iconSizeSmallPxls
-'            iconWidthPxls = iconSizeSmallPxls
-'
-'            If dockPosition = vbbottom Then
-'
-'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
-'                    iconCurrentBottomPxls = ((dockUpperMostPxls + iconSizeLargePxls)) + xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
-'                    iconCurrentBottomPxls = ((dockUpperMostPxls + iconSizeLargePxls)) - xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'                Else
-'                    ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'                    iconCurrentTopPxls = dockUpperMostPxls + iconSizeLargePxls - iconSizeSmallPxls
-'                    iconCurrentBottomPxls = dockUpperMostPxls + iconSizeLargePxls ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'                End If
-'            End If
-'
-'            If dockPosition = vbtop Then
-'
-'                ' NOTE: everything is inverted...
-'
-'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeSmallPxls)) - xAxisModifier '.nn added the slidein/out
-'                    iconCurrentBottomPxls = ((dockUpperMostPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeSmallPxls)) + xAxisModifier
-'                    iconCurrentBottomPxls = ((dockUpperMostPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'                Else
-'                    iconCurrentTopPxls = dockUpperMostPxls '.48 DAEB 01/04/2021 frmMain.frm  removed the vertical adjustment already applied to iconCurrentTopPxls
-'                End If
-'            End If
-'
-'            'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - iconSizeSmallPxls
-'            showsmall = True
-'            expandedDockWidth = expandedDockWidth + iconWidthPxls
-'        End If
-'
-'
-'
-'
-'
-'    ' the group of icons to the left of the main icon, resized dynamically
-'    If useloop < iconIndex And useloop >= leftmostResizedIcon Then
-'        ' this is the area that we are currently changing
-'        ' loop through all resized icons to the left
-'
-'       For useloop2 = leftmostResizedIcon To (iconIndex - 1)
-'              ' if the icon number shown is 5
-'             ' for the shrinking icon next to the main icon there will be a minimum size that it does not shrink below = 50% of the maximum it can grow, it grows to the max
-'             ' if rDZoomWidth = 5 then
-'             '
-'             ' endif
-'             ' for the next shrinking icon it will grow from minimum size to 50% of the maximum it can grow
-'
-'            resizeProportion = 1 / ((rDZoomWidth - 1) / 2) ' 33, .50 &c
-'
-'
-'            ' for five icons that means two to the left
-'
-'
-'            'leftmostResizedIcon.height and width = maximum iconsize *resizeProportion ie.50%
-'            ' sizeModifierPxls = offsetFromLeftPxls
-'            ' useloop * resizeProportion
-'
-''                iconHeightPxls = iconSizeLargePxls - (sizeModifierPxls * (useloop * resizeProportion)) 'sizeModifierPxls is the difference from the midpoint of the current icon in the x axis
-''                iconWidthPxls = iconSizeLargePxls - (sizeModifierPxls * (useloop * resizeProportion))
-'
-'
-'            'next icon height and width =up to maximum iconsize
-'            'middle icon maximum icon size of course
-'
-'            resizeProportion = 1
-'
-'
-'
-'             iconHeightPxls = iconSizeLargePxls - (sizeModifierPxls * resizeProportion) 'sizeModifierPxls is the difference from the midpoint of the current icon in the x axis
-'             iconWidthPxls = iconSizeLargePxls - (sizeModifierPxls * resizeProportion)
-'
-'
-'             If dockPosition = vbbottom Then
-'
-'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    'iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeLargePxls - sizeModifierPxls)) + xAxisModifier
-'                    iconCurrentTopPxls = (dockUpperMostPxls + sizeModifierPxls) + xAxisModifier '.nn
-'                ElseIf autoSlideMode = "slidein" Then
-'                    'iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeLargePxls - sizeModifierPxls)) - xAxisModifier
-'                    iconCurrentTopPxls = (dockUpperMostPxls + sizeModifierPxls) - xAxisModifier '.nn
-'                Else
-'                    ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'                    'iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeLargePxls - sizeModifierPxls))
-'                    iconCurrentTopPxls = (dockUpperMostPxls + sizeModifierPxls) '.nn
-'                End If
-'
-'                'If selectedIconIndex = iconIndex - 1 Then iconCurrentTopPxls = iconCurrentTopPxls - bounceCounter
-'             End If
-'
-'            If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-'
-'                '.nn added the slidein/out
-'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeSmallPxls)) - xAxisModifier
-'                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeSmallPxls)) + xAxisModifier
-'                Else
-'                    iconCurrentTopPxls = dockUpperMostPxls
-'                End If
-'            End If
-'
-'             'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeLargePxls - sizeModifierPxls)
-'            showsmall = False
-'             expandedDockWidth = expandedDockWidth + iconWidthPxls
-'
-'        Next useloop2
-'    End If
-'
-'
-'        ' the main fullsize icon
-'        If useloop = iconIndex Then
-'            iconHeightPxls = iconSizeLargePxls
-'            iconWidthPxls = iconSizeLargePxls
-'
-'            If dockPosition = vbbottom Then
-'
-'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = dockUpperMostPxls + xAxisModifier
-'                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = dockUpperMostPxls - xAxisModifier
-'                Else
-'                    ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'                    iconCurrentTopPxls = dockUpperMostPxls
-'                End If
-'
-'                If selectedIconIndex = iconIndex Then iconCurrentTopPxls = iconCurrentTopPxls - bounceHeight
-'            End If
-'
-'            If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-'
-'                '.nn added the slidein/out
-'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeSmallPxls)) - xAxisModifier
-'                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeSmallPxls)) + xAxisModifier
-'                Else
-'                    iconCurrentTopPxls = dockUpperMostPxls
-'                End If
-'
-'                If selectedIconIndex = iconIndex Then iconCurrentTopPxls = dockUpperMostPxls + bounceHeight
-'            End If
-'
-'            'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - iconSizeLargePxls
-'            showsmall = False
-'            expandedDockWidth = expandedDockWidth + (iconWidthPxls)
-'    End If
-'
-'
-'        If useloop > iconIndex And useloop <= rightMostResizedIcon Then
-'            iconHeightPxls = iconSizeSmallPxls + sizeModifierPxls
-'            iconWidthPxls = iconSizeSmallPxls + sizeModifierPxls
-'
-'            If dockPosition = vbbottom Then
-'
-'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls + sizeModifierPxls)) + xAxisModifier
-'                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls + sizeModifierPxls)) - xAxisModifier
-'                Else
-'                    ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'                    iconCurrentTopPxls = (dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls + sizeModifierPxls))
-'                End If
-'                'If selectedIconIndex = iconIndex + 1 Then iconCurrentTopPxls = iconCurrentTopPxls - bounceHeight
-'            End If
-'
-'            If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-'
-'                '.nn added the slidein/out
-'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeSmallPxls)) - xAxisModifier
-'                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeSmallPxls)) + xAxisModifier
-'                Else
-'                    iconCurrentTopPxls = dockUpperMostPxls
-'                End If
-'            End If
-'
-'            'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeSmallPxls + sizeModifierPxls)
-'            expandedDockWidth = expandedDockWidth + iconWidthPxls
-'            showsmall = False
-'        End If
-'
-'        If useloop > rightMostResizedIcon Then 'small icons to the right
-'            iconHeightPxls = iconSizeSmallPxls
-'            iconWidthPxls = iconSizeSmallPxls
-'
-'            If dockPosition = vbbottom Then
-'
-'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
-'                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
-'                Else
-'                    ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeLargePxls - iconSizeSmallPxls))
-'                End If
-'            End If
-'
-'            If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-'
-'                '.nn added the slidein/out
-'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeSmallPxls)) - xAxisModifier
-'                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = ((dockUpperMostPxls + iconSizeSmallPxls)) + xAxisModifier
-'                Else
-'                    iconCurrentTopPxls = dockUpperMostPxls
-'                End If
-'            End If
-'
-'            'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - iconSizeSmallPxls
-'            expandedDockWidth = expandedDockWidth + iconWidthPxls
-'            showsmall = True
-'        End If
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-'
-'    '===================
-'    ' the main fullsize icon
-'    '==================
-'    iconHeightPxls = iconSizeLargePxls
-'    iconWidthPxls = iconSizeLargePxls
-'    mainIconWidthPxls = iconWidthPxls
-'
-'    If dockPosition = vbbottom Then
-'        ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'        iconCurrentTopPxls = dockUpperMostPxls
-'        ' .50 DAEB 01/04/2021 frmMain.frm Pruned all the redundant code for positioniong according to the slideIn/Out state, not done here
-'    End If
-'
-'    If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-'        iconCurrentTopPxls = dockUpperMostPxls
-'    End If
-'
-'    ' the following two lines  position the main icon initially to the main icon's leftmost start point when small
-'    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'    iconPosLeftPxls = (iconStoreLeftPixels(iconIndex)) '
-'
-'    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'    iconStoreRightPixels(iconIndex) = iconStoreLeftPixels(iconIndex) + iconWidthPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-'    iconStoreTopPixels(iconIndex) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-'
-'    'iconStoreBottomPixels(thisIconIndex) =' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'
-'    ' any alteration to the above two lines to offset the icon start position causes a cascade in the subsequent animation routine moving it drastically to the left/right
-'
-'    Call loadTheImageIntoGDIPlus(iconIndex)
-'    Call drawTheLabel(iconIndex)
-'
-'
-''     all other icons are positioned in relation to the large main icon
-''
-''    ===================
-'    ' one icon to the left, resized dynamically
-'    '==================
-'    If iconIndex > 0 Then 'check it isn't trying to animate a non-existent icon before the first icon
-''        iconHeightPxls = iconSizeLargePxls - sizeModifierPxls 'sizeModifierPxls is the difference from the midpoint of the current icon in the x axis
-''        iconWidthPxls = iconSizeLargePxls - sizeModifierPxls
-'
-'        iconHeightPxls = iconSizeLargePxls '.nn removal of sizeModifierPxls
-'        iconWidthPxls = iconSizeLargePxls
-'
-'        If dockPosition = vbbottom Then
-'            'iconCurrentTopPxls = dockUpperMostPxls + iconSizeLargePxls - (iconSizeLargePxls - sizeModifierPxls)
-'            iconCurrentTopPxls = dockUpperMostPxls + iconSizeLargePxls - (iconSizeLargePxls) '.nn removal of sizeModifierPxls
-'        ' .50 DAEB 01/04/2021 frmMain.frm Pruned all the redundant code for positioniong according to the slideIn/Out state, not done here
-'        End If
-'
-'        If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-'           iconCurrentTopPxls = dockUpperMostPxls
-'        End If
-'
-'        'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeLargePxls - sizeModifierPxls)
-'
-'        iconPosLeftPxls = iconPosLeftPxls - iconWidthPxls
-'        ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'        iconStoreLeftPixels(iconIndex - 1) = iconPosLeftPxls
-'        ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'        iconStoreRightPixels(iconIndex - 1) = iconStoreLeftPixels(iconIndex - 1) + iconWidthPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-'        iconStoreTopPixels(iconIndex - 1) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-'
-'        'iconStoreBottomPixels(iconIndex - 1) =' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'
-'        Call loadTheImageIntoGDIPlus(iconIndex - 1)
-'    End If
-'
-'
-'
-'    '===================
-'    ' one icon to the right, resized dynamically
-'    '==================
-'    If iconIndex < rdIconMaximum Then  '    If iconIndex > 0 Then 'check it isn't trying to animate a non-existent icon before the first icon
-'
-''        iconHeightPxls = iconSizeSmallPxls + sizeModifierPxls '.nn removal of sizeModifierPxls
-''        iconWidthPxls = iconSizeSmallPxls + sizeModifierPxls
-'
-'        iconHeightPxls = iconSizeSmallPxls  '.nn removal of sizeModifierPxls
-'        iconWidthPxls = iconSizeSmallPxls
-'
-'        rightIconWidthPxls = iconWidthPxls
-'
-'        If dockPosition = vbbottom Then
-''                ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'                'iconCurrentTopPxls = dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls + sizeModifierPxls) '.nn removal of sizeModifierPxls
-'
-'                iconCurrentTopPxls = dockUpperMostPxls + iconSizeLargePxls - (iconSizeSmallPxls) '.nn removal of sizeModifierPxls
-'
-'        ' .50 DAEB 01/04/2021 frmMain.frm Pruned all the redundant code for positioniong according to the slideIn/Out state, not done here
-'        End If
-'
-'        If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-'            iconCurrentTopPxls = dockUpperMostPxls
-'        End If
-'
-'        'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeSmallPxls + sizeModifierPxls)
-'
-'        ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'        iconPosLeftPxls = (iconStoreLeftPixels(iconIndex)) + mainIconWidthPxls
-'        ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'        iconStoreLeftPixels(iconIndex + 1) = iconPosLeftPxls
-'        ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'        iconStoreRightPixels(iconIndex + 1) = iconStoreLeftPixels(iconIndex + 1) + iconWidthPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-'        iconStoreTopPixels(iconIndex + 1) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-'
-'        'iconStoreBottomPixels(iconIndex + 1) =' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'
-'        Call loadTheImageIntoGDIPlus(iconIndex + 1)
-'    End If
-'
-'
-''    ===================
-'    ' all icons to the left
-'    '==================
-'    If iconIndex > 0 Then 'check it isn't trying to animate a non-existent icon before the first icon
-'        ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'        iconPosLeftPxls = iconStoreLeftPixels(iconIndex - 1)
-'
-'        For useloop = iconIndex - 2 To 0 Step -1
-'            iconHeightPxls = iconSizeSmallPxls
-'            iconWidthPxls = iconSizeSmallPxls
-'
-'            If dockPosition = vbbottom Then
-'                ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'                iconCurrentTopPxls = dockUpperMostPxls + iconSizeLargePxls - iconSizeSmallPxls
-'        ' .50 DAEB 01/04/2021 frmMain.frm Pruned all the redundant code for positioniong according to the slideIn/Out state, not done here
-'            End If
-'
-'            If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-'                iconCurrentTopPxls = dockUpperMostPxls
-'            End If
-'
-'            iconPosLeftPxls = iconPosLeftPxls - iconWidthPxls
-'            iconStoreLeftPixels(useloop) = iconPosLeftPxls ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'            iconStoreRightPixels(useloop) = iconStoreLeftPixels(useloop) + iconWidthPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon             ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'            iconStoreTopPixels(useloop) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-'
-'            'iconStoreBottomPixels(useloop) =' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'
-'            thiskey = useloop & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
-'            updateDisplayFromDictionary collSmallIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
-'            If rDShowRunning = "1" Then
-'                If processCheckArray(useloop) = True Then
-'                    If dockPosition = vbbottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-'                    If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconSizeSmallPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)
-'                End If
-'                ' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
-'                If targetExistsArray(useloop) = 1 Then
-'                    If dockPosition = vbbottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-'                    If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconSizeSmallPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)
-'                End If
-'
-'            End If
-'        Next useloop
-'    End If
-'
-'    '====================
-'    ' icons to the right
-'    '====================
-'    If iconIndex < rdIconMaximum Then   'check it isn't trying to animate a non-existent icon after the last icon
-'
-'        ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'       iconPosLeftPxls = (iconStoreLeftPixels(iconIndex + 1)) + rightIconWidthPxls
-'       For useloop = iconIndex + 2 To iconArrayUpperBound
-'
-'            iconHeightPxls = iconSizeSmallPxls
-'            iconWidthPxls = iconSizeSmallPxls
-'
-'            If dockPosition = vbbottom Then
-'                ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'                iconCurrentTopPxls = dockUpperMostPxls + iconSizeLargePxls - iconSizeSmallPxls
-'                ' .50 DAEB 01/04/2021 frmMain.frm Pruned all the redundant code for positioniong according to the slideIn/Out state, not done here
-'            End If
-'
-'            If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-'                iconCurrentTopPxls = dockUpperMostPxls
-'            End If
-'
-'
-'            iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
-'            ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'            iconStoreLeftPixels(useloop) = iconPosLeftPxls
-'            iconStoreRightPixels(useloop) = iconStoreLeftPixels(useloop) + iconWidthPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-'            iconStoreTopPixels(useloop) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-'            'iconStoreBottomPixels(useloop) =' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'
-'            thiskey = useloop & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
-'            updateDisplayFromDictionary collSmallIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
-'            If rDShowRunning = "1" Then
-'                If processCheckArray(useloop) = True Then
-'                    If dockPosition = vbbottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-'                    If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconSizeSmallPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)
-'                End If
-'            End If
-'            ' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
-'            If targetExistsArray(useloop) = 1 Then  ' redxResizedImg64
-'                    If dockPosition = vbbottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-'                    If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconSizeSmallPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2)
-'            End If
-'        Next useloop
-'    End If
-'
+Private Sub setSomeValues()
+    dockOpacity = 100
+    dockLoweredTime = Now
+    rdDefaultYPos = 6
+    dockJustEntered = True
+    bounceZone = 75 ' .82 DAEB 12/07/2021 frmMain.frm Add the BounceZone as a configurable variable.
+    msgBoxOut = True
+    msgLogOut = True
+    strTimeThen = Now
+    autoHideMode = "fadeout"
+    selectedIconIndex = 999 ' sets the icon to bounce index to something that will never occur
+    bounceTimerRun = 1
+    sDBounceStep = 4 ' we can add a slider for this in the dockSettings later
+    sDBounceInterval = 5
+    
+End Sub
