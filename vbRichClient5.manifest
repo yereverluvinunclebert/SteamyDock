@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <file         name = "vbRichClient5.dll" >
+    <comClass progid = "vbRichClient5.cConstructor"  clsid = "{CAECC935-9C70-4176-8BED-C39B2E33B31F}" />
+  </file>
+</assembly>

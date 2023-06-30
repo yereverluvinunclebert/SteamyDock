@@ -74,8 +74,6 @@ Public Sub readIconSettingsIni(location As String, ByVal iconNumberToRead As Int
     'Reads an .INI File (SETTINGS.INI)
         
    On Error GoTo readIconSettingsIni_Error
-   'If debugflg = 1 Then debugLog "%readIconSettingsIni"
-                                '"Software\RocketDock\Icons"
         sFilename = GetINISetting(location, iconNumberToRead & "-FileName", settingsFile)
         sFileName2 = GetINISetting(location, iconNumberToRead & "-FileName2", settingsFile)
         sTitle = GetINISetting(location, iconNumberToRead & "-Title", settingsFile)
@@ -87,13 +85,14 @@ Public Sub readIconSettingsIni(location As String, ByVal iconNumberToRead As Int
         sIsSeparator = GetINISetting(location, iconNumberToRead & "-IsSeparator", settingsFile)
         sUseContext = GetINISetting(location, iconNumberToRead & "-UseContext", settingsFile)
         sDockletFile = GetINISetting(location, iconNumberToRead & "-DockletFile", settingsFile)
-        
-        'If defaultDock = 1 Then
         sUseDialog = GetINISetting(location, iconNumberToRead & "-UseDialog", settingsFile)
         sUseDialogAfter = GetINISetting(location, iconNumberToRead & "-UseDialogAfter", settingsFile)  ' .01 DAEB 31/01/2021 rdIconConfig.frm Added new checkbox to determine if a post initiation dialog should appear
         sQuickLaunch = GetINISetting(location, iconNumberToRead & "-QuickLaunch", settingsFile) ' .02 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
         sAutoHideDock = GetINISetting(location, iconNumberToRead & "-AutoHideDock", settingsFile)       ' .12 DAEB 20/05/2021 common3.bas Added new check box to allow autohide of the dock after launch of the chosen app
         sSecondApp = GetINISetting(location, iconNumberToRead & "-SecondApp", settingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+        sRunElevated = GetINISetting(location, iconNumberToRead & "-RunElevated", settingsFile)
+        sRunSecondAppBeforehand = GetINISetting(location, iconNumberToRead & "-RunSecondAppBeforehand", settingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+        sAppToTerminate = GetINISetting(location, iconNumberToRead & "-AppToTerminate", settingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
         sDisabled = GetINISetting(location, iconNumberToRead & "-Disabled", settingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
         
    On Error GoTo 0
@@ -115,6 +114,9 @@ Public Sub readIconRegistryWriteSettings(settingsFile As String)
     Dim useloop As Integer: useloop = 0
     
     On Error GoTo readIconRegistryWriteSettings_Error
+    
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", dockSettingsFile
+    
     'If debugflg = 1 Then debugLog "%" & "readIconRegistryWriteSettings"
  
     For useloop = 0 To rdIconMaximum
@@ -123,6 +125,7 @@ Public Sub readIconRegistryWriteSettings(settingsFile As String)
          ' write the rocketdock alternative settings.ini
          Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, settingsFile)
      Next useloop
+
 
    On Error GoTo 0
    Exit Sub
@@ -165,6 +168,10 @@ Public Sub writeRegistryOnce(ByVal iconNumberToWrite As Integer)
     Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-QuickLaunch", sQuickLaunch) ' .02 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
     Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-AutoHideDock", sAutoHideDock) ' .12 DAEB 20/05/2021 common3.bas Added new check box to allow autohide of the dock after launch of the chosen app
     Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-SecondApp", sSecondApp)  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+    
+    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-RunSecondAppBeforehand", sRunSecondAppBeforehand)
+    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-AppToTerminate", sAppToTerminate)
+    
     Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Disabled", sDisabled)  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
     
    On Error GoTo 0
@@ -261,19 +268,6 @@ Public Function identifyAppIcons(iconCommand As String) As String
     
     On Error GoTo identifyAppIcons_Error
 
-    'initialise the vars
-    
-    iconFileName = vbNullString
-    identFileName = vbNullString
-    sDataLine = vbNullString
-    strDelimiter = vbNullString
-    appName = vbNullString
-    appIdent1 = vbNullString
-    appIdent2 = vbNullString
-    appIcon = vbNullString
-    appIdent1Bool = False
-    appIdent2Bool = False
-    fileH = 0
     
     identFileName = sdAppPath & "\appIdent.csv"
 
@@ -611,4 +605,28 @@ GetShellShortcutInfo_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetShellShortcutInfo of Form dock"
 End Function
 
+
+Public Sub zeroAllIconCharacteristics()
+
+    sFilename = vbNullString
+    sFileName2 = vbNullString
+    sTitle = vbNullString
+    sCommand = vbNullString
+    sArguments = vbNullString
+    sWorkingDirectory = vbNullString
+    sOpenRunning = "0"
+    sIsSeparator = "0"
+    sUseContext = "0"
+    sDockletFile = "0"
+    sUseDialog = "0"
+    sUseDialogAfter = "0"
+    sQuickLaunch = "0"
+    sDisabled = "0"
+    sAutoHideDock = "0"
+    sSecondApp = vbNullString
+    sRunSecondAppBeforehand = "0"
+    sAppToTerminate = vbNullString
+    sRunElevated = "0"
+            
+End Sub
 

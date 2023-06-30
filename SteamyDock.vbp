@@ -2,13 +2,12 @@ Type=Exe
 Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\SysWOW64\stdole2.tlb#OLE Automation
 Reference=*\G{50A7E9B0-70EF-11D1-B75A-00A0C90564FE}#1.0#0#C:\Windows\SysWOW64\shell32.dll#Microsoft Shell Controls And Automation
 Reference=*\G{420B2830-E718-11CF-893D-00A0C9054228}#1.0#0#C:\Windows\SysWOW64\scrrun.dll#Microsoft Scripting Runtime
-Reference=*\G{F9015E81-CAAC-45C0-94E8-42B7DA5D7558}#5.1#0#C:\Windows\SysWow64\oleexp.tlb#OLEEXP - Modern Shell Interfaces for VB6, v5.1
+Reference=*\G{F9015E81-CAAC-45C0-94E8-42B7DA5D7558}#5.1#0#C:\Windows\SysWOW64\oleexp.tlb#OLEEXP - Modern Shell Interfaces for VB6, v5.1
 Form=menu.frm
 Form=about.frm
 Form=hiddenForm.frm
 Form=showAndTell.frm
 Form=splashForm.frm
-Module=Module1; monitorModule.bas
 Module=mdlSdMain; mdlMain.bas
 Form=frmMain.frm
 Module=mdlhotkeys; mdlhotkeys.bas
@@ -17,10 +16,15 @@ Form=licence.frm
 Module=iconExtract; iconExtract.bas
 Module=sdModule; sdModule.bas
 Module=common2; common2.bas
-Module=common3; common3.bas
 Module=Module2; mdlEmbed.bas
 Module=mdlExplorerPaths; mdlOpenExplorer.bas
+Module=mdlUnusedCode; mdlUnusedCode.bas
+Module=Module1; monitorModule.bas
+Module=common3; common3.bas
+Form=message.frm
 Module=common; common.bas
+Class=cwMainIcon; cwIcon.cls
+IconForm="dock"
 Startup="dock"
 HelpFile=""
 NoControlUpgrade=1
@@ -34,7 +38,7 @@ Description="A FOSS dock for Windows"
 CompatibleMode="0"
 MajorVer=0
 MinorVer=0
-RevisionVer=2408
+RevisionVer=2710
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Pre-release version. Alpha."
@@ -660,7 +664,6 @@ Description=drag and drop from one location in the dock to another
 Status=2
 Priority=2
 AssignedTo=16hrs
-Comment=
 
 [TASK107]
 Description=04/08/2020 ' DebugPrint themeing of the pop-up panel
@@ -899,7 +902,6 @@ Description=test steamydock without Rocketdock installed at all
 Status=2
 Priority=1
 Comment=remove RD prog folder remove registry entries remove settings file  - and test!
-AssignedTo=
 
 [TASK149]
 Description=how to place Steamydock on another monitor
@@ -908,8 +910,10 @@ Priority=1
 
 [TASK150]
 Description=code to determine which apps are currently opening the dock settings file
-Status=0
-Priority=1
+Status=4
+Priority=0
+AssignedTo=
+Comment=
 
 [TASK151]
 Description=18/09/2020 sort out the form initialise, tidying up a lot of mess into new routines x 7

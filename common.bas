@@ -158,7 +158,7 @@ End Type
 Private Declare Function SHBrowseForFolderA Lib "shell32.dll" (binfo As BROWSEINFO) As Long
 Private Declare Function SHGetPathFromIDListA Lib "shell32.dll" (ByVal pidl&, ByVal szPath$) As Long
 Private Declare Function CoTaskMemFree Lib "ole32.dll" (lp As Any) As Long
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 ' APIs and structures for opening a common dialog box to select files without OCX dependencies STARTS
 
 ' Rocketdock compatible icon global variables START
@@ -170,6 +170,8 @@ Public sArguments  As String
 Public sWorkingDirectory  As String
 Public sShowCmd  As String
 Public sOpenRunning  As String
+Public sRunElevated  As String
+
 Public sIsSeparator  As String
 Public sUseContext  As String
 Public sDockletFile  As String
@@ -178,11 +180,14 @@ Public sUseDialogAfter  As String ' .03 DAEB 31/01/2021 common.bas Added new che
 Public sQuickLaunch  As String ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
 Public sAutoHideDock  As String ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
 Public sSecondApp  As String ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+Public sRunSecondAppBeforehand  As String
+
+Public sAppToTerminate As String
 Public sDisabled  As String
 
 ' Rocketdock icon global variables END
 
-'Public rdSettingsFile As String
+
 Public usedMenuFlag As Boolean
 
 Public dockSettingsFile As String
@@ -229,10 +234,11 @@ Private lstDevicesListCount As Integer
 Public sAllDrives As String
 
 
+
 ' Steamydock global configuration variables END
 
 ' APIs for useful functions START
-Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 ' APIs for useful functions END
 
@@ -252,63 +258,11 @@ Private Declare Function GetLogicalDriveStringsA Lib "kernel32" (ByVal nBufferLe
 Private Declare Function GetDriveTypeA Lib "kernel32" (ByVal nDrive As String) As Long
 ' APIs and variables for querying running processes' paths ENDS
 
-Private Type RECT
-    Left As Long
-    Top As Long
-    Right As Long
-    Bottom As Long
-End Type
-
-'Constants for the return value when finding a monitor
-Public Enum dwFlags
-    MONITOR_DEFAULTTONULL = &H0       'If the monitor is not found, return 0
-    MONITOR_DEFAULTTOPRIMARY& = &H1   'If the monitor is not found, return the primary monitor
-    MONITOR_DEFAULTTONEAREST = &H2    'If the monitor is not found, return the nearest monitor
-End Enum
-
-Public Const MONITORINFOF_PRIMARY = 1
-
-'Structure for the position of a monitor
-Public Type tagMONITORINFO
-    cbSize      As Long 'Size of structure
-    rcMonitor   As RECT 'Monitor rect
-    rcWork      As RECT 'Working area rect
-    dwFlags     As Long 'Flags
-End Type
-
-Public Type UDTMonitor
-    handle As Long
-    Left As Long
-    Right As Long
-    Top As Long
-    Bottom As Long
-    
-    WorkLeft As Long
-    WorkRight As Long
-    WorkTop As Long
-    Workbottom As Long
-    
-    Height As Long
-    Width As Long
-    
-    WorkHeight As Long
-    WorkWidth As Long
-    
-    IsPrimary As Boolean
-End Type
-
-'.nn
-Private Declare Function GetWindowRect Lib "user32.dll" (ByVal hWnd As Long, lpRect As RECT) As Long
-Private Declare Function MonitorFromRect Lib "user32" (rc As RECT, ByVal dwFlags As dwFlags) As Long
-Private Declare Function GetMonitorInfo Lib "user32" Alias "GetMonitorInfoA" (ByVal hMonitor As Long, MonInfo As tagMONITORINFO) As Long
-
-Public screenTwipsPerPixelX As Long ' .07 DAEB 26/04/2021 common.bas changed to use pixels alone, removed all unnecessary twip conversion
-Public screenTwipsPerPixelY As Long ' .07 DAEB 26/04/2021 common.bas changed to use pixels alone, removed all unnecessary twip conversion
 
 Public storeWindowHwnd As Long '.nn
 
 ' .05 DAEB 01/04/2021 common.bas Added declaration to allow replacement of some modal msgbox with the non-modal versions
-Public Declare Function MessageBox Lib "user32" Alias "MessageBoxA" (ByVal hWnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
+Public Declare Function MessageBox Lib "user32" Alias "MessageBoxA" (ByVal hwnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
 
 ' Flag for debug mode '.06 DAEB 19/04/2021 common.bas moved to the common area so that it can be used by each of the utilities
 Private mbDebugMode As Boolean ' .30 DAEB 03/03/2021 frmMain.frm replaced the inIDE function that used a variant to one without
@@ -350,6 +304,7 @@ Public msgBoxOut As Boolean
 Public msgLogOut As Boolean
 
 Public windowsVersionString As String
+Public sDShowIconSettings As String ' .14 DAEB 01/05/2021 docksettings added checkbox and values to show icon settings utility when adding an icon to the dock
 
 '
 '---------------------------------------------------------------------------------------
@@ -533,6 +488,7 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
     
     Dim ProgramFilesDir As String: ProgramFilesDir = vbNullString
     Dim strString As String: strString = vbNullString
+    Dim prg As String: prg = vbNullString
     
     ' other variable assignments
     classicThemeCapable = False
@@ -580,9 +536,10 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
 
     'MsgBox strString
     
+    prg = Environ$("ProgramFiles")
 
     ProgramFilesDir = strString
-    If ProgramFilesDir = vbNullString Then ProgramFilesDir = "c:\program files (x86)" ' 64bit systems
+    If ProgramFilesDir = vbNullString Then ProgramFilesDir = prg ' 64bit systems
     If Not DirExists(ProgramFilesDir) Then
         ProgramFilesDir = "c:\program files" ' 32 bit systems
     End If
@@ -772,7 +729,7 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
           AppCount = 0
           
           binaryName = getFileNameFromPath(NameProcess)
-          folderName = extractDirectoryFromPath(NameProcess)
+          folderName = getFolderNameFromPath(NameProcess)
           
           uProcess.dwSize = Len(uProcess)
           hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
@@ -794,7 +751,7 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
                     Else
                         If checkForFolder = True Then ' only check the process actual run folder when killing an app from the dock
                             procId = uProcess.th32ProcessID ' actual PID
-                            runningProcessFolder = extractDirectoryFromPath(getExePathFromPID(procId))
+                            runningProcessFolder = getFolderNameFromPath(getExePathFromPID(procId))
                             If LCase$(runningProcessFolder) = LCase$(folderName) Then
                                 ' checkAndKill = TerminateProcess(processToKill, ExitCode)
                                 ' Call CloseHandle(processToKill)
@@ -936,31 +893,7 @@ End Function
 
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : extractDirectoryFromPath
-' Author    : beededea
-' Date      : 11/07/2019
-' Purpose   : get the folder or directory path as a string not including the last backslash
-'---------------------------------------------------------------------------------------
-'
-Public Function extractDirectoryFromPath(ByRef Path As String) As String
 
-   On Error GoTo extractDirectoryFromPath_Error
-   'If debugflg = 1 Then debugLog "%" & "extractDirectoryFromPath"
-
-    If InStrRev(Path, "\") = 0 Then
-        extractDirectoryFromPath = vbNullString
-        Exit Function
-    End If
-    extractDirectoryFromPath = Left$(Path, InStrRev(Path, "\") - 1)
-
-   On Error GoTo 0
-   Exit Function
-
-extractDirectoryFromPath_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure extractDirectoryFromPath of Module Common"
-End Function
 
 
 
@@ -991,7 +924,7 @@ Public Function ExtractSuffix(ByVal strPath As String) As String
         Max = UBound(AY)
         ExtractSuffix = AY(Max)
     Else
-        ExtractSuffix = strPath
+        ExtractSuffix = ""
     End If
 
    On Error GoTo 0
@@ -1002,7 +935,31 @@ ExtractSuffix_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ExtractSuffix of Module Common"
 End Function
 
+'---------------------------------------------------------------------------------------
+' Procedure : getFolderNameFromPath
+' Author    : beededea
+' Date      : 11/07/2019
+' Purpose   : get the folder or directory path as a string not including the last backslash
+'---------------------------------------------------------------------------------------
+'
+Public Function getFolderNameFromPath(ByRef Path As String) As String
 
+   On Error GoTo getFolderNameFromPath_Error
+   'If debugflg = 1 Then debugLog "%" & "getFolderNameFromPath"
+
+    If InStrRev(Path, "\") = 0 Then
+        getFolderNameFromPath = vbNullString
+        Exit Function
+    End If
+    getFolderNameFromPath = Left$(Path, InStrRev(Path, "\") - 1)
+
+   On Error GoTo 0
+   Exit Function
+
+getFolderNameFromPath_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFolderNameFromPath of Module Common"
+End Function
 
 
 
@@ -1012,12 +969,17 @@ End Function
 ' Author    : beededea
 ' Date      : 01/06/2019
 ' Purpose   : A function to getFileNameFromPath
+'
 '---------------------------------------------------------------------------------------
 '
 Public Function getFileNameFromPath(ByRef strFullPath As String) As String
    On Error GoTo getFileNameFromPath_Error
-   'If debugflg = 1 Then debugLog "%" & "getFileNameFromPath"
-   
+      
+   ' returns the remainder of the path from the final backslash which can be a file or a folder
+   If Not FExists(strFullPath) Then ' tests to see if a file or a folder of the same name in the same location
+        getFileNameFromPath = ""    ' if a file does not exist then what remains must be a folder
+        Exit Function               ' if a file does exist get its name below
+   End If
    getFileNameFromPath = Right$(strFullPath, Len(strFullPath) - InStrRev(strFullPath, "\"))
 
    On Error GoTo 0
@@ -1054,7 +1016,7 @@ Public Function ExtractSuffixWithDot(ByVal strPath As String) As String
         Max = UBound(AY)
         ExtractSuffixWithDot = "." & AY(Max)
     Else
-        ExtractSuffixWithDot = strPath
+        ExtractSuffixWithDot = vbNullString
     End If
 
    On Error GoTo 0
@@ -1134,13 +1096,13 @@ End Function
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Function BrowseCallbackProc(ByVal hWnd&, ByVal Msg&, ByVal lp&, ByVal initDir$) As Long
+Private Function BrowseCallbackProc(ByVal hwnd&, ByVal Msg&, ByVal lp&, ByVal initDir$) As Long
    Const BFFM_INITIALIZED As Long = 1
    Const BFFM_SETSELECTION As Long = &H466
    On Error GoTo BrowseCallbackProc_Error
 
    If (Msg = BFFM_INITIALIZED) And (initDir <> vbNullString) Then
-      Call SendMessage(hWnd, BFFM_SETSELECTION, 1, ByVal initDir$)
+      Call SendMessage(hwnd, BFFM_SETSELECTION, 1, ByVal initDir$)
    End If
    BrowseCallbackProc = 0
 
@@ -1232,6 +1194,8 @@ Public Sub writeIconSettingsIni(ByVal location As String, ByVal iconNumberToWrit
         PutINISetting location, iconNumberToWrite & "-WorkingDirectory", sWorkingDirectory, settingsFile
         PutINISetting location, iconNumberToWrite & "-ShowCmd", sShowCmd, settingsFile
         PutINISetting location, iconNumberToWrite & "-OpenRunning", sOpenRunning, settingsFile
+        PutINISetting location, iconNumberToWrite & "-RunElevated", sRunElevated, settingsFile
+        
         PutINISetting location, iconNumberToWrite & "-IsSeparator", sIsSeparator, settingsFile
         PutINISetting location, iconNumberToWrite & "-UseContext", sUseContext, settingsFile
         PutINISetting location, iconNumberToWrite & "-DockletFile", sDockletFile, settingsFile
@@ -1242,7 +1206,11 @@ Public Sub writeIconSettingsIni(ByVal location As String, ByVal iconNumberToWrit
         PutINISetting location, iconNumberToWrite & "-QuickLaunch", sQuickLaunch, settingsFile ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
         PutINISetting location, iconNumberToWrite & "-AutoHideDock", sAutoHideDock, settingsFile  ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
         PutINISetting location, iconNumberToWrite & "-SecondApp", sSecondApp, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+ 
+        PutINISetting location, iconNumberToWrite & "-RunSecondAppBeforehand", sRunSecondAppBeforehand, settingsFile
+        PutINISetting location, iconNumberToWrite & "-AppToTerminate", sAppToTerminate, settingsFile
         PutINISetting location, iconNumberToWrite & "-Disabled", sDisabled, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+        
         
         
        On Error GoTo 0
@@ -1383,6 +1351,8 @@ Public Sub readRegistryIconValues(ByVal iconNumberToRead As Integer)
     sWorkingDirectory = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-WorkingDirectory")
     sShowCmd = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-ShowCmd")
     sOpenRunning = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-OpenRunning")
+    sRunElevated = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-RunElevated")
+    
     sIsSeparator = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-IsSeparator")
     sUseContext = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-UseContext")
     sDockletFile = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-DockletFile")
@@ -1393,6 +1363,10 @@ Public Sub readRegistryIconValues(ByVal iconNumberToRead As Integer)
     sQuickLaunch = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-QuickLaunch") ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
     sAutoHideDock = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-AutoHideDock")   ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
     sSecondApp = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-SecondApp")   ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+    
+    sRunSecondAppBeforehand = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-RunSecondAppBeforehand")
+    sAppToTerminate = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-AppToTerminate")
+
     sDisabled = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Disabled")
     
    On Error GoTo 0
@@ -1533,143 +1507,7 @@ GetNtDeviceNameForDrive_Error:
    
 End Function
 
-'---------------------------------------------------------------------------------------
-' Procedure : monitorProperties
-' Author    : beededea
-' Date      : 23/01/2021
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Function monitorProperties(frm As Form, ByRef screenTwipsPerPixelX As Long, ByRef screenTwipsPerPixelY As Long) As UDTMonitor
-    
-    'Return the properties (in Twips) of the monitor on which most of Frm is mapped
-    
-    Dim hMonitor As Long: hMonitor = 0
-    Dim MONITORINFO As tagMONITORINFO
-    Dim Frect As RECT
-    Dim ad As Double: ad = 0
-    
-    ' reads the size and position of the window
-   On Error GoTo monitorProperties_Error
-   
-    If debugflg = 1 Then debugLog "%" & " func monitorProperties"
 
-    GetWindowRect frm.hWnd, Frect
-    hMonitor = MonitorFromRect(Frect, MONITOR_DEFAULTTOPRIMARY) ' get handle for monitor containing most of Frm
-                                                                ' if disconnected return handle (and properties) for primary monitor
-    ' STARTS 23/01/2021 .01 common.bas DAEB calls twipsperpixelsX/Y function when determining the twips for high DPI screens
-
-'    screenTwipsPerPixelX =  Screen.TwipsPerPixelX
-'    screenTwipsPerPixelY =  Screen.TwipsPerPixelY
-
-    ' only calling TwipsPerPixelX/Y once on startup
-    screenTwipsPerPixelX = twipsPerPixelX
-    screenTwipsPerPixelY = twipsPerPixelY
-    
-    'MsgBox "Harry - send me this please screenTwipsPerPixelX - " & screenTwipsPerPixelX
-
-    
-    ' ENDS 23/01/2021 .01 common.bas DAEB calls twipsperpixelsX/Y function when determining the twips for high DPI screens
-    
-    On Error GoTo GetMonitorInformation_Err
-    MONITORINFO.cbSize = Len(MONITORINFO)
-    GetMonitorInfo hMonitor, MONITORINFO
-    With monitorProperties
-        .handle = hMonitor
-        'convert all dimensions from pixels to twips
-        .Left = MONITORINFO.rcMonitor.Left * screenTwipsPerPixelX
-        .Right = MONITORINFO.rcMonitor.Right * screenTwipsPerPixelX
-        .Top = MONITORINFO.rcMonitor.Top * screenTwipsPerPixelY
-        .Bottom = MONITORINFO.rcMonitor.Bottom * screenTwipsPerPixelY
-        
-        .WorkLeft = MONITORINFO.rcWork.Left * screenTwipsPerPixelX
-        .WorkRight = MONITORINFO.rcWork.Right * screenTwipsPerPixelX
-        .WorkTop = MONITORINFO.rcWork.Top * screenTwipsPerPixelY
-        .Workbottom = MONITORINFO.rcWork.Bottom * screenTwipsPerPixelY
-        
-        .Height = (MONITORINFO.rcMonitor.Bottom - MONITORINFO.rcMonitor.Top) * screenTwipsPerPixelY
-        .Width = (MONITORINFO.rcMonitor.Right - MONITORINFO.rcMonitor.Left) * screenTwipsPerPixelX
-        
-        .WorkHeight = (MONITORINFO.rcWork.Bottom - MONITORINFO.rcWork.Top) * screenTwipsPerPixelY
-        .WorkWidth = (MONITORINFO.rcWork.Right - MONITORINFO.rcWork.Left) * screenTwipsPerPixelX
-        
-        .IsPrimary = MONITORINFO.dwFlags And MONITORINFOF_PRIMARY
-    End With
-    
-    Exit Function
-GetMonitorInformation_Err:
-    'Beep
-    If Err.Number = 453 Then
-        'should be handled if pre win2k compatibility is required
-        'Non-Multimonitor OS, return -1
-        'GetMonitorInformation = -1
-        'etc
-    End If
-
-   On Error GoTo 0
-   Exit Function
-
-monitorProperties_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure monitorProperties of Module common"
-End Function
-
-
-
-Public Sub EnsureFormIsInsideMonitor(frm As Form, Optional RefForm As Form)
-    
-    'typically used to determine if the previously saved position/size of a Form needs adjustment re the current monitor layout
-    ' if a Form is mapped to a disconnected monitor the Form is remapped to the Primary monitor
-    
-    'typical usage:
-    'Private Sub Form_Load()
-    '   retrieve previous left and top positions from file and apply them to Me.Left and Me.Top Properties
-    '   EnsureFormIsInsideMonitor Me
-    'End Sub
-    
-    'If Reform is not specified Frm is positioned to be displayed entirely within the monitor on which most of it is currently mapped
-    'If Reform is specified Frm is positioned to be displayed entirely on the same monitor as that on which most of Reform is mapped
-    
-    'adjusts Frm Left and Top so that all the borders of Frm are contained within the same Monitor
-    
-    ' if Frm.Width or Height exceed monitor.width or height Frm is positioned at Left/ Top of monitor and
-    '  Width/ Height of Frm may be adjusted if Frm is Sizable
-        
-    Dim VFlag As Boolean: VFlag = False
-    Dim HFlag As Boolean: HFlag = False
-    Dim cMonitor As UDTMonitor
-    
-    If RefForm Is Nothing Then Set RefForm = frm
-    
-    cMonitor = monitorProperties(RefForm, screenTwipsPerPixelX, screenTwipsPerPixelY)
-
-    With frm
-        If .Width > cMonitor.WorkWidth Then
-            If .BorderStyle = vbSizable Or .BorderStyle = vbSizableToolWindow Then
-                .Width = cMonitor.WorkWidth
-            Else
-                .Left = cMonitor.WorkLeft: HFlag = True
-            End If
-        End If
-        If .Height > cMonitor.WorkHeight Then
-            If .BorderStyle = vbSizable Or .BorderStyle = vbSizableToolWindow Then
-                .Height = cMonitor.WorkHeight
-            Else
-                .Top = cMonitor.WorkTop: VFlag = True
-            End If
-        End If
-
-        If Not HFlag Then
-            If .Left < cMonitor.WorkLeft Then .Left = cMonitor.WorkLeft
-            If (.Left + .Width) > cMonitor.WorkRight Then .Left = cMonitor.WorkRight - .Width
-        End If
-        If Not VFlag Then
-            If .Top < cMonitor.WorkTop Then .Top = cMonitor.WorkTop
-            If (.Top + .Height) > cMonitor.Workbottom Then .Top = cMonitor.Workbottom - .Height
-        End If
-    End With
-
-End Sub
 
 
 ' 26/10/2020 .01 rocket1 DAEB Moved function isRunning from Steamydock mdlMain(mdlMain.bas) to a shared common.bas module so that more than just one program can utilise it
@@ -1687,47 +1525,79 @@ Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) 
     Dim SzExename As String: SzExename = vbNullString
     Dim ExitCode As Long: ExitCode = 0
     Dim procId As Long: procId = 0
+    Dim a As Integer: a = 0
     Dim i As Integer: i = 0
-    'Dim WinDirEnv As String
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
 
-   On Error GoTo IsRunning_Error
-   'If debugflg = 1 Then debugLog "%IsRunning"
+    On Error GoTo IsRunning_Error
+    'If debugflg = 1 Then debugLog "%IsRunning"
 
     If NameProcess <> vbNullString Then
-          AppCount = 0
-          binaryName = getFileNameFromPath(NameProcess)
-          folderName = extractDirectoryFromPath(NameProcess) ' folder name of the binary in the stored process array
-          uProcess.dwSize = Len(uProcess)
-          hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
-          RProcessFound = ProcessFirst(hSnapshot, uProcess)
-          Do
-            i = InStr(1, uProcess.szexeFile, Chr$(0))
-            SzExename = LCase$(Left$(uProcess.szexeFile, i - 1))
-            'WinDirEnv = Environ("Windir") + "\"
-            'WinDirEnv = LCase$(WinDirEnv)
-
-            If Right$(SzExename, Len(binaryName)) = LCase$(binaryName) Then
-
-                    AppCount = AppCount + 1
-                    procId = uProcess.th32ProcessID
-                    runningProcessFolder = extractDirectoryFromPath(getExePathFromPID(procId))
-                    If LCase$(runningProcessFolder) = LCase$(folderName) Then
-                        IsRunning = True
-                        processID = procId
-                    Else
-                        'MsgBox runningProcessFolder & " " & binaryName
-                        IsRunning = False
-                    End If
-                    
-                    Exit Function
+            AppCount = 0
+                     
+            If InStr(NameProcess, "::{") > 0 Then
+                IsRunning = False
+                Exit Function  ' the target is a CLSID so invalid
             End If
-            RProcessFound = ProcessNext(hSnapshot, uProcess)
 
-          Loop While RProcessFound
-          Call CloseHandle(hSnapshot)
+            binaryName = getFileNameFromPath(NameProcess)
+            folderName = getFolderNameFromPath(NameProcess) ' folder name of the binary in the stored process array
+            If binaryName = "" Then
+                IsRunning = False
+                Exit Function  ' the target is a folder so also invalid
+            End If
+            
+            uProcess.dwSize = Len(uProcess)
+            hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
+            RProcessFound = ProcessFirst(hSnapshot, uProcess)
+            Do
+                i = InStr(1, uProcess.szexeFile, Chr$(0))
+                SzExename = LCase$(Left$(uProcess.szexeFile, i - 1))
+    
+                If Right$(SzExename, Len(binaryName)) = LCase$(binaryName) Then
+
+                        AppCount = AppCount + 1
+                        procId = uProcess.th32ProcessID
+
+                        runningProcessFolder = getFolderNameFromPath(getExePathFromPID(procId))
+                        
+                        ' some processes can only be interrogated when running with admin
+                        If runningProcessFolder = vbNullString Then
+                                IsRunning = True
+                                processID = procId
+                        Else
+                            If LCase$(runningProcessFolder) = LCase$(folderName) Then
+                                IsRunning = True
+                                processID = procId
+                            Else
+                                'MsgBox runningProcessFolder & " " & binaryName
+                                IsRunning = False
+                            End If
+                        End If
+                        
+'                        If NameProcess = "C:\Program Files\CPUID\CPU-Z\cpuz.exe" Then
+'                            If runningProcessFolder = vbNullString Then
+'                                MsgBox "error obtaining runningProcessFolder from " & aa
+'                            End If
+'                        End If
+                        
+                        'If runningProcessFolder <> vbNullString Then
+'                        If LCase$(runningProcessFolder) = LCase$(folderName) Then
+'                            IsRunning = True
+'                            processID = procId
+'                        Else
+'                            'MsgBox runningProcessFolder & " " & binaryName
+'                            IsRunning = False
+'                        End If
+                        
+                        Exit Function
+                End If
+                RProcessFound = ProcessNext(hSnapshot, uProcess)
+    
+            Loop While RProcessFound
+            Call CloseHandle(hSnapshot)
     End If
 
 
@@ -2292,7 +2162,9 @@ Public Function confirmEachKill(ByVal binaryName As String, ByVal procId As Long
 
     If confirmEachProcessKill = True Then
         rmessage = "A matching process has been found. Kill this application? - " & binaryName & " with process ID " & procId
-        answer = MsgBox(rmessage, vbYesNo)
+        'nswer = MsgBox(rmessage, vbYesNo)
+        answer = msgBoxA(rmessage, vbYesNo, "Killing this application", True, "confirmEachKill")
+
         If answer = vbNo Then
             goAheadAndKill = False
         Else
@@ -2319,3 +2191,44 @@ confirmEachKill_Error:
           End If
     End With
 End Function
+
+
+
+
+
+' .74 DAEB 22/05/2022 rDIConConfig.frm Msgbox replacement that can be placed on top of the form instead as the middle of the screen, see Steamydock for a potential replacement?
+'---------------------------------------------------------------------------------------
+' Procedure : msgBoxA
+' Author    : beededea
+' Date      : 20/05/2022
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function msgBoxA(ByVal msgBoxPrompt As String, Optional ByVal msgButton As VbMsgBoxResult, Optional ByVal msgTitle As String, Optional ByVal msgShowAgainChkBox As Boolean = False, Optional ByRef msgContext As String = "none") As Integer
+     
+    ' set the defined properties of a form
+    On Error GoTo msgBoxA_Error
+
+    frmMessage.propMessage = msgBoxPrompt
+    frmMessage.propTitle = msgTitle
+    frmMessage.propShowAgainChkBox = msgShowAgainChkBox
+    frmMessage.propButtonVal = msgButton
+    frmMessage.propMsgContext = msgContext
+    frmMessage.Display ' run a subroutine in the form that displays the form
+
+    msgBoxA = frmMessage.propReturnedValue
+
+    On Error GoTo 0
+    Exit Function
+
+msgBoxA_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure msgBoxA of Module mdlMain"
+            Resume Next
+          End If
+    End With
+
+End Function
+

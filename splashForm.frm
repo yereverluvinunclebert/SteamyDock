@@ -90,7 +90,8 @@ Private Sub chkSplashDisable_Click()
     End If
     
     PutINISetting "Software\SteamyDock\DockSettings", "SplashStatus", sDSplashStatus, dockSettingsFile
-
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", "9999", dockSettingsFile
    On Error GoTo 0
    Exit Sub
 

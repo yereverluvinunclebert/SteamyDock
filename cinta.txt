@@ -1,0 +1,17 @@
+' The dock background on wide docks or high DPI screens, loading the scaled image to dictionary failed when the image needed to be stretched beyong 2000 pixels.
+
+
+' Current Task:
+' =============
+
+' When adding a new program to the dock using add DLL/exe, the name should be the exe name extracted from the path
+
+
+' Project References:
+'           VisualBasic for Applications
+'           VisualBasic Runtime Objects and Procedures
+'           VisualBasic Objects and Procedures
+'           OLE Automation - drag and drop
+'           Microsoft Shell Controls and Automation
+'           Microsoft scripting runtime - for the scripting dictionary usage
+'           OLEEXP Modern Shell Interfaces for VB6, v5.1

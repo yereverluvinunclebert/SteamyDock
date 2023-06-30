@@ -15,16 +15,20 @@ Begin VB.Form menuForm
    Visible         =   0   'False
    Begin VB.Menu mnuMainMenu 
       Caption         =   "mainmenu"
-      Begin VB.Menu mnuRun 
+      Begin VB.Menu mnuRunApp 
          Caption         =   "Run this App"
       End
       Begin VB.Menu mnuAdmin 
-         Caption         =   "Run App as Administrator"
-         Enabled         =   0   'False
-         Visible         =   0   'False
+         Caption         =   "Run this App as Administrator"
       End
       Begin VB.Menu mnuRunNewApp 
          Caption         =   "Run New Instance of this App"
+      End
+      Begin VB.Menu mnuRunNewAppAsAdmin 
+         Caption         =   "Run New Instance of this App As Admin."
+      End
+      Begin VB.Menu mnuBlank5 
+         Caption         =   "______________________"
       End
       Begin VB.Menu mnuCloseApp 
          Caption         =   "Close Running Instances of this App"
@@ -82,8 +86,11 @@ Begin VB.Form menuForm
          Begin VB.Menu mnuAddSleep 
             Caption         =   "Add Sleep"
          End
-         Begin VB.Menu mnuAddLog 
-            Caption         =   "Add Log Off Workstation"
+         Begin VB.Menu mnuAddLogOut 
+            Caption         =   "Add Log Out"
+         End
+         Begin VB.Menu mnuAddLockWorkstation 
+            Caption         =   "Add Lock Workstation"
          End
          Begin VB.Menu mnuAddWorkgroup 
             Caption         =   "Add Workgroup"
@@ -106,8 +113,29 @@ Begin VB.Form menuForm
          Begin VB.Menu mnuAddPrograms 
             Caption         =   "Add Programs / Features"
          End
-         Begin VB.Menu mnuAddAdministrative 
+         Begin VB.Menu mnuAddAdministrativeTools 
             Caption         =   "Add Administrative Tools"
+            Begin VB.Menu mnuAddCompMgmt 
+               Caption         =   "Add Computer Management"
+            End
+            Begin VB.Menu mnuAddDiscMgmt 
+               Caption         =   "Add Disc Management"
+            End
+            Begin VB.Menu mnuAddDevMgmt 
+               Caption         =   "Add Device Management"
+            End
+            Begin VB.Menu mnuAddEventViewer 
+               Caption         =   "Add Event Viewer"
+            End
+            Begin VB.Menu mnuAddPerfMon 
+               Caption         =   "Add Performance Monitor"
+            End
+            Begin VB.Menu mnuAddServices 
+               Caption         =   "Add Services Management"
+            End
+            Begin VB.Menu mnuAddTaskSched 
+               Caption         =   "Add Task Scheduler"
+            End
          End
          Begin VB.Menu mnuAddRecycle 
             Caption         =   "Add Recycle Bin"
@@ -132,7 +160,7 @@ Begin VB.Form menuForm
          Caption         =   "Disable This Icon"
       End
       Begin VB.Menu mnuAppFolder 
-         Caption         =   "Open App Folder for this Icon"
+         Caption         =   "Open App Folder in Windows Explorer"
       End
       Begin VB.Menu mnublnk 
          Caption         =   "______________________"
@@ -231,7 +259,7 @@ Begin VB.Form menuForm
          Caption         =   "Restart Steamydock"
       End
       Begin VB.Menu mnuQuit 
-         Caption         =   "Quit"
+         Caption         =   "Quit Steamydock"
       End
    End
 End
@@ -252,7 +280,7 @@ Attribute VB_Exposed = False
 ' .10 DAEB 07/03/2021 menu.frm Menu option to add a "my music" utility dock entry
 ' .11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
 ' .12 DAEB 08/04/2021 menu.frm made public so that it can be called by another routine in the dock frmMain.frm
-' .13 DAEB 01/04/2021 menu.frm post addicon tasks, adding an icon now calls mnuIconSettings_Click to start up the icon settings tools and display the properties of the new icon.
+' .13 DAEB 01/04/2021 menu.frm post addicon tasks, adding an icon now calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
 ' .14 DAEB 01/04/2021 menu.frm made public so that it can be called by another routine in the dock frmMain.frm
 ' .15 DAEB 01/04/2021 menu.frm make changes for running in the IDE
 ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
@@ -295,26 +323,20 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub menuRestart_Click()
-    Dim thisCommand As String: thisCommand = vbNullString
-    
-    On Error GoTo menuRestart_Click_Error
-
-    thisCommand = App.Path & "\restartSteamyDock.exe"
-    
-    If FExists(thisCommand) Then
-        If userLevel <> "runas" Then userLevel = "open"
-        Call dock.runCommand("focus", thisCommand)
-    Else
-         MessageBox Me.hWnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-    End If
     
    On Error GoTo 0
+   
+   Call restartSteamydock
+   
    Exit Sub
 
 menuRestart_Click_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure menuRestart_Click of Form menuForm"
 End Sub
+
+
+
 
 
 ' .03 02/02/2021 DAEB Added menu option to clear the cache - mnuAddCache_Click
@@ -343,11 +365,16 @@ Private Sub mnuAddCache_Click()
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
 
-        Call menuAddSummat(iconImage, "Clear Cache", "C:\WINDOWS\system32\rundll32.exe", "advapi32.dll , ProcessIdleTasks", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Clear Cache")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Clear Cache", "C:\WINDOWS\system32\rundll32.exe", "advapi32.dll , ProcessIdleTasks", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Clear Cache")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add Clear Cache image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add Clear Cache image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         'MsgBox "Unable to add Clear Cache image as it does not exist"
     End If
    On Error GoTo 0
@@ -356,6 +383,63 @@ Private Sub mnuAddCache_Click()
 mnuAddCache_Click_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddCache_Click of Form menuForm"
+End Sub
+
+
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : mnuAddEventViewer_Click
+' Author    : beededea
+' Date      : 24/02/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuAddEventViewer_Click()
+    Dim iconImage As String
+    Dim iconFileName As String
+
+    On Error GoTo mnuAddEventViewer_Click_Error
+
+    ' check the icon exists
+    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
+
+    iconFileName = App.Path & "\iconSettings\my collection" & "\event-viewer(CEventVwr.msc).png"
+    If FExists(iconFileName) Then
+        iconImage = iconFileName
+    Else
+        iconImage = App.Path & "\iconSettings\Icons\help.png"
+    End If
+    
+    '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+    If FExists(iconImage) Then
+        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Event Viewer", "eventvwr.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Event Viewer")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
+    Else
+        '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+        MessageBox Me.hwnd, "Unable to add Event Viewer image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        '        MsgBox "Unable to add Administration Tools image as it does not exist"
+    End If
+    
+
+    On Error GoTo 0
+    Exit Sub
+
+mnuAddEventViewer_Click_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddEventViewer_Click of Form menuForm"
+            Resume Next
+          End If
+    End With
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -389,11 +473,16 @@ Private Sub mnuAddMyDocuments_Click()
        
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "My Documents")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "My Documents")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add my Documents image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add my Documents image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add my Documents image as it does not exist"
     End If
         
@@ -441,14 +530,20 @@ Private Sub mnuAddMyMusic_Click()
     userprof = Environ$("USERPROFILE")
     
     If FExists(iconImage) Then
+
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' using the Special CLSID for the video folder this, in fact resolves to the my documents folder and not the video folder below.
-        'Call menuAddSummat(iconImage, "My Music", "::{1CF1260C-4DD0-4ebb-811F-33C572699FDE}", vbNullString, vbNullString, vbNullString, vbNullString)
-        Call menuAddSummat(iconImage, "My Music", userprof & "\Documents\Music", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "My Music")
+        'Call insertNewIconDataIntoCurrentPosition(iconImage, "My Music", "::{1CF1260C-4DD0-4ebb-811F-33C572699FDE}", vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "My Music", userprof & "\Documents\Music", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "My Music")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add my Music image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add my Music image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '                MsgBox "Unable to add my Music image as it does not exist"
     End If
         
@@ -497,12 +592,16 @@ Private Sub mnuAddMyPictures_Click()
 
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        'Call menuAddSummat(iconImage, "My Pictures", "::{3ADD1653-EB32-4cb0-BBD7-DFA0ABB5ACCA}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call menuAddSummat(iconImage, "My Pictures", userprof & "\Documents\Pictures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "My Pictures")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "My Pictures", userprof & "\Documents\Pictures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "My Pictures")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add my Pictures image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add my Pictures image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add my Pictures image as it does not exist"
     End If
         
@@ -550,12 +649,17 @@ Private Sub mnuAddMyVideos_Click()
        
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        'Call menuAddSummat(iconImage, "My Videos", "::{A0953C92-50DC-43bf-BE83-3742FED03C9C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call menuAddSummat(iconImage, "My Videos", userprof & "\Documents\Videos", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "My Videos")
+        'Call insertNewIconDataIntoCurrentPosition(iconImage, "My Videos", "::{A0953C92-50DC-43bf-BE83-3742FED03C9C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "My Videos", userprof & "\Documents\Videos", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "My Videos")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add my Videos image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add my Videos image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add my Videos image as it does not exist"
     End If
         
@@ -570,6 +674,58 @@ mnuAddMyVideos_Click_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
+' Procedure : mnuAddPerfMon_Click
+' Author    : beededea
+' Date      : 24/02/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuAddPerfMon_Click()
+    Dim iconImage As String
+    Dim iconFileName As String
+    
+    On Error GoTo mnuAddPerfMon_Click_Error
+
+    ' check the icon exists
+    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
+
+    iconFileName = App.Path & "\iconSettings\my collection" & "\perfmon.png"
+    If FExists(iconFileName) Then
+        iconImage = iconFileName
+    Else
+        iconImage = App.Path & "\iconSettings\Icons\help.png"
+    End If
+    
+    '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+    If FExists(iconImage) Then
+        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Performance Monitor", "perfmon.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Performance Monitor")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
+    Else
+        '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+        MessageBox Me.hwnd, "Unable to add Performance Monitor image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        '        MsgBox "Unable to add Administration Tools image as it does not exist"
+    End If
+
+    On Error GoTo 0
+    Exit Sub
+
+mnuAddPerfMon_Click_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddPerfMon_Click of Form menuForm"
+            Resume Next
+          End If
+    End With
+End Sub
+
+'---------------------------------------------------------------------------------------
 ' Procedure : mnuAddProgram_Click
 ' Author    : beededea
 ' Date      : 12/04/2020
@@ -581,7 +737,7 @@ Private Sub mnuAddProgram_Click()
     ' this may be because the dock_form is not visible at any time. Moving the file dialog form to the
     ' main dock form caused the dialog to display.
     
-    addProgramDLLorEXE
+    Call addProgramDLLorEXE
     
    On Error GoTo 0
    Exit Sub
@@ -592,6 +748,59 @@ mnuAddProgram_Click_Error:
 End Sub
 
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : mnuAddServices_Click
+' Author    : beededea
+' Date      : 24/02/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuAddServices_Click()
+    Dim iconImage As String
+    Dim iconFileName As String
+    
+    On Error GoTo mnuAddServices_Click_Error
+
+    ' check the icon exists
+    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
+
+    iconFileName = App.Path & "\iconSettings\my collection" & "\Administrative Tools(compmgmt.msc).png"
+    If FExists(iconFileName) Then
+        iconImage = iconFileName
+    Else
+        iconImage = App.Path & "\iconSettings\Icons\help.png"
+    End If
+    
+    '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+    If FExists(iconImage) Then
+        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Services Management", "services.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Services Management")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
+    Else
+        '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+        MessageBox Me.hwnd, "Unable to add Services Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        '        MsgBox "Unable to add Administration Tools image as it does not exist"
+    End If
+
+    On Error GoTo 0
+    Exit Sub
+
+mnuAddServices_Click_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddServices_Click of Form menuForm"
+            Resume Next
+          End If
+    End With
+
+End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuAddSleep_Click
@@ -616,11 +825,16 @@ Private Sub mnuAddSleep_Click()
            
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Sleep", "C:\Windows\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Sleep")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Sleep", "C:\Windows\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Sleep")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add sleep image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add sleep image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add sleep image as it does not exist"
     End If
 
@@ -631,6 +845,60 @@ mnuAddSleep_Click_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddSleep_Click of Form menuForm"
 
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : mnuAddTaskSched_Click
+' Author    : beededea
+' Date      : 24/02/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuAddTaskSched_Click()
+    Dim iconImage As String
+    Dim iconFileName As String
+
+    On Error GoTo mnuAddTaskSched_Click_Error
+
+    ' check the icon exists
+    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
+
+    iconFileName = App.Path & "\iconSettings\my collection" & "\glass-clipboard.png"
+    If FExists(iconFileName) Then
+        iconImage = iconFileName
+    Else
+        iconImage = App.Path & "\iconSettings\Icons\help.png"
+    End If
+    
+    '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+    If FExists(iconImage) Then
+        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Task Scheduler", "taskschd.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Task Scheduler")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
+    Else
+        '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+        MessageBox Me.hwnd, "Unable to add Task Scheduler image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        '        MsgBox "Unable to add Administration Tools image as it does not exist"
+    End If
+
+    
+
+    On Error GoTo 0
+    Exit Sub
+
+mnuAddTaskSched_Click_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddTaskSched_Click of Form menuForm"
+            Resume Next
+          End If
+    End With
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -649,7 +917,7 @@ Private Sub mnuAdmin_Click()
     'Call readIconData(selectedIconIndex)
     readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile
         
-    userLevel = "runas"
+    
 
     Call dock.fMouseUp(1) ' performs the equivalent of a 'left' click on the dock
 
@@ -671,24 +939,24 @@ Private Sub mnuAppFolder_Click()
     If DirExists(sCommand) Then ' if it is a folder already
         'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
         'Call ShellExecute(hwnd, "open", sCommand, sArguments, vbNullString, 1)
-        execStatus = ShellExecute(hWnd, "open", sCommand, sArguments, vbNullString, 1)
+        execStatus = ShellExecute(hwnd, "open", sCommand, sArguments, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
     Else
         'obtain the folder from the scommand
-        folderPath = extractDirectoryFromPath(sCommand)  ' extract the default folder from the batch full path
+        folderPath = getFolderNameFromPath(sCommand)  ' extract the default folder from the batch full path
         If DirExists(folderPath) Then
             'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
-            execStatus = ShellExecute(hWnd, "open", folderPath, sArguments, vbNullString, 1)
+            execStatus = ShellExecute(hwnd, "open", folderPath, sArguments, vbNullString, 1)
             If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
         Else
             'if that fails try and obtain the folder from the Working Directory
             If DirExists(sWorkingDirectory) Then
-                execStatus = ShellExecute(hWnd, "open", sWorkingDirectory, sArguments, vbNullString, 1)
+                execStatus = ShellExecute(hwnd, "open", sWorkingDirectory, sArguments, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
             Else
                 ' if that fails, spit out an error.
                 '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-                MessageBox Me.hWnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+                MessageBox Me.hwnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
                 'MsgBox ("Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.")
             End If
         End If
@@ -719,6 +987,10 @@ Private Sub mnuAutoHide_Click()
     
 '    If rDGeneralWriteConfig = "True" Then ' the 3rd option, steamydock compatibility
         PutINISetting "Software\SteamyDock\DockSettings", "AutoHide", rDAutoHide, dockSettingsFile
+        
+        PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
+        PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", "9999", dockSettingsFile
+
 '    Else ' rocketdock compatibility
 '        If FExists(origSettingsFile) Then ' does the original settings.ini exist?
 '            PutINISetting "Software\RocketDock", "AutoHide", rDAutoHide, origSettingsFile
@@ -780,8 +1052,10 @@ Private Sub mnublank1_Click()
 End Sub
 
 Private Sub mnuBlank2_Click()
-    Call mnuIconSettings_Click
+    Call mnuIconSettings_Click_Event
 End Sub
+
+
 
 Private Sub mnublnk_Click()
     Call mnuDockSettings_Click
@@ -802,23 +1076,15 @@ Private Sub mnuBottom_Click()
     menuForm.mnuLeft.Checked = False
     menuForm.mnuRight.Checked = False
 
-    rDSide = 1
+    rDSide = vbBottom
     menuForm.mnuBottom.Checked = True
-    dockPosition = vbbottom
+    dockPosition = vbBottom
     
-'    If rDGeneralWriteConfig = "True" Then ' the 3rd option, steamydock compatibility
-        PutINISetting "Software\SteamyDock\DockSettings", "Side", rDSide, dockSettingsFile
-'    Else ' rocketdock compatibility
-'        If FExists(origSettingsFile) Then ' does the original settings.ini exist?
-'            PutINISetting "Software\RocketDock", "Side", rDSide, origSettingsFile
-'        Else
-'            Call savestring(HKEY_CURRENT_USER, "Software\RocketDock", "Side", rDSide)
-'        End If
-'    End If
-    
-    Call dock.drawSmallStaticIcons 'here deanie ' here
-    
-    'dock.fInitialise
+    PutINISetting "Software\SteamyDock\DockSettings", "Side", rDSide, dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", "9999", dockSettingsFile ' no icon changed
+
+    Call dock.drawSmallStaticIcons
 
    On Error GoTo 0
    Exit Sub
@@ -833,44 +1099,37 @@ End Sub
 ' Procedure : mnuCloseApp_Click
 ' Author    : beededea
 ' Date      : 28/07/2020
-' Purpose   : Closes any currently running instance of this app.
+' Purpose   : Closes any currently running instance of this process or explorer window.
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuCloseApp_Click()
-    Dim NameProcess As String
-    'Dim itis As Boolean
-    
-    NameProcess = vbNullString
-    'itis = False
-
     On Error GoTo mnuCloseApp_Click_Error
-
-    'NameProcess = GetFileNameFromPath(sCommandArray(selectedIconIndex))
-    NameProcess = sCommandArray(selectedIconIndex)
-    If checkAndKillPutWindowBehind(NameProcess, True, True) = True Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
     
-        Sleep 200 ' this ESSENTIAL small delay is required as it may take a moment or two for the system list to be updated.
-
-        'itis = IsRunning(NameProcess, vbNull) ' this is the check to see if the process has actually been removed
-                                                         ' some running processes do not die... or this dock does not have the capability to kill them.
-        If IsRunning(NameProcess, vbNull) = False Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
-            processCheckArray(selectedIconIndex) = False ' remove the entry from the cog array
-            initiatedProcessArray(selectedIconIndex) = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
-        
-            If smallDockBeenDrawn = False Then ' only draws the dock when it has not yet been drawn
-                Call dock.drawSmallStaticIcons 'here deanie
+    Dim NameProcess As String: NameProcess = vbNullString
+    
+    NameProcess = sCommandArray(selectedIconIndex)
+    
+    ' if the open application is an Explorer window then kill it this way
+    If explorerCheckArray(selectedIconIndex) = True Then
+        Call CloseExplorerWindowByPath(NameProcess)
+        explorerCheckArray(selectedIconIndex) = False
+        initiatedExplorerArray(selectedIconIndex) = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
+        Exit Sub
+    Else
+        ' if the open application is a standard binary then kill it this way
+        If checkAndKillPutWindowBehind(NameProcess, True, True) = True Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
+            Sleep 200 ' this ESSENTIAL small delay is required as it may take a moment or two for the system list to be updated.
+            If IsRunning(NameProcess, vbNull) = False Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
+                processCheckArray(selectedIconIndex) = False ' remove the entry from the cog array
+                initiatedProcessArray(selectedIconIndex) = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
+            Else
+                ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
+                ' sometimes the target process does not die in time and this message can be generated, I could drop this whole wait into a timer but it still would not handle
+                ' the indeterminate time that processes can take to die dependant upon cpu load and delays at the time.
+                'MsgBox ("Cannot kill this process - " & NameProcess)
             End If
-            'Call dock.drawSmallStaticIcons  'redraw the icons without the specific cog this time
-        Else
-            ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
-            
-            ' sometimes the target process does not die in time and this message can be generated, I could drop this whole wait into a timer but it still would not handle
-            ' the indeterminate time that processes can take to die dependant upon cpu load and delays at the time.
-            
-            'MsgBox ("Cannot kill this process - " & NameProcess)
         End If
     End If
-
    On Error GoTo 0
    Exit Sub
 
@@ -906,14 +1165,12 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuCloneIcon_Click()
-        
     dock.Refresh
     
     readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile
 
-    Call menuAddSummat(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
-    Call menuForm.postAddIConTasks(sFilename, sTitle)
-
+    Call insertNewIconDataIntoCurrentPosition(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
+    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(sFilename, sTitle)
 
    On Error GoTo 0
    Exit Sub
@@ -932,7 +1189,11 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuDisableIcon_Click()
-        
+    Dim largeKey As String: largeKey = vbNullString
+    Dim smallKey As String: smallKey = vbNullString
+    Dim partialStringKey As String: partialStringKey = vbNullString
+    Dim imageOpacity As Integer: imageOpacity = 0
+    
     dock.Refresh
         
     Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile)
@@ -941,15 +1202,43 @@ Private Sub mnuDisableIcon_Click()
         sDisabled = "0"
         menuForm.mnuDisableIcon.Caption = "Disable This Icon"
         menuForm.mnuDisableIcon.Checked = False
+        
+        disabledArray(selectedIconIndex) = 0
     Else
         sDisabled = "1"
         menuForm.mnuDisableIcon.Caption = "Enable This Icon"
         menuForm.mnuDisableIcon.Checked = True
+        
+        ' tell SD that this icon has recently been disabled (during the lifetime of this program run)
+        disabledArray(selectedIconIndex) = 1
     End If
     
-
+    PutINISetting "Software\SteamyDock\IconSettings\Icons", selectedIconIndex & "-Disabled", sDisabled, dockSettingsFile
     
-    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile)
+    ' triggers for telling the iconSettings tool that it needs to refresh
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
+    
+'   we cannot modify the current icon in the dictionary
+'   instead, create a transparent version of the disabled icon on the fly based upon the filename
+'   and store that as an additional icon at the end of the main collection and use the location array to point to that instead
+        
+'    create new keys for both transparent images in the collLargeIcons/collSmallIcons collections
+    largeKey = dictionaryLocationArray(selectedIconIndex) & "TransparentImg" & LTrim$(Str$(iconSizeLargePxls))
+    smallKey = dictionaryLocationArray(selectedIconIndex) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
+        
+    partialStringKey = LTrim$(Str$(selectedIconIndex))
+    imageOpacity = Val(rDIconOpacity)
+    
+    ' reduce the opacity
+    imageOpacity = imageOpacity / 4
+    
+    ' load and cache transparent versions of the current images to the associated collections
+    ' at small and large sizes.
+    If FExists(sFilename) Then
+        resizeAndLoadImgToDict collLargeIcons, partialStringKey, fileNameArray(selectedIconIndex), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity
+        resizeAndLoadImgToDict collSmallIcons, partialStringKey, fileNameArray(selectedIconIndex), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity
+    End If
 
    On Error GoTo 0
    Exit Sub
@@ -1014,6 +1303,8 @@ mnuHideTwenty_Click_Error:
     
 End Sub
 
+
+
 ' the hidefor20 timer runs disables itself
 ' removes the hidefor20 flag
 ' shows the dock
@@ -1036,7 +1327,7 @@ Private Sub mnuLeft_Click()
     menuForm.mnuLeft.Checked = False
     menuForm.mnuRight.Checked = False
 
-    rDSide = 2
+    rDSide = vbLeft
     menuForm.mnuLeft.Checked = True
     dockPosition = vbLeft
     
@@ -1085,6 +1376,9 @@ Private Sub mnuLockIcons_Click()
     
 '    If rDGeneralWriteConfig = "True" Then ' the 3rd option, steamydock compatibility
         PutINISetting "Software\SteamyDock\DockSettings", "LockIcons", rDLockIcons, dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", "9999", dockSettingsFile
+        
 '    Else ' rocketdock compatibility
 '        If FExists(origSettingsFile) Then ' does the original settings.ini exist?
 '            PutINISetting "Software\RocketDock", "LockIcons", rDLockIcons, origSettingsFile
@@ -1143,7 +1437,7 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : mnuIconSettings_Click
+' Procedure : mnuIconSettings_Click_Event
 ' Author    : beededea
 ' Date      : 07/04/2020
 ' Purpose   :
@@ -1152,9 +1446,7 @@ End Sub
 Public Sub mnuIconSettings_Click() ' .14 DAEB 01/04/2021 menu.frm made public so that it can be called by another routine in the dock frmMain.frm
     Dim thisCommand As String: thisCommand = vbNullString
     Dim execStatus As Long: execStatus = 0
-    
- 
-    
+    Dim prg As String: prg = vbNullString
    
    On Error GoTo mnuIconSettings_Click_Error
    
@@ -1162,32 +1454,37 @@ Public Sub mnuIconSettings_Click() ' .14 DAEB 01/04/2021 menu.frm made public so
     If Not InIDE Then
         thisCommand = App.Path & "\iconSettings\iconsettings.exe" ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
     Else
-        thisCommand = "C:\Program Files (x86)\SteamyDock\iconSettings\iconsettings.exe"
+        prg = Environ$("ProgramFiles")
+        thisCommand = prg & "\SteamyDock\iconSettings\iconsettings.exe"
     End If
     
-    If FExists(thisCommand) Then
+    'If IsRunning(thisCommand, vbNull) = False Then
     
-    ' code was added here to re-use the existing icon settings process if it was open already. However, the selectedIconIndex cannot currently be
-    ' passed to an running process as there is no inter-process communication and it is required that we pass the selectedIconIndex to identify
-    ' which icon to display in the utility. We can do that when starting a new process but not when re-using an existing one. So, the gentle opening
-    ' of the icon settings tool will have to wait until it is all brought into one program.
-    
-'        If userLevel <> "runas" Then userLevel = "open"
-'        Call dock.runCommand("focus", thisCommand)
-    
-        'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
-        If InStr(WindowsVer, "Windows XP") <> 0 Then
-            execStatus = ShellExecute(Me.hWnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
-            If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
+        If FExists(thisCommand) Then
+        
+        ' code was added here to re-use the existing icon settings process if it was open already. However, the selectedIconIndex cannot currently be
+        ' passed to an running process as there is no inter-process communication and it is required that we pass the selectedIconIndex to identify
+        ' which icon to display in the utility. We can do that when starting a new process but not when re-using an existing one. So, the gentle opening
+        ' of the icon settings tool will have to wait until it is all brought into one program.
+        
+    '        If userLevel <> "runas" Then userLevel = "open"
+    '        Call dock.runCommand("focus", thisCommand)
+        
+            'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
+            If InStr(WindowsVer, "Windows XP") <> 0 Then
+                execStatus = ShellExecute(Me.hwnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
+                If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
+            Else
+                execStatus = ShellExecute(hwnd, "runas", thisCommand, selectedIconIndex, vbNullString, 1)
+                If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
+            End If
         Else
-            execStatus = ShellExecute(hWnd, "runas", thisCommand, selectedIconIndex, vbNullString, 1)
-            If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
+             '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+             MessageBox Me.hwnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+             '        MsgBox thisCommand & " is missing"
         End If
-    Else
-         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-         '        MsgBox thisCommand & " is missing"
-    End If
+        
+    'End If
 
    On Error GoTo 0
    Exit Sub
@@ -1196,6 +1493,56 @@ mnuIconSettings_Click_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuIconSettings_Click of Form menuForm"
 End Sub
+
+Public Sub mnuIconSettings_Click_Event()
+    Dim thisCommand As String: thisCommand = vbNullString
+    Dim execStatus As Long: execStatus = 0
+    Dim prg As String: prg = vbNullString
+      
+    ' .15 DAEB 01/04/2021 menu.frm make changes for running in the IDE
+    If Not InIDE Then
+        thisCommand = App.Path & "\iconSettings\iconsettings.exe" ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
+    Else
+        prg = Environ$("ProgramFiles")
+        thisCommand = prg & "\SteamyDock\iconSettings\iconsettings.exe"
+    End If    ' .15 DAEB 01/04/2021 menu.frm make changes for running in the IDE
+    If Not InIDE Then
+        thisCommand = App.Path & "\iconSettings\iconsettings.exe" ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
+    Else
+        prg = Environ$("ProgramFiles")
+        thisCommand = prg & "\SteamyDock\iconSettings\iconsettings.exe"
+    End If
+    
+    If IsRunning(thisCommand, vbNull) = False Then
+    
+        If FExists(thisCommand) Then
+        
+        ' code was added here to re-use the existing icon settings process if it was open already. However, the selectedIconIndex cannot currently be
+        ' passed to an running process as there is no inter-process communication and it is required that we pass the selectedIconIndex to identify
+        ' which icon to display in the utility. We can do that when starting a new process but not when re-using an existing one. So, the gentle opening
+        ' of the icon settings tool will have to wait until it is all brought into one program.
+        
+    '        If userLevel <> "runas" Then userLevel = "open"
+    '        Call dock.runCommand("focus", thisCommand)
+        
+            'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
+            If InStr(WindowsVer, "Windows XP") <> 0 Then
+                execStatus = ShellExecute(Me.hwnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
+                If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
+            Else
+                execStatus = ShellExecute(hwnd, "runas", thisCommand, selectedIconIndex, vbNullString, 1)
+                If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
+            End If
+        Else
+             '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+             MessageBox Me.hwnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+             '        MsgBox thisCommand & " is missing"
+        End If
+        
+    End If
+    
+End Sub
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuDockSettings_Click
@@ -1225,7 +1572,7 @@ Public Sub mnuDockSettings_Click()
 
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hwnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox thisCommand & " is missing"
     End If
 
@@ -1252,7 +1599,7 @@ Private Sub mnuRight_Click()
     menuForm.mnuLeft.Checked = False
     menuForm.mnuRight.Checked = False
 
-    rDSide = 3
+    rDSide = vbRight
     menuForm.mnuRight.Checked = True
     dockPosition = vbRight
     
@@ -1279,25 +1626,26 @@ mnuRight_Click_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : mnuRun_Click
+' Procedure : mnuRunApp_Click
 ' Author    : beededea
 ' Date      : 30/08/2020
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub mnuRun_Click()
+Private Sub mnuRunApp_Click()
 
-   On Error GoTo mnuRun_Click_Error
+   On Error GoTo mnuRunApp_Click_Error
 
     forceRunNewAppFlag = False
-    dock.runTimer.Enabled = True
+    Call dock.startRunTimer
+    'dock.runTimer.Enabled = True
 
    On Error GoTo 0
    Exit Sub
 
-mnuRun_Click_Error:
+mnuRunApp_Click_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuRun_Click of Form menuForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuRunApp_Click of Form menuForm"
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -1363,19 +1711,13 @@ Private Sub mnuTop_Click()
     menuForm.mnuLeft.Checked = False
     menuForm.mnuRight.Checked = False
 
-    rDSide = 0
+    rDSide = vbtop
     menuForm.mnuTop.Checked = True
     dockPosition = vbtop
     
-'    If rDGeneralWriteConfig = "True" Then ' the 3rd option, steamydock compatibility
-        PutINISetting "Software\SteamyDock\DockSettings", "Side", rDSide, dockSettingsFile
-'    Else ' rocketdock compatibility
-'        If FExists(origSettingsFile) Then ' does the original settings.ini exist?
-'            PutINISetting "Software\RocketDock", "Side", rDSide, origSettingsFile
-'        Else
-'            Call savestring(HKEY_CURRENT_USER, "Software\RocketDock", "Side", rDSide)
-'        End If
-'    End If
+    PutINISetting "Software\SteamyDock\DockSettings", "Side", rDSide, dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", "9999", dockSettingsFile
     
     Call dock.drawSmallStaticIcons ' here
 
@@ -1404,7 +1746,7 @@ Private Sub mnuCoffee_Click(index As Integer)
     answer = MsgBox(" Help support the creation of more widgets like this, send us a beer! This button opens a browser window and connects to the Paypal donate page for this widget). Will you be kind and proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hWnd, "Open", "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=info@lightquick.co.uk&currency_code=GBP&amount=2.50&return=&item_name=Donate%20a%20Beer", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hwnd, "Open", "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=info@lightquick.co.uk&currency_code=GBP&amount=2.50&return=&item_name=Donate%20a%20Beer", vbNullString, App.Path, 1)
     End If
 
     On Error GoTo 0
@@ -1430,7 +1772,7 @@ Private Sub mnuHelpPdf_click()
     answer = MsgBox("This option opens a browser window and displays this tool's help. Proceed?", vbExclamation + vbYesNo)
     If answer = vbYes Then
         If FExists(App.Path & "\help\SteamyDock.html") Then
-            Call ShellExecute(Me.hWnd, "Open", App.Path & "\help\SteamyDock.html", vbNullString, App.Path, 1)
+            Call ShellExecute(Me.hwnd, "Open", App.Path & "\help\SteamyDock.html", vbNullString, App.Path, 1)
         Else
             MsgBox ("The help file - SteamyDock.html- is missing from the help folder.")
         End If
@@ -1460,7 +1802,7 @@ Private Sub mnuFacebook_Click()
 
     answer = MsgBox("Visiting the Facebook chat page - this button opens a browser window and connects to our Facebook chat page. Proceed?", vbExclamation + vbYesNo)
     If answer = vbYes Then
-        Call ShellExecute(Me.hWnd, "Open", "http://www.facebook.com/profile.php?id=100012278951649", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hwnd, "Open", "http://www.facebook.com/profile.php?id=100012278951649", vbNullString, App.Path, 1)
     End If
 
     On Error GoTo 0
@@ -1489,7 +1831,7 @@ Private Sub mnuLatest_Click()
     answer = MsgBox("Download latest version of the program - this button opens a browser window and connects to the widget download page where you can check and download the latest zipped file). Proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hWnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/art/Quartermaster-VB6-Desktop-784624943", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hwnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/art/Quartermaster-VB6-Desktop-784624943", vbNullString, App.Path, 1)
     End If
 
 
@@ -1541,7 +1883,7 @@ Private Sub mnuSupport_Click()
     answer = MsgBox("Visiting the support page - this button opens a browser window and connects to our contact us page where you can send us a support query or just have a chat). Proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hWnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/art/Quartermaster-VB6-Desktop-784624943", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hwnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/art/Quartermaster-VB6-Desktop-784624943", vbNullString, App.Path, 1)
     End If
 
     On Error GoTo 0
@@ -1570,7 +1912,7 @@ Private Sub mnuSweets_Click()
     answer = MsgBox(" Help support the creation of more widgets like this. Buy me a small item on my Amazon wishlist! This button opens a browser window and connects to my Amazon wish list page). Will you be kind and proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hWnd, "Open", "http://www.amazon.co.uk/gp/registry/registry.html?ie=UTF8&id=A3OBFB6ZN4F7&type=wishlist", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hwnd, "Open", "http://www.amazon.co.uk/gp/registry/registry.html?ie=UTF8&id=A3OBFB6ZN4F7&type=wishlist", vbNullString, App.Path, 1)
     End If
     
     On Error GoTo 0
@@ -1598,7 +1940,7 @@ Private Sub mnuWidgets_Click()
     answer = MsgBox(" This button opens a browser window and connects to the Steampunk widgets page on my site. Do you wish to proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hWnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/gallery/59981269/yahoo-widgets", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hwnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/gallery/59981269/yahoo-widgets", vbNullString, App.Path, 1)
     End If
 
     On Error GoTo 0
@@ -1689,11 +2031,17 @@ Private Sub menuAddBlank_Click()
     
     If FExists(iconImage) Then
         ' general tool to add an icon
-        Call menuAddSummat(iconImage, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Separator")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add blank image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hwnd, "Unable to add blank image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox "Unable to add blank image as it does not exist"
     End If
     
@@ -1731,11 +2079,16 @@ Private Sub mnuAddShutdown_click()
            
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Shutdown", "C:\Windows\System32\shutdown.exe", "/s /t 00 /f /i", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Shutdown")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Shutdown", "C:\Windows\System32\shutdown.exe", "/s /t 00 /f /i", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Shutdown")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add shutdown image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hwnd, "Unable to add shutdown image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox "Unable to add shutdown image as it does not exist"
     End If
        
@@ -1758,9 +2111,8 @@ Private Sub mnuAddReboot_click()
     Dim iconImage As String
     Dim iconFileName As String
     
-   On Error GoTo mnuAddReboot_click_Error
-      'If debugflg = 1 Then debugLog "%" & "mnuAddReboot_click"
-   
+    On Error GoTo mnuAddReboot_click_Error
+    'If debugflg = 1 Then debugLog "%" & "mnuAddReboot_click"
    
     ' check the icon exists
     iconFileName = App.Path & "\iconSettings\my collection" & "\Reboot.png"
@@ -1772,11 +2124,16 @@ Private Sub mnuAddReboot_click()
            
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Reboot", "C:\Windows\System32\shutdown.exe", "/r", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, "1", vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Reboot")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Reboot", "C:\Windows\System32\shutdown.exe", "/r /t 00", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, "1", vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Reboot")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add Reboot image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hwnd, "Unable to add Reboot image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox "Unable to add Reboot image as it does not exist"
     End If
        
@@ -1789,21 +2146,21 @@ mnuAddReboot_click_Error:
     
 End Sub
 '---------------------------------------------------------------------------------------
-' Procedure : mnuAddLog_click
+' Procedure : mnuAddLockWorkstation_click
 ' Author    : beededea
 ' Date      : 18/09/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub mnuAddLog_click()
+Private Sub mnuAddLockWorkstation_click()
     Dim iconImage As String
     Dim iconFileName As String
 
-    On Error GoTo mnuAddLog_click_Error
+    On Error GoTo mnuAddLockWorkstation_click_Error
     'If debugflg = 1 Then debugLog "%mnuAddLog_click"
     
     ' check the icon exists
-    iconFileName = App.Path & "\iconSettings\my collection" & "\padlock(log off).png"
+    iconFileName = App.Path & "\iconSettings\my collection" & "\padlockLockWorkstation.png"
     If FExists(iconFileName) Then
         iconImage = iconFileName
     Else
@@ -1814,23 +2171,72 @@ Private Sub mnuAddLog_click()
     
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Log Off", "frameProperties:\WINDOWS\system32\rundll32.exe", "user32.dll, LockWorkStation", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Log Off")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Lock Workstation", Environ$("windir") & "\system32\rundll32.exe", "user32.dll, LockWorkStation", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Lock Workstation")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add log off image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hwnd, "Unable to add Lock Workstation image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox "Unable to add log off image as it does not exist"
     End If
     
     On Error GoTo 0
     Exit Sub
 
-mnuAddLog_click_Error:
+mnuAddLockWorkstation_click_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddLog_click of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddLockWorkstation_click of Form rDIconConfigForm"
 
 End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : mnuAddLogOut_click
+' Author    : beededea
+' Date      : 18/09/2019
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuAddLogOut_click()
+    Dim iconImage As String
+    Dim iconFileName As String
 
+    On Error GoTo mnuAddLogOut_click_Error
+    'If debugflg = 1 Then debugLog "%mnuAddLogOut_click"
+    
+    ' check the icon exists
+    iconFileName = App.Path & "\iconSettings\my collection" & "\console-green-screen-logout.png"
+    If FExists(iconFileName) Then
+        iconImage = iconFileName
+    Else
+        iconImage = App.Path & "\iconSettings\Icons\help.png"
+    End If
+        
+    If FExists(iconImage) Then
+        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Log Out", Environ$("windir") & "\system32\shutdown.exe", "/l", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Log Out")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
+    Else
+         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+         MessageBox Me.hwnd, "Unable to add log off image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         '        MsgBox "Unable to add log off image as it does not exist"
+    End If
+    
+    On Error GoTo 0
+    Exit Sub
+
+mnuAddLogOut_click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddLogOut_click of Form rDIconConfigForm"
+
+End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuAddNetwork_click
 ' Author    : beededea
@@ -1856,11 +2262,16 @@ Private Sub mnuAddNetwork_click()
     ' thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Network")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Network")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add network image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hwnd, "Unable to add network image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '         MsgBox "Unable to add network image as it does not exist"
     End If
     On Error GoTo 0
@@ -1897,11 +2308,16 @@ Private Sub mnuAddWorkgroup_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "WorkGroup", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "WorkGroup")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "WorkGroup", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "WorkGroup")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add workgroup image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hwnd, "Unable to add workgroup image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          'MsgBox "Unable to add log off image as it does not exist"
     End If
    On Error GoTo 0
@@ -1937,11 +2353,16 @@ Private Sub mnuAddPrinters_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Printers", "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Printers")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Printers", "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Printers")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add printers image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hwnd, "Unable to add printers image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          'MsgBox "Unable to add printers image as it does not exist"
     End If
    On Error GoTo 0
@@ -1979,22 +2400,27 @@ Private Sub mnuAddTask_click()
         ' if a 32 bit application on a 64bit o/s, regardless of the command, the o/s calls C:\Windows\SysWOW64\taskmgr.exe
         If FExists(iconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            Call menuAddSummat(iconImage, "Task Manager", Environ$("windir") & "\SysWOW64\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-            Call postAddIConTasks(iconImage, "Task Manager")
+            Call insertNewIconDataIntoCurrentPosition(iconImage, "Task Manager", Environ$("windir") & "\SysWOW64\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Task Manager")
+        
+            ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+            If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+                Call menuForm.mnuIconSettings_Click_Event
+            End If
         Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add Task Manager image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hwnd, "Unable to add Task Manager image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          'MsgBox "Unable to add Task Manager image as it does not exist"
         End If
     Else
         ' if a 32 bit application on a 32bit o/s, regardless of the o/s calls C:\Windows\System32\taskmgr.exe
         If FExists(iconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            Call menuAddSummat(iconImage, "Task Manager", Environ$("windir") & "\System32\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-            Call postAddIConTasks(iconImage, "Task Manager")
+            Call insertNewIconDataIntoCurrentPosition(iconImage, "Task Manager", Environ$("windir") & "\System32\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Task Manager")
         Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add Task Manager image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hwnd, "Unable to add Task Manager image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          'MsgBox "Unable to add Task Manager image as it does not exist"
         End If
     End If
@@ -2030,11 +2456,16 @@ Private Sub mnuAddControl_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Control panel", "control", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Control panel")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Control panel", "control.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Control panel")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add control panel image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add control panel image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         ' MsgBox "Unable to add control panel image as it does not exist"
     End If
    On Error GoTo 0
@@ -2070,11 +2501,16 @@ Private Sub mnuAddPrograms_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Programs and Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Programs and Features")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Programs and Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Programs and Features")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add Program and Features image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add Program and Features image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '         MsgBox "Unable to add Program and Features image as it does not exist"
     End If
    On Error GoTo 0
@@ -2109,11 +2545,16 @@ Private Sub mnuAddDock_click()
 
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Dock Settings", "[Settings]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Dock Settings")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Dock Settings", "[Settings]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Dock Settings")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add Dock Settings image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add Dock Settings image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Dock Settings image as it does not exist"
     End If
     
@@ -2127,18 +2568,18 @@ mnuAddDock_click_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : mnuAddAdministrative_click
+' Procedure : mnuAddCompMgmt_click
 ' Author    : beededea
 ' Date      : 18/08/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub mnuAddAdministrative_click()
+Private Sub mnuAddCompMgmt_click()
     Dim iconImage As String
     Dim iconFileName As String
     ' check the icon exists
-    On Error GoTo mnuAddAdministrative_click_Error
-    'If debugflg = 1 Then debugLog "%" & "mnuAddAdministrative_click"
+    On Error GoTo mnuAddCompMgmt_click_Error
+    'If debugflg = 1 Then debugLog "%" & "mnuAddCompMgmt_click"
 
     iconFileName = App.Path & "\iconSettings\my collection" & "\Administrative Tools(compmgmt.msc).png"
     If FExists(iconFileName) Then
@@ -2150,21 +2591,120 @@ Private Sub mnuAddAdministrative_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Administration Tools", "compmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Administration Tools")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Computer Management", "compmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Computer Management")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add  Administration Tools image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add Computer Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Administration Tools image as it does not exist"
     End If
    On Error GoTo 0
    Exit Sub
 
-mnuAddAdministrative_click_Error:
+mnuAddCompMgmt_click_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddAdministrative_click of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddCompMgmt_click of Form rDIconConfigForm"
+End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : mnuAddDevMgmt_Click
+' Author    : beededea
+' Date      : 24/02/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuAddDevMgmt_Click()
+    Dim iconImage As String
+    Dim iconFileName As String
+
+    On Error GoTo mnuAddDevMgmt_Click_Error
+    ' check the icon exists
+    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
+
+    iconFileName = App.Path & "\iconSettings\my collection" & "\Administrative Tools(compmgmt.msc).png"
+    If FExists(iconFileName) Then
+        iconImage = iconFileName
+    Else
+        iconImage = App.Path & "\iconSettings\Icons\help.png"
+    End If
+    
+    '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+    If FExists(iconImage) Then
+        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Device Management", "devmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Device Management")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
+    Else
+        '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+        MessageBox Me.hwnd, "Unable to add Device Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        '        MsgBox "Unable to add Administration Tools image as it does not exist"
+    End If
+    
+
+    On Error GoTo 0
+    Exit Sub
+
+mnuAddDevMgmt_Click_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddDevMgmt_Click of Form menuForm"
+            Resume Next
+          End If
+    End With
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : mnuAddDiscMgmt_click
+' Author    : beededea
+' Date      : 18/08/2019
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuAddDiscMgmt_click()
+    Dim iconImage As String
+    Dim iconFileName As String
+    ' check the icon exists
+    On Error GoTo mnuAddDiscMgmt_click_Error
+    'If debugflg = 1 Then debugLog "%" & "mnuAddDiscMgmt_click"
+
+    iconFileName = App.Path & "\iconSettings\my collection" & "\discMgmt.png"
+    If FExists(iconFileName) Then
+        iconImage = iconFileName
+    Else
+        iconImage = App.Path & "\iconSettings\Icons\help.png"
+    End If
+    
+    '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+    If FExists(iconImage) Then
+        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Disc Management", "diskmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Disc Management")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
+    Else
+        '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+        MessageBox Me.hwnd, "Unable to add Disc Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        '        MsgBox "Unable to add Administration Tools image as it does not exist"
+    End If
+   On Error GoTo 0
+   Exit Sub
+
+mnuAddDiscMgmt_click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddDiscMgmt_click of Form rDIconConfigForm"
+End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuAddRecycle_click
 ' Author    : beededea
@@ -2189,11 +2729,16 @@ Private Sub mnuAddRecycle_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Recycle Bin", "::{645ff040-5081-101b-9f08-00aa002f954e}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Recycle Bin")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Recycle Bin", "::{645ff040-5081-101b-9f08-00aa002f954e}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Recycle Bin")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add Recycle Bin image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add Recycle Bin image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Recycle Bin image as it does not exist"
     End If
    On Error GoTo 0
@@ -2232,11 +2777,16 @@ Private Sub mnuAddQuit_click()
     
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Quit", "[Quit]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Quit")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Quit", "[Quit]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Quit")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add Quit image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add Quit image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Quit image as it does not exist"
     End If
            
@@ -2273,11 +2823,16 @@ Private Sub mnuAddProgramFiles_click()
 
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Program Files", "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Program Files")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Program Files", "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Program Files")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add Program Files image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add Program Files image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Program Files image as it does not exist"
     End If
     
@@ -2315,11 +2870,16 @@ Private Sub mnuAddSeparator_click()
         
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "Separator", vbNullString, vbNullString, vbNullString, vbNullString, sIsSeparator, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Separator")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Separator", vbNullString, vbNullString, vbNullString, vbNullString, sIsSeparator, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Separator")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add separator image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add separator image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add separator image as it does not exist"
     End If
 
@@ -2351,7 +2911,7 @@ Private Sub mnuaddFolder_click()
 
     dialogInitDir = App.Path 'start dir, might be "C:\" or so also
 
-    getFolder = BrowseFolder(hWnd, dialogInitDir) ' show the dialog box to select a folder
+    getFolder = BrowseFolder(hwnd, dialogInitDir) ' show the dialog box to select a folder
 
     If DirExists(getFolder) Then
     
@@ -2368,11 +2928,16 @@ Private Sub mnuaddFolder_click()
    
         If FExists(iconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            Call menuAddSummat(iconImage, getFolder, getFolder, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-            Call postAddIConTasks(iconImage, getFolder)
+            Call insertNewIconDataIntoCurrentPosition(iconImage, getFolder, getFolder, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            Call addImageToDictionaryAndCheckForRunningProcess(iconImage, getFolder)
+        
+            ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+            If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+                Call menuForm.mnuIconSettings_Click_Event
+            End If
         Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add folder image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add folder image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '            MsgBox "Unable to add folder image as it does not exist"
         End If
 
@@ -2414,11 +2979,16 @@ Private Sub mnuAddMyComputer_click()
        
     If FExists(iconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call menuAddSummat(iconImage, "My Computer", "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "My Computer")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "My Computer", "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "My Computer")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add my computer  image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add my computer  image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '         MsgBox "Unable to add my computer image as it does not exist"
     End If
         
@@ -2462,11 +3032,16 @@ Private Sub mnuAddEnhanced_click()
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
 
-        Call menuAddSummat(iconImage, "Enhanced Icon Settings", App.Path & "\iconsettings.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call postAddIConTasks(iconImage, "Enhanced Icon Settings")
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Enhanced Icon Settings", App.Path & "\iconsettings.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Enhanced Icon Settings")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Unable to add my Enhanced Icon Settings image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Unable to add my Enhanced Icon Settings image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Enhanced Icon Settings image as it does not exist"
     End If
     
@@ -2540,7 +3115,7 @@ Private Sub mnuAddDocklet_click()
 '      End If
 '
 '       '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-'      Call menuAddSummat(txtCurrentIcon.Text, "Docklet", vbNullString, vbNullString, vbNullString, txtTarget.Text, vbNullString)
+'      Call insertNewIconDataIntoCurrentPosition(txtCurrentIcon.Text, "Docklet", vbNullString, vbNullString, vbNullString, txtTarget.Text, vbNullString)
 '
 '    ' disable the fields, only enable the target fields and use the target field as a temporary location for the docklet data
 '
@@ -2570,36 +3145,32 @@ mnuAddDocklet_click_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : postAddIConTasks
+' Procedure : addImageToDictionaryAndCheckForRunningProcess
 ' Author    : beededeaand
 ' Date      : 02/05/2020
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub postAddIConTasks(newFileName As String, newName As String)
+Public Sub addImageToDictionaryAndCheckForRunningProcess(newFileName As String, newName As String)
 
-   On Error GoTo postAddIConTasks_Error
-   'If debugflg = 1 Then debugLog "%postAddIConTasks"
+   On Error GoTo addImageToDictionaryAndCheckForRunningProcess_Error
+   'If debugflg = 1 Then debugLog "%addImageToDictionaryAndCheckForRunningProcess"
         
-    Sleep 50 ' a small pause to allow the o/s time to write the registry
+    'Sleep 25 ' a small pause to allow the o/s time to write the registry
         
-    ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click to start up the icon settings tools and display the properties of the new icon.
-    If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
-        Call menuForm.mnuIconSettings_Click
-    End If
-        
+    ' add to the image dictionary
     Call addNewImageToDictionary(newFileName, newName)
 
-    'add to initiatedProcessArray
-    dockProcessTimer ' trigger a test of running processes in half a second
-
+    'add to the initiated ProcessArray
+    Call checkDockProcessesRunning ' trigger a test of running processes in half a second
+    Call checkExplorerRunning
 
    On Error GoTo 0
    Exit Sub
 
-postAddIConTasks_Error:
+addImageToDictionaryAndCheckForRunningProcess_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure postAddIConTasks of Form menuForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addImageToDictionaryAndCheckForRunningProcess of Form menuForm"
 
 End Sub
 

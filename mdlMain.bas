@@ -42,7 +42,7 @@ End Type
 
 Private Const PROCESS_ALL_ACCESS = &H1F0FFF
 Private Const TH32CS_SNAPPROCESS As Long = 2&
-Private uProcess   As PROCESSENTRY32
+Private uProcess As PROCESSENTRY32
 Private hSnapshot As Long
 
 Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
@@ -73,13 +73,14 @@ Public Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hdc As Long) A
 Public Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
 Public Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlob&, ByVal fDeleteOnRelease As Long, ppstm As stdole.IUnknown) As Long
 Public Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
-Public Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+
+Public Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long) As Long
 Public Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Public Declare Function SelectObject Lib "gdi32.dll" (ByVal hdc As Long, ByVal hObject As Long) As Long
 Public Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
-Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
-Public Declare Function UpdateLayeredWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal hdcDst As Long, pptDst As Any, psize As Any, ByVal hdcSrc As Long, pptSrc As Any, ByVal crKey As Long, ByRef pblend As BLENDFUNCTION, ByVal dwFlags As Long) As Long
+Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Public Declare Function UpdateLayeredWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal hdcDst As Long, pptDst As Any, psize As Any, ByVal hdcSrc As Long, pptSrc As Any, ByVal crKey As Long, ByRef pblend As BLENDFUNCTION, ByVal dwFlags As Long) As Long
 Public Declare Function DrawIconEx Lib "user32" (ByVal hdc As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 ' API to obtain correct screen width (to correct VB6 bug)
 Public Declare Function GetDeviceCaps Lib "gdi32" (ByVal hdc As Long, ByVal nIndex As Long) As Long
@@ -168,31 +169,31 @@ Public Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal String
 
 ' Private APIs and vars for enumerating running windows START
 Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
-Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetParent Lib "user32.dll" (ByVal hWnd As Long) As Long
-Private Declare Function GetWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
-Private Declare Function GetAncestor Lib "user32" (ByVal hWnd As Long, ByVal gaFlags As Long) As Long
-Private Declare Function IsTopWIndow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function GetParent Lib "user32.dll" (ByVal hwnd As Long) As Long
+Private Declare Function GetWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function GetAncestor Lib "user32" (ByVal hwnd As Long, ByVal gaFlags As Long) As Long
+Private Declare Function IsTopWIndow Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 ' Private APIs and vars for enumerating running windows END
 
 ' Public APIs and vars for enumerating running windows START
-Public Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
-Public Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
-Public Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
+Public Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
+Public Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hwnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
+Public Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hwnd As Long) As Long
 
 ' .38 DAEB 18/03/2021 frmMain.frm utilised SetActiveWindow to give window focus without bringing it to fore
-Public Declare Function SetActiveWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
-Public Declare Function IsIconic Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function SetActiveWindow Lib "user32.dll" (ByVal hwnd As Long) As Long
+Public Declare Function IsIconic Lib "user32" (ByVal hwnd As Long) As Long
     
 ' .25 DAEB frmMain.bas 10/02/2021 added API and vars to test to see if a window is zoomed
-Public Declare Function IsZoomed Lib "user32" (ByVal hWnd As Long) As Long
-Public Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
-Public Declare Function ShowWindowAsync Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Integer) As Boolean
+Public Declare Function IsZoomed Lib "user32" (ByVal hwnd As Long) As Long
+Public Declare Function ShowWindow Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Long) As Long
+Public Declare Function ShowWindowAsync Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Integer) As Boolean
 Public Declare Function AttachThreadInput Lib "user32" (ByVal idAttach As Long, ByVal idAttachTo As Long, ByVal fAttach As Long) As Long
 Public Declare Function GetForegroundWindow Lib "user32" () As Long
 ' .39 DAEB 18/03/2021 frmMain.frm utilised BringWindowToTop instead of SetWindowPos & HWND_TOP as that was used by a C program that worked perfectly.
-Public Declare Function BringWindowToTop Lib "user32.dll" (ByVal hWnd As Long) As Long
+Public Declare Function BringWindowToTop Lib "user32.dll" (ByVal hwnd As Long) As Long
 
 'APIs and vars for enumerating running windows ENDS
 
@@ -215,7 +216,7 @@ Private Const GW_HWNDNEXT = 2
 Private Const GA_ROOT = 2&
 ' APIs and vars for enumerating running windows END
 
-' global GDI+ constants START
+' global Windows+ constants START
 Public Const ULW_ALPHA = &H2
 Public Const DIB_RGB_COLORS As Long = 0
 Public Const AC_SRC_ALPHA As Long = &H1
@@ -239,7 +240,7 @@ Public Const DEFAULT_QUALITY = 0
 Public Const DEFAULT_PITCH = 0
 Public Const DEFAULT_CHARSET = 1
 Public Const OUT_DEFAULT_PRECIS = 0
-' GDI+ constants END
+' Windows+ constants END
 
 Public Const PixelFormat32bppPARGB = &HE200B
 Public Const PixelFormat32bppARGB = &H26200A
@@ -378,12 +379,21 @@ Public Enum GDIPLUS_UNIT
     UnitMillimeter
 End Enum
 
+'Public Enum TASKBAR_POSITION
+'    vbbottom
+'    vbLeft
+'    vbRight
+'    vbtop
+'End Enum
+
+    
 Public Enum TASKBAR_POSITION
-    vbbottom
+    vbtop
+    vbBottom
     vbLeft
     vbRight
-    vbtop
 End Enum
+    
 
 ' NOTE: Enums evaluate to a Long
 Public Enum GpStatus   ' aka Status
@@ -474,7 +484,6 @@ End Enum
 ' global GDI+ Enums END
 
 
-
 Public gdipInit As GDIPLUS_STARTINPUT
 Public rctText As RECTF
 
@@ -499,7 +508,7 @@ Public bmpInfo As BITMAPINFO
 
 
 ' collection objects
-'Private collTemporaryIcons As Object ' .64 DAEB 30/04/2021 frmMain.frm Deleted the temporary collection, now unused.
+Private collTemporaryIcons As Object
 Public collLargeIcons As Object
 Public collSmallIcons As Object
 
@@ -524,13 +533,18 @@ Public inc As Boolean
 Public bounceTimerRun As Integer
 Public fcount As Integer
 
-Public processCheckArray() As String
+Public processCheckArray() As Boolean
+Public explorerCheckArray() As Boolean
+
 Public fileNameArray() As String
 Public initiatedProcessArray() As String
-Public dictionaryLocationArray() As String
+Public initiatedExplorerArray() As String
+
+Public dictionaryLocationArray() As String ' array to store the location (index) for the images in the dictionary collection
 Public namesListArray() As String ' the name assigned to each icon
-Public sCommandArray() As String ' the command assigned to each icon
+Public sCommandArray() As String ' the command assigned to each icon, used for quick access
 Public targetExistsArray() As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+Public disabledArray() As Integer
 
 Public WindowsVer As String
 Public rdIconMaximum As Integer
@@ -557,14 +571,13 @@ Public forceRunNewAppFlag As Boolean
 
 Public insideDockFlg As Boolean '.nn Added to allow a MouseUp to capture a drag from one part of the dock to another
 
-
-
 ' vars to obtain correct screen width (to correct VB6 bug)
 
-Public screenWidthTwips As Long
-Public screenHeightTwips As Long
-Public screenWidthPixels As Integer
-Public screenHeightPixels As Integer
+Public screenWidthPixels As Long
+Public screenHeightPixels As Long
+
+Public oldScreenWidthPixels As Long
+Public oldScreenHeightPixels As Long
 
 ' vars to store the position of each icon
 
@@ -583,18 +596,11 @@ Public iconStoreBottomPixels() As Double ' 01/06/2021 DAEB frmMain.frm Added to 
 ' using iconStoreXxxxPixels we can derive all the rectangle's co-ordinates
 
 Public iconArrayUpperBound As Single
+
+' array used to store the location of the dictionary image for each icon
 Public dictionaryLocationArrayUpperBound As Single
+
 Public iconWidthPxls As Single
-
-'' collection objects
-'Private collLargeIcons As Object
-'Private collSmallIcons As Object
-
-'vars for the animation
-'Private iconSizeLargePxls As Byte
-'Private iconSizeSmallPxls As Byte
-
-
 
 'APIs and constants to read embedded icons. Most of these APIs are not really used yet, they are there just in case anyone wants to
 'complete the reading of embedded icons from binaries/DLLs
@@ -603,7 +609,7 @@ Public iconWidthPxls As Single
 Public bounceZone As Integer ' .16 DAEB 12/07/2021 mdlMain.bas Add the BounceZone as a configurable variable.
 Public smallDockBeenDrawn As Boolean
 
-
+Public hdcScreen As Long
 
 
 
@@ -816,7 +822,7 @@ ColorToGDIplus_Error:
 End Function
 
 '---------------------------------------------------------------------------------------
-' Procedure : dockProcessTimer
+' Procedure : checkDockProcessesRunning
 ' Author    : beededea
 ' Date      : 08/07/2020
 ' Purpose   : it used to test all icon binaries against all processes in the task list
@@ -824,26 +830,78 @@ End Function
 '             this routine is used to identify an item in the dock as currently running even if not triggered by the dock
 '---------------------------------------------------------------------------------------
 '
-Public Sub dockProcessTimer()
-    Dim useloop As Integer
+Public Sub checkDockProcessesRunning()
     
-    On Error GoTo dockProcessTimer_Error
-        For useloop = 0 To rdIconMaximum
-            ' instead of looping through all elements in the docksettings.ini file, we now store all the current commands in an sCommandArray
-            ' we loop through the array much quicker than looping through the temporary settings file and extracting the commands from each
-            ' we must remember to populate the array whenever an icon is added or deleted
-            
+    On Error GoTo checkDockProcessesRunning_Error
+    
+    Dim useloop As Integer: useloop = 0
+        
+    For useloop = 0 To rdIconMaximum
+        ' instead of looping through all elements in the docksettings.ini file, we now store all the current commands in an sCommandArray
+        ' we loop through the array much quicker than looping through the temporary settings file and extracting the commands from each
+        ' we must remember to populate the array whenever an icon is added or deleted
+        If sCommandArray(useloop) <> "" Then
             processCheckArray(useloop) = IsRunning(sCommandArray(useloop), vbNull)
+        End If
 
-        Next useloop
+    Next useloop
    On Error GoTo 0
    Exit Sub
 
-dockProcessTimer_Error:
+checkDockProcessesRunning_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure dockProcessTimer of Module mdlMain"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure checkDockProcessesRunning of Module mdlMain"
 
 End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : checkExplorerRunning
+' Author    : beededea
+' Date      : 08/07/2020
+' Purpose   : it used to test all currently running explorer windows against all icon's target as stored
+'             in the sCommandArray. This routine is used to identify an Explorer Window in the dock as currently
+'             being open even if not triggered by the dock.
+'---------------------------------------------------------------------------------------
+'
+Public Sub checkExplorerRunning()
+    
+    On Error GoTo checkExplorerRunning_Error
+
+    Dim windowCount As Integer: windowCount = 0
+    Dim openExplorerPathArray() As String
+    Dim windowLoop As Integer: windowLoop = 0
+    Dim sCommandLoop As Integer: sCommandLoop = 0
+    Dim NameProcess As String: NameProcess = vbNullString
+    
+    Call enumerateExplorerWindows(openExplorerPathArray(), windowCount)
+    
+    If windowCount = 0 Then Call enumerateExplorerWindows(openExplorerPathArray(), windowCount)
+    
+    ' instead of looping through all elements in the docksettings.ini file, we now store all the current commands in an sCommandArray
+    ' we loop through the array much quicker than looping through the temporary settings file and extracting the commands from each.
+    
+    For windowLoop = 0 To windowCount - 1
+        For sCommandLoop = 0 To rdIconMaximum
+            If sCommandArray(sCommandLoop) <> vbNullString Then
+                If LCase$(sCommandArray(sCommandLoop)) = LCase$(openExplorerPathArray(windowLoop)) Then
+                    explorerCheckArray(sCommandLoop) = True
+                End If
+            End If
+        Next sCommandLoop
+    Next windowLoop
+        
+   On Error GoTo 0
+   Exit Sub
+
+checkExplorerRunning_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure checkExplorerRunning of Module mdlMain"
+
+End Sub
+
+
 ''---------------------------------------------------------------------------------------
 '' Procedure : getWindowHWndForPid
 '' Author    : dee-u Candon City, Ilocos https://www.vbforums.com/showthread.php?561413-getting-hwnd-from-process
@@ -926,7 +984,7 @@ End Sub
 '
 '---------------------------------------------------------------------------------------
 '
-Private Function fEnumWindowsCallBack(ByVal hWnd As Long, ByVal lParam As Long) As Long
+Private Function fEnumWindowsCallBack(ByVal hwnd As Long, ByVal lParam As Long) As Long
 Dim lReturn     As Long
 Dim lExStyle    As Long
 Dim bNoOwner    As Boolean
@@ -947,26 +1005,26 @@ On Error GoTo fEnumWindowsCallBack_Error
 
 pid = lParam
 
-If hWnd <> dock.hWnd Then
+If hwnd <> dock.hwnd Then
         ' check if window is visible or not
-        If IsWindowVisible(hWnd) Then
+        If IsWindowVisible(hwnd) Then
             ' This is a top-level window. See if it has the target instance handle.
             ' test_pid is the process ID returned for the window handle
             
             ' GetWindowThreadProcessId finds the process ID given for the thread which owns the window
-            Thread_ID = GetWindowThreadProcessId(hWnd, test_pid)
+            Thread_ID = GetWindowThreadProcessId(hwnd, test_pid)
                       
             If test_pid = pid Then
-                If GetParent(hWnd) = 0 Then
-                    bNoOwner = (GetWindow(hWnd, GW_OWNER) = 0)
-                    lExStyle = GetWindowLong(hWnd, GWL_EXSTYLE)
+                If GetParent(hwnd) = 0 Then
+                    bNoOwner = (GetWindow(hwnd, GW_OWNER) = 0)
+                    lExStyle = GetWindowLong(hwnd, GWL_EXSTYLE)
 
                         If (((lExStyle And WS_EX_TOOLWINDOW) = 0) And bNoOwner) Or _
                             ((lExStyle And WS_EX_APPWINDOW) And Not bNoOwner) Then
         
-                                hWnd = GetAncestor(hWnd, GA_ROOT)
+                                hwnd = GetAncestor(hwnd, GA_ROOT)
         
-                                storeWindowHwnd = hWnd ' a bit of a kludge, a global var that carries the window handle to the calling function
+                                storeWindowHwnd = hwnd ' a bit of a kludge, a global var that carries the window handle to the calling function
                                 Exit Function
                         End If
                 End If
@@ -1168,19 +1226,14 @@ End Sub
 '
 Private Sub adjustControls()
 
-    ' read the skins available from the rocketdock folder
+    On Error GoTo adjustControls_Error
 
-    'Dim MyFile As String
-    Dim MyPath  As String
-    Dim themePresent As Boolean
-    Dim myName As String
-    Dim toggleText As String
-   
-   On Error GoTo adjustControls_Error
-
+    Dim MyPath  As String: MyPath = vbNullString
+    Dim themePresent As Boolean: themePresent = False
+    Dim myName As String: myName = vbNullString
+    Dim toggleText As String: toggleText = vbNullString
 
     MyPath = sdAppPath & "\Skins\" '"E:\Program Files (x86)\RocketDock\Skins\"
-    themePresent = False
 
     If Not DirExists(MyPath) Then
         MsgBox "WARNING - The skins folder is not present in the correct location " & sdAppPath
@@ -1227,19 +1280,19 @@ Private Sub adjustControls()
     menuForm.mnuLeft.Checked = False
     menuForm.mnuRight.Checked = False
 
-    If rDSide = 0 Then
+    If rDSide = vbtop Then
         menuForm.mnuTop.Checked = True
         dockPosition = vbtop
     End If
-    If rDSide = 1 Then
+    If rDSide = vbBottom Then
         menuForm.mnuBottom.Checked = True
-        dockPosition = vbbottom
+        dockPosition = vbBottom
     End If
-    If rDSide = 2 Then
+    If rDSide = vbLeft Then
         menuForm.mnuLeft.Checked = True
         dockPosition = vbLeft
     End If
-    If rDSide = 3 Then
+    If rDSide = vbRight Then
         menuForm.mnuRight.Checked = True
         dockPosition = vbRight
     End If
@@ -1270,20 +1323,12 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Sub testDockRunning()
-    ' local variables declared
-
-    Dim NameProcess As String
-    Dim AppExists As Boolean
-
-    ' initial values assigned
-     
     On Error GoTo testDockRunning_Error
+    
+    Dim NameProcess As String: NameProcess = vbNullString
+    Dim AppExists As Boolean: AppExists = False
    
     If debugflg = 1 Then debugLog "% sub testDockRunning"
-
-
-    NameProcess = vbNullString
-    AppExists = False
 
     AppExists = App.PrevInstance
     If AppExists = True Then
@@ -1301,15 +1346,22 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : menuAddSummat
+' Procedure : insertNewIconDataIntoCurrentPosition
 ' Author    : beededea
 ' Date      : 18/08/2019
 ' Purpose   : Add something to the dock called by all the menuAdd functions that follow
+
+    ' instead of reordering the images within the dictionary (which is difficult as you can't just add and
+    ' replace objects into an existing collection, also, it does not release memory) instead we simply
+    ' add a new icon reference to the settings file, add a new image to the end of the collection and then we
+    ' manipulate an array of index numbers indicating which image in the collection to use. This persists until the
+    ' dock is restarted. Then the images are loaded and numbered sequentially.
+    
 '---------------------------------------------------------------------------------------
 '.nn Modified the function inputs to add the missing icon characteristics that are needed when dragging and dropping an icon within the dock.
 ' .15 DAEB 20/05/2021 mdlMain.bas Added new check box to allow a quick launch of the chosen app
 
-Public Sub menuAddSummat(ByVal thisFilename As String, ByVal thisTitle As String, _
+Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, ByVal thisTitle As String, _
     ByVal thisCommand As String, _
     ByVal thisArguments As String, ByVal thisWorkingDirectory As String, _
     ByVal thisShowCmd As String, ByVal thisOpenRunning As String, _
@@ -1320,28 +1372,17 @@ Public Sub menuAddSummat(ByVal thisFilename As String, ByVal thisTitle As String
     Dim useloop As Integer
     Dim thisIcon As Integer
 
-    On Error GoTo menuAddSummat_Error
-    'If debugflg = 1 Then debugLog "%" & "menuAddSummat"
+    On Error GoTo insertNewIconDataIntoCurrentPosition_Error
+    'If debugflg = 1 Then debugLog "%" & "insertNewIconDataIntoCurrentPosition"
 
-    ' instead of reordering the images within the dictionary, which is difficult as you can't just add and
-    ' replace objects into an existing collection, also, it does not release memory. So, instead we simply
-    ' add a new icon reference to the settings file, add a new image to the end of the collection. Then we
-    ' manipulate the index numbers indicating which image in the collection to use. This persists until the
-    ' dock is restarted.
-    
     ' starting at the end of the steamydock map, scroll backward and increment the number
     ' until we reach the current position.
     
     For useloop = rdIconMaximum To selectedIconIndex Step -1
-        ' read the steamydock alternative settings.ini
-         'readIconSettingsIni (useloop) ' the settings.ini only exists when RD is set to use it
+         Call zeroAllIconCharacteristics
          
          readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
-         'readIconSettingsIni "Software\RocketDock\Icons", useloop, rdSettingsFile
         
-        ' and increment the identifier by one
-        
-         'Call writeIconSettingsIni("Software\RocketDock\Icons", useloop + 1, rdSettingsFile)
          Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop + 1, dockSettingsFile)
     
     Next useloop
@@ -1352,12 +1393,27 @@ Public Sub menuAddSummat(ByVal thisFilename As String, ByVal thisTitle As String
     iconArrayUpperBound = rdIconMaximum
     
     'amend the count in the alternative rdSettings.ini
-    'PutINISetting "Software\RocketDock\Icons", "count", theCount, rdSettingsFile
     PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, dockSettingsFile
-
+    
+    'resize all arrays used for storing icon information
+    ReDim Preserve fileNameArray(rdIconMaximum) As String ' the file location of the original icons
+    ReDim Preserve dictionaryLocationArray(rdIconMaximum) As String ' the dictionary location of the original icons
+    ReDim Preserve namesListArray(rdIconMaximum) As String ' the name assigned to each icon
+    ReDim Preserve sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
+    ReDim Preserve targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+    ReDim Preserve processCheckArray(rdIconMaximum) As Boolean ' the process name assigned to each icon
+    ReDim Preserve explorerCheckArray(rdIconMaximum) As Boolean ' the process name assigned to each icon
+    
+    ReDim Preserve initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
+    ReDim Preserve initiatedExplorerArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track explorer processes initiated from the dock
+    
+    ReDim Preserve disabledArray(rdIconMaximum) As Integer '
+   
    ' dynamically extend the number of picture boxes by one
     
     thisIcon = useloop + 1
+    
+    Call zeroAllIconCharacteristics
     
     'when we arrive at the original position then add a blank item
     ' with the following blank characteristics
@@ -1379,11 +1435,37 @@ Public Sub menuAddSummat(ByVal thisFilename As String, ByVal thisTitle As String
     sQuickLaunch = thisQuickLaunch ' .15 DAEB 20/05/2021 mdlMain.bas Added new check box to allow a quick launch of the chosen app
     
     sDisabled = thisDisabled
-    
-    
-    ' Call writeIconSettingsIni("Software\RocketDock\Icons", thisIcon, rdSettingsFile) ' interim
+            
     Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", thisIcon, dockSettingsFile)
 
+    ' then re-read the config for every icon
+    For useloop = rdIconMaximum To selectedIconIndex Step -1
+        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
+        ' read the two main icon variables into arrays, one for each
+        fileNameArray(useloop) = sFilename
+        namesListArray(useloop) = sTitle
+        sCommandArray(useloop) = sCommand
+        targetExistsArray(useloop) = 0
+        
+        ' check to see if each process is running and store the result away
+        explorerCheckArray(useloop) = isExplorerRunning(sCommand)
+        processCheckArray(useloop) = IsRunning(sCommand, vbNull)
+
+        If sDisabled = "1" Then
+            disabledArray(useloop) = 1
+        Else
+            disabledArray(useloop) = 0
+        End If
+    
+    Next useloop
+
+    'amend the count in both the alternative rdSettings.ini
+    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, dockSettingsFile
+    
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
+    
+    
     '.nn new check for dragInsideDockOperating
     If dragInsideDockOperating = False Then '.nn for performance reason, disabled when dragging and dropping as it is carried out during the delete operation as well
         'Call saveIconConfigurationToSource ' final write to the docksettings file
@@ -1392,9 +1474,9 @@ Public Sub menuAddSummat(ByVal thisFilename As String, ByVal thisTitle As String
    On Error GoTo 0
    Exit Sub
 
-menuAddSummat_Error:
+insertNewIconDataIntoCurrentPosition_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure menuAddSummat of module mdlMain.bas"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertNewIconDataIntoCurrentPosition of module mdlMain.bas"
     
 End Sub
 
@@ -1469,7 +1551,7 @@ Public Sub saveIconConfigurationToSource()
 '        origSettingsFile = rdAppPath & "\settings.ini"
 '        If FExists(origSettingsFile) Then ' does the original settings.ini exist?
 '
-'            ' we don't need to write anything else to the intermediate rdsettings file as it has already been done in menuAddSummat
+'            ' we don't need to write anything else to the intermediate rdsettings file as it has already been done in insertNewIconDataIntoCurrentPosition
 '
 '            'using the intermediate option is much faster just requiring a file copy
 '            ' all we need to do is copy the duplicate settings file to the original
@@ -1553,6 +1635,7 @@ Public Sub addProgramDLLorEXE()
      Dim qPos As Integer
      Dim filestring As String
      Dim suffix As String
+     Dim thisTitle As String: thisTitle = vbNullString
      
      Const x_MaxBuffer = 256
     
@@ -1612,7 +1695,7 @@ Public Sub addProgramDLLorEXE()
 
             suffix = Right(filestring, Len(filestring) - InStr(1, filestring, "."))
             ' test as to whether it is an .EXE or a .DLL
-            If InStr(".exe,.dll", LCase(suffix)) <> 0 Then
+            If InStr(1, ".exe,.dll", LCase(suffix)) <> 0 Then
                 'FileName = txtCurrentIcon.Text ' revert to the relative path which is what is expected
                 'Call displayEmbeddedIcons(filestring, picBox, icoPreset)
 
@@ -1660,11 +1743,17 @@ Public Sub addProgramDLLorEXE()
 
     End If
     
+    thisTitle = getFileNameFromPath(retFileName)
+    
     dock.Refresh
     
-    Call menuAddSummat(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-    Call menuForm.postAddIConTasks(iconImage, retFileName)
-    
+    Call insertNewIconDataIntoCurrentPosition(iconImage, thisTitle, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(iconImage, retFileName)
+        
+    ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+    If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+        Call menuForm.mnuIconSettings_Click_Event
+    End If
     On Error GoTo 0
     Exit Sub
 
@@ -1730,10 +1819,10 @@ End Sub
 '
 '    dock.Refresh
 '
-'    Call menuAddSummat(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-'    Call menuForm.postAddIConTasks(iconImage, retFileName)
+'    Call insertNewIconDataIntoCurrentPosition(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+'    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(iconImage, retFileName)
 '
-'    Call dockProcessTimer ' trigger a test of running processes in half a second
+'    Call checkDockProcessesRunning ' trigger a test of running processes in half a second
 '
 '    ' if that fails, spit out an error.
 '    ' no point in changing this to a non-modal message box as the dock will not restart until the modal menu has completed its work.
@@ -1772,6 +1861,8 @@ Public Sub deleteThisIcon()
 
     itemName = namesListArray(selectedIconIndex)
     
+    disabledArray(selectedIconIndex) = 0
+    
     'If chkConfirmSaves.Value = 1 Then
     
     '.nn Added a check to see if the operation is happening during a drag and drop inside the dock
@@ -1783,23 +1874,42 @@ Public Sub deleteThisIcon()
         Else
             dMessage = "This will delete the currently selected entry from the dock, " & vbCr & align(itemName, 90, " ", "both") & vbCr & " It will remove it permanently -  are you sure?"
         End If
-        answer = MsgBox(dMessage, vbYesNo)
+        
+        answer = msgBoxA(dMessage, vbQuestion + vbYesNo, "Deleting an Icon", True, "dragAndDeleteThisIcon")
         If answer = vbNo Then
             Exit Sub
         End If
+    Else
+        dMessage = "This will delete the currently selected entry from the dock, " & vbCr & align(itemName, 90, " ", "both") & vbCr & " It will remove it permanently -  are you sure?"
+        answer = msgBoxA(dMessage, vbQuestion + vbYesNo, "Deleting an Icon", True, "deleteThisIcon")
+        If answer = vbNo Then
+            Exit Sub
+        End If
+    
     End If
     
     dragInsideDockOperating = False '.nn new check for dragInsideDockOperating '.nn reset
     
     If selectedIconIndex < rdIconMaximum Then 'if not the top icon loop through them all and reassign the values
         ' read the steamyDock settings one item up in the list
-        ' then write the the new item at the current location effectively overwriting it
+        ' then write the new item at the current location effectively overwriting it
         For useloop = selectedIconIndex + 1 To rdIconMaximum
             Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile)
             Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop - 1, dockSettingsFile)
+'            If useloop = 73 Then
+'                Dim a As Integer
+'                a = 1
+'            End If
         Next useloop
-            
-        ' then re-read the config and
+        
+ 
+        ' for the final, now unused icon, we need to delete the data and write it.
+'        Call zeroAllIconCharacteristics
+'        Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", rdIconMaximum, dockSettingsFile)
+'        dictionaryLocationArray(selectedIconIndex) = dictionaryLocationArrayUpperBound
+
+        
+        ' then re-read the config for every icon
         For useloop = selectedIconIndex To rdIconMaximum
             Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile)
             
@@ -1810,16 +1920,27 @@ Public Sub deleteThisIcon()
             targetExistsArray(useloop) = 0
             
             ' check to see if each process is running and store the result away
+            explorerCheckArray(useloop) = isExplorerRunning(sCommand)
             processCheckArray(useloop) = IsRunning(sCommand, vbNull)
             
-            ' then copy the other critical array contents one location down
-            If useloop + 1 < rdIconMaximum Then
+            ' then copy the image array contents one location down
+            If useloop + 1 <= rdIconMaximum Then
+                
                 dictionaryLocationArray(useloop) = dictionaryLocationArray(useloop + 1)
+                disabledArray(useloop) = disabledArray(useloop + 1)
+                
+                ' unused vars now
                 iconStoreLeftPixels(useloop) = iconStoreLeftPixels(useloop + 1)
                 iconStoreRightPixels(useloop) = iconStoreRightPixels(useloop + 1)
                 iconStoreTopPixels(useloop) = iconStoreTopPixels(useloop + 1)
                 iconStoreBottomPixels(useloop) = iconStoreBottomPixels(useloop + 1)
             End If
+            
+'            If useloop = 73 Then
+'                Dim b As Integer
+'                b = 1
+'            End If
+            
         Next useloop
     End If
         
@@ -1831,7 +1952,10 @@ Public Sub deleteThisIcon()
 
     'amend the count in both the alternative rdSettings.ini
     PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, dockSettingsFile
-
+    
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
+    
     'must go here
     rdIconMaximum = rdIconMaximum - 1
 
@@ -1850,17 +1974,21 @@ Public Sub deleteThisIcon()
     ReDim Preserve namesListArray(rdIconMaximum) As String ' the name assigned to each icon
     ReDim Preserve sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
     ReDim Preserve targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-    ReDim Preserve processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
+    ReDim Preserve processCheckArray(rdIconMaximum) As Boolean ' the process name assigned to each icon
+    ReDim Preserve explorerCheckArray(rdIconMaximum) As Boolean ' the process name assigned to each icon
     ReDim Preserve initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
+    ReDim Preserve initiatedExplorerArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track explorer processes initiated from the dock
+    
+    ReDim Preserve disabledArray(rdIconMaximum) As Integer '
     
     iconArrayUpperBound = rdIconMaximum
     
-    Call dockProcessTimer ' trigger a test of running processes in half a second
+    Call checkDockProcessesRunning ' trigger a test of running processes in half a second
     
     ' if that fails, spit out an error.
     ' no point in changing this to a non-modal message box as the dock will not restart until the modal menu has completed its work.
     'MsgBox (itemName & " Dock item deleted at position " & selectedIconIndex)
-    If insideDockFlg = False Then MessageBox dock.hWnd, itemName & " Dock item deleted at position " & selectedIconIndex, "SteamyDock Confirmation Message", vbOKOnly
+    'If insideDockFlg = False Then MessageBox dock.hwnd, itemName & " Dock item deleted at position " & selectedIconIndex, "SteamyDock Confirmation Message", vbOKOnly
 
     On Error GoTo 0
     Exit Sub
@@ -1871,101 +1999,6 @@ deleteThisIcon_Error:
 End Sub
 
 
-'' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-''---------------------------------------------------------------------------------------
-'' Procedure : removeImageFromDictionary
-'' Author    : beededea
-'' Date      : 18/06/2020
-'' Purpose   : only used when a single icon is to be added to the dock
-''             this routine is a workaround to the memory leakage problem in resizeAndLoadImgToDict
-''             where if run twice the RAM usage doubled as the vars are not clearing their contents when
-''             the routine ends
-''
-'' When an icon is added it should no longer call the routine to recreate the arrays and collections
-'' instead it calls this routine, previously there was one dictionary.
-''
-'' there is now a separate dictionary for the smaller icons
-'' there is another dictionary for the larger icons
-'' there is a third temporary dictionary that is used as temporary storage whilst resizing the above
-'' when a new icon is added to the dock
-''
-'' we use the existing resizeAndLoadImgToDict to read the larger icon format
-'' the icons to the left are written to the 3rd temporary dictionary with existing keys, the new icon is then written using the current location as part of the key
-'' the icons to the right are then read from the old dictionary and then written to the new temporary dictionary with updated keys
-'' the larger image dictionary is cleared down readied for population
-'' the temporary dictionary is used to repopulate the larger image dictionary, a clone
-'' the temporary dictionary is cleared down, ready for re-use
-'
-'' then we do the same for the smaller icon format images
-''---------------------------------------------------------------------------------------
-''
-'Public Sub oldRemoveImageFromDictionary()
-'
-'    Dim useloop As Integer
-'    Dim thiskey As String
-'    Dim newKey As String
-'
-'    On Error GoTo removeImageFromDictionary_Error
-'
-''    If debugflg = 1 Then debugLog "%" & "removeImageFromDictionary"
-'
-'    'resize all arrays used for storing icon information
-'    ReDim fileNameArray(rdIconMaximum) As String ' the file location of the original icons
-'    ReDim namesListArray(rdIconMaximum) As String ' the name assigned to each icon
-'    ReDim sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
-'    ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-'    ReDim processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
-'    ReDim initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
-'                                                         ' but I feel that it does not really matter so I am going to not bother at the moment, this is something that could be done later!
-'
-'    ' assuming that the details have already been written to the configuration file
-'    ' extract filenames from Rocketdock registry, settings.ini or user data area
-'    ' we reload the arrays that store pertinent icon information
-'    For useloop = 0 To rdIconMaximum
-'        'readIconData (useloop)
-'        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
-'        ' read the two main icon variables into arrays, one for each
-'        fileNameArray(useloop) = sFilename
-'        namesListArray(useloop) = sTitle
-'        sCommandArray(useloop) = sCommand
-'        targetExistsArray(useloop) = 0
-'
-'        ' check to see if each process is running and store the result away
-'        'processCheckArray(useloop) = isProcessInTaskList(sCommand)
-'        processCheckArray(useloop) = IsRunning(sCommand, vbNull)
-'
-'    Next useloop
-'
-'    'redimension the array that is used to store all of the icon current positions in pixels
-'    ' preserves the data in the existing array when changing the size of only the last dimension.
-'    ReDim Preserve iconStoreLeftPixels(rdIconMaximum + 1) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'    ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-'    ReDim Preserve iconStoreRightPixels(rdIconMaximum + 1) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'    ReDim Preserve iconStoreTopPixels(rdIconMaximum + 1) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-'    ReDim Preserve iconStoreBottomPixels(rdIconMaximum + 1) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'
-'
-'    iconArrayUpperBound = rdIconMaximum '<*
-'
-'    ' populate the array element containing the final icon position
-'    'iconPosLeftTwips(rdIconMaximum) = iconPosLeftTwips(rdIconMaximum - 1) + (iconWidthPxls * screenTwipsPerPixelX) '< this may need revisiting if you add left and right positions
-'
-'    ' re-order the large icons in the collLargeIcons dictionary collection
-'    Call decrementCollection(collLargeIcons, iconSizeLargePxls)
-'
-'    ' re-order the small icons in the collSmallIcons dictionary collection
-'    Call decrementCollection(collSmallIcons, iconSizeSmallPxls)
-'
-'    Call loadAdditionalImagestoDictionary ' the additional images need to be re-added back to the dictionary
-'
-'   On Error GoTo 0
-'   Exit Sub
-'
-'removeImageFromDictionary_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure removeImageFromDictionary of module mdlMain.bas"
-'
-'End Sub
 
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
@@ -1979,30 +2012,37 @@ End Sub
 Public Sub loadAdditionalImagestoDictionary()
 
     Dim themeName As String
+    Dim imageOpacity As Integer: imageOpacity = 0
     
     On Error GoTo loadAdditionalImagestoDictionary_Error
     
 '    If debugflg = 1 Then debugLog "%" & "loadAdditionalImagestoDictionary"
     
     themeName = vbNullString
+            
+'    If key = "sDSkinLeft" Or key = "sDSkinRight" Or key = "sDSkinMid" Then
+'        imageOpacity = Val(rDThemeOpacity)
+'    Else
+'    End If
 
     If rDtheme <> vbNullString And rDtheme <> "Blank" Then
+        imageOpacity = Val(rDThemeOpacity)
         ' load the theme background image into the collection sDSkinLeft is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDleft.png"
         If FExists(themeName) Then
-            resizeAndLoadImgToDict collLargeIcons, "sDSkinLeft", themeName, vbNullString, sDisabled, (0), (0), sDSkinSize, sDSkinSize
+            resizeAndLoadImgToDict collLargeIcons, "sDSkinLeft", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, , imageOpacity
         End If
     '
     '    ' load the theme background image into the collection sDSkinMid is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDmiddle.png"
         If FExists(themeName) Then
-            resizeAndLoadImgToDict collLargeIcons, "sDSkinMid", themeName, "sDSkinMid.png", sDisabled, (0), (0), sDSkinSize, sDSkinSize
+            resizeAndLoadImgToDict collLargeIcons, "sDSkinMid", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, , imageOpacity
         End If
 
     '    ' load the theme background image into the collection sDSkinRight is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDright.png"
         If FExists(themeName) Then
-            resizeAndLoadImgToDict collLargeIcons, "sDSkinRight", themeName, vbNullString, sDisabled, (0), (0), sDSkinSize, sDSkinSize
+            resizeAndLoadImgToDict collLargeIcons, "sDSkinRight", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, , imageOpacity
         End If
         
         ' load the theme separator image into the collection sDSeparator is the unique key
@@ -2012,44 +2052,47 @@ Public Sub loadAdditionalImagestoDictionary()
     
     End If
     
+    imageOpacity = Val(rDIconOpacity)
+    
     ' load a transparent 128 x 128 image into the collection, used to stop click-throughs
-    If FExists(App.Path & "\blank.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "blank", App.Path & "\blank.png", vbNullString, sDisabled, (0), (0), (128), (128)
+    If FExists(App.Path & "\blankSquare.png") Then
+        resizeAndLoadImgToDict collLargeIcons, "blank", App.Path & "\blankSquare.png", sDisabled, (0), (0), (128), (128), , 1
     End If
     
     ' .11 DAEB 01/05/2021 mdlMain.bas load a transparent 128 x 128 image into the collection, used to highlight the position of a drag/drop
     If FExists(App.Path & "\red.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "red", App.Path & "\red.png", vbNullString, sDisabled, (0), (0), (256), (256)
+        resizeAndLoadImgToDict collLargeIcons, "red", App.Path & "\red.png", sDisabled, (0), (0), (256), (256), , imageOpacity
     End If
     
     ' load a small circle image into the collection, used to signify running process
+    '                           thisDictionary, key ,strFilename, strName,thisDisabled ,Left, ByVal Top As Long,Width, Height,fullStringKey)
     If FExists(App.Path & "\tinyCircle.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", sDisabled, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
     
     ' load a small circle image into the collection, used to signify running process
     If FExists(App.Path & "\red-X.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "redx", App.Path & "\red-X.png", sDisabled, (0), (0), (64), (64)
+        resizeAndLoadImgToDict collLargeIcons, "redx", App.Path & "\red-X.png", sDisabled, (0), (0), (64), (64), , imageOpacity
     End If
     
     ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
     If FExists(App.Path & "\busy-F1-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass1", App.Path & "\busy-F1-32x32x24.png", sDisabled, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass1", App.Path & "\busy-F1-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
     If FExists(App.Path & "\busy-F2-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass2", App.Path & "\busy-F2-32x32x24.png", sDisabled, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass2", App.Path & "\busy-F2-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
     If FExists(App.Path & "\busy-F3-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass3", App.Path & "\busy-F3-32x32x24.png", sDisabled, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass3", App.Path & "\busy-F3-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
     If FExists(App.Path & "\busy-F4-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass4", App.Path & "\busy-F4-32x32x24.png", sDisabled, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass4", App.Path & "\busy-F4-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
     If FExists(App.Path & "\busy-F5-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass5", App.Path & "\busy-F5-32x32x24.png", sDisabled, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass5", App.Path & "\busy-F5-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
     If FExists(App.Path & "\busy-F6-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass6", App.Path & "\busy-F6-32x32x24.png", sDisabled, (0), (0), (128), (128)
+        resizeAndLoadImgToDict collLargeIcons, "hourglass6", App.Path & "\busy-F6-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
 
     
@@ -2190,20 +2233,26 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
     Dim useloop As Integer
     Dim thiskey As String
     Dim newKey As String
-    Dim strKey As String
+    Dim partialStringKey As String: partialStringKey = ""
+    Dim imageOpacity As Integer: imageOpacity = 0
 
     On Error GoTo addNewImageToDictionary_Error
     
-    dictionaryLocationArrayUpperBound = dictionaryLocationArrayUpperBound + 1
+    dictionaryLocationArrayUpperBound = rdIconMaximum
 
     'resize all arrays used for storing icon information
     ReDim Preserve fileNameArray(rdIconMaximum) As String ' the file location of the original icons
-    ReDim Preserve dictionaryLocationArray(dictionaryLocationArrayUpperBound) As String ' the dictionary location of the original icons
+    ReDim Preserve dictionaryLocationArray(rdIconMaximum) As String ' the dictionary location of the original icons
     ReDim Preserve namesListArray(rdIconMaximum) As String ' the name assigned to each icon
     ReDim Preserve sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
     ReDim Preserve targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-    ReDim Preserve processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
+    ReDim Preserve processCheckArray(rdIconMaximum) As Boolean ' the process name assigned to each icon
+    ReDim Preserve explorerCheckArray(rdIconMaximum) As Boolean ' the process name assigned to each icon
+    
     ReDim Preserve initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
+    ReDim Preserve initiatedExplorerArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
+    
+    ReDim Preserve disabledArray(rdIconMaximum) As Integer '
     
     ReDim Preserve iconStoreLeftPixels(rdIconMaximum) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
@@ -2213,25 +2262,23 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
 
 '    If debugflg = 1 Then debugLog "%" & "addNewImageToDictionary "
 
-    'now we add the new icon to the current position in the dictionary
-    strKey = LTrim$(Str$(dictionaryLocationArrayUpperBound))
+    imageOpacity = Val(rDIconOpacity)
+
+    'now we add the new icon image giving it a key relating to the topmost position in the dictionary locating array
+    partialStringKey = LTrim$(Str$(dictionaryLocationArrayUpperBound))
     If FExists(newFileName) Then
-        ' we use the existing resizeAndLoadImgToDict to read the icon format
-         resizeAndLoadImgToDict collLargeIcons, strKey, newFileName, newName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls)
-         resizeAndLoadImgToDict collSmallIcons, strKey, newFileName, newName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls)
+        ' we use the existing resizeAndLoadImgToDict to read the icon format and load into the two dictionaries
+         resizeAndLoadImgToDict collLargeIcons, partialStringKey, newFileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , imageOpacity
+         resizeAndLoadImgToDict collSmallIcons, partialStringKey, newFileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , imageOpacity
     End If
   
-'    If selectedIconIndex < rdIconMaximum Then 'if not the top icon loop through them all and reassign the values
+    'If selectedIconIndex <= rdIconMaximum Then 'if not the top icon loop through them all and reassign the values
         ' read the steamyDock settings one item up in the list
         ' then write the the new item at the current location effectively overwriting it
         For useloop = rdIconMaximum To (selectedIconIndex + 1) Step -1
-            ' copy the critical array contents one location down
-            If useloop + 1 < rdIconMaximum Then
+            ' copy the array contents one location down
+            If useloop < rdIconMaximum Then
                 dictionaryLocationArray(useloop) = dictionaryLocationArray(useloop - 1)
-'                iconStoreLeftPixels(useloop) = iconStoreLeftPixels(useloop - 1)
-'                iconStoreRightPixels(useloop) = iconStoreRightPixels(useloop - 1)
-'                iconStoreTopPixels(useloop) = iconStoreTopPixels(useloop - 1)
-'                iconStoreBottomPixels(useloop) = iconStoreBottomPixels(useloop - 1)
             End If
         Next useloop
                                 
@@ -2246,12 +2293,13 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
             targetExistsArray(useloop) = 0
             
             ' check to see if each process is running and store the result away
+            explorerCheckArray(useloop) = isExplorerRunning(sCommand)
             processCheckArray(useloop) = IsRunning(sCommand, vbNull)
         Next useloop
         
         dictionaryLocationArray(selectedIconIndex) = dictionaryLocationArrayUpperBound
 
-'    End If
+    'End If
     
     ' reads from the last icon to the current one and for each it writes it one step up
 '    For useloop = rdIconMaximum To selectedIconIndex Step -1
@@ -2286,160 +2334,7 @@ addNewImageToDictionary_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addNewImageToDictionary of module mdlMain.bas"
 
 End Sub
-' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-'---------------------------------------------------------------------------------------
-' Procedure : incrementCollection
-' Author    : beededea
-' Date      : 18/06/2020
-' Purpose   : Writes a new icon to the named dictionary big or small together with all the previous icons
-'             We are simply moving elements up and down a dictionary
-'---------------------------------------------------------------------------------------
-Private Sub incrementCollection(ByRef thisCollection As Object, ByVal thisByteSize As Byte, ByVal newFileName As String, ByVal newName As String)
-    Dim useloop As Integer
-    Dim thiskey As String
-    Dim newKey As String
-    Dim strKey As String
-    
-    On Error GoTo incrementCollection_Error
-    
-'    If debugflg = 1 Then debugLog "%" & "incrementCollection "
-   
-    ' .62 DAEB 29/04/2021 frmMain.frm Improved the speed of the addition of icons to the dictionary collections
-    ' the icons to the left of the current icon are not read nor touched
-    ' reads from the last icon to the current one and for each it writes it one step up
-    For useloop = rdIconMaximum To selectedIconIndex Step -1
-        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-        newKey = useloop + 1 & "ResizedImg" & LTrim$(Str$(thisByteSize))
-        If thisCollection.Exists(thiskey) Then
-            thisCollection(newKey) = thisCollection(thiskey)
-        End If
-    Next useloop
-    
-    'now we add the new icon to the current position in the dictionary
-    strKey = LTrim$(Str$(selectedIconIndex))
-    If FExists(newFileName) Then
-        ' we use the existing resizeAndLoadImgToDict to read the icon format
-         resizeAndLoadImgToDict thisCollection, strKey, newFileName, newName, sDisabled, (0), (0), (thisByteSize), (thisByteSize)
-    End If
 
-
-'   OLD METHOD (SLOW)
-
-'    For useloop = 0 To selectedIconIndex - 1
-'        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        newKey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        collTemporaryIcons(newKey) = thisCollection(thiskey)
-'    Next useloop
- 
-'    'now we add the new icon to the current position in the temporary dictionary
-'    strKey = LTrim$(Str$(selectedIconIndex))
-'    If FExists(newFileName) Then
-'        ' we use the existing resizeAndLoadImgToDict to read the icon format
-'         resizeAndLoadImgToDict thisCollection, strKey, newFileName, newName, CLng(0), CLng(0), CLng(thisByteSize), CLng(thisByteSize)
-'    End If
-'
- 
-    ' the icons to the right including the current are then read from the old dictionary and then written to the new temporary dictionary with updated incremented keys
-'    For useloop = selectedIconIndex To rdIconMaximum
-'        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        newKey = useloop + 1 & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        collTemporaryIcons(newKey) = thisCollection(thiskey)
-'    Next useloop
-
-    ' the larger image dictionary is cleared down readied for repopulation
-    'thisCollection.RemoveAll
-
-    ' the temporary dictionary is used to repopulate the larger image dictionary, a clone of all elements
-'    For useloop = 0 To rdIconMaximum
-'        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        thisCollection(thiskey) = collTemporaryIcons(thiskey)
-'    Next useloop
-
-    ' the temporary dictionary is cleared down, ready for re-use
-    'Set collTemporaryIcons = New Scripting.Dictionary ' to do the SET NEW here, support for MS scripting must be enabled in project - references
-    ' emptying a dictionary or disposing of the contents does not release the memory used by the construct
-    ' creating a new example removes the old version from memory and creates an unpopulated dictionary
-
-   On Error GoTo 0
-   Exit Sub
-
-incrementCollection_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure incrementCollection of module mdlMain.bas"
-
-End Sub
-
-' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-'---------------------------------------------------------------------------------------
-' Procedure : decrementCollection
-' Author    : beededea
-' Date      : 18/06/2020
-' Purpose   : Removes icon from the appropriate dictionary big or small
-'---------------------------------------------------------------------------------------
-'
-Private Sub decrementCollection(ByRef thisCollection As Object, ByVal thisByteSize As Byte)
-    Dim useloop As Integer
-    Dim thiskey As String
-    Dim newKey As String
-    Dim strKey As String
-    
-    On Error GoTo decrementCollection_Error
-
-    ' .60 DAEB 29/04/2021 frmMain.frm Improved the speed of the deletion of icons from the dictionary collections
-    ' the icons to the left of the current icon are not read nor touched.
-    ' we delete the current icon from the collection
-    thiskey = selectedIconIndex & "ResizedImg" & LTrim$(Str$(thisByteSize))
-    thisCollection.Remove thiskey
-        
-    ' the icons to the right are then read from the old dictionary and then written one key down
-    For useloop = selectedIconIndex + 1 To rdIconMaximum + 1 ' change this at your peril
-        newKey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-        thiskey = useloop - 1 & "ResizedImg" & LTrim$(Str$(thisByteSize))
-        thisCollection(thiskey) = thisCollection(newKey)
-    Next useloop
-    
-    ' OLD METHOD (SLOW)
-    ' the icons to the left are written to the 3rd temporary dictionary with existing keys, the new icon is then written with the current location as part of the key
-    
-    ' A.
-'    For useloop = 0 To selectedIconIndex - 1
-'        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        newKey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        collTemporaryIcons(newKey) = thisCollection(thiskey)
-'    Next useloop
- 
-    ' B.
-    ' the icons to the right including the current are then read from the old dictionary and then written to the new temporary dictionary with updated incremented keys
-'    For useloop = selectedIconIndex + 1 To rdIconMaximum + 1 ' change this at your peril
-'        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        newKey = useloop - 1 & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        collTemporaryIcons(newKey) = thisCollection(thiskey)
-'    Next useloop
-    
-
-    ' the original image dictionary is cleared down readied for repopulation
-    'thisCollection.RemoveAll
-
-    ' the temporary dictionary is used to repopulate the larger image dictionary, a clone of all elements
-'    For useloop = 0 To rdIconMaximum
-'        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        thisCollection(thiskey) = collTemporaryIcons(thiskey)
-'    Next useloop
-
-    ' the temporary dictionary is cleared down, ready for re-use
-    'collTemporaryIcons.RemoveAll
-    ' Set collTemporaryIcons = New Scripting.Dictionary ' to do the SET NEW here, support for MS scripting must be enabled in project - references
-    ' emptying a dictionary or disposing of the contents does not release the memory used by the construct
-    ' creating a new example removes the old version from memory and creates an unpopulated dictionary
-
-   On Error GoTo 0
-   Exit Sub
-
-decrementCollection_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure decrementCollection of module mdlMain.bas"
-
-End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : resizeAndLoadImgToDict
 ' Author    : beededea
@@ -2458,7 +2353,7 @@ End Sub
 
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key As String, ByVal strFilename As String, ByVal strName As String, ByVal thisDisabled As String, Optional ByVal Left As Long = 0, Optional ByVal Top As Long = 0, Optional ByVal Width As Long = -1, Optional ByVal Height As Long = -1) As Long
+Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, Optional ByVal fullStringKey As String = "", Optional ByVal imageOpacity As Integer) As Long
 
     Dim thiskey As String
     Dim saveStatus As Boolean
@@ -2471,11 +2366,12 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
     Dim dx As Long
     Dim dy As Long
     Dim dockSkinWidth As Long
+    Dim cropWidth As Long
     
     Dim action As String
     Dim lngPixelFormat As Long
     Dim stat As GpStatus
-    Dim opacity As String
+    'Dim imageOpacity As Integer
     
     'Dim clearBytes() As Byte
     
@@ -2504,39 +2400,39 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
     ' a bit of a bodge but we need to handle the background image by cropping it
     ' Rocketdock has a background theme image in a single image, it is cropped left and right to extract the ends whilst the middle is both cropped and stretched.
 
-    If key = "sDSkinLeft" Or key = "sDSkinRight" Or key = "sDSkinMid" Then
-        opacity = rDThemeOpacity
-    Else
-        opacity = rDIconOpacity
-        ' check if the icon is disabled
-        If thisDisabled = "1" Then
-            ' if so reduce the opacity by 50%
-            opacity = opacity / 4
-        End If
-    End If
     
+    ' uses a function createScaledImg extracted from Olaf Schmidt's code in gdiPlusCacheCls to create and resize the image
     If key = "sDSkinMid" Then
         dockSkinWidth = (rdIconMaximum * iconSizeSmallPxls) + iconSizeLargePxls * 2
 
-        ' Get the current image pixel format.
-        ' The C++ SDK clone example used PixelFormatDontCare, but this can limit what you can do with the image.
+        ' Get the current image pixel format. The C++ SDK clone example used PixelFormatDontCare, but this can limit what you can do with the image.
         Call GdipGetImagePixelFormat(img, lngPixelFormat)
 
+        ' when cloning a bitmap area beyond the original size of the image, it fails and creates nothing.
+        ' this ensures the cropped width is never greater than the original image.
+        
+        cropWidth = dockSkinWidth
+        If dockSkinWidth >= 2000 Then cropWidth = 2000
+        
         ' Create a new Bitmap object by cropping a portion of the long 2000px bitmap to the calculated dock width - x, y, width, height
-        Call GdipCloneBitmapAreaI(0, 0, dockSkinWidth, dy, lngPixelFormat, img, imgCrop) '
-        lngBitmap = CreateScaledImg(imgCrop, dockSkinWidth, dy, dockSkinWidth, Height, opacity)
+        Call GdipCloneBitmapAreaI(0, 0, cropWidth, dy, lngPixelFormat, img, imgCrop) '
+        lngBitmap = createScaledImg(imgCrop, cropWidth, dy, cropWidth, Height, imageOpacity)
     Else
-        ' uses a function extracted from Olaf Schmidt's code in gdiPlusCacheCls to create and resize the image
-        lngBitmap = CreateScaledImg(img, dx, dy, Width, Height, opacity) ' <consumes memory 100k approx.
+        lngBitmap = createScaledImg(img, dx, dy, Width, Height, imageOpacity) ' <consumes memory 100k approx.
     End If
     
-    ' Save as a PNG file no longer required but retained here for documentation purposes
+    ' Save as a PNG file no longer required but retained here for reference purposes
 '    If key = "sDSkinMid" Then
 '        saveStatus = GdipSaveImageToFile(lngBitmap, StrConv(App.path & "\cache\" & LTrim$(str$(Width)) & strName, vbUnicode), encoderCLSID, ByVal 0)
 '    End If
     
-    ' create a unique key string
-    thiskey = key & "ResizedImg" & LTrim$(Str$(Width))
+    'override the key
+    If fullStringKey = "" Then
+        ' create a unique key string
+        thiskey = key & "ResizedImg" & LTrim$(Str$(Width))
+    Else
+        thiskey = fullStringKey
+    End If
     
     ' add the bitmap to the dictionary collection
     If thisDictionary.Exists(thiskey) Then
@@ -2597,14 +2493,14 @@ End Function
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
 '---------------------------------------------------------------------------------------
-' Procedure : CreateScaledImg
+' Procedure : createScaledImg
 ' Author    : Credit to Olaf Schmidt for the original
 '             also to Joaquim https://www.vbforums.com/showthread.php?840601-RESOLVED-how-use-ColorMatrix
 ' Date      : 07/04/2020
 ' Purpose   : Creates the scaled image with quality and opacity attributes
 '---------------------------------------------------------------------------------------
 '
-Public Function CreateScaledImg(SrcImg As Long, dxSrc, dySrc, dxDst, dyDst, opacity As String) As Long
+Public Function createScaledImg(SrcImg As Long, dxSrc, dySrc, dxDst, dyDst, opacity As Integer) As Long
     Dim img As Long
     Dim Ctx As Long
     Dim imgQuality As Long
@@ -2614,18 +2510,9 @@ Public Function CreateScaledImg(SrcImg As Long, dxSrc, dySrc, dxDst, dyDst, opac
     Dim clrMatrix As ColorMatrix
     Dim graMatrix As ColorMatrix
 
-    On Error GoTo CreateScaledImg_Error
+    On Error GoTo createScaledImg_Error
         
-    imgAttr = &H11
-    
-    'Setup the transform matrix for alpha adjustment
-    clrMatrix.m(0, 0) = 1
-    clrMatrix.m(1, 1) = 1
-    clrMatrix.m(2, 2) = 1
-    clrMatrix.m(3, 3) = 1 * Val(opacity) / 100 ' 0.5 'Alpha transform (50%)
-    clrMatrix.m(4, 4) = 1
-    
-    ' prepare the quality vars according to config.
+' prepare the quality vars according to config.
 '    SmoothingModeDefault = 0&
 '    SmoothingModeHighSpeed = 1&
 '    SmoothingModeHighQuality = 2&
@@ -2633,6 +2520,15 @@ Public Function CreateScaledImg(SrcImg As Long, dxSrc, dySrc, dxDst, dyDst, opac
 '    SmoothingModeAntiAlias8x4 = 4&
 '    SmoothingModeAntiAlias = 4&
 '    SmoothingModeAntiAlias8x8 = 5&
+
+    imgAttr = &H11
+    
+    'Setup the transform matrix for alpha adjustment
+    clrMatrix.m(0, 0) = 1
+    clrMatrix.m(1, 1) = 1
+    clrMatrix.m(2, 2) = 1
+    clrMatrix.m(3, 3) = 1 * opacity / 100 ' 0.5 'Alpha transform (50%)
+    clrMatrix.m(4, 4) = 1
 
     If rDIconQuality = "0" Then
         imgQuality = &H1 '    ipmNearestNeighbor = &H5
@@ -2651,7 +2547,7 @@ Public Function CreateScaledImg(SrcImg As Long, dxSrc, dySrc, dxDst, dyDst, opac
     Call GdipCreateBitmapFromScan0(dxDst, dyDst, dxDst * 4, PixelFormat32bppPARGB, 0, img)
     
     If img Then
-        CreateScaledImg = img ' set the return value to the bitmap object
+        createScaledImg = img ' set the return value to the bitmap object
         'Creates a Graphics object that is associated with an Image bitmap object ie. the hw context of the image
         Call GdipGetImageGraphicsContext(img, Ctx)
     Else
@@ -2686,9 +2582,9 @@ Public Function CreateScaledImg(SrcImg As Long, dxSrc, dySrc, dxDst, dyDst, opac
    On Error GoTo 0
    Exit Function
 
-CreateScaledImg_Error:
+createScaledImg_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure CreateScaledImg of module mdlMain.bas"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure createScaledImg of module mdlMain.bas"
 End Function
 
         
@@ -2699,7 +2595,7 @@ End Function
 ' Purpose   : This utility displays using GDI+, one of several icon images stored in a dictionary collection by key.
 '---------------------------------------------------------------------------------------
 '
-Public Function updateDisplayFromDictionary(thisCollection As Object, strFilename As String, ByVal key As String, Optional Left As Double = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1) As Boolean
+Public Function updateDisplayFromDictionary(thisCollection As Object, strFilename As String, ByVal key As String, Optional Left As Long = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1) As Boolean
    'Dim h As Long
    On Error GoTo updateDisplayFromDictionary_Error
 
@@ -2719,34 +2615,34 @@ Public Function updateDisplayFromDictionary(thisCollection As Object, strFilenam
         Call GdipGetImageWidth(lngBitmap, Width)
     End If
 
-    Dim opacity As String
-    opacity = "100"
-    If opacity <> "100" Then
-        Dim imgAttr As Long
-        Dim clrMatrix As ColorMatrix
-        Dim graMatrix As ColorMatrix
-    
-        imgAttr = &H11
-    
-        'Setup the transform matrix for alpha adjustment
-        clrMatrix.m(0, 0) = 1
-        clrMatrix.m(1, 1) = 1
-        clrMatrix.m(2, 2) = 1
-        clrMatrix.m(3, 3) = 1 * Val(opacity) / 100 ' 0.5 'Alpha transform (50%)
-        clrMatrix.m(4, 4) = 1
-    
-'       Dim lngBitmap2 As Long
-
-'       'Create storage for the image attributes struct used below
-        Call GdipCreateImageAttributes(imgAttr)
+'    Dim opacity As String
+'    opacity = "100"
+'    If opacity <> "100" Then
+'        Dim imgAttr As Long
+'        Dim clrMatrix As ColorMatrix
+'        Dim graMatrix As ColorMatrix
 '
-'       'Setup the image attributes using the color matrix  'ColorAdjustTypeDefault
-        Call GdipSetImageAttributesColorMatrix(imgAttr, ColorAdjustTypeBitmap, 1, clrMatrix, graMatrix, ColorMatrixFlagsDefault)
+'        imgAttr = &H11
 '
-        Call GdipDrawImageRectRect(lngImage, lngBitmap, Left, Top, Width, Height, 0, 0, Width, Height, 2, imgAttr, 0, 0)
-    Else
+'        'Setup the transform matrix for alpha adjustment
+'        clrMatrix.m(0, 0) = 1
+'        clrMatrix.m(1, 1) = 1
+'        clrMatrix.m(2, 2) = 1
+'        clrMatrix.m(3, 3) = 1 * Val(opacity) / 100 ' 0.5 'Alpha transform (50%)
+'        clrMatrix.m(4, 4) = 1
+'
+''       Dim lngBitmap2 As Long
+'
+''       'Create storage for the image attributes struct used below
+'        Call GdipCreateImageAttributes(imgAttr)
+''
+''       'Setup the image attributes using the color matrix  'ColorAdjustTypeDefault
+'        Call GdipSetImageAttributesColorMatrix(imgAttr, ColorAdjustTypeBitmap, 1, clrMatrix, graMatrix, ColorMatrixFlagsDefault)
+''
+'        Call GdipDrawImageRectRect(lngImage, lngBitmap, Left, Top, Width, Height, 0, 0, Width, Height, 2, imgAttr, 0, 0)
+'    Else
         Call GdipDrawImageRectI(lngImage, lngBitmap, Left, Top, Width, Height)  ' shrinks the bitmap into the image object
-    End If
+'    End If
     
    Exit Function
 
@@ -2802,8 +2698,8 @@ Public Function setWindowCharacteristics()
     If debugflg = 1 Then debugLog "% sub setWindowCharacteristics"
     
     'set the transparency of the underlying form with click through
-    lngReturn = GetWindowLong(dock.hWnd, GWL_EXSTYLE)
-    SetWindowLong dock.hWnd, GWL_EXSTYLE, lngReturn Or WS_EX_LAYERED
+    lngReturn = GetWindowLong(dock.hwnd, GWL_EXSTYLE)
+    SetWindowLong dock.hwnd, GWL_EXSTYLE, lngReturn Or WS_EX_LAYERED
     
     ' determine the z position of the dock with respect to other application and o/s windows.
     ' this also changes the window positioning and size:
@@ -2815,11 +2711,11 @@ Public Function setWindowCharacteristics()
     ' we may have to set GDI to the width of the whole virtual screen
     
     If rDzOrderMode = "0" Then
-        SetWindowPos dock.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+        SetWindowPos dock.hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
     ElseIf rDzOrderMode = "1" Then
-        SetWindowPos dock.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+        SetWindowPos dock.hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
     ElseIf rDzOrderMode = "2" Then
-        SetWindowPos dock.hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
+        SetWindowPos dock.hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
     End If
     
     ' point structure that specifies the location of the layer updated in UpdateLayeredWindow
@@ -2849,7 +2745,7 @@ Public Function setWindowCharacteristics()
     'GdipDeleteGraphics lngImage 'The graphics may now be deleted
             
     'Update the specified window handle (hwnd) with a handle to our bitmap (dc) passing all the required characteristics
-    UpdateLayeredWindow dock.hWnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
+    UpdateLayeredWindow dock.hwnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
     ' The UpdateLayeredWindow API call above does not need really to be run here as it is run repeatedly by the animate timer and the function to draw the icons small
     
    On Error GoTo 0
@@ -3030,7 +2926,7 @@ End Sub
 ' Purpose   : .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
 '---------------------------------------------------------------------------------------
 '
-Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As Long)
+Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hwnd As Long)
 
     Dim Count As Long: Count = 0
     Dim hIcon() As Long: 'hIcon() = 0
@@ -3049,7 +2945,7 @@ Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As 
         pid = GetPidByWindow(hIcon(i))
         'if the extracted pid matches the supplied processID then we have the window handle
         If pid = processID Then
-            hWnd = hIcon(i)
+            hwnd = hIcon(i)
             Exit Function
         End If
     Next
@@ -3085,7 +2981,8 @@ Public Function confirmEachKillPutWindowBehind(ByVal binaryName As String, ByVal
         ' send application to back so the msgbox appears on top
         a = handleWindowConditionAndZorder(procId, "back")
         rmessage = "A matching process has been found. Kill this application? - " & binaryName & " with process ID " & procId
-        answer = MsgBox(rmessage, vbYesNo)
+        'answer = MsgBox(rmessage, vbYesNo)
+        answer = msgBoxA(rmessage, vbYesNo, "Killing this application", True, "confirmEachKillPutWindowBehind")
         If answer = vbNo Then
             goAheadAndKill = False
         Else
@@ -3150,7 +3047,7 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
           AppCount = 0
           
           binaryName = getFileNameFromPath(NameProcess)
-          folderName = extractDirectoryFromPath(NameProcess)
+          folderName = getFolderNameFromPath(NameProcess)
           
           uProcess.dwSize = Len(uProcess)
           hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
@@ -3172,7 +3069,7 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
                     Else
                         If checkForFolder = True Then ' only check the process actual run folder when killing an app from the dock
                             procId = uProcess.th32ProcessID ' actual PID
-                            runningProcessFolder = extractDirectoryFromPath(getExePathFromPID(procId))
+                            runningProcessFolder = getFolderNameFromPath(getExePathFromPID(procId))
                             If LCase$(runningProcessFolder) = LCase$(folderName) Then
                                 ' checkAndKillPutWindowBehind = TerminateProcess(processToKill, ExitCode)
                                 ' Call CloseHandle(processToKill)
@@ -3203,3 +3100,39 @@ checkAndKillPutWindowBehind_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure checkAndKillPutWindowBehind of Module Common"
 
 End Function
+
+'---------------------------------------------------------------------------------------
+' Procedure : restartSteamydock
+' Author    : beededea
+' Date      : 27/02/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub restartSteamydock()
+    Dim thisCommand As String: thisCommand = vbNullString
+    
+    On Error GoTo restartSteamydock_Error
+
+    thisCommand = App.Path & "\restartSteamyDock.exe"
+    
+    If FExists(thisCommand) Then
+        If userLevel <> "runas" Then userLevel = "open"
+        Call dock.runCommand("focus", thisCommand)
+    Else
+         MessageBox dock.hwnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+    End If
+
+
+    On Error GoTo 0
+    Exit Sub
+
+restartSteamydock_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure restartSteamydock of Form menuForm"
+            Resume Next
+          End If
+    End With
+
+End Sub

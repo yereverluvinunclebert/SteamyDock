@@ -72,6 +72,13 @@ End Enum
 Private hwndTT As Long ' hwnd of the tooltip
 '
 
+'---------------------------------------------------------------------------------------
+' Procedure : CreateToolTip
+' Author    :
+' Date      : 28/02/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Sub CreateToolTip(ByVal ParentHwnd As Long, _
                          ByVal TipText As String, _
                          Optional ByVal uIcon As ttIconType = TTNoIcon, _
@@ -96,6 +103,8 @@ Public Sub CreateToolTip(ByVal ParentHwnd As Long, _
     Static PrevTitle                    As String
     '
     ' Don't do anything unless we need to.
+    On Error GoTo CreateToolTip_Error
+
     If hwndTT <> 0& And ParentHwnd = PrevParentHwnd And TipText = PrevTipText And sTitle = PrevTitle Then Exit Sub
     PrevParentHwnd = ParentHwnd
     PrevTipText = TipText
@@ -140,6 +149,18 @@ Public Sub CreateToolTip(ByVal ParentHwnd As Long, _
     '
     SendMessageLongA hwndTT, TTM_SETDELAYTIME, TTDT_AUTOPOP, lVisibleTime
     SendMessageLongA hwndTT, TTM_SETDELAYTIME, TTDT_INITIAL, lDelayTime
+
+    On Error GoTo 0
+    Exit Sub
+
+CreateToolTip_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure CreateToolTip of Module modTooltips"
+            Resume Next
+          End If
+    End With
 End Sub
 
 Public Sub DestroyToolTip()
@@ -148,13 +169,22 @@ Public Sub DestroyToolTip()
     hwndTT = 0&
 End Sub
 
-Private Sub FormatTooltipText(TipText As String, lLen As Long)
+'---------------------------------------------------------------------------------------
+' Procedure : FormatTooltipText
+' Author    :
+' Date      : 28/02/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub FormatTooltipText(ByRef TipText As String, ByVal lLen As Long)
     Dim s       As String
     Dim ss()    As String
     Dim i       As Long
     Dim j       As Long
     '
     ' Make sure we need to do anything.
+    On Error GoTo FormatTooltipText_Error
+
     If lLen = 0& Then Exit Sub
     If lLen < 40& Then lLen = 40&
     If Len(TipText) <= lLen Then Exit Sub
@@ -180,6 +210,18 @@ Private Sub FormatTooltipText(TipText As String, lLen As Long)
         End If
     Next
     TipText = Join(ss, vbCrLf)
+
+    On Error GoTo 0
+    Exit Sub
+
+FormatTooltipText_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure FormatTooltipText of Module modTooltips"
+            Resume Next
+          End If
+    End With
 End Sub
 
 

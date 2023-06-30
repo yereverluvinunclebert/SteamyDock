@@ -1,6 +1,14 @@
 Attribute VB_Name = "mdlExplorerPaths"
+'---------------------------------------------------------------------------------------
+' Module    : mdlExplorerPaths
+' Author    : fafalone
+' Date      : 11/04/2023
+' Purpose   : Lists all explorer window details, lovely useful code, don't know how Fafalone
+'             figured out all this but it is all so very useful, thanks Faf.!
+'---------------------------------------------------------------------------------------
+
 Option Explicit
-Public openExplorerPaths() As String
+
 Public Declare Function PSGetNameFromPropertyKey Lib "propsys.dll" (PropKey As PROPERTYKEY, ppszCanonicalName As Long) As Long
 Public Declare Function SysReAllocString Lib "oleaut32.dll" (ByVal pBSTR As Long, Optional ByVal pszStrPtr As Long) As Long
 Public Declare Sub CoTaskMemFree Lib "ole32.dll" (ByVal PV As Long) ' Frees memory allocated by the shell
@@ -64,10 +72,56 @@ Public Sub DEFINE_UUID(Name As UUID, L As Long, w1 As Integer, w2 As Integer, B0
     .Data4(7) = b7
   End With
 End Sub
-Public Sub EnumWindows()
-    'Dim li As ListItem
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : isExplorerRunning
+' Author    : beededea
+' Date      : 10/04/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function isExplorerRunning(ByRef NameProcess As String) As Boolean
+    Dim a As String
+    Dim windowCount As Integer
+    Dim openExplorerPathArray() As String
+    Dim useloop As Integer
+    
+    On Error GoTo isExplorerRunning_Error
+    
+    Call enumerateExplorerWindows(openExplorerPathArray(), windowCount)
+    
+    For useloop = 0 To windowCount - 1
+        If LCase$(NameProcess) = LCase$(openExplorerPathArray(useloop)) Then
+        
+            isExplorerRunning = True
+            Exit Function
+        End If
+    Next useloop
+    
+    isExplorerRunning = False
+
+    On Error GoTo 0
+    Exit Function
+
+isExplorerRunning_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure isExplorerRunning of Module common"
+            Resume Next
+          End If
+    End With
+End Function
+'---------------------------------------------------------------------------------------
+' Procedure : enumerateExplorerWindows
+' Author    : fafalone
+' Date      : 10/04/2023
+' Purpose   : Obtains the path for each explorer window
+'---------------------------------------------------------------------------------------
+'
+Public Sub enumerateExplorerWindows(ByRef openExplorerPaths() As String, ByRef windowCount As Integer)
     Dim i As Long, j As Long
-    'Dim s1 As String, s2 As String, s3 As String
     Dim siaSel As IShellItemArray
     Dim lpText As Long
     Dim sText As String
@@ -89,11 +143,15 @@ Public Sub EnumWindows()
     Dim pdp As oleexp.IDispatch
     Dim useloop As Integer
     
+    On Error GoTo 0 ' l_start ' essential
+
+l_start:
     Set openShellWindow = New ShellWindows
-    If openShellWindow.Count < 1 Then Exit Sub
-    ReDim openExplorerPaths(openShellWindow.Count - 1)
+    windowCount = openShellWindow.Count
+    If windowCount < 1 Then Exit Sub
+    ReDim openExplorerPaths(windowCount - 1)
     
-    For useloop = 0 To openShellWindow.Count - 1
+    For useloop = 0 To windowCount - 1
         Set pdp = openShellWindow.Item(CVar(useloop))
         Set punkitem = pdp
     
@@ -114,13 +172,6 @@ Public Sub EnumWindows()
                             spfv.getFolder IID_IShellItem, lsiptr
                             If lsiptr Then vbaObjSetAddRef spsi, lsiptr
                             If (spsi Is Nothing) = False Then
-                        
-'                                Set li = ListView1.ListItems.Add(, , vbNullString)
-'                                With li
-'                                    spsi.GetDisplayName SIGDN_DESKTOPABSOLUTEPARSING, lpPath
-'                                    sPath = LPWSTRtoStr(lpPath)
-'                                    .SubItems(5) = sPath
-'                                End With
                                 
                                 spsi.GetDisplayName SIGDN_DESKTOPABSOLUTEPARSING, lpPath
                                 sPath = LPWSTRtoStr(lpPath)
@@ -138,4 +189,89 @@ Public Sub EnumWindows()
     
     Next useloop
 
+    On Error GoTo 0
+    Exit Sub
+
+enumerateExplorerWindows_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure enumerateExplorerWindows of Module mdlExplorerPaths"
+            Resume Next
+          End If
+    End With
+
+End Sub
+
+
+
+
+Public Sub CloseExplorerWindowByPath(sPath As String)
+    On Error GoTo e0
+    Dim pWindows As ShellWindows
+    Set pWindows = New ShellWindows
+    Dim pWB2 As IWebBrowser2
+    #If TWINBASIC Then
+    Dim pDisp As IDispatch
+    #Else
+    Dim pDisp As oleexp.IDispatch
+    #End If
+    Dim pSP As IServiceProvider
+    Dim pSB As IShellBrowser
+    Dim pSView As IShellView
+    Dim pFView As IFolderView2
+    Dim pFolder As IShellItem
+    Dim lpPath As LongPtr, sCurPath As String
+    Dim nCount As Long
+    Dim i As Long
+    Dim hr As Long
+    nCount = pWindows.Count
+    If nCount < 1 Then
+        Debug.Print "No open Explorer windows found."
+        Exit Sub
+    End If
+    For i = 0 To nCount - 1
+        Set pDisp = pWindows.Item(i)
+        If (pDisp Is Nothing) = False Then
+            Set pSP = pDisp
+            If (pSP Is Nothing) = False Then
+                pSP.QueryService SID_STopLevelBrowser, IID_IShellBrowser, pSB
+                If (pSB Is Nothing) = False Then
+                    pSB.QueryActiveShellView pSView
+                    If (pSView Is Nothing) = False Then
+                        Set pFView = pSView
+                        If (pFView Is Nothing) = False Then
+                            pFView.getFolder IID_IShellItem, pFolder
+                            pFolder.GetDisplayName SIGDN_FILESYSPATH, lpPath
+                            sCurPath = LPWSTRtoStr(lpPath)
+                            Debug.Print "CompPath " & sCurPath & "||" & sPath
+                            If LCase$(sCurPath) = LCase$(sPath) Then
+                                Set pWB2 = pDisp
+                                If (pWB2 Is Nothing) = False Then
+                                    pWB2.Quit
+                                    Exit Sub
+                                Else
+                                    Debug.Print "Couldn't get IWebWebrowser2"
+                                End If
+                            End If
+                        Else
+                            Debug.Print "Couldn't get IFolderView"
+                        End If
+                    Else
+                        Debug.Print "Couldn't get IShellView"
+                    End If
+                Else
+                    Debug.Print "Couldn't get IShellBrowser"
+                End If
+            Else
+                Debug.Print "Couldn't get IServiceProvider"
+            End If
+        Else
+            Debug.Print "Couldn't get IDispatch"
+        End If
+    Next
+    Debug.Print "Couldn't find path."
+Exit Sub
+e0:
+    Debug.Print "CloseExplorerPathByWindow.Error->0x" & Hex$(Err.Number) & ", " & Err.Description
 End Sub

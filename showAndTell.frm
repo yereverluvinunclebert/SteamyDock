@@ -24,6 +24,15 @@ Begin VB.Form showAndTell
       Width           =   1335
    End
    Begin VB.TextBox Textbox 
+      BeginProperty Font 
+         Name            =   "Times New Roman"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       Height          =   5550
       Left            =   240
       MultiLine       =   -1  'True
@@ -85,7 +94,7 @@ Private Sub Form_Load()
     Textbox.Text = Textbox.Text + "* Additional confirmation dialog to give you a chance to say NO! to accidentally triggered functions." & vbCrLf
     Textbox.Text = Textbox.Text + "* Additional confirmation dialog for programs that provide no feedback." & vbCrLf
     Textbox.Text = Textbox.Text + "* Additional menu options for running as admin or opening an apps' default folder." & vbCrLf
-    Textbox.Text = Textbox.Text + "* Most o/s commands now operate via an icon click, just as you would expect." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Most o/s commands (cpl, msc) now operate via an icon click, just as you would expect." & vbCrLf
     Textbox.Text = Textbox.Text + "* Lots of bugs fixed all the time just as they are discovered!" & vbCrLf
     Textbox.Text = Textbox.Text + "* Lots of new icons types being added all the time" & vbCrLf
     Textbox.Text = Textbox.Text + "* The running process indicators are now just as dynamic as Rocketdock's (running on timers to minimise CPU usage)." & vbCrLf
@@ -108,8 +117,17 @@ Private Sub Form_Load()
     Textbox.Text = Textbox.Text + "* Steamydock can fire up a secondary program if required" & vbCrLf
     Textbox.Text = Textbox.Text + "* SteamyDock can now auto-hide the dock after running a app" & vbCrLf
     Textbox.Text = Textbox.Text + "* Has a menu option to clone current item" & vbCrLf
-    Textbox.Text = Textbox.Text + "* Adds a sound option when initiating an icon mouseDown." & vbCrLf
-    Textbox.Text = Textbox.Text + "* New functions being added all the time." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Adds a sound option when initiating an icon click." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Addition of new administrative icon choices." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Icons can be disabled to appear semi-transparent in the dock." & vbCrLf
+    Textbox.Text = Textbox.Text + "* SteamyDock tests whether dock items point to valid programs, a red 'x' marks an invalid link." & vbCrLf
+    Textbox.Text = Textbox.Text + "* SteamyDock can terminate any other chosen program prior to running the assigned app." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Allows an appplication to run elevated as an administrator directly from the dock." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Allows an appplication to run elevated as an administrator as an assigned characteristic of the icon." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Adds running process indicators above open Explorer windows." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Allows a restart of SteamyDock via the dock menu." & vbCrLf
+    Textbox.Text = Textbox.Text + "* Dynamically handles monitor resolution changes repositioning to the bottom of the screen." & vbCrLf
+    Textbox.Text = Textbox.Text + "* " & vbCrLf
     
     Textbox.Text = Textbox.Text + "* " & vbCrLf & vbCrLf
     Textbox.Text = Textbox.Text + "Things SteamyDock can't yet do:." & vbCrLf & vbCrLf

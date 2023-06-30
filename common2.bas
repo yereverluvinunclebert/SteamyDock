@@ -66,7 +66,6 @@ Public rDSkinSize As String
 
 Public sDSkinSize As Long ' the Steamydock version
 Public sDSplashStatus As String
-Public sDShowIconSettings As String ' .14 DAEB 01/05/2021 docksettings added checkbox and values to show icon settings utility when adding an icon to the dock
 
 Public sDFontOpacity As String
 Public sDAutoHideType As String
@@ -168,7 +167,7 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDSide = GetINISetting(location, "Side", settingsFile)
     rDOffset = GetINISetting(location, "Offset", settingsFile)
     rDvOffset = GetINISetting(location, "vOffset", settingsFile)
-    rDOptionsTabIndex = GetINISetting(location, "OptionsTabIndex", settingsFile)
+    rDOptionsTabIndex = GetINISetting(location, "OptionsTabIndex", toolSettingsFile)
     '= GetINISetting("Software\SteamyDock\DockSettings\WindowFilters", "Count", 0, settingsFile)
     
    On Error GoTo 0
