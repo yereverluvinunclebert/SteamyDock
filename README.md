@@ -19,17 +19,17 @@ BUILD: The program runs without any Microsoft plugins.
 Built using: VB6, MZ-TOOLS 3.0, VBAdvance, CodeHelp Core IDE Extender
 Framework 2.2 & Rubberduck 2.4.1
 
-   MZ-TOOLS https://www.mztools.com/
-   CodeHelp http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62468&lngWId=1
-   Rubberduck http://rubberduckvba.com/
-   Rocketdock https://punklabs.com/
-   Registry code ALLAPI.COM
-   La Volpe  http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=67466&lngWId=1
-   PrivateExtractIcons code http://www.activevb.de/rubriken/
-   Persistent debug code http://www.vbforums.com/member.php?234143-Elroy
-   Open File common dialog code without dependent OCX - http://forums.codeguru.com/member.php?92278-rxbagain
-   VBAdvance
-   Fafalone for the enumerate Explorer windows code
+MZ-TOOLS https://www.mztools.com/
+CodeHelp http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62468&lngWId=1
+Rubberduck http://rubberduckvba.com/
+Rocketdock https://punklabs.com/
+Registry code ALLAPI.COM
+La Volpe  http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=67466&lngWId=1
+PrivateExtractIcons code http://www.activevb.de/rubriken/
+Persistent debug code http://www.vbforums.com/member.php?234143-Elroy
+Open File common dialog code without dependent OCX - http://forums.codeguru.com/member.php?92278-rxbagain
+VBAdvance
+Fafalone for the enumerate Explorer windows code
 
 LICENCE AGREEMENTS:
 
