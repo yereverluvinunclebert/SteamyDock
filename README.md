@@ -19,6 +19,8 @@ BUILD: The program runs without any Microsoft plugins.
 Built using: VB6, MZ-TOOLS 3.0, VBAdvance, CodeHelp Core IDE Extender
 Framework 2.2 & Rubberduck 2.4.1
 
+Links:
+
 MZ-TOOLS https://www.mztools.com/
 CodeHelp http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62468&lngWId=1
 Rubberduck http://rubberduckvba.com/
@@ -95,8 +97,6 @@ Project References:
 	Microsoft scripting runtime - for the scripting dictionary usage
 	OLEEXP Modern Shell Interfaces for VB6, v5.1
 
-========================================================================================================
-
 Credits
 
 I have really tried to maintain the credits as the project has progressed. If I 
@@ -162,5 +162,4 @@ Fafalone for the enumerate Explorer windows code:
 https://www.vbforums.com/showthread.php?818959-VB6-Get-extended-details-about-Explorer-windows-by-getting-their-IFolderView
 
 Dragokas systray code
-
 
