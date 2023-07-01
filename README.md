@@ -252,7 +252,7 @@ does not require anywhere near the 4gigabytes maximum of RAM that
 even with seventy-two 128x128 bit icons displayed.
 
 If you really do care about the 64bit thing and won't run 32bit
-programs on a 64bit system for some personal reason, then run the .NET
-version when it comes out. Personally I prefer the 32bit VB6 version,
-I know them both inside out and VB6 is just 'better', easier to code
-and certainly much more fun to create.
+programs on a 64bit system for some personal reason, then wait until
+the TwinBasic version comes out. 
+
+![steamydockWithWidgets](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/2583560c-e923-47b9-87ff-bdc09824b5eb)
