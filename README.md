@@ -28,39 +28,29 @@ Framework 2.2 & Rubberduck 2.4.1
 
 Links:
 
-MZ-TOOLS https://www.mztools.com/  
-CodeHelp http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62468&lngWId=1  
-Rubberduck http://rubberduckvba.com/  
-Rocketdock https://punklabs.com/  
-Registry code ALLAPI.COM  
-La Volpe http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=67466&lngWId=1  
-PrivateExtractIcons code http://www.activevb.de/rubriken/  
-Persistent debug code http://www.vbforums.com/member.php?234143-Elroy  
-Open File common dialog code without dependent OCX - http://forums.codeguru.com/member.php?92278-rxbagain  
-VBAdvance  
-Fafalone for the enumerate Explorer windows code
+	MZ-TOOLS https://www.mztools.com/  
+	CodeHelp http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62468&lngWId=1  
+	Rubberduck http://rubberduckvba.com/  
+	Rocketdock https://punklabs.com/  
+	Registry code ALLAPI.COM  
+	La Volpe http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=67466&lngWId=1  
+	PrivateExtractIcons code http://www.activevb.de/rubriken/  
+	Persistent debug code http://www.vbforums.com/member.php?234143-Elroy  
+	Open File common dialog code without dependent OCX - http://forums.codeguru.com/member.php?92278-rxbagain  
+	VBAdvance  
+	Fafalone for the enumerate Explorer windows code
 
-LICENCE AGREEMENTS:
-
-Copyright 2023 Dean Beedell
-
-In addition to the GNU General Public Licence please be aware that you may use
-any of my own imagery in your own creations but commercially only with my
-permission. In all other non-commercial cases I require a credit to the
-original artist using my name or one of my pseudonyms and a link to my site.
-With regard to the commercial use of incorporated images, permission and a
-licence would need to be obtained from the original owner and creator, ie. me.
 
 Tested on :
 
-ReactOS 0.4.14 32bit on virtualBox  
-Windows 7 Professional 32bit on Intel  
-Windows 7 Ultimate 64bit on Intel  
-Windows 7 Professional 64bit on Intel  
-Windows XP SP3 32bit on Intel  
-Windows 10 Home 64bit on Intel  
-Windows 10 Home 64bit on AMD  
-Windows 11 64bit on Intel
+	ReactOS 0.4.14 32bit on virtualBox  
+	Windows 7 Professional 32bit on Intel  
+	Windows 7 Ultimate 64bit on Intel  
+	Windows 7 Professional 64bit on Intel  
+	Windows XP SP3 32bit on Intel  
+	Windows 10 Home 64bit on Intel  
+	Windows 10 Home 64bit on AMD  
+	Windows 11 64bit on Intel
 
 Dependencies:
 
@@ -96,13 +86,14 @@ REGTLIB %SystemRoot%\System32\OLEEXP.TLB
 In the VB6 IDE - project - references - browse - select the OLEEXP.tlb
 
 Project References:
-VisualBasic for Applications  
-VisualBasic Runtime Objects and Procedures  
-VisualBasic Objects and Procedures  
-OLE Automation - drag and drop  
-Microsoft Shell Controls and Automation  
-Microsoft scripting runtime - for the scripting dictionary usage  
-OLEEXP Modern Shell Interfaces for VB6, v5.1
+
+	VisualBasic for Applications  
+	VisualBasic Runtime Objects and Procedures  
+	VisualBasic Objects and Procedures  
+	OLE Automation - drag and drop  
+	Microsoft Shell Controls and Automation  
+	Microsoft scripting runtime - for the scripting dictionary usage  
+	OLEEXP Modern Shell Interfaces for VB6, v5.1
 
 Credits
 
@@ -171,6 +162,17 @@ https://www.vbforums.com/showthread.php?818959-VB6-Get-extended-details-about-Ex
 Dragokas systray code
 
 ![steamydock](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/6191a067-fa96-44e3-8c7b-30f009214487)
+
+LICENCE AGREEMENTS:
+
+Copyright 2023 Dean Beedell
+
+In addition to the GNU General Public Licence please be aware that you may use
+any of my own imagery in your own creations but commercially only with my
+permission. In all other non-commercial cases I require a credit to the
+original artist using my name or one of my pseudonyms and a link to my site.
+With regard to the commercial use of incorporated images, permission and a
+licence would need to be obtained from the original owner and creator, ie. me.
 
 Background:
 
@@ -254,5 +256,7 @@ even with seventy-two 128x128 bit icons displayed.
 If you really do care about the 64bit thing and won't run 32bit
 programs on a 64bit system for some personal reason, then wait until
 the TwinBasic version comes out. 
+
+
 
 ![steamydockWithWidgets](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/2583560c-e923-47b9-87ff-bdc09824b5eb)
