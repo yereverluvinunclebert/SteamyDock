@@ -1,12 +1,12 @@
 Attribute VB_Name = "modDebugPrint"
-Option Explicit
+
 '
 ' This is a Stand-Alone module that can be thrown into any project.
 ' It works in conjunction with the PersistentDebugPrint program, and that program must be running to use this module.
 ' The only procedure you should worry about is the DebugPrint procedure.
 ' Basically, it does what it says, provides a "Debug" window that is persistent across your development IDE exits and starts (even IDE crashes).
 '
-'Option Explicit
+Option Explicit
 '
 Private Type COPYDATASTRUCT
     dwData  As Long
@@ -15,19 +15,19 @@ Private Type COPYDATASTRUCT
 End Type
 '
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (ByRef Dest As Any, ByRef Source As Any, ByVal Bytes As Long)
-Private Declare Function SendMessageTimeout Lib "user32" Alias "SendMessageTimeoutA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any, ByVal fuFlags As Long, ByVal uTimeout As Long, lpdwResult As Long) As Long
+Private Declare Function SendMessageTimeout Lib "user32" Alias "SendMessageTimeoutA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any, ByVal fuFlags As Long, ByVal uTimeout As Long, lpdwResult As Long) As Long
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
-Private Declare Function GetClassName Lib "user32" Alias "GetClassNameA" (ByVal hWnd As Long, ByVal lpClassName As String, ByVal nMaxCount As Long) As Long
-Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthA" (ByVal hWnd As Long) As Long
-Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
-Private Declare Function IsWindow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetClassName Lib "user32" Alias "GetClassNameA" (ByVal hwnd As Long, ByVal lpClassName As String, ByVal nMaxCount As Long) As Long
+Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthA" (ByVal hwnd As Long) As Long
+Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hwnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
+Private Declare Function IsWindow Lib "user32" (ByVal hwnd As Long) As Long
 '
 Dim mhWndTarget As Long
 '
 Const DoDebugPrint As Boolean = True
-'
 
-Public Sub DebugPrint(ParamArray vArgs() As Variant)
+
+Public Sub DebugPrint(ParamArray vArgs() As Variant) ' have not implemented this in .NET yet so variant remains
     ' Commas are allowed, but not semicolons.
     '
     If Not DoDebugPrint Then Exit Sub
@@ -42,8 +42,6 @@ Public Sub DebugPrint(ParamArray vArgs() As Variant)
         End If
     End If
     '
-        
-    ' variables declared
     Dim v       As Variant
     Dim sMsg    As String
     Dim bNext   As Boolean
@@ -71,33 +69,31 @@ Private Sub ValidateTargetHwnd()
     EnumWindows AddressOf EnumToFindTargetHwnd, 0&
 End Sub
 
-Private Function EnumToFindTargetHwnd(ByVal hWnd As Long, ByVal lParam As Long) As Long
+Private Function EnumToFindTargetHwnd(ByVal hwnd As Long, ByVal lParam As Long) As Long
     mhWndTarget = 0&                        ' We just set it every time to keep from needing to think about it before this is called.
-    Select Case WindowClass(hWnd)
+    Select Case WindowClass(hwnd)
     Case "ThunderForm", "ThunderRT6Form"
-        If WindowText(hWnd) = "Persistent Debug Print Window" Then
-            mhWndTarget = hWnd
+        If WindowText(hwnd) = "Persistent Debug Print Window" Then
+            mhWndTarget = hwnd
             Exit Function
         End If
     End Select
     EnumToFindTargetHwnd = 1&               ' Keep looking.
 End Function
 
-Private Function WindowClass(hWnd As Long) As String
+Private Function WindowClass(hwnd As Long) As String
     WindowClass = String$(1024&, vbNullChar)
-    WindowClass = Left$(WindowClass, GetClassName(hWnd, WindowClass, 1024&))
+    WindowClass = Left$(WindowClass, GetClassName(hwnd, WindowClass, 1024&))
 End Function
 
-Private Function WindowText(hWnd As Long) As String
+Private Function WindowText(hwnd As Long) As String
     ' Form or control.
-    WindowText = String$(GetWindowTextLength(hWnd) + 1&, vbNullChar)
-    Call GetWindowText(hWnd, WindowText, Len(WindowText))
+    WindowText = String$(GetWindowTextLength(hwnd) + 1&, vbNullChar)
+    Call GetWindowText(hwnd, WindowText, Len(WindowText))
     WindowText = Left$(WindowText, InStr(WindowText, vbNullChar) - 1&)
 End Function
 
 Private Sub SendStringToAnotherWindow(sMsg As String)
-        
-    ' variables declared
     Dim cds             As COPYDATASTRUCT
     Dim lpdwResult      As Long
     Dim Buf()           As Byte

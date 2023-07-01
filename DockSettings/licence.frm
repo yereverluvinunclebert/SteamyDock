@@ -18,7 +18,7 @@ Begin VB.Form licence
       BackColor       =   &H00414D38&
       Height          =   4245
       Left            =   -60
-      Picture         =   "licence.frx":20FA
+      Picture         =   "licence.frx":058A
       ScaleHeight     =   4185
       ScaleWidth      =   5055
       TabIndex        =   0
@@ -32,8 +32,8 @@ Begin VB.Form licence
          MultiLine       =   -1  'True
          ScrollBars      =   2  'Vertical
          TabIndex        =   5
-         Top             =   420
-         Width           =   4395
+         Top             =   405
+         Width           =   4455
       End
       Begin VB.Label Label2 
          BackStyle       =   0  'Transparent
@@ -59,7 +59,6 @@ Begin VB.Form licence
       End
       Begin VB.Label Label1 
          BackStyle       =   0  'Transparent
-         Caption         =   $"licence.frx":A714
          BeginProperty Font 
             Name            =   "Arial"
             Size            =   6.75
@@ -104,17 +103,21 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+'---------------------------------------------------------------------------------------
+' Procedure : declineLabel_Click
+' Author    : beededea
+' Date      : 27/10/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub declineLabel_Click()
-        
-    ' variables declared
     Dim ofrm As Form
     Dim slicence As Integer
     
-        
-    'initialise the dimensioned variables
-   
     
-    MsgBox "Please uninstall and remove the Rocketdock Enhanced" & vbCr & "settings tool from your computer."
+   On Error GoTo declineLabel_Click_Error
+
+    MsgBox "Please uninstall and remove Steamydock" & vbCr & "from your computer."
 
     For Each ofrm In Forms
         Unload ofrm
@@ -123,21 +126,38 @@ Private Sub declineLabel_Click()
     
     PutINISetting "Software\SteamyDockSettings", "Licence", slicence, toolSettingsFile
     End
+
+   On Error GoTo 0
+   Exit Sub
+
+declineLabel_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure declineLabel_Click of Form licence"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : Label2_Click
+' Author    : beededea
+' Date      : 27/10/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub Label2_Click()
-        
-    ' variables declared
     Dim slicence As Integer
 
-        
-    'initialise the dimensioned variables
-   
+   On Error GoTo Label2_Click_Error
+
     licence.Hide
     slicence = 1
     
     PutINISetting "Software\SteamyDockSettings", "Licence", slicence, toolSettingsFile
 
-End Sub
+   On Error GoTo 0
+   Exit Sub
 
+Label2_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Label2_Click of Form licence"
+
+End Sub
 

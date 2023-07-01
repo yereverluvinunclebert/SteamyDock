@@ -96,7 +96,7 @@ End Type
 
 Private Type ChooseColorStruct
     lStructSize As Long
-    hwndOwner As Long
+    hWndOwner As Long
     hInstance As Long
     rgbResult As Long
     lpCustColors As Long
@@ -137,6 +137,12 @@ Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" _
     (lpChoosecolor As ChooseColorStruct) As Long
 Private Declare Function OleTranslateColor Lib "oleaut32.dll" (ByVal lOleColor _
     As Long, ByVal lHPalette As Long, lColorRef As Long) As Long
+
+Public rDEnableBalloonTooltips As Boolean
+Public sdChkToggleDialogs As String
+
+Public dockSettingsXPos As String
+Public dockSettingsYPos As String
 
 
 
@@ -397,7 +403,7 @@ Function ShowColorDialog(Optional ByVal hParent As Long, _
     'fill the ChooseColorStruct struct
     With CC
         .lStructSize = Len(CC)
-        .hwndOwner = hParent
+        .hWndOwner = hParent
         .lpCustColors = VarPtr(aColorRef(0))
         .rgbResult = lInitColor
         .flags = CC_SOLIDCOLOR Or CC_ANYCOLOR Or CC_RGBINIT Or IIf(bFullOpen, _

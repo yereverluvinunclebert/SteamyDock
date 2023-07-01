@@ -1,0 +1,26 @@
+
+[INFOTYPES]
+
+[OPTIONS]
+Auto Index=No
+Binary Index=Yes
+Binary TOC=No
+Compatibility=1.1 or later
+Compiled File=iconSettings.chm
+Contents File=iconSettings.hhc
+Index File=iconSettings.hhk
+Error log file=iconSettings.log.txt
+Full-text search=Yes
+Language=0x409 English (United States)
+Title=Title
+Default Topic=Rocketdock Enhanced Settings.html
+Default Window=
+Default Font=Arial, 9, 000
+Create CHI file=No
+Full text search stop list file=
+Display compile notes=Yes
+Display compile progress=Yes
+
+[FILES]
+Rocketdock Enhanced Settings.html
+generate documentation.html

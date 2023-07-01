@@ -1,0 +1,57 @@
+Microsoft HTML Help Compiler 4.74.8702
+
+Compiling e:\vb6\rocketdock\help\iconSettings.chm
+
+Rocketdock Enhanced Settings.html
+generate documentation.html
+rocketdock-embeddedIcons.jpg
+instance.png
+..\..\dockSettings\help\docksAdmin.jpg
+rdTreeview01.jpg
+windowsGeneralIcons.png
+customFolders.png
+customFolders2.png
+down.png
+data-configuration.png
+rdIconView01.jpg
+rdpreview01.jpg
+get-More.png
+deviantart.png
+mapdown.png
+rdiconmap01.jpg
+confirmation.png
+rdbuttton01.jpg
+dockMenu.jpg
+menuoptions01.jpg
+propertiesPanel.png
+set.jpg
+target01.jpg
+propertiesPanelButton.png
+propertiesPanelLarge.png
+rocketdockSettings.jpg
+menu01.jpg
+lowContrasr.png
+highContrast.png
+desktop1.jpg
+..\..\dockSettings\help\docksDebug.jpg
+..\..\dockSettings\help\docksLicence.jpg
+rocket-font01.jpg
+rdSetting_about.jpg
+..\..\SteamyDock\help\steamydock.jpg
+iconGenerateBtn.png
+generate01.png
+generateCopyItemsBtn.png
+generateDockBtn.png
+generateClearBtn.png
+generateRadioBtn.png
+generate02.png
+
+Compile time: 0 minutes, 2 seconds
+4	Topics
+2	Local links
+0	Internet links
+41	Graphics
+
+
+Created e:\vb6\rocketdock\help\iconSettings.chm, 5,527,225 bytes
+Compression decreased file by 242,467 bytes.

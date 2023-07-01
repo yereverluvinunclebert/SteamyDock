@@ -1,41 +1,44 @@
-This version was developed on Windows using VisualBasic 6 as a FOSS project to allow 
-easier configuration, bug-fixing and enhancement of Rocketdock and currently underway,
-a fully open source version of a Rocketdock clone.
+This Settings utility was developed on Windows using VisualBasic 6 as a 
+FOSS project to allow easier configuration, bug-fixing and enhancement of Rocketdock.
+The project has moved on since then and is now a fully open source Rocketdock clone 
+called SteamyDock.
 
-The first steps are the two VB6 utilities that replicate the icons settings and dock settings 
-screen. The subsequent step is the dock itself. I do hope you enjoy using these utilities. 
-Your software enhancements and contributions will be gratefully received.
+The second step was the utility that replicated the icons settings screens. The 
+subsequent steps were the dock itself. I do hope you enjoy using these three 
+utilities. Your software enhancements and contributions will be gratefully received.
 
 The original Rocketdock was developed by the Apple fanboy and fangirl team at Punklabs. 
 They developed it as a peace offering from the Mac community to the Windows 
-Community. This new dock, now known as SteamyDock, was developed by a 
-Windows/ReactOS fanboy on Windows 7 using 32bit VB6. 
+Community. This new dock, now known as SteamyDock, was developed by a single
+Windows/ReactOS fanboy on Windows 7 using 32bit VB6. Hopefully, one day, these 
+utilities will be operable at least on Linux using new VB6-orientated technology.
+At the moment however, it is just for Windows but possibly soon-ish, ReactOS too.
 
-This utility faithfully reproduces the original as created by Punklabs. Initially 
-created solely as a homage to Rocketdock as that version is no longer being supported. 
-However, it has now evolved into a set of tools that has become a replacement for 
-rocketdock itself. It must be stated that the initial idea for this dock came from 
-Punklabs but in turn from OS/X dock and its predecessors. 
+This utility faithfully reproduces the original dock as created by Punklabs (and 
+ObjectDock/Mac Dock before it). Initially it was created solely as a homage to 
+Rocketdock as that package is no longer being supported by Punklabs. It has now 
+evolved into a set of tools that has become a replacement for rocketdock itself. 
 
-All HAIL to Apple and Punklabs!
+All HAIL to Apple, Stardock and Punklabs!
 
 This version was developed on Windows using VisualBasic 6 as a FOSS project. It is open 
 source to allow easier configuration, bug-fixing and enhancement of Rocketdock and 
-community contribution towards this new dock. The first steps were the two VB6 utilities 
-that replicate the icons settings and dock settings screen (this utility). These are 
-largely complete and the dock itself is now under development and 90% complete. A future 
-step is conversion to 64bit-ness using RADBasic/TwinBasic. Some conversion to VB.NET 
-has already been undertaken for future-proofing and 64bit-ness. This latter step is 
-1/3rd underway but I may halt and transfer developement to RADBasic in the near future. 
+community contribution towards this new dock. 
 
-I do hope you enjoy using these utilities. Your software enhancements and contributions 
-will be gratefully received if you choose to contribute.
+A future step is conversion to 64bit-ness using VB.NET, RADBasic and TwinBasic. Some 
+conversion to VB.NET has already been undertaken for future-proofing and 64bit-ness. 
+This latter step was already 1/3rd underway and was successful but I found I really 
+did not like working with VB.NET. It is slow, cumbersome and not really BASIC nor is 
+it RAD. I have made the very pleasant decision to halt and transfer all .NET 
+development to TwinBasic/RADBasic sometime in the near future when these VB6 
+technology enhancements reach maturity and stability.
 
-This utility MUST run as administrator when used to access Rocketdock's registry 
-settings (due to a Windows shadow registry feature/bug that gives incorrect shadow 
-data). Administrator is only required when run with Rocketdock but not when used in 
-conjunction with SteamyDock.
+There is a FULL and RICH help facility. Please use it. 
 
-Basically, the result is this - If you run it without admin rights and you want to 
-change the Rocketdock values in the registry then some of the values may be incorrectly
-modified and the resulting dock might look and act rather strange. You have been warned!
+If you already have experience using Rocketdock these utilties will feel very familiar. 
+If you haven't then take some time to read the help. There is a help button below and 
+balloon tooltips for most functions. A separate help file is dedicated to each of the 
+three components, the dock settings, the icon settings and the dock itself.
+
+Once again, I do hope you enjoy using these utilities. Your own software enhancements 
+and contributions will be gratefully received if you choose to contribute. 

@@ -1,11 +1,10 @@
-dockSettings = 116, -24, 1468, 772, , 201, -15, 822, 678, C
+dockSettings = 120, -24, 1468, 772, Z, 478, -11, 1099, 682, C
 mdlMain = 16, 64, 917, 525, 
 licence = 225, 58, 1009, 519, , 220, 220, 928, 681, C
 about = 57, 34, 715, 491, , 42, 44, 760, 501, C
 modDebugPrint = 199, -16, 899, 551, 
 mdlDeadCode = 132, 132, 1167, 587, 
+modTooltips = 198, 198, 1086, 737, 
 common2 = 97, 47, 1331, 721, 
-Module1 = 198, 72, 1088, 558, 
+Module1 = 555, 58, 1445, 544, 
 common = 106, -4, 1345, 607, 
-generalConfigurationTab = 0, 0, 0, 0, C, 0, 0, 557, 621, C
-IconDockBehaviour = 0, 0, 0, 0, C, 22, 22, 491, 665, C

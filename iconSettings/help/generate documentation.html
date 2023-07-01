@@ -4,6 +4,8 @@
 
 
 
+
+  
   
   
   
@@ -11,6 +13,8 @@
 
 
 
+
+  
   
   
   
@@ -22,31 +26,27 @@
 
 
 
+
 <h3>SteamyDock Icon Generation Tool</h3>
-
-
 This utility is used to generate a dock from scratch. It can add icons
 to the dock in bulk. The source of the data are the registry uninstall
 area and the start menu. These are the only places where applications
 are 'registered' with the o/s. Note: many apps do not do any form of
 registering, they simply exist on a hard drive somewhere. This
 application will NOT find those. Understand that this is a limitation
-of Windows itself. Anyone can copy an .exe to the hard drive, Windows
-itself only knows about the app when it is running. Immediately
-afterwards it forgets.<br>
+of Windows itself. Anyone can copy an .exe to the file system on the
+hard drive but Windows
+itself only knows the existence of an app if the program explicitily
+makes itself known via a registry or start menu entry. Windows becomes
+aware of the program when it is running but immediately
+afterwards, it forgets.<br>
+
 <br>
-We do not currently extract an icon from an EXE. Instead, when the
-user's list of apps is processed the program will try to identify an
-appropriate icon to use. It does this through the use of an CSV file
-containing lists of applications, named appIdent.csv that contains two
-factors used to identify an app.&nbsp;if the app corresponds then it
-will be assigned an icon. That list is limited and only contains a few
-dozen major applications. If the app is not found then it will be
-assigned a default 'link' icon.<br>
-<br>
+
 
 
 <img class="" style="width: 688px; height: 678px;" alt="the display" src="iconGenerateBtn.png"><br>
+
 
 
 <span style="font-weight: bold;">
@@ -59,14 +59,18 @@ assigned a default 'link' icon.<br>
 Fig 01. The SteamyDock/Rocketdock Enhanced Setting Utility.</span><br>
 
 
+
 <br>
+
 
 
 
 When the 'generate' button on the Icon Settings screen is pressed the Dock Generation Utility will pop up. <br>
 
 
+
 <img style="width: 1074px; height: 597px;" alt="generate screen" src="generate01.png"><br>
+
 
 
 <span style="font-weight: bold;">
@@ -79,7 +83,9 @@ When the 'generate' button on the Icon Settings screen is pressed the Dock Gener
 Fig 02. The SteamyDock Icon Generation Tool<br>
 
 
+
 <br>
+
 
 
 </span>You will see this isn't my most attractive utility but as I know
@@ -89,7 +95,9 @@ feel. <br>
 
 
 
+
 <br>
+
 
 
 This utility will automatically generate a complete dock from the
@@ -101,7 +109,9 @@ warn you and ask&nbsp;whether you really want to continue. <br>
 
 
 
+
 <br>
+
 
 
 The SteamyDock Icon Generation Tool&nbsp;is simple in operation. On the
@@ -113,10 +123,13 @@ items that you want to appear in
 your dock.&nbsp;That is the Approved Dock Entries Box. <br>
 
 
+
 <br>
 
 
+
 <img style="width: 100px; height: 29px;" alt="generateCopyItemsBtn.png" title="generateCopyItemsBtn.png" src="generateCopyItemsBtn.png"><br>
+
 
 
 <span style="font-weight: bold;">
@@ -129,7 +142,9 @@ your dock.&nbsp;That is the Approved Dock Entries Box. <br>
 Fig 03. Copy Items Button</span><br>
 
 
+
 <br>
+
 
 
 When you have selected the programs you want, press
@@ -140,10 +155,13 @@ scratch. You can also use the left mouse click and drag operation to drag select
 
 
 
+
 <br>
 
 
+
 <img style="width: 101px; height: 32px;" alt="generateDockBtn.png" title="generateDockBtn.png" src="generateDockBtn.png"><br>
+
 
 
 <span style="font-weight: bold;">
@@ -156,7 +174,9 @@ scratch. You can also use the left mouse click and drag operation to drag select
 Fig 04. Generate Dock </span><span style="font-weight: bold;">Button</span><br>
 
 
+
 <br>
+
 
 
 
@@ -164,10 +184,13 @@ When you are content with your selection then press the "Generate Dock" button.<
 
 
 
+
 <br>
 
 
+
 <img style="width: 97px; height: 28px;" alt="generateClearBtn.png" title="generateClearBtn.png" src="generateClearBtn.png"><br>
+
 
 
 <span style="font-weight: bold;">
@@ -180,7 +203,9 @@ When you are content with your selection then press the "Generate Dock" button.<
 Fig 05a. Clear </span><span style="font-weight: bold;">Button</span><br>
 
 
+
 <br>
+
 
 
 
@@ -188,7 +213,9 @@ The other buttons are self-explanatory, the clear button clears the right hand
 dock items list if you are unhappy with your choice so far.
 <br>
 
+
 <br>
+
 
 
 <span style="font-weight: bold;">
@@ -201,16 +228,21 @@ dock items list if you are unhappy with your choice so far.
 Fig 05b. Clear </span><span style="font-weight: bold;">Button</span><br>
 
 
+
 <br>
+
 
 
 
 The deselect button clears all your selection in the software list above.<br>
 
+
 <br>
 
 
+
 <img style="width: 141px; height: 89px;" alt="generateRadioBtn" title="generateRadioBtn" src="generateRadioBtn.png"><br>
+
 
 
 <span style="font-weight: bold;">
@@ -223,7 +255,9 @@ The deselect button clears all your selection in the software list above.<br>
 Fig 06. Selecting Source using Radio </span><span style="font-weight: bold;">Buttons </span><br>
 
 
+
 <br>
+
 
 
 On the far left there are two radio buttons, each selects a different
@@ -239,16 +273,21 @@ Windows. There is no central list of installed apps. As
 a&nbsp;result, this program will only find the following apps: <br>
 
 
+
 <br>
+
 
 
 1. Apps that have&nbsp;a shortcut entry to the start menu <br>
 
 
+
 2.&nbsp;Apps that have an entry in the uninstall section of the registry. <br>
 
 
+
 <br>
+
 
 <span style="font-weight: bold;">Background: </span>If any of your
 installed apps have
@@ -269,14 +308,18 @@ start menu is currently the best source of data for installed apps.<br>
 
 
 
+
 <br>
+
 
 There is a Help button and Close button. The help button shows you this
 document. The close button simply closes the auto generation tool.<br>
 
 
 
+
 <br>
+
 
 
 
@@ -284,11 +327,14 @@ When you press "Generate Dock" a dialog will pop up to ask you how you want to p
 
 
 
+
 <br>
 
 
 
+
 <img style="width: 203px; height: 199px;" alt="generate02" src="generate02.png"><br>
+
 
 
 <span style="font-weight: bold;">
@@ -302,7 +348,9 @@ Fig 07.&nbsp;Dock Confirmation Prior to Generation</span><br>
 
 
 
+
 <br>
+
 
 
 
@@ -312,19 +360,25 @@ to the existing dock. The <span style="font-weight: bold;">Overwrite</span> opti
 will lose all the current dock entries if you choose it. Choose with care, the choice is yours.<br>
 
 
+
 <br>
+
 A final confirmation pop up will ask you if you really want to do this.
 The utility will take a backup of the current dock. A message box will
 pop up letting you know this has taken place.<br>
 
 
+
 <br>
+
 
 
 The dock will restart and the new icons will be shown in the dock.<br>
 
 
+
 <br>
+
 
 
 If you accidentally destroy your old dock and want to recover it, be
@@ -334,9 +388,27 @@ sub-folder. Once you have identified which configuration file you want
 to restore, it is possible to revert to that older version&nbsp;using
 the&nbsp;Icon Settings Utility's restore facility. See the help for the
 Enhanced Icons Settings Utility to learn how to do that.<br>
+<br>
+<span style="font-weight: bold;">Icons<br>
+</span><br>
+When the dock is generated you may notice a few unexpected icons in the
+dock. This because we do not currently extract any embedded icon from
+an EXE. Instead, when the
+user's list of apps is processed the program will try to identify an
+appropriate icon to use. It does this through the use of an CSV file
+containing lists of applications, named appIdent.csv that contains two
+factors used to identify an app.&nbsp;if the app corresponds to a known
+app. then it
+will be assigned an icon. That list is limited and only contains a few
+dozen major applications. If the app is not found then it will be
+assigned a default 'link' icon. When I have a good and reliable method
+for extracting an embedded icon then I will implement an option to use
+embedded icons.<br>
+
 
 
 <br>
+
 
 
 

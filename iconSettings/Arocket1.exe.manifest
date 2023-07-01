@@ -1,0 +1,55 @@
+ReplaceManifestExe UBound(b)               4483
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
+  <!-- "ManifestMaker www.CyberActiveX.com 1.0.0.0" -->
+  <assemblyIdentity name="Brick Moon Interplanetary Enterprises.RocketdockEnhancedSettings" processorArchitecture="X86" type="win32" version="0.9.0.24" />
+  <dependency>
+    <dependentAssembly>
+      <assemblyIdentity language="*" name="Microsoft.Windows.Common-Controls" processorArchitecture="X86" publicKeyToken="6595b64144ccf1df" type="win32" version="6.0.0.0" />
+    </dependentAssembly>
+  </dependency>
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+    <security>
+        <requestedPrivileges>
+          <requestedExecutionLevel level="asInvoker" uiAccess="False" />
+        </requestedPrivileges>
+    </security>
+  </trustInfo>
+<file name="control.ocx">
+  <comClass description="Sub control" clsid="{76548630-0CC8-48E4-B471-A9001865AE65}"
+    miscStatus = "recomposeonresize,cantlinkinside,insideout,activatewhenvisible,setclientsitefirst"
+    progid="Control.TextBox" threadingModel="Apartment"
+    tlbid="{8A1ADF05-8164-4D5B-9267-FA74E601D826}"/>
+  <typelib tlbid="{8A1ADF05-8164-4D5B-9267-FA74E601D826}" version="1.0" helpdir=""/>
+</file>  <application xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
+    <asmv3:windowsSettings xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">
+      <dpiAware>true</dpiAware>
+    </asmv3:windowsSettings>
+  </application>
+   <asmv3:application>
+      <asmv3:windowsSettings xmlns="http://schemas.microsoft.com/SMI/2017/WindowsSettings">
+         <gdiScaling>true</gdiScaling>
+      </asmv3:windowsSettings>
+   </asmv3:application>  <Compatibility xmlns="urn:schemas-microsoft-com:compatibility.v1">
+    <Application>
+        <supportedOS Id="{e2011457-1546-43c5-a5fe-008deee3d3f0}"/>
+        <supportedOS Id="{35138b9a-5d96-4fbd-8e2d-a2440225f93a}"/>
+        <supportedOS Id="{4a2f28e3-53b9-4441-ba9c-d69d4a4a6e38}"/>
+        <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"/>
+        <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
+    </Application>
+  </Compatibility>
+  <file name="mscomctl.ocx">
+    <typelib tlbid="{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}" version="2.0" flags="" helpdir="" />
+    <comClass clsid="{1EFB6596-857C-11D1-B16A-00C0F0283628}" tlbid="{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}" threadingModel="Apartment" progid="MSComctlLib.TabStrip.2" description="Microsoft TabStrip Control" />
+    <comClass clsid="{66833FE6-8583-11D1-B16A-00C0F0283628}" tlbid="{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}" threadingModel="Apartment" progid="MSComctlLib.Toolbar.2" description="Microsoft Toolbar Control" />
+    <comClass clsid="{8E3867A3-8586-11D1-B16A-00C0F0283628}" tlbid="{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}" threadingModel="Apartment" progid="MSComctlLib.SBarCtrl.2" description="Microsoft StatusBar Control" />
+    <comClass clsid="{35053A22-8589-11D1-B16A-00C0F0283628}" tlbid="{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}" threadingModel="Apartment" progid="MSComctlLib.ProgCtrl.2" description="Microsoft ProgressBar Control" />
+    <comClass clsid="{C74190B6-8589-11D1-B16A-00C0F0283628}" tlbid="{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}" threadingModel="Apartment" progid="MSComctlLib.TreeCtrl.2" description="Displays a hierarchical list of Node objects, each of which consists of a label and an optional bitmap." />
+    <comClass clsid="{BDD1F04B-858B-11D1-B16A-00C0F0283628}" tlbid="{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}" threadingModel="Apartment" progid="MSComctlLib.ListViewCtrl.2" description="Displays a collection of ListItems such as files or folders." />
+    <comClass clsid="{2C247F23-8591-11D1-B16A-00C0F0283628}" tlbid="{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}" threadingModel="Apartment" progid="MSComctlLib.ImageListCtrl.2" description="Contains a collection of ListImage objects, each of which can be referred to by its index or key" />
+    <comClass clsid="{F08DF954-8592-11D1-B16A-00C0F0283628}" tlbid="{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}" threadingModel="Apartment" progid="MSComctlLib.Slider.2" description="A calibrated control with a slider for setting or selecting values." />
+    <comClass clsid="{DD9DA666-8594-11D1-B16A-00C0F0283628}" tlbid="{831FDD16-0C5C-11D2-A9FC-0000F8754DA1}" threadingModel="Apartment" progid="MSComctlLib.ImageComboCtl.2" description="Microsoft ImageComboBox Control" />
+  </file>
+</assembly>   
+

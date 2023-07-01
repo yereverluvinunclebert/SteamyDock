@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+  <title>administrator</title>
+</head>
+<body>
+<h3><small><span style="font-weight: normal;"></span></small></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h2><a name="Administrator_Rights"></a>Administrator Rights</h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>When using the migration utility, the utility must run as administrator in order to access the registry settings for 
+Rocketdock. A
+recent Windows feature has been introduced
+that prevents normal processes from accessing and modifying another
+tool's registry
+settings. If you run it without admin rights then due to this Windows
+bug/feature,
+some of the saved values may be incorrect and therefore the dock may
+look and
+start to act rather strange - due to corruption of configuration data
+where values are only partially saved. This will only affect
+Rocketdock/Steamydock.&nbsp;Run it as administrator and it will work as
+expected. Right click on the iconsettings.exe file and under the
+compatibility tab,
+enable "Run this program as administrator". When Steamydock coding is
+finished this requirement may to go away but for the moment, to
+access
+Rocketdock's data, <span style="text-decoration: underline;">admin access is required</span>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p><img style="width: 367px; height: 502px;" alt="Running as admin" title="Running as admin" src="file:///E:/vb6/dockSettings/help/docksAdmin.jpg"><br>
+
+
+
+
+
+
+
+
+
+
+
+
+<span style="font-weight: bold;">
+
+
+
+
+
+
+Fig 03. The administrator compatibility utility setting the SteamyDock privilege level.</span></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>In addition to resolving the above bug/feature, admin access is required as SteamyDock does
+things that are fairly low level and fundamental. It does the sort of
+things that the Windows taskbar
+itself does. Stopping and starting applications, checking whether the
+processes it has initialised are running - these actions require admin
+access in order to function. When the dock program is complete and released it
+will be bundled
+with a manifest that will specify the admin requirement and it should
+then install complete with admin rights without any requirement for
+user intervention.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>If you don't like running with administrator rights then my advice
+is, remove this tool now, it cannot run without. If you don't trust my
+software, don't run it To allay any of your fears the source code is
+available on github and you can view it, download it and compile it
+yourself at any
+time.&nbsp;</p>
+</body>
+</html>

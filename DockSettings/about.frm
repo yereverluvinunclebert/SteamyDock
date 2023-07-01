@@ -1,17 +1,17 @@
 VERSION 5.00
 Begin VB.Form about 
    BorderStyle     =   0  'None
-   Caption         =   "About the Settings for Rocketdock"
+   Caption         =   "About SteamyDock"
    ClientHeight    =   5400
    ClientLeft      =   0
    ClientTop       =   0
-   ClientWidth     =   5115
+   ClientWidth     =   5130
    Icon            =   "about.frx":0000
    LinkTopic       =   "Form1"
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   5400
-   ScaleWidth      =   5115
+   ScaleWidth      =   5130
    ShowInTaskbar   =   0   'False
    StartUpPosition =   2  'CenterScreen
    Begin VB.PictureBox aboutPicture 
@@ -21,7 +21,7 @@ Begin VB.Form about
       ForeColor       =   &H80000008&
       Height          =   5460
       Left            =   -45
-      Picture         =   "about.frx":20FA
+      Picture         =   "about.frx":058A
       ScaleHeight     =   5460
       ScaleWidth      =   5205
       TabIndex        =   0
@@ -145,7 +145,7 @@ Option Explicit
 '
 Private Sub aboutPicture_Click()
    On Error GoTo aboutPicture_Click_Error
-   If debugflg = 1 Then Debug.Print "%aboutPicture_Click"
+   'If debugflg = 1 Then debugLog "%aboutPicture_Click"
 
     Me.Hide
 
@@ -157,6 +157,34 @@ aboutPicture_Click_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure aboutPicture_Click of Form about"
 End Sub
 
+Private Sub Form_Load()
+    ' display the version number on the general panel
+    Call displayVersionNumber
+End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : displayVersionNumber
+' Author    : beededea
+' Date      : 29/02/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Sub displayVersionNumber()
+   On Error GoTo displayVersionNumber_Error
+   'If debugflg = 1 Then debugLog "%displayVersionNumber"
+
+     about.lblMajorVersion.Caption = App.Major
+     about.lblMinorVersion.Caption = App.Minor
+     about.lblRevisionNum.Caption = App.Revision
+
+   On Error GoTo 0
+   Exit Sub
+
+displayVersionNumber_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure displayVersionNumber of Form dock"
+End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : lblPunklabsLink_Click
 ' Author    : beededea
@@ -166,9 +194,9 @@ End Sub
 '
 Private Sub lblPunklabsLink_Click()
    On Error GoTo lblPunklabsLink_Click_Error
-   If debugflg = 1 Then Debug.Print "%lblPunklabsLink_Click"
+   'If debugflg = 1 Then debugLog "%lblPunklabsLink_Click"
 
-        Call ShellExecute(Me.hwnd, "Open", "http://www.punklabs.com", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hWnd, "Open", "http://www.punklabs.com", vbNullString, App.Path, 1)
 
    On Error GoTo 0
    Exit Sub

@@ -1,0 +1,26 @@
+YOU MUST READ THIS!
+
+This program is ALPHA. It installs my Rocketdock Enhanced Settings Utility written in VB6.
+You MUST have Rocketdock pre-installed on your system before you install it.
+
+I've had to jump through hoops to make this old 32bit VB6 program work on 
+modern Windows - but it does! First of all if you haven't already done so then 
+you must run this program as administrator or it may not install properly.
+How? Right click on the setup.exe and select run as administrator. That's it.
+You can safely ignore this message next time!
+
+At the end of the installation the program should auto-start here but if it
+doesn't please understand it is probably Windows NT6+ and Win10 especially 
+is a pain in the... bloody arse! You may have to add an exclusion to your anti-virus 
+tool as they tend to hate any programs written in VB6.
+
+You may have something small to do when the installer completes. Please test the
+program and if it runs then all is well. I will eventually fix any bugs or
+inconsistencies and find a newer and better installer but this tool is an
+early release and in beta! (still in development).
+
+Good luck and report any bugs please on deviantart.
+https://www.deviantart.com/yereverluvinuncleber
+
+When testing is complete, the source code will be placed onto VBforums codebank for you
+to peruse.

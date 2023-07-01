@@ -1,0 +1,2 @@
+This is the folder that contains the resources and tools that I have used to buld the utility.
+There is also a tool called PersistentDebugPrint.exe that is required. It has its own folder called debugPrint. The code for that utility is located there.

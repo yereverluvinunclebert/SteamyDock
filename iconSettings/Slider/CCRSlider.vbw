@@ -1,0 +1,8 @@
+PPSliderGeneral = 52, 42, 674, 454, , 26, 21, 533, 455, C
+Slider = 78, 63, 700, 475, C, 52, 42, 559, 476, C
+PPSliderAppearance = 0, 0, 0, 0, C, 78, 63, 585, 497, C
+ComCtlsBase = 0, 0, 0, 0, C
+Common = 0, 0, 0, 0, C
+VisualStyles = 0, 0, 0, 0, C
+VTableHandle = 0, 0, 0, 0, C
+ISubclass = 26, 21, 648, 455, 

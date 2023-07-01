@@ -1,0 +1,1487 @@
+Type=Exe
+Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\SysWOW64\stdole2.tlb#OLE Automation
+Reference=*\G{50A7E9B0-70EF-11D1-B75A-00A0C90564FE}#1.0#0#C:\Windows\SysWOW64\shell32.dll#Microsoft Shell Controls And Automation
+Object={FB95F7DD-5143-4C75-88F9-A53515A946D7}#2.0#0; CCRTreeView.ocx
+Object={13E244CC-5B1A-45EA-A5BC-D3906B9ABB79}#1.0#0; CCRSlider.ocx
+Object={FA5FEA4A-5ED5-4004-A509-2DABC30D42A7}#1.0#0; CCRImageList.ocx
+Reference=*\G{E5797841-D68A-435D-9AC8-34AE00678EE4}#1.2#0#CoolXPImageList.ocx#CoolXPImageList
+Module=mdlMain; rocketdock1.bas
+Form=rocketdockhelpform.frm
+Form=licence.frm
+Form=about.frm
+Class=c32bppDIB; c32bppDIB.cls
+Class=cBMPparser; cBMPparser.cls
+Class=cCDECL; cCDECL.cls
+Class=cGDIPlus; cGDIPlus.cls
+Module=modParsers; modParsers.bas
+Class=cGIFparser; cGIFparser.cls
+Class=cJPGWriter; cJPGWriter.cls
+Class=cPNGparser; cPNGparser.cls
+Class=cPNGwriter; cPNGwriter.cls
+Class=cTGAparser; cTGAparser.cls
+Class=StdPictureEx; StdPictureEx.cls
+Form=softwareList.frm
+Module=modDebugPrint; debugPrint.bas
+Class=CommonDlgs; CommonDlgs.cls
+Class=cICOparser; cICOparser.cls
+Module=mdlDeadCode; mdlDeadCode.bas
+Form=frmConfirmDock.frm
+Form=message.frm
+Module=modTooltips; ..\SteamyDock\modTooltips.bas
+Form=rdIconConfig.frm
+Module=Module1; ..\SteamyDock\monitorModule.bas
+Module=common3; ..\SteamyDock\common3.bas
+Form=frmConfig.frm
+Module=common; ..\SteamyDock\common.bas
+ResFile32="RocketdockEnhancedSettings.RES"
+Startup="rDIconConfigForm"
+HelpFile=""
+Title="SteamyDock Enhanced Icon Settings"
+ExeName32="iconsettings.exe"
+Path32="C:\Program Files (x86)\SteamyDock\iconSettings"
+Command32=""
+Name="SteamyDockEnhancedSettings"
+HelpContextID="0"
+Description="SteamyDock's icon settings utility"
+CompatibleMode="0"
+MajorVer=0
+MinorVer=9
+RevisionVer=1710
+AutoIncrementVer=1
+ServerSupportFiles=0
+VersionComments="Pre-release version. Alpha."
+VersionCompanyName="Brick Moon Interplanetary Enterprises"
+VersionFileDescription="ICON SETTINGS for Steamydock, written in VB6."
+VersionLegalCopyright="Usage according to the GPL licence"
+VersionProductName="SteamyDock Enhanced Icon Settings"
+CompilationType=0
+OptimizationType=0
+FavorPentiumPro(tm)=0
+CodeViewDebugInfo=0
+NoAliasing=0
+BoundsCheck=0
+OverflowCheck=0
+FlPointCheck=0
+FDIVCheck=0
+UnroundedFP=0
+StartMode=0
+Unattended=0
+Retained=0
+ThreadPerObject=0
+MaxNumberOfThreads=1
+DebugStartupOption=0
+
+[Rubberduck]
+ProjectId=cf3fe9c9-72d8-4843-8ae4-cd7c7d65e3e0
+
+[TaskList]
+Num=260
+
+[TASK1]
+Description=startup - fix it
+Status=2
+Priority=1
+Comment=must open icon element one
+
+[TASK2]
+Description=next/prev click on icon image should also move along the map
+Status=2
+Priority=1
+
+[TASK3]
+Description=fix the menu option - licence
+Status=2
+Priority=1
+
+[TASK4]
+Description=fix the menu option - about
+Status=2
+Priority=1
+
+[TASK5]
+Description=add item on the map, right click
+Status=2
+Priority=1
+Comment=in the rdSettings.ini file read the menu items from the last item and increment the identifier by one write it move to the next item &c &c when we arrive at the original position then add a blank item  then write to the settings or registry amend the count in both the settings and rdSettings.ini  
+
+[TASK6]
+Description=add delete item functionality
+Status=2
+Priority=1
+Comment=in the rdSettings.ini file read the menu items from the next item and decrement the identifier by one write it move to the next item &c &c until we arrive at the end amend the count  then write to the settings or registry amend the count in both the settings and rdSettings.ini
+
+[TASK7]
+Description=the treeview - learn how to do it
+Status=2
+Priority=1
+
+[TASK8]
+Description=dbl click on a preview image does not show you the thumbnail image top right
+Status=2
+Priority=1
+Comment=when in thumbnail mode
+
+[TASK9]
+Description=when running for the first time it should pop up the licence screen
+Status=2
+Priority=1
+
+[TASK10]
+Description=add a settings functionality so it can remember whether the licence has been viewed before
+Status=2
+Priority=1
+
+[TASK11]
+Description=automatically add an icon to Rocketdock for the new settings utility
+Status=2
+Priority=1
+
+[TASK12]
+Description=add the ability to save copies of the settings files used
+Status=2
+Priority=1
+Comment=save on startup to .1, .2 &c
+
+[TASK13]
+Description=change the icon to the tardis
+Status=2
+Priority=1
+Comment=create a small tardis icon
+
+[TASK14]
+Description=open sans font
+Status=2
+Priority=1
+Comment=added a font selection menu option and dialog box
+
+[TASK15]
+Description=only change the preview when the thumbnail window is in focus
+Status=2
+Priority=1
+
+[TASK16]
+Description=bug when writing the registry - investigat!
+Status=2
+Priority=1
+
+[TASK17]
+Description=add capability to show tiny 32x32 images in the thumb view
+Status=2
+Priority=1
+
+[TASK18]
+Description=backup the settings in any case?
+Status=2
+Priority=1
+Comment=even when in registry mode, just copying the local version that the tool creates
+
+[TASK19]
+Description=create a RES file containing a manifest
+Status=2
+Priority=1
+
+[TASK20]
+Description=left and right menu movement when the menu is in focus
+Status=2
+Priority=1
+
+[TASK21]
+Description=when Rocketdock starts it has too few icons for a complete map
+Status=2
+Priority=1
+Comment=when Rocketdock starts it has few icons so the map could be centered or the padded out with blank, greyed-out boxes.
+
+[TASK22]
+Description=remember the default folder and re-open it next time the utility is started
+Status=2
+Priority=1
+
+[TASK23]
+Description=the utility failed to add a tardis icon to the dock
+Status=1
+Priority=1
+Comment=this was as the settings.ini for the utility was an re-used one. It need to be new when testing
+AssignedTo=041019
+
+[TASK24]
+Description=rdMap needs to be overhauled, scrolling right/left when off screen
+Status=2
+Priority=1
+
+[TASK25]
+Description=fix resizing of PNGs
+Status=2
+Priority=1
+
+[TASK26]
+Description=when deleting an icon from the end of the map the box still shows
+Status=2
+Priority=1
+Comment=it now unloads the final picture box for the rdMap
+
+[TASK27]
+Description=fixed a bug in the addition of icons
+Status=2
+Priority=1
+Comment=The map was dynamically adding the next picture boxes at a undetermined location. It needs to have its .left value explicitly stated.
+
+[TASK28]
+Description=Add a timer that checks whether the settings.ini file exists
+Status=2
+Priority=1
+Comment=If RD is switched from settings.ini to registry what should it do? - restart?  It does not matter. The registry is only tested for when save and restart is pressed, prior to that we are working from a temporary copy of the settings file that is created either from the registry or the original settings file.   The only issue is whether the user has modified the data separately using RD's functionality and not the tools.
+
+[TASK29]
+Description=Document and comment the code
+Status=2
+Priority=1
+
+[TASK30]
+Description=' The program cannot currently extract icons embedded within a DLL or an executable
+Status=2
+Priority=1
+
+[TASK31]
+Description=Added a relativePath variable so that filelist icon double clicks are not hard-coded
+Status=2
+Priority=1
+
+[TASK32]
+Description=a missing icon was not being handled correctly
+Status=2
+Priority=1
+Comment=it now checks for a dropped exe or dll with an embedded icon and then handles a completly missing icon path
+
+[TASK33]
+Description=When extracting an cion from an EXE or DLL it now does the proper checks beforehand
+Status=2
+Priority=1
+
+[TASK34]
+Description=Added a "working" indicator on the initial creation of the map
+Status=2
+Priority=1
+
+[TASK35]
+Description=fixed treeview commondialog cancel result
+Status=2
+Priority=1
+
+[TASK36]
+Description=removed the highlighting of the thumbnail when switching to small icon size
+Status=2
+Priority=1
+
+[TASK37]
+Description=added the ability to click on the text in small thumbnail mode
+Status=2
+Priority=1
+
+[TASK38]
+Description=fixed focus bug where the incorrect icon was being expanded
+Status=2
+Priority=1
+
+[TASK39]
+Description=scrollbar on the thumb view needs to be in synch. when clicking on the custom folder
+Status=2
+Priority=1
+
+[TASK40]
+Description=needs to read the user configured folder on startup and automatically set it in the treevie
+Status=2
+Priority=1
+
+[TASK41]
+Description=the default treeview path needs to be set on startup
+Status=2
+Priority=1
+
+[TASK42]
+Description=driveCheck ' on 32bit windows the folder is "Program Files\Rocketdock"
+Status=2
+Priority=1
+
+[TASK43]
+Description=HOME and END on the rdMap
+Status=2
+Priority=1
+Comment=and on the buttons
+
+[TASK44]
+Description=test the ico files with prj32bppSuite to see if the same problem occurs
+Status=2
+Priority=1
+Comment=identify the dodgy icons test the slider test against bmps, icos and PNGs  the icons do the same with his tool so the problem is built-in
+
+[TASK45]
+Description=when the commondialog for the target exe is pressed a cancel there is an error
+Status=2
+Priority=1
+
+[TASK46]
+Description=remove unwanted code from Lavolpe's code regarding unnecessary functions
+Status=2
+Priority=1
+Comment=A WIP but it really requires Rubberduck
+
+[TASK47]
+Description=move an icon in the map to another position using a new menu option
+Status=2
+Priority=1
+Comment=mousedown code inserted but now commented out needs: o when the box is slid rightways to over 50% of the next box then the box it is over should slide to the left to the position of the box previously on the left  o and of course the same for leftward movement  o on mouseUp the box snaps to the current position and the number of boxes it has displaced denote the new position of the box in the rdMap and the displaced box position are each reduced by one.
+
+[TASK48]
+Description=When the rdMap is shown for a second time then it ought not to regenerate the map
+Status=2
+Priority=1
+Comment=fixed!
+
+[TASK49]
+Description=fixed the ICO positioning bug
+Status=2
+Priority=1
+Comment=after reinserting lavolpe's older code for the ICO files, the positioning error was fixed by copying formatting code re: size and position
+
+[TASK50]
+Description=32 byte icon files need to show in the correct position on the small thumbnails
+Status=2
+Priority=1
+
+[TASK51]
+Description=.png.ico files are not handled correctly
+Status=2
+Priority=1
+
+[TASK52]
+Description=when a common dialog is cancelled the field is wiped
+Status=2
+Priority=1
+Comment=both file and folder selection now fixed
+
+[TASK53]
+Description=when an icon has been changed and the map is showing it should update
+Status=2
+Priority=1
+
+[TASK54]
+Description=when adding a folder to the folder lists, pressing cancel delivers afolder to the tree rather than just abandoning
+Status=2
+Priority=1
+
+[TASK55]
+Description=when selecting a root custom folder in the folder tree it has an subscript error
+Status=2
+Priority=1
+
+[TASK56]
+Description=when selecting a type of icon file ands then scrolling to the end a subscript error is generated
+Status=2
+Priority=1
+
+[TASK57]
+Description=when an icon type is selected it ought to refresh and display the first icon
+Status=2
+Priority=1
+
+[TASK58]
+Description=the first display of an icon has no defined size
+Status=2
+Priority=1
+
+[TASK59]
+Description=when it starts it ought to kill any other running version of rocket1.exe
+Status=2
+Priority=1
+
+[TASK60]
+Description=the horizontal slider bar for the rdMAP
+Status=2
+Priority=1
+
+[TASK61]
+Description=When selecting a target folder or target filename it needs to open the default folder as stated in the path
+Status=2
+Priority=1
+
+[TASK62]
+Description=thumbnail view when an icon has been clicked before it does not always react  and show the current image
+Status=2
+Priority=1
+
+[TASK63]
+Description=sorted the thumbnail caption on the smaller icon view
+Status=2
+Priority=1
+Comment=sorted the thumbnail caption on the smaller icon view so  filenames wrap onto the second line with a vbcr
+
+[TASK64]
+Description=fixed the clicking on a empty thumbnail causing an erro and program to crash
+Status=2
+Priority=1
+
+[TASK65]
+Description=when reading a custom folder it checks whether it is valid before placing it in a folder tree
+Status=2
+Priority=1
+
+[TASK66]
+Description=add 2nd custom folder to the dock using the toolSettings.ini
+Status=2
+Priority=1
+
+[TASK67]
+Description=fixed the thumbnail icons displaying under pictureboxes
+Status=2
+Priority=1
+Comment=fixed the thumbnail icons displaying under pictureboxes by placing a loop at the end of the populateThumbnails that gave each Zorder
+
+[TASK68]
+Description=rdMap move left or right now just refreshes the two icons  affected
+Status=2
+Priority=1
+
+[TASK69]
+Description=incorrect filename labels when thumbnail scrolling
+Status=2
+Priority=1
+
+[TASK70]
+Description=check to see if the customfolder has been previously assigned a place in the treeview
+Status=2
+Priority=1
+Comment=check to see if the customfolder has been previously assigned a place in the treeview     ' if the customfolder exists then remove it first
+
+[TASK71]
+Description=add a mousepointer busy to a treeview click
+Status=2
+Priority=1
+
+[TASK72]
+Description=added f5 to refresh each image area
+Status=2
+Priority=1
+
+[TASK73]
+Description=added confirmation to view the bkpSettings.ini files after backup
+Status=2
+Priority=1
+
+[TASK74]
+Description=removed unwanted preview image menu items for saving
+Status=2
+Priority=1
+Comment=and removed the redundant code too
+
+[TASK75]
+Description=tidy the code
+Status=2
+Priority=1
+Comment=sorted the form_load moving all code to subroutines and commenting and adding error trapping
+
+[TASK76]
+Description=lint the code with Rubberduck
+Status=2
+Priority=1
+
+[TASK77]
+Description=fix the double-click issue on the treeview
+Status=2
+Priority=1
+Comment=It now creates all the tree views in the same manner with the complete foldernametree as the unique key, this means double and single clicks are sure to be handled correctly and will be unique
+
+[TASK78]
+Description=fixed the deletion from the treeview
+Status=2
+Priority=1
+Comment=this code needed to match the addition of the treeviews, searching for the root to determine whether  a folder could be deleted or not
+
+[TASK79]
+Description=adding a last item does not seem to increment rdIconMax
+Status=2
+Priority=1
+Comment=There is a bug around the last icon when adding an icon toward the end, possibly to do with rdIconMax not being incremented?  two bugs were confusing - rdiconmax and not count - the two were different and the loop forgot to remove the final data from the rdsettings.ini file and the
+
+[TASK80]
+Description=add a timer to allow a busy icon to rotate when the map is regenerating
+Status=2
+Priority=1
+Comment=the separate timer did not work
+
+[TASK81]
+Description=moved the busytimer code moved to inside the rdMap Populate
+Status=2
+Priority=1
+
+[TASK82]
+Description=refined all tooltips
+Status=2
+Priority=1
+
+[TASK83]
+Description=Added credits
+Status=2
+Priority=1
+
+[TASK84]
+Description=implement the extractPrivateImage API to read  icons within DLLs
+Status=2
+Priority=1
+Comment=Can't make this work
+
+[TASK85]
+Description=determine the location of all ocxs used
+Status=2
+Priority=1
+Comment=and ensure they are the same on both development systems
+
+[TASK86]
+Description=check the ver 6.0 controls compared to the SP2 ver 5.0 versions
+Status=2
+Priority=1
+Comment=the ver 6 controls cause a crash on exit
+
+[TASK87]
+Description=test the packaging wizard and see how it does the job
+Status=2
+Priority=1
+Comment=avoid it!
+
+[TASK88]
+Description=test the packaged installer on XP
+Status=0
+Priority=1
+AssignedTo=230919
+
+[TASK89]
+Description=test the packaged installer on Win10
+Status=2
+Priority=1
+AssignedTo=260919
+Comment=Worked successfully
+
+[TASK90]
+Description=The program cannot currently extract the larger icons embedded within a DLL or an executable
+Status=2
+Priority=1
+
+[TASK91]
+Description=closure via 'x' - does it always kill the process?
+Status=2
+Priority=1
+Comment=yes
+
+[TASK92]
+Description=allow the default font to be read and set on startup
+Status=2
+Priority=1
+
+[TASK93]
+Description=add error handling to the settings.ini copy
+Status=2
+Priority=1
+Comment=no need, the settings file is now backed up to the tools' folder in program files so no permission problems
+
+[TASK94]
+Description=resize the icon collection icons to be square
+Status=2
+Priority=1
+Comment=almost complete! - those that are mis-sized only
+
+[TASK95]
+Description=test without a local settings.ini
+Status=2
+Priority=1
+AssignedTo=300919
+
+[TASK96]
+Description=add the remaining icons to my collection
+Status=2
+Priority=1
+
+[TASK97]
+Description=when the tool is installed for the first time there is an inconsistency in the numbers of dock items
+Status=0
+Priority=2
+AssignedTo=021019
+
+[TASK98]
+Description=right click on target field should bring up options
+Status=2
+Priority=1
+Comment=right click on the target gives options as to system-style functions that can be called.  network - ::{208D2C60-3AEA-1069-A2D7-08002B30309D} shutdown - c:\WINDOWS\system32\rundll32.exe arguments user32.dll, LockWorkStation shutdown - C:\Windows\System32\shutdown.exe /s /t 00 /f /i Control Panel - control  Administrative Tools - %SystemRoot%\system32\compmgmt.msc arguments - /s  start in %HOMEDRIVE%%HOMEPATH% 
+
+[TASK99]
+Description=If the docklet entry in the settings.ini is populated
+Status=2
+Priority=1
+Comment=If the docklet entry in the settings.ini is populated then blank off all the target, folder and image fields  DockletFile=Docklets\RocketClock\RocketClock.dll
+
+[TASK100]
+Description=deleting final icon in the map gives an array scope error
+Status=2
+Priority=1
+
+[TASK101]
+Description=home and end on the vertical scrollbar and the piciconlist
+Status=2
+Priority=1
+
+[TASK102]
+Description=Adding a clock docklet - see what it has in the resettings.ini
+Status=2
+Priority=1
+Comment=It is possible to add a docklet now, via menu Add
+
+[TASK103]
+Description=2. The font on the small icons should be grey with black text
+Status=2
+Priority=1
+
+[TASK104]
+Description=3. When selected the font should change to dark blue with white text
+Status=2
+Priority=1
+
+[TASK105]
+Description=When a new icon collection is selected the thumb view refresh should cause the first icon to be selected
+Status=2
+Priority=1
+
+[TASK106]
+Description=5. Double-clicking on an icon in the preview no longer finds that icon in the thumbnailview, although it does find it in the file list view
+Status=2
+Priority=1
+
+[TASK107]
+Description=6. Adding log off workstation via the right click menu does not work
+Status=2
+Priority=1
+
+[TASK108]
+Description=7. Switching from file list back to thumbnail, the correct icon is not selected
+Status=2
+Priority=1
+
+[TASK109]
+Description=add readme.txt to all folders
+Status=2
+Priority=1
+
+[TASK110]
+Description=test the program on Win7 32bit by copying over
+Status=2
+Priority=1
+
+[TASK111]
+Description=test the binary on Win10
+Status=2
+Priority=1
+Comment=needs some colour changes requires running with admin rights
+
+[TASK112]
+Description=Busy icon background colour needs to be RGB 240 for Win10
+Status=2
+Priority=1
+Comment=or test it for a PNG image
+
+[TASK113]
+Description=RdIconMap background colour needs to be RGB 240 for Win10
+Status=2
+Priority=1
+Comment=set to button colour by default
+
+[TASK114]
+Description=add advice on running as admin on Win10
+Status=2
+Priority=1
+AssignedTo=200919
+Comment=in a msg box and on help too
+
+[TASK115]
+Description=button colours should change for Win10
+Status=2
+Priority=1
+Comment=Change the images dynamically if Win10/7/XP &c     opened post as to how to determine the current theme and/or background colour
+
+[TASK116]
+Description=the thumbnail scrollbar was not working unless a thumbnail was clicked on first
+Status=2
+Priority=1
+
+[TASK117]
+Description=page up and down buttons working on the thumbnail view
+Status=2
+Priority=1
+
+[TASK118]
+Description=the first icon in a newly selected folder will not show in the preview  when first clicked upon
+Status=2
+Priority=1
+
+[TASK119]
+Description=sometimes the filelistbox changes height arbitrarily
+Status=2
+Priority=1
+Comment=the file list box is sized correctly after changing a font
+
+[TASK120]
+Description=allows you to modify a docklet
+Status=2
+Priority=1
+
+[TASK121]
+Description=adding a blank icon, allow it to handle docklets in the right order- low priority
+Status=2
+Priority=1
+AssignedTo=190919
+
+[TASK122]
+Description=always enable the timer before compile and release
+Status=1
+Priority=1
+AssignedTo=061019
+
+[TASK123]
+Description=uparrow Win 10 version
+Status=2
+Priority=1
+AssignedTo=210919
+
+[TASK124]
+Description=determine what the problem is with adding/removing icons that results in the final icons to be incorrect/too many
+Status=2
+Priority=1
+AssignedTo=260919
+
+[TASK125]
+Description=comment those .setfocus back in
+Status=2
+Priority=1
+Comment=and deal with a focus flag instead of the me.active bollox
+
+[TASK126]
+Description=first icon not resizable after an initial set of the theme colours
+Status=2
+Priority=1
+
+[TASK127]
+Description=test the package on Win10 with the auto theme change enabled
+Status=2
+Priority=1
+AssignedTo=200919
+
+[TASK128]
+Description=When you package it for the first time remember to initialise everything in the tool's settings.ini
+Status=1
+Priority=1
+AssignedTo=031019
+
+[TASK129]
+Description=' put the following in a separate timer so it can be enabled at will
+Status=2
+Priority=1
+
+[TASK130]
+Description=Added a test for other o/s versions that don't support the classic theme
+Status=2
+Priority=1
+Comment=doesn't run the other timer if the o/s isn't capable of running the classic theme
+
+[TASK131]
+Description=add the ability to run those 'strange' targets such as admin tools
+Status=2
+Priority=1
+
+[TASK132]
+Description=Fix the problem with themeing - added an auto theme option
+Status=2
+Priority=1
+
+[TASK133]
+Description=The Map refresh now re-reads the settings or registry
+Status=2
+Priority=1
+
+[TASK134]
+Description=test running an icon on Win10
+Status=2
+Priority=1
+Comment=wasn't initiating folders and file properly
+
+[TASK135]
+Description=fixed up arrow on last row, does not cause a refresh
+Status=2
+Priority=1
+
+[TASK136]
+Description=the rdmap refresh button uses its own version of the busy hourglass
+Status=2
+Priority=1
+Comment=this needs to have the conditonal check added
+
+[TASK137]
+Description=fixed problem introduced by adding a save to the map refresh
+Status=2
+Priority=1
+Comment=It caused a docklet insertion to fail as despite saving it brought the rocketdock settings over every time the refresh button was clicked overwriting the current icon list.
+
+[TASK138]
+Description=add a confirmation to the delete of an entry in the rocketdock map
+Status=2
+Priority=1
+
+[TASK139]
+Description=it is now possible to add a docklet via a right click
+Status=2
+Priority=1
+
+[TASK140]
+Description=windows 10 Rocketdock new install rdMap fails to generate
+Status=2
+Priority=1
+Comment=fixed the 'extra' map icon locations, the count had not been synched at all
+
+[TASK141]
+Description=prevent deletion of a single icon if only position zero is left
+Status=2
+Priority=1
+
+[TASK142]
+Description=Added change location for Rocketdock folder
+Status=2
+Priority=1
+
+[TASK143]
+Description=rocketdock folder location written to the tool settings file
+Status=2
+Priority=1
+
+[TASK144]
+Description=added handling of a separator
+Status=2
+Priority=1
+
+[TASK145]
+Description=separator image
+Status=2
+Priority=1
+
+[TASK146]
+Description=user application data instead of settings.ini
+Status=2
+Priority=1
+Comment=convert from settings.ini to the new folder
+
+[TASK147]
+Description=add automatic in-filling of the title and start-in folders when selecting a target
+Status=2
+Priority=1
+
+[TASK148]
+Description=Add the restore backup settings functionality
+Status=2
+Priority=1
+
+[TASK149]
+Description=test the restore backup folder functionality
+Status=2
+Priority=1
+
+[TASK150]
+Description=not handling null answer from common dialog to select  a file
+Status=2
+Priority=1
+
+[TASK151]
+Description=getDirectory selects a folder without the trailing \
+Status=2
+Priority=1
+
+[TASK152]
+Description=add click event to the separate toggle text for the checkbox
+Status=2
+Priority=1
+
+[TASK153]
+Description=added check to the treeview add a folder
+Status=2
+Priority=1
+Comment=so if one of the default protected folders is chosen then it does not try to delete and then pop up a message
+
+[TASK154]
+Description=when adding a custom folder it should name it accordingly
+Status=2
+Priority=1
+
+[TASK155]
+Description=new clone entry on the menu
+Status=2
+Priority=1
+
+[TASK156]
+Description=menu right click add icons to the dock
+Status=2
+Priority=1
+
+[TASK157]
+Description=New Functionality - icons that are enabled/disabled in the tools map
+Status=0
+Priority=0
+Comment=future functionality
+
+[TASK158]
+Description=check the click functionality
+Status=2
+Priority=1
+Comment=o doing too much, how many iterations? o refreshing the 12 icons when it is unecessary to do so
+
+[TASK159]
+Description=how to check for multiple ICO compared to normal single-image ICO
+Status=2
+Priority=1
+
+[TASK160]
+Description=add separator to both menus
+Status=2
+Priority=1
+Comment=Added to the rdMapAddMenu menu Added to the targetmenu
+
+[TASK161]
+Description=add warning message on refresh
+Status=2
+Priority=1
+
+[TASK162]
+Description=refresh needs more of a test to see what has changed
+Status=2
+Priority=1
+Comment=if any change has been made to an icon and save & restart has not been pressed then changes will be lost
+
+[TASK163]
+Description=centrePreviewImage created to rationalise the code
+Status=2
+Priority=1
+
+[TASK164]
+Description=create a new icon sizing slider that can cope with theme change
+Status=2
+Priority=1
+Comment=to fix the redrawing problems on a lighter theme on NT6 and to get rid of the dependency  fixed using one of Krool's controls
+
+[TASK165]
+Description=how to extract the sizes of a single icon
+Status=2
+Priority=1
+Comment=we can extract the fact that it is a multiple icon but we need to be able to extract the size of a single icon too
+
+[TASK166]
+Description=test the startup of the tool to prevent multiple runs of the image display routines
+Status=2
+Priority=1
+Comment=tested through the startup and removed duplicates - same applied to VB.NET
+
+[TASK167]
+Description=Showing the last few icons in small thumbnail mode causes an error
+Status=2
+Priority=1
+
+[TASK168]
+Description=if the map has been modified at all a flag needs to be permanently set so that a refresh  will pop up a  warning
+Status=2
+Priority=1
+
+[TASK169]
+Description=' move the 32 x 32 thumbnail images up a bit on the thumbnail view (VB NET and VB6)
+Status=2
+Priority=1
+
+[TASK170]
+Description=move the btnGetMore link below to a right click menu as well
+Status=2
+Priority=1
+Comment=btnGetMore move the link below to a right click menu as well
+
+[TASK171]
+Description=clicking on the last icon in the thumbnail list sometimes causes an error
+Status=2
+Priority=1
+
+[TASK172]
+Description=The first scroll downward does not highlight the icon in the row below < VB NET and VB6
+Status=2
+Priority=1
+
+[TASK173]
+Description=When ever the default "icons" is found convert it to the full app.path
+Status=2
+Priority=1
+
+[TASK174]
+Description=' manual sizing of the text below the 32 x 32 thumbnail images, add vbCRlf &c
+Status=2
+Priority=1
+
+[vbAdvance]
+IsConsole=0
+HasStubFile=0
+GenerateMap=0
+TSAware=0
+XPManifest=0
+ResBuildName=.\rocket1.dll
+ReplaceIcon=0
+SendCommandArgs=0
+SymbDbgPref=0
+RevisionVersion=1
+
+[TASK175]
+Description=test for file existence when running persistentDebug.exe
+Status=2
+Priority=1
+
+[TASK176]
+Description=a double click on the file preview finds the correct icon in the thumb view but the thumbindexno should be 0 to select the first icon
+Status=2
+Priority=1
+
+[TASK177]
+Description=fixed the size extraction for ICO and multiple ICO files
+Status=2
+Priority=1
+
+[TASK178]
+Description=fixed lcase handing of a filename with an uppercase suffix
+Status=2
+Priority=1
+
+[TASK179]
+Description=fixed problem where a FExist would fail in .NET when searching for a filename containing a "?"
+Status=2
+Priority=1
+
+[TASK180]
+Description=' fixed the size extraction for ICO and multiple ICO files
+Status=2
+Priority=1
+
+[TASK181]
+Description=fixed problem where a FExist would fail in .NET when searching for a filename containing a "?"
+Status=2
+Priority=1
+
+[TASK182]
+Description=setfocus procedure to bundle the gotfocus variables into one VB6 and VB.NET - WIP
+Status=2
+Priority=1
+
+[TASK183]
+Description=added handling of testing the .NET .exe process
+Status=2
+Priority=1
+
+[TASK184]
+Description=added handling of testing the rocket1.exe process
+Status=2
+Priority=1
+
+[TASK185]
+Description=added type .gif to the list
+Status=2
+Priority=1
+
+[TASK186]
+Description=fixed a bug adding an extra folder location to a filename on cancel
+Status=2
+Priority=1
+
+[TASK187]
+Description=fixed the handling of errors during the size extraction for single ICO files
+Status=2
+Priority=1
+
+[TASK188]
+Description=added error handling for corrupt ICOs just as for .NET
+Status=2
+Priority=1
+
+[TASK189]
+Description=skin the whole utility in a grey 'classic' theme
+Status=2
+Priority=1
+
+[TASK190]
+Description=skin the whole utility in a medieval theme
+Status=4
+Priority=1
+Comment=not going to do this on VB6 - too much pain - VB.NET version only
+
+[TASK191]
+Description=add mouse scrollwheel sub-classing and cause scrollbar events to respond to mousewheel events
+Status=0
+Priority=0
+Comment=won't have to if Krool creates his VB6 replacements
+
+[TASK192]
+Description=added Exit Sub in the unlikely event that no node is selected in the treeview
+Status=2
+Priority=1
+
+[TASK193]
+Description=changed the filename existence check in displayResizedImage
+Status=2
+Priority=1
+Comment=the filename check did not cover the whole routine
+
+[TASK194]
+Description=Add an egg timer to the opening of the custom folders
+Status=2
+Priority=1
+
+[TASK195]
+Description=Unload ofrm commented out as it caused a crash on exit in Win 7
+Status=2
+Priority=1
+Comment=Unload ofrm
+
+[TASK196]
+Description=New Functionality - add drag and drop of applications directly to the map
+Status=1
+Priority=0
+Comment=Future functionality
+
+[TASK197]
+Description=New Functionality - add ability to drag and drop icons in the map to an alternate position
+Status=2
+Priority=0
+Comment=New functionality
+
+[TASK198]
+Description=right click menu - add close option
+Status=2
+Priority=1
+
+[TASK199]
+Description=page up and down on the RD map as well as home/end
+Status=2
+Priority=1
+
+[TASK200]
+Description=add Krool's horizontal and vertical scrollbars
+Status=3
+Priority=1
+Comment=This will fix the lack of scrollwheel on the icon map and the icon thumbnail views. However, these don't actually exist yet - but I have requested them.
+
+[TASK201]
+Description=change the debug.prints to debugprint
+Status=2
+Priority=1
+
+[TASK202]
+Description=fix the map scrolling to respond when the icon selection goes off-map
+Status=2
+Priority=1
+Comment=the map next and prev clicks were swapped...
+
+[TASK203]
+Description=fix a small bug when pgdn-ing to the end of the map
+Status=2
+Priority=1
+
+[TASK204]
+Description=check the value of the rocketdock folder location
+Status=0
+Priority=1
+Comment=     ' get the value of the rocketdock folder location     ' check the value exists     ' check the location exists     ' if the location exists do not search
+
+[TASK205]
+Description=checkRocketdockInstallation updated as per SteamyDock
+Status=2
+Priority=1
+
+[TASK206]
+Description=Add checkSteamyDockInstallation as per Steamydock
+Status=2
+Priority=1
+
+[TASK207]
+Description=add a new icon focus method to match steamydock
+Status=2
+Priority=1
+Comment=When the dock calls icon enhanced settings it needs to be able to pass an icon number to the utility so that icon can receive focus
+
+[TASK208]
+Description=added a refresh after a deletion from the map
+Status=2
+Priority=1
+Comment=fixes a dialog box remnants problem
+
+[TASK209]
+Description=Addition of a add icon button for manual selection of an icon using a file explorer
+Status=2
+Priority=1
+
+[TASK210]
+Description=added byval to the addSummat menu to preserve the state of the variables passed to the function
+Status=2
+Priority=1
+
+[TASK211]
+Description=fixed the add separator not adding the isSeparator setting correctly
+Status=2
+Priority=1
+
+[TASK212]
+Description=getDirectory now returns nothing if there is no path and no longer crashes
+Status=2
+Priority=1
+
+[TASK213]
+Description=when you package it, remember to remove the custom folder from the docksettings.ini files
+Status=1
+Priority=1
+
+[TASK214]
+Description=Added "add program/EXE or DLL" to the enhanced settings icon menu just as per the dock
+Status=2
+Priority=1
+
+[TASK215]
+Description=button to manually select an icon does nor display the icon in the map after selection
+Status=0
+Priority=2
+
+[TASK216]
+Description=05/07/2020 add the ability to read the new third settings file
+Status=2
+Priority=2
+
+[TASK217]
+Description=form no longer shows maximise button
+Status=2
+Priority=1
+
+[TASK218]
+Description=08/07/2020 backup the 3rd dock settings
+Status=2
+Priority=1
+
+[TASK219]
+Description=05/07/2020 fix the timer ability to test and display where the icon output will be written
+Status=2
+Priority=2
+
+[TASK220]
+Description=05/07/2020 add the ability to write the new third settings file
+Status=2
+Priority=2
+
+[TASK221]
+Description=05/07/2020 Fixed the docksettings.ini receiving data meant for the interim rdsettings.ini file
+Status=2
+Priority=2
+
+[TASK222]
+Description=06/07/2020 Reading/writing records to the data file, loses long strings
+Status=2
+Priority=2
+Comment=limit is now 500 characters
+
+[TASK223]
+Description=final icon can be unexpectedly changed to the previous in the list
+Status=0
+Priority=1
+Comment=- unsure why
+
+[TASK224]
+Description=30/07/202 New checkbox form created to show the location and source of the data
+Status=2
+Priority=2
+Comment=the frames around the check buttons are deliberately disabled. This prevents the checkboxes from being 'clicked or generating events when their values are changed.
+
+[TASK225]
+Description=create new icons for each of the main rocketdock icons as matching closely to the originals as possible
+Status=1
+Priority=1
+
+[TASK226]
+Description=02/08/2020 the Rocketdock [...] folder selection button should not auto populate the working directory
+Status=2
+Priority=2
+Comment=This causes some problems for certain apps such as VB6 that do not like a parameter
+
+[TASK227]
+Description=02/08/2020 BAT file existence test added to run command
+Status=2
+Priority=1
+
+[TASK228]
+Description=03/08/2020 added test for sworkingdirectory as it was not been used at all by binaries
+Status=2
+Priority=2
+
+[TASK229]
+Description=04/08/2020 Any closure of the app using the top right 'x' causes a crash under 32bit windows only
+Status=2
+Priority=1
+Comment=This seems to be caused by the END statement, comment it out and instead add unload of all forms and the problem appears to go away
+
+[TASK230]
+Description=17/08/2020 add a sleep option to both menus
+Status=2
+Priority=1
+
+[TASK231]
+Description=19/08/2020 checkAndKill added current process PID check agains the killed process to prevent the process killing itself
+Status=2
+Priority=1
+
+[TASK232]
+Description=20/08/2020 moved checkAndKill to common.bas and removed other references to the new location
+Status=2
+Priority=1
+
+[TASK233]
+Description=20/08/2020 moved is64bit to common.bas and removed other references to the new location
+Status=2
+Priority=1
+
+[TASK234]
+Description=10/09/2020 adding an icon in the map does not increment the maximumRecordNumber, meaning that the icon to the left is not displayed even though it is still in the config data
+Status=2
+Priority=2
+AssignedTo=2hrs 4hrs
+
+[TASK235]
+Description=09/08/2020 menus enabled in the IDE so that it is easier to maintain the menus using point and click
+Status=2
+Priority=1
+
+[TASK236]
+Description=09/08/2020 disable the menus in the program startup otherwise the menus will appear at runtime
+Status=2
+Priority=1
+Comment=The menu are enable in the IDE to allow easier development
+
+[TASK237]
+Description=09/08/2020 form height disturbed by visibility of the menus, manually moved up
+Status=2
+Priority=1
+
+[TASK238]
+Description=New Functionality - add drag and drop of icons directly to the map
+Status=2
+Priority=1
+
+[TASK239]
+Description=19/09/2020 Added Confirmation Dialog functionality
+Status=2
+Priority=1
+
+[TASK240]
+Description=find method of determining the last write time of the chosen settings file
+Status=0
+Priority=2
+Comment=For the three tools to synchronise their handling of the data we need to know the last tool to open and modify the data.  1. File creation  date and time (does not work for the registry) 2. Writing a timestamp and owner to the settings file, if that does not match then dialog box and reload.
+
+[TASK241]
+Description=26/10/2020 .01 DAEB    rocket1 Moved function isRunning from mdlMain (sD mdlMain.bas) to a shared common.bas module so that more than just one program can utilise it
+Status=2
+Priority=1
+
+[TASK242]
+Description=26/10/2020 .02 DAEB    Created new sub readInterimAndWriteConfig to allow the save to be called more than once on a btnSaveRestart_Click
+Status=2
+Priority=1
+
+[TASK243]
+Description=17/11/2020    .04 DAEB Replaced all occurrences of rocket1.exe with iconsettings.exe
+Status=2
+Priority=1
+
+[TASK244]
+Description=17/11/2020    .04 DAEB Replaced all occurrences of rocket1.exe with iconsettings.exe
+Status=2
+Priority=1
+
+[TASK245]
+Description=No longer can find the steamydock.exe process on a save & restart
+Status=2
+Priority=2
+
+[TASK246]
+Description=' check the thumbnails are not being generated multiple times
+Status=2
+Priority=1
+
+[TASK247]
+Description=run through the switch from large to small manually to see if the label hiding can be improved
+Status=2
+Priority=1
+
+[TASK248]
+Description=fix the caption text in small thumbnail mode to fit the set width box and be more consistent.
+Status=2
+Priority=1
+
+[TASK249]
+Description=' 1st run of the thumbnail view window is done using the old method and it comes out incorrectly.
+Status=2
+Priority=1
+
+[TASK250]
+Description=fix the borders around the thumbnail boxes
+Status=2
+Priority=1
+
+[TASK251]
+Description=' themeing issues with frames
+Status=2
+Priority=1
+
+[TASK252]
+Description=last thumbnail, using right key, click right twice, thumbnail selection increments by 4. Focus shifting to the vscroller.
+Status=2
+Priority=1
+
+[TASK253]
+Description=Deleting the first icon in the icon list causes the icons to be drawn incorrectly resulting in a duplication of the first
+Status=2
+Priority=1
+
+[TASK254]
+Description=Deleting/adding last icon
+Status=2
+Priority=1
+
+[TASK255]
+Description=ensure the labels prior to checkboxes activate the check boxes
+Status=2
+Priority=1
+
+[TASK256]
+Description=add a hidden pcbox that is loaded at the same time as the preview
+Status=2
+Priority=1
+Comment=' add a hidden pcbox that is loaded at the same time as the preview, this will be used to populate the dragIcon. The new picbox to be the same size as the ' thumbnail box with a 64 x 64 image rendered to it. This resolves the small sizing issue of the dragIcon when it is extracted from the pic preview from a box with a lot of whitespace around it. ' it can also be used as a source of the dragIcon for the small thumbnails that are also too small.
+
+[TASK257]
+Description=all the new msgboxes need to be styled throughout
+Status=2
+Priority=1
+
+[TASK258]
+Description=Add enumeration of the vb msgbox constants - DONE
+Status=2
+Priority=1
+
+[TASK259]
+Description=create information, exclamation, question and critical icons for the messagebox
+Status=2
+Priority=1
+
+[TASK260]
+Description=All external images in a separate imagelist loaded upfront
+Status=2
+Priority=1
+AssignedTo=
+Comment=All external images in a separate imagelist loaded upfront. This specifically will be used to store the themeing images on buttons and the like. Imagelists can be front-loaded at design time. An imageList would appear to be a good choice for this but all the images stored in an imageList need to be the same size, so not useful! 
