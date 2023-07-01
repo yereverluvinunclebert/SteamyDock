@@ -1332,7 +1332,6 @@ Attribute VB_Exposed = False
 ' https://www.vbforums.com/showthread.php?818959-VB6-Get-extended-details-about-Explorer-windows-by-getting-their-IFolderView
 
 ' Dragokas systray code
-
 '
 '
 '========================================================================================================

@@ -54,15 +54,30 @@ Tested on :
 
 Dependencies:
 
-Requires a steamydock folder in C:\Users\<user>\AppData\Roaming\
+o A windows-alike o/s such as Windows XP, 7-11 or ReactOS.
+
+o Microsoft VB6 IDE installed with its runtime components. The program runs 
+without any additional Microsoft OCX components, just the basic controls that 
+ship with VB6.
+
+o GDI+ 
+
+o Requires the SteamyDock program source code to be downloaded and available in 
+an adjacent folder as some of the BAS modules are common and shared.
+
+Example folder structure:
+	
+	E:\VB6\steamydock
+	E:\VB6\docksettings
+	E:\VB6\rocketdock
+
+o Requires a steamydock folder in C:\Users\<user>\AppData\Roaming\
 eg: C:\Users\<user>\AppData\Roaming\steamydock
 Requires a docksettings.ini file to exist in C:\Users\<user>\AppData\Roaming\PzEasteamydockrth
 The above will be created automatically by the compiled program when run for the
 first time.
 
-GDI+
-A windows-alike o/s such as Windows 7-11 or ReactOS.
-OLEEXP.TLB placed in sysWoW64 - required to obtain the explorer paths only
+o OLEEXP.TLB placed in sysWoW64 - required to obtain the explorer paths only
 during development. OLEEXP.TLB placed in sysWoW64 - required to obtain the
 explorer paths.
 
