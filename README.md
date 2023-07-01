@@ -67,9 +67,9 @@ an adjacent folder as some of the BAS modules are common and shared.
 
 Example folder structure:
 	
-	E:\VB6\steamydock
-	E:\VB6\docksettings
-	E:\VB6\rocketdock
+	E:\VB6\steamydock	  ! this repo.
+	E:\VB6\docksettings ! from https://github.com/yereverluvinunclebert/dockSettings
+	E:\VB6\rocketdock   ! from https://github.com/yereverluvinunclebert/rocketdock
 
 o Requires a steamydock folder in C:\Users\<user>\AppData\Roaming\
 eg: C:\Users\<user>\AppData\Roaming\steamydock
