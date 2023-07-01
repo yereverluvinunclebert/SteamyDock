@@ -2,6 +2,8 @@
 
 A VB6 GDI+ WoW64 dock for Reactos, XP, Win7, 8 and 10.
 
+![cogs](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/ba617c24-0c77-4577-b211-47e1c05a4a5e)
+
 SteamyDock is a functional reproduction of the dock we all know and
 love - Rocketdock for Windows from Punklabs - which in turn was a
 clone of the Mac OS/X dock. Back in the Noughties, there were other
@@ -13,6 +15,8 @@ to import from any location.
 SteamyDock gets its name from the bundling of my own three dock
 utilities with my own self-created Steampunk icon sets, ie. SteamyDock
 is a dock and the icons are steamy... so there you have it.
+
+![dockS-fullscreen](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/e94eef2c-38dd-4e77-aa57-7478eb8cab15)
 
 BUILD: The program runs without any Microsoft plugins.
 
@@ -162,3 +166,6 @@ Fafalone for the enumerate Explorer windows code:
 https://www.vbforums.com/showthread.php?818959-VB6-Get-extended-details-about-Explorer-windows-by-getting-their-IFolderView
 
 Dragokas systray code
+
+![steamydock](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/6191a067-fa96-44e3-8c7b-30f009214487)
+
