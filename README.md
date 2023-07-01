@@ -35,7 +35,7 @@ Fafalone for the enumerate Explorer windows code
 
 LICENCE AGREEMENTS:
 
-Copyright � 2023 Dean Beedell
+Copyright 2023 Dean Beedell
 
 In addition to the GNU General Public Licence please be aware that you may use
 any of my own imagery in your own creations but commercially only with my
@@ -89,12 +89,12 @@ REGTLIB %SystemRoot%\System32\OLEEXP.TLB
 In the VB6 IDE - project - references - browse - select the OLEEXP.tlb
 
 Project References:
-VisualBasic for Applications
-VisualBasic Runtime Objects and Procedures
-VisualBasic Objects and Procedures
-OLE Automation - drag and drop
-Microsoft Shell Controls and Automation
-Microsoft scripting runtime - for the scripting dictionary usage
+VisualBasic for Applications  
+VisualBasic Runtime Objects and Procedures  
+VisualBasic Objects and Procedures  
+OLE Automation - drag and drop  
+Microsoft Shell Controls and Automation  
+Microsoft scripting runtime - for the scripting dictionary usage  
 OLEEXP Modern Shell Interfaces for VB6, v5.1
 
 Credits
