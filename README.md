@@ -18,6 +18,9 @@ is a dock and the icons are steamy... so there you have it.
 
 ![dockS-fullscreen](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/e94eef2c-38dd-4e77-aa57-7478eb8cab15)
 
+SteamyDock is Alpha-grade software, under development, not yet ready
+to use on a production system - use at your own risk.
+
 BUILD: The program runs without any Microsoft plugins.
 
 Built using: VB6, MZ-TOOLS 3.0, VBAdvance, CodeHelp Core IDE Extender
@@ -169,3 +172,87 @@ Dragokas systray code
 
 ![steamydock](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/6191a067-fa96-44e3-8c7b-30f009214487)
 
+Background:
+
+I always loved Rocketdock for its ease of use, the fact that it was
+free to download but more importantly because it allowed each of your
+PCs to display a desktop with a look and feel that was unique to you.
+At the time Objectdock and Rocketdock were developed. customisation
+was the name of the game, everyone was doing it and Rocketdock made
+it easy and painless to do so. Then came the change in the form of
+Windows 8 and 10... and a drastic rework to Microsoft's corporate
+policies meant that customisation was frowned upon, companies such as
+MS and Apple now wanted all your systems to look and operate just like
+everyone else's, corresponding to a corporate style. Each recent
+change to the Windows operating system has made it more closed and
+more difficult to customise. Slowly but surely, due to these changes
+being accepted by users, Rocketdock and other customisation tools
+fell out of favour and as a result Rocketdock's developers Punklabs
+moved onto better things and Rocketdock is no longer supported by
+them, meaning no more updates to fix bugs and no new versions with
+improved functionality. This is a problem for me as I want to use it
+on the latest versions of Windows.
+
+Increasingly, Microsoft has changed Windows in unexpected and
+unpleasant ways introducing little problems for Rocketdock and its
+remaining users. Despite this, perhaps surprisingly, Rocketdock still
+works today even on Windows 10, however, it is becoming increasingly
+difficult to configure and operate with reliability. Without support
+and in the absence of new versions, users can struggle to make the old
+program run in the easy manner that they were accustomed to under
+Windows XP. With that in mind I stepped into the breach (as
+Rocketdock's self-styled saviour) and I have created an open source
+version of something akin to RocketDock in both spirit and in design,
+this time named SteamyDock. Please note - SteamyDock hasn't used any
+of Rocketdock's code nor any of its resources, it has all been built
+from scratch.
+
+I have been communicating with Skunkie from Punklabs and she has given
+me approval and encouragement to recreate Rocketdock in functionality
+and form, so that is what I have been doing. Instead of recreating
+Rocketdock as one monolithic tool I have instead decided to recreate
+it in three separate components, biting off what I can chew, as it
+were. First of all I have created the Icon Settings Tool, adding a lot
+more functionality than Rocketdock's original icon settings
+configuration tool. Secondly, I created the utility that replicates
+Rocketdock's Dock Settings configuration tool. Note that no code, nor
+resource has been taken from Punklabs nor Rocketdock, all the code,
+resources and icons shown are my own creation. All I have replicated
+is the functionality of Rocketdock and even then I have hopefully
+improved upon it and also upon the visual form.
+
+SteamyDock is compatible with Rocketdock in many ways. It can use the
+same icons, the dock and icon configuration screens are very similar
+in operation so will be quite familiar to Rocketdock users. The main
+advantage of Steamydock over Rocketdock is that this new version is
+supported. In addition, it also has some new functionality and
+improvements. Fundamentally though, the design is limited to providing
+or enhancing what Rocketdock already provides. This will make the dock
+and its supporting utilities quite familiar to Rocketdock users.
+This program will be available in two flavours. The first is a VB6
+version, this is the original. The second will be a VB.NET version,
+not yet available. The two will be functionally the same, in almost
+all respects. The choice of which version to use will be entirely up
+to you. The VB.NET version has yet to be completed but when done will
+future-proof this utility. Regardless, the VB6 version should work on
+Windows 10 for the 'foreseeable future' which means years and years
+yet to come as of 2021. Note that the VB6 version will also operate on
+ReactOS, a 32bit-only Windows clone when its WINE-inspired GDI+ layer
+is implemented
+
+32bitness, I hear you say? - The VB6 version is of course 32 bit by
+default as that is all a VB6 application can ever be. VB6 is a 32bit
+language. Some see running 32bits as a limitation. It is not really,
+because of course, 32-bit applications run just fine on all versions
+of 64-bit Windows and this dock does not need 64bits to operate. This
+program has no need to use the main advantage of 64bit functionality -
+that being the ability to access more than 4gb of RAM. This utility
+does not require anywhere near the 4gigabytes maximum of RAM that
+32bit applications can address. In fact it averages just 45mb of usage
+even with seventy-two 128x128 bit icons displayed.
+
+If you really do care about the 64bit thing and won't run 32bit
+programs on a 64bit system for some personal reason, then run the .NET
+version when it comes out. Personally I prefer the 32bit VB6 version,
+I know them both inside out and VB6 is just 'better', easier to code
+and certainly much more fun to create.
