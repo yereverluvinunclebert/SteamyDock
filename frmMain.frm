@@ -827,6 +827,9 @@ Attribute VB_Exposed = False
 
 ' blinked-out icon when right clicking.
 
+' unsure what causes the dock to sometimes be in full admin mode, does not appear to be the restart nor the privilege level of the
+' restartSteamydock.exe - currently unsure why it find itself running in admin mode.
+
 ' Current Bugs and Regressions
 ' ============================
 

@@ -87,8 +87,8 @@ Public Function isExplorerRunning(ByRef NameProcess As String) As Boolean
     Dim openExplorerPathArray() As String
     Dim useloop As Integer
     
-    'On Error GoTo isExplorerRunning_Error
-    On Error Resume Next
+    On Error GoTo isExplorerRunning_Error
+   
     
     Call enumerateExplorerWindows(openExplorerPathArray(), windowCount)
     
@@ -144,7 +144,9 @@ Public Sub enumerateExplorerWindows(ByRef openExplorerPaths() As String, ByRef w
     Dim pdp As oleexp.IDispatch
     Dim useloop As Integer
     
-    On Error GoTo 0 ' l_start ' essential
+    'On Error GoTo 0 ' l_start ' essential
+    
+    On Error Resume Next ' handles automation error
 
 l_start:
     Set openShellWindow = New ShellWindows
