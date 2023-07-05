@@ -87,7 +87,8 @@ Public Function isExplorerRunning(ByRef NameProcess As String) As Boolean
     Dim openExplorerPathArray() As String
     Dim useloop As Integer
     
-    On Error GoTo isExplorerRunning_Error
+    'On Error GoTo isExplorerRunning_Error
+    On Error Resume Next
     
     Call enumerateExplorerWindows(openExplorerPathArray(), windowCount)
     
