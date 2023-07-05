@@ -830,6 +830,10 @@ Attribute VB_Exposed = False
 ' unsure what causes the dock to sometimes be in full admin mode, does not appear to be the restart nor the privilege level of the
 ' restartSteamydock.exe - currently unsure why it find itself running in admin mode.
 
+' deletion confirmation during move operation.
+
+' icon temporarily grows too big when dock approached from the right
+
 ' Current Bugs and Regressions
 ' ============================
 
@@ -848,7 +852,7 @@ Attribute VB_Exposed = False
 ' Main Tasks:  ' see the separate bug/task list provided by vBAdvance
 ' ============
 
-'     1. icon temporarily grows too big when dock approached from the right
+'     1.
 '     2. Graphics Next Technology Cairo/RC5 - WIP - testing in the Pz Earth widget
 '     3. Add known identifers to the known apps list - WIP
 '     4. dockSettings, regular process check reduce to 5 secs minimum.
