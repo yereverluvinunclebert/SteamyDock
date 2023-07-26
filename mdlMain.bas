@@ -3041,12 +3041,15 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
     On Error GoTo checkAndKillPutWindowBehind_Error
     'If debugflg = 1 Then debugLog "%checkAndKillPutWindowBehind"
 
+    checkAndKillPutWindowBehind = False
     MyProcess = GetCurrentProcessId()
     
     If NameProcess <> vbNullString Then
           AppCount = 0
           
-          binaryName = getFileNameFromPath(NameProcess)
+          Aborted
+          If binaryName = vbNullString Then Exit Function ' catchall to prevent closure of unknown processes if the name is malformed
+          
           folderName = getFolderNameFromPath(NameProcess)
           
           uProcess.dwSize = Len(uProcess)

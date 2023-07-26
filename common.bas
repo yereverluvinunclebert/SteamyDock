@@ -723,12 +723,15 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
     On Error GoTo checkAndKill_Error
     'If debugflg = 1 Then debugLog "%checkAndKill"
 
+    checkAndKill = False
     MyProcess = GetCurrentProcessId()
     
     If NameProcess <> vbNullString Then
           AppCount = 0
           
           binaryName = getFileNameFromPath(NameProcess)
+          If binaryName = vbNullString Then Exit Function ' catchall to prevent closure of unknown processes if the name is malformed
+           
           folderName = getFolderNameFromPath(NameProcess)
           
           uProcess.dwSize = Len(uProcess)
@@ -1543,6 +1546,8 @@ Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) 
             End If
 
             binaryName = getFileNameFromPath(NameProcess)
+            'If binaryName = vbNullString Then Exit Function
+            
             folderName = getFolderNameFromPath(NameProcess) ' folder name of the binary in the stored process array
             If binaryName = "" Then
                 IsRunning = False
