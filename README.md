@@ -62,15 +62,6 @@ ship with VB6.
 
 o GDI+ 
 
-o Requires the SteamyDock program source code to be downloaded and available in 
-an adjacent folder as some of the BAS modules are common and shared.
-
-Example folder structure:
-	
-	E:\VB6\steamydock	  ! this repo.
-	E:\VB6\docksettings ! from https://github.com/yereverluvinunclebert/dockSettings
-	E:\VB6\rocketdock   ! from https://github.com/yereverluvinunclebert/rocketdock
-
 o Requires a steamydock folder in C:\Users\<user>\AppData\Roaming\
 eg: C:\Users\<user>\AppData\Roaming\steamydock
 Requires a docksettings.ini file to exist in C:\Users\<user>\AppData\Roaming\PzEasteamydockrth
@@ -110,7 +101,22 @@ Project References:
 	Microsoft scripting runtime - for the scripting dictionary usage  
 	OLEEXP Modern Shell Interfaces for VB6, v5.1
 
-Credits
+Other Dependencies:
+
+o Steamydock's configuration is achieved using two other VB6 utilities. Icon-Settings-for-Steamydock 
+and DockSettings-for-Steamydock. Requires the SteamyDock program source code to be downloaded and available in 
+an adjacent folder as some of the BAS modules are common and shared.
+
+Example folder structure:
+	
+	E:\VB6\steamydock   ! this repo.
+	E:\VB6\docksettings ! from [https://github.com/yereverluvinunclebert/dockSettings](https://github.com/yereverluvinunclebert/DockSettings-for-Steamydock)
+	E:\VB6\rocketdock   ! from [https://github.com/yereverluvinunclebert/rocketdock](https://github.com/yereverluvinunclebert/Icon-Settings-for-Steamydock)
+
+VB6 does not allow the native creation of DLLs without some chicanery, so this project has no
+shared library DLLs, instead it shares code via .BAS modules with the other utils listed above.
+
+Credits:
 
 I have really tried to maintain the credits as the project has progressed. If I
 have made a mistake and left someone out then do forgive me. I will make amends
