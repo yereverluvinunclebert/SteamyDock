@@ -16,6 +16,6 @@ mdlExplorerPaths = 154, 30, 951, 781,
 mdlUnusedCode = 0, 0, 727, 415, 
 Module1 = 129, -17, 977, 519, 
 common3 = 66, 66, 1065, 628, 
-frmMessage = 88, 88, 858, 602, , 110, 110, 880, 624, C
+frmMessage = 573, 48, 1681, 838, , 110, 110, 880, 624, C
 common = 73, 4, 1086, 571, 
 cwMainIcon = 0, 0, 0, 0, C

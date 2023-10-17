@@ -1304,7 +1304,13 @@ Private Sub adjustControls()
         dock.autoHideChecker.Enabled = True
     End If
     
-   
+       
+    If sDDefaultEditor <> vbNullString And sDDebug = "1" Then
+        menuForm.mnuEditWidget.Caption = "Edit Widget using " & sDDefaultEditor
+        menuForm.mnuEditWidget.Visible = True
+    Else
+        menuForm.mnuEditWidget.Visible = False
+    End If
     
    On Error GoTo 0
    Exit Sub
@@ -3047,7 +3053,7 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
     If NameProcess <> vbNullString Then
           AppCount = 0
           
-          Aborted
+          'Aborted
           If binaryName = vbNullString Then Exit Function ' catchall to prevent closure of unknown processes if the name is malformed
           
           folderName = getFolderNameFromPath(NameProcess)

@@ -224,6 +224,7 @@ Public rDOpenRunning As String
 Public rDShowRunning As String
 Public rDManageWindows As String
 Public rDDisableMinAnimation As String
+Public rDDefaultEditor As String
 
 Public sixtyFourBit As Boolean
 Public rDCustomIconFolder As String

@@ -8524,3 +8524,32 @@
 2023-07-05 13:54:31.741 ******************************
 2023-07-05 13:54:31.741 % SteamyDock startup complete.
 2023-07-05 13:54:31.741 ******************************
+2023-09-28 10:55:56.805 % sub toggleDebugging
+2023-09-28 10:55:56.813 *****************************
+2023-09-28 10:55:56.813 % SteamyDock program started.
+2023-09-28 10:55:56.813 *****************************
+2023-09-28 10:55:56.813 % sub sDriveStrings
+2023-09-28 10:55:56.814 % sub testDockRunning
+2023-09-28 10:55:56.814 % sub checkLicenceState
+2023-09-28 10:55:56.870 % sub classicThemeCapable
+2023-09-28 10:55:56.871 % sub disableAdmin
+2023-09-28 10:55:56.871 % sub checkSteamyDockInstallation
+2023-09-28 10:55:56.879 % sub locateDockSettingsFile
+2023-09-28 10:55:56.882 % sub readDockConfiguration
+2023-09-28 10:55:56.882 % sub readDockSettingsFile
+2023-09-28 10:55:57.161 % sub setUserHotKey
+2023-09-28 10:55:57.161 % func monitorProperties
+2023-09-28 10:55:57.162 % sub resolveVB6SizeBug
+2023-09-28 10:55:57.168 % sub setLocalConfigurationVars
+2023-09-28 10:55:57.178 % sub initialiseGDIStartup
+2023-09-28 10:55:57.179 % sub createDictionaryObjects
+2023-09-28 10:55:57.180 % sub prepareArraysAndCollections
+2023-09-28 10:56:00.997 % sub createGDIPlusElements
+2023-09-28 10:56:00.997 % sub showSplashScreen
+2023-09-28 10:56:01.060 % sub readyGDIPlus
+2023-09-28 10:56:01.060 % sub setAutoHide
+2023-09-28 10:56:01.060 % sub setWindowCharacteristics
+2023-09-28 10:56:01.082 % sub setUpProcessTimers
+2023-09-28 10:56:01.097 ******************************
+2023-09-28 10:56:01.098 % SteamyDock startup complete.
+2023-09-28 10:56:01.098 ******************************

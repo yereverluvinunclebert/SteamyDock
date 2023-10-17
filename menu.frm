@@ -255,6 +255,9 @@ Begin VB.Form menuForm
             Caption         =   "Turn Debugging ON"
          End
       End
+      Begin VB.Menu mnuEditWidget 
+         Caption         =   "Edit Dock Using VB6 IDE..."
+      End
       Begin VB.Menu menuRestart 
          Caption         =   "Restart Steamydock"
       End
@@ -1475,7 +1478,7 @@ Public Sub mnuIconSettings_Click() ' .14 DAEB 01/04/2021 menu.frm made public so
                 execStatus = ShellExecute(Me.hwnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             Else
-                execStatus = ShellExecute(hwnd, "runas", thisCommand, selectedIconIndex, vbNullString, 1)
+                execStatus = ShellExecute(hwnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             End If
         Else
@@ -1530,7 +1533,7 @@ Public Sub mnuIconSettings_Click_Event()
                 execStatus = ShellExecute(Me.hwnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             Else
-                execStatus = ShellExecute(hwnd, "runas", thisCommand, selectedIconIndex, vbNullString, 1)
+                execStatus = ShellExecute(hwnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             End If
         Else
@@ -3175,3 +3178,35 @@ addImageToDictionaryAndCheckForRunningProcess_Error:
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : mnuEditWidget_Click
+' Author    : beededea
+' Date      : 05/05/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuEditWidget_Click()
+    Dim editorPath As String: editorPath = vbNullString
+    Dim execStatus As Long: execStatus = 0
+    
+   On Error GoTo mnuEditWidget_Click_Error
+
+    editorPath = sDDefaultEditor
+    If FExists(editorPath) Then ' if it is a folder already
+        '''If debugflg = 1  Then msgBox "ShellExecute " & sCommand
+        
+            ' run the selected program
+        execStatus = ShellExecute(Me.hwnd, "open", editorPath, vbNullString, vbNullString, 1)
+        If execStatus <= 32 Then MsgBox "Attempt to open the IDE for this widget failed."
+    Else
+        MsgBox "Having a bit of a problem opening an IDE for this widgt - " & editorPath & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
+        'MessageBox Me.hWnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+mnuEditWidget_Click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuEditWidget_Click of Form menuForm"
+End Sub

@@ -1643,14 +1643,14 @@ Private Sub clickBlankTimer_Timer()
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : clearAllMessageBoxes
+' Procedure : clearAllMessageBoxRegistryEntries
 ' Author    : beededea
 ' Date      : 11/04/2023
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub clearAllMessageBoxes()
-    On Error GoTo clearAllMessageBoxes_Error
+Private Sub clearAllMessageBoxRegistryEntries()
+    On Error GoTo clearAllMessageBoxRegistryEntries_Error
 
     SaveSetting App.EXEName, "Options", "Show message" & "dragAndDeleteThisIcon", 0
     SaveSetting App.EXEName, "Options", "Show message" & "deleteThisIcon", 0
@@ -1661,11 +1661,11 @@ Private Sub clearAllMessageBoxes()
     On Error GoTo 0
     Exit Sub
 
-clearAllMessageBoxes_Error:
+clearAllMessageBoxRegistryEntries_Error:
 
     With Err
          If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure clearAllMessageBoxes of Form dock"
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure clearAllMessageBoxRegistryEntries of Form dock"
             Resume Next
           End If
     End With
@@ -1718,7 +1718,7 @@ Private Sub Form_Load()
     On Error GoTo Form_Load_Error
     
     ' Clear all the message box "show again" entries in the registry
-    Call clearAllMessageBoxes
+    Call clearAllMessageBoxRegistryEntries
     
     ' set some variable values ready for operation
     Call setSomeValues

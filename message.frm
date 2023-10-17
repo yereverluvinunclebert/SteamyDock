@@ -28,7 +28,7 @@ Begin VB.Form frmMessage
          TabIndex        =   4
          Top             =   270
          Width           =   735
-         Begin VB.Image picVBInformation 
+         Begin VB.Image picVBExclamation 
             Height          =   720
             Left            =   0
             Picture         =   "message.frx":0000
@@ -39,15 +39,15 @@ Begin VB.Form frmMessage
          Begin VB.Image picVBCritical 
             Height          =   720
             Left            =   0
-            Picture         =   "message.frx":11EA
+            Picture         =   "message.frx":1238
             Top             =   0
             Visible         =   0   'False
             Width           =   720
          End
-         Begin VB.Image picVBExclamation 
+         Begin VB.Image picVBInformation 
             Height          =   720
             Left            =   0
-            Picture         =   "message.frx":23D2
+            Picture         =   "message.frx":2420
             Top             =   0
             Visible         =   0   'False
             Width           =   720

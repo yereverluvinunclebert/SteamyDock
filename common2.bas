@@ -73,8 +73,10 @@ Public sDShowLblBacks As String ' 25/10/2020 docksettings .02 DAEB add the logic
 
 Public sDContinuousHide As String 'nn
 Public sDBounceZone As String ' .05 DAEB 12/07/2021 common2.bas Add the BounceZone as a configurable variable.
-
-
+    
+' development
+Public sDDebug As String
+Public sDDefaultEditor As String
 
 Public Const SM_CMONITORS = 80
 
@@ -115,6 +117,10 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
         sDShowLblBacks = GetINISetting("Software\SteamyDock\DockSettings", "ShowLblBacks", settingsFile) ' 25/10/2020 docksettings .02 DAEB add the logic for saving/reading icon label background string to configuration files
         sDContinuousHide = GetINISetting("Software\SteamyDock\DockSettings", "ContinuousHide", settingsFile) ' 25/10/2020 docksettings .02 DAEB add the logic for saving/reading icon label background string to configuration files ' nn
         sDBounceZone = GetINISetting("Software\SteamyDock\DockSettings", "BounceZone", settingsFile) ' .05 DAEB 12/07/2021 common2.bas Add the BounceZone as a configurable variable.
+
+        ' development
+        sDDebug = GetINISetting(location, "debug", settingsFile)
+        sDDefaultEditor = GetINISetting(location, "defaultEditor", settingsFile)
 
     End If
         
@@ -285,7 +291,6 @@ Public Sub validateInputs()
     validateRegistryBehaviour
     validateRegistryStyle
     validateRegistryPosition
-    
 
 
     
@@ -620,6 +625,10 @@ Public Sub validateRegistryGeneral()
     If Val(rDManageWindows) <= 0 And Val(rDManageWindows) > 1 Then rDManageWindows = "1" '
     If Val(rDDisableMinAnimation) <= 0 And Val(rDDisableMinAnimation) > 1 Then rDDisableMinAnimation = "1" '
 
+    ' development
+    If sDDebug = vbNullString Then sDDebug = "0"
+    If sDDefaultEditor = vbNullString Then sDDefaultEditor = vbNullString
+        
    On Error GoTo 0
    Exit Sub
 
