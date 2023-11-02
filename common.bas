@@ -1537,6 +1537,12 @@ Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) 
 
     On Error GoTo IsRunning_Error
     'If debugflg = 1 Then debugLog "%IsRunning"
+    
+    ' ignore a Windows binary that can persist
+    If InStr("RUNDLL32.exe", NameProcess) > 0 Then
+        IsRunning = False
+        Exit Function
+    End If
 
     If NameProcess <> vbNullString Then
             AppCount = 0
