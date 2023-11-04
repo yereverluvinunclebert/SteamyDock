@@ -281,3 +281,4 @@ the TwinBasic version comes out.
 
 
 ![steamydockWithWidgets](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/2583560c-e923-47b9-87ff-bdc09824b5eb)
+There is SteamyDock at the bottom, running on Windows 7, also showing all my other desktop additions.
