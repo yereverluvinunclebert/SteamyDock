@@ -2076,6 +2076,10 @@ Public Sub loadAdditionalImagestoDictionary()
         resizeAndLoadImgToDict collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
     
+    If FExists(App.Path & "\smallGoldCoin.png") Then
+        resizeAndLoadImgToDict collLargeIcons, "smallgoldCoin", App.Path & "\smallGoldCoin.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+    End If
+    
     ' load a small circle image into the collection, used to signify running process
     If FExists(App.Path & "\red-X.png") Then
         resizeAndLoadImgToDict collLargeIcons, "redx", App.Path & "\red-X.png", sDisabled, (0), (0), (64), (64), , imageOpacity

@@ -5452,9 +5452,10 @@ Public Sub drawSmallStaticIcons()
         ' this loop redraws all the icons at the same small size after the mouse has left the icon area
         For useloop = 0 To rdIconMaximum  'File1.ListCount - 1
             
+            
             'Call sizeDockPositionZero(useloop, showsmall)
             
-            ' all small icons to the left shown in small mode, do it just once, all the other icons will take that same size without recalculating
+            ' call this to set the size of all icons in small mode, do it just once, all the subsequent icons will take that same size without recalculating
             If useloop = 0 Then Call sizeEachSmallIconToLeft(useloop, rdIconMaximum, True)
             
             ' display the small size icons
@@ -6050,6 +6051,10 @@ Private Sub applyThemeSkinToDock(ByVal dockSkinStart As Long, ByVal dockSkinWidt
     thiskey = "sDSkinRight" & "ResizedImg" & LTrim$(Str$(sDSkinSize))
     '                           thisCollection, strFilename ,  key,      Left          Top            Width,        Height
     updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, themeSkinRight, themeSkinTop, sDSkinSize, sDSkinSize
+
+    If IsUserAnAdmin() = 1 Then
+        If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "smallGoldCoinResizedImg128", (themeSkinLeft), (themeSkinTop - 17), (128), (128)
+    End If
 
    On Error GoTo 0
    Exit Sub
@@ -7526,6 +7531,8 @@ Private Function fValidateComponents() As Boolean
     If fValidateComponents = False Then Exit Function
     fValidateComponents = reportMissingFile(sdAppPath & "\nixietubelargeQ.png")
     If fValidateComponents = False Then Exit Function
+    fValidateComponents = reportMissingFile(sdAppPath & "\smallGoldCoin.png")
+    If fValidateComponents = False Then Exit Function
     
     On Error GoTo 0
     Exit Function
@@ -7617,11 +7624,11 @@ Private Sub selectBubbleAnimation(ByVal animationType As Integer)
 
     Select Case animationType
         Case 1
-            Call sequentialBubbleAnimation
+            Call sequentialBubbleAnimation ' the animation
         Case 2
-            Call drawDockByCursorEntryPosition
+            Call drawDockByCursorEntryPosition ' only dockJustEntered = True
         Case 3
-            Call drawSmallStaticIcons
+            Call drawSmallStaticIcons ' simple static redraw
     End Select
 
     On Error GoTo 0
