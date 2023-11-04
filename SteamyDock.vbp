@@ -1050,3 +1050,5 @@ Description=create a manifest for the program
 Status=0
 Priority=1
 Comment=There is a DPI aware manifest at the bottom of the program
+
+

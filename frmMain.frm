@@ -2780,22 +2780,27 @@ Private Sub Form_Unload(Cancel As Integer)
 
     Call dock.shutdwnGDI
 
-    ' shutdown GDI
-'    If lngImage Then
-'        Call GdipReleaseDC(lngImage, dcMemory)
-'        Call GdipDeleteGraphics(lngImage)
-'    End If
-'    If lngBitmap Then Call GdipDisposeImage(lngBitmap)
-'    If lngGDI Then Call GdiplusShutdown(lngGDI)
+    ' unload the other native VB6forms
     
-    ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
-'    Dim lIndex As Long
-'    For lIndex = 0 To 3
-'        RemoveHotKey lHotKey(lIndex) ' removes the keys set when the app ends
-'    Next
+    Unload about
+    Unload licence
+    Unload frmMessage
+    Unload hiddenForm
+    Unload menuForm
+    Unload showAndTell
+    Unload splashForm
+    
+    ' remove all variable references to each form in turn
+    
+    Set about = Nothing
+    Set frmMessage = Nothing
+    Set hiddenForm = Nothing
+    Set menuForm = Nothing
+    Set showAndTell = Nothing
+    Set splashForm = Nothing
+    Set licence = Nothing
 
-    ' .23 DAEB frmMain.frm 08/02/2021 Changed from an array to a single var
-     RemoveHotKey lHotKey
+    RemoveHotKey lHotKey
 
     ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
 
