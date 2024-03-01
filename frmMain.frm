@@ -1871,7 +1871,7 @@ End Sub
 ' Purpose   : We handle the mouse events during mouseUp, we only set some states here
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     On Error GoTo Form_MouseDown_Error
     
@@ -1907,7 +1907,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Dim timeDiff As Long: timeDiff = 0
     Dim tickCount As Long: tickCount = 0
     
@@ -2096,7 +2096,10 @@ Public Sub initialiseGlobalVars()
     lastPositionRelativeToDock = False
     outsideDock = False
     'iconGrowthModifier = 0
-
+    
+    sDDefaultEditor = "" ' "E:\vb6\rocketdock\iconsettings.vbp"
+    sDDebugFlg = ""
+    
     On Error GoTo 0
     
     Exit Sub
@@ -2189,7 +2192,7 @@ End Sub
 ' Purpose   : this is the equivalent of an icon MouseUp event, a click anywhere on the form
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
    On Error GoTo Form_MouseUp_Error
 
@@ -2422,7 +2425,7 @@ Public Sub fMouseUp(Button As Integer)
             Call runCommand("run", "") ' added new parameter to allow override .68
         End If
         
-        If FExists(soundtoplay) And rDSoundSelection <> "0" Then
+        If fFExists(soundtoplay) And rDSoundSelection <> "0" Then
             PlaySound soundtoplay, ByVal 0&, SND_FILENAME Or SND_ASYNC
         End If
               
@@ -2465,7 +2468,7 @@ End Sub
     'Files = 15 (vbCFFiles)
     'RTF = -16639
     '
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
    
     Dim suffix As String: suffix = vbNullString
     Dim Filename As String: Filename = vbNullString
@@ -2522,9 +2525,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         iconCommand = Data.Files(1) ' set the command for all types
         
         ' is it a folder, does the folder exist
-        If DirExists(iconTitle) Then
+        If fDirExists(iconTitle) Then
             iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-dir.png"
-            If FExists(iconFileName) Then
+            If fFExists(iconFileName) Then
                 iconImage = iconFileName
             End If
         Else ' otherwise it is a file
@@ -2556,7 +2559,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                        
                     iconFileName = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                        
-                    If FExists(iconFileName) Then
+                    If fFExists(iconFileName) Then
                       iconImage = iconFileName
                     Else
                       iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
@@ -2570,7 +2573,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
                       iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-msc.png"
-                      If FExists(iconFileName) Then
+                      If fFExists(iconFileName) Then
                           iconImage = iconFileName
                       End If
                   End If
@@ -2581,7 +2584,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
                       iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-bat.png"
-                      If FExists(iconFileName) Then
+                      If fFExists(iconFileName) Then
                           iconImage = iconFileName
                       End If
                   End If
@@ -2592,7 +2595,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
                       iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-cpl.png"
-                      If FExists(iconFileName) Then
+                      If fFExists(iconFileName) Then
                           iconImage = iconFileName
                       End If
                   End If
@@ -2638,7 +2641,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       
                       iconFileName = identifyAppIcons(iconCommand)
                        
-                      If FExists(iconFileName) Then
+                      If fFExists(iconFileName) Then
                         iconImage = iconFileName
                       Else
                         iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-lnk.png"
@@ -2652,7 +2655,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                   Effect = vbDropEffectCopy
                   
                   iconImage = iconCommand
-                  If Not FExists(iconImage) Then
+                  If Not fFExists(iconImage) Then
                       Exit Sub
                   End If
               
@@ -2676,11 +2679,11 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                 suffix = LCase$(ExtractSuffix(Data.Files(1)))
                 iconImage = App.Path & "\my collection\steampunk icons MKVI\document-" & suffix & ".png"
                 iconCommand = Data.Files(1)
-                If Not FExists(iconImage) Then
+                If Not fFExists(iconImage) Then
                     iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-zip.png"
                 End If
                 
-                If Not FExists(iconImage) Then
+                If Not fFExists(iconImage) Then
                     Exit Sub
                 End If
             
@@ -2696,7 +2699,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                   suffix = LCase(ExtractSuffix(Data.Files(1)))
                   iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI\document-" & suffix & ".png"
                   iconCommand = Data.Files(1)
-                  If Not FExists(iconImage) Then
+                  If Not fFExists(iconImage) Then
                       iconImage = App.Path & "\nixietubelargeQ.png"
                   End If
                       
@@ -2708,7 +2711,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
             iconImage = App.Path & "\nixietubelargeQ.png"
         End If
         
-        If FExists(iconImage) Then ' last check that the default ? image has not been deleted.
+        If fFExists(iconImage) Then ' last check that the default ? image has not been deleted.
             Call insertNewIconDataIntoCurrentPosition(iconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             ' .51 DAEB 08/04/2021 frmMain.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
             Call menuForm.addImageToDictionaryAndCheckForRunningProcess(iconImage, iconTitle)
@@ -2750,7 +2753,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
    On Error GoTo Form_OLEDragOver_Error
 
     If rDLockIcons = 0 Then
@@ -3130,10 +3133,10 @@ Private Function fTestCursorWithinDockYPosition() As Boolean
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
     If dockPosition = vbBottom Then
-        outsideDock = apiMouse.y < dockEntranceLocation Or apiMouse.x < iconLeftmostPointPxls Or apiMouse.x > iconStoreLeftPixels(UBound(iconStoreLeftPixels))    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.Y < dockEntranceLocation Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels))    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     End If
     If dockPosition = vbtop Then
-        outsideDock = apiMouse.y > dockEntranceLocation Or apiMouse.x < iconLeftmostPointPxls Or apiMouse.x > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.Y > dockEntranceLocation Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     End If
     
     fTestCursorWithinDockYPosition = outsideDock ' return
@@ -3305,11 +3308,11 @@ Private Sub animateTimer_Timer()
             responseTimer.Enabled = True
 '            Exit Sub             ' if the timer that does the bouncing is running then we need to animate even if the mouse is stationary...
         'End If
-        If savApIMouseX = apiMouse.x And savApIMouseY <> apiMouse.y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
+        If savApIMouseX = apiMouse.X And savApIMouseY <> apiMouse.Y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
     End If
 
-    savApIMouseY = apiMouse.y
-    savApIMouseX = apiMouse.x
+    savApIMouseY = apiMouse.Y
+    savApIMouseX = apiMouse.X
     
     showsmall = True
     bDrawn = False
@@ -3318,7 +3321,7 @@ Private Sub animateTimer_Timer()
     ' determines if and where exactly the mouse is in the < horizontal > icon hover area and if so, determine the icon index
     For useloop = 0 To iconArrayUpperBound
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-        insideDock = apiMouse.x >= iconStoreLeftPixels(useloop) And apiMouse.x <= iconStoreRightPixels(useloop)
+        insideDock = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
     
         If insideDock Then
             iconIndex = useloop ' this is the current icon number being hovered over
@@ -3448,7 +3451,7 @@ Private Sub sequentialBubbleAnimation()
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
         
         ' this is the actual line that does the main animation
-        dynamicSizeModifierPxls = ((apiMouse.x) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
+        dynamicSizeModifierPxls = ((apiMouse.X) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
 
 
     Else
@@ -3496,7 +3499,7 @@ Private Sub sequentialBubbleAnimation()
     ' .nn Changed or added as part of the drag and drop functionality
     ' 12/05/2021 .nn DAEB Displays a smaller size icon at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
-        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplay, (apiMouse.x - iconSizeLargePxls / 2), (apiMouse.y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
+        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplay, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
     End If
     
     Call updateGDIPlus
@@ -4388,14 +4391,14 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
      
     ' admin tools with msc suffix (management console controls) can be called from the command line
     If InStr(thisCommand, ".msc") <> 0 Then
-        If FExists(thisCommand) Then ' if the file exists and is valid - run it
+        If fFExists(thisCommand) Then ' if the file exists and is valid - run it
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, vbNullString, intShowCmd)
             Exit Sub ' .89 DAEB 08/12/2022 frmMain.frm Fixed duplicate run of .msc files.
         Else
             folderPath = getFolderNameFromPath(thisCommand)  ' extract the default folder from the full path
 
             ' .45 DAEB 01/04/2021 frmMain.frm Changed the logic to remove the code around a folder path existing...
-            If Not DirExists(folderPath) Then
+            If Not fDirExists(folderPath) Then
                  ' if there is no folder path provided then attempt it on its own hoping that the windows PATH will find it
                 On Error GoTo tryMSCFullPAth ' apologies for this GOTO - testing to see if it is in the path, then it will run.
                 Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
@@ -4428,7 +4431,7 @@ tryMSCFullPAth:
         'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
         thisCommand = """" & sCommand & """" ' put the command in quotes so it handles spaces in the path
         'folderPath = getFolderNameFromPath(thisCommand)  ' extract the default folder from the batch full path
-        If FExists(sCommand) Then
+        If fFExists(sCommand) Then
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
         Else
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
@@ -4439,7 +4442,7 @@ tryMSCFullPAth:
     End If
     
     'anything else remaining
-    If FExists(thisCommand) Then ' checks the current filename for the named target
+    If fFExists(thisCommand) Then ' checks the current filename for the named target
         'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
         If sWorkingDirectory <> vbNullString Then
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
@@ -4448,7 +4451,7 @@ tryMSCFullPAth:
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, vbNullString, intShowCmd)
             Exit Sub
         End If
-    ElseIf DirExists(thisCommand) Then ' checks if a folder of the same name exists in the current folder
+    ElseIf fDirExists(thisCommand) Then ' checks if a folder of the same name exists in the current folder
         Call shellExecuteWithDialog("open", thisCommand, sArguments, sWorkingDirectory, intShowCmd, "folder")
         Exit Sub
     End If
@@ -4462,7 +4465,7 @@ tryMSCFullPAth:
         
         For useloop = 0 To strCnt - 1
             userprof = Environ$("SYSTEMROOT") & "\system32\" & thisCommand & arrStr(useloop)
-            If FExists(userprof) Then ' ' checks the windows system 32 folder for the named target
+            If fFExists(userprof) Then ' ' checks the windows system 32 folder for the named target
                 Call shellExecuteWithDialog(userLevel, userprof, sArguments, sWorkingDirectory, intShowCmd)
                 Exit Sub
             ElseIf validURL = False Then
@@ -4744,7 +4747,7 @@ End Sub
     ' if the process to kill is named then kill it before running the main process associated with the icon
     
     If sAppToTerminate <> vbNullString Then
-        If FExists(sAppToTerminate) Then
+        If fFExists(sAppToTerminate) Then
             checkAndKill sAppToTerminate, False, False
         End If
     End If
@@ -4761,7 +4764,7 @@ End Sub
                 Exit Sub
             End If
         End If
-        If FExists(sSecondApp) Then ' .78 DAEB 21/05/2021 frmMain.frm Added new field for second program to be run
+        If fFExists(sSecondApp) Then ' .78 DAEB 21/05/2021 frmMain.frm Added new field for second program to be run
             delayRunTimer.Enabled = True
         End If
     End If
@@ -4780,7 +4783,7 @@ End Sub
                 Exit Sub
             End If
         End If
-        If FExists(sSecondApp) Then ' .78 DAEB 21/05/2021 frmMain.frm Added new field for second program to be run
+        If fFExists(sSecondApp) Then ' .78 DAEB 21/05/2021 frmMain.frm Added new field for second program to be run
             delayRunTimer.Enabled = True
         End If
     End If
@@ -5187,7 +5190,7 @@ Public Sub checkQuestionMark(ByVal key As String, ByRef Filename As String, ByVa
     End If
     
     ' test the resulting filestring exists
-    If FExists(filestring) Then
+    If fFExists(filestring) Then
         ' extract the suffix
         suffix = ExtractSuffixWithDot(filestring)
         ' test as to whether it is an .EXE or a .DLL
@@ -5671,7 +5674,7 @@ Public Sub prepareArraysAndCollections()
             smallKey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
             
             ' here is the code to cache the images to the collection transparently at a small size
-            If FExists(sFilename) Then
+            If fFExists(sFilename) Then
                 resizeAndLoadImgToDict collSmallIcons, partialStringKey, fileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity
             ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
                 checkQuestionMark partialStringKey, fileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
@@ -5680,7 +5683,7 @@ Public Sub prepareArraysAndCollections()
             End If
                         
             ' now cache all the images to the collection transparently at the larger size
-            If FExists(sFilename) Then
+            If fFExists(sFilename) Then
                 resizeAndLoadImgToDict collLargeIcons, partialStringKey, fileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity
             ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then  ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
                 checkQuestionMark partialStringKey, fileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
@@ -5691,7 +5694,7 @@ Public Sub prepareArraysAndCollections()
     
     
         ' cache the images to the collection at a small size at full opacity
-        If FExists(sFilename) Then
+        If fFExists(sFilename) Then
             resizeAndLoadImgToDict collSmallIcons, partialStringKey, fileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
         ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
             checkQuestionMark partialStringKey, fileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
@@ -5700,7 +5703,7 @@ Public Sub prepareArraysAndCollections()
         End If
         
         ' now cache all the images to the collection at the larger size
-        If FExists(sFilename) Then
+        If fFExists(sFilename) Then
             resizeAndLoadImgToDict collLargeIcons, partialStringKey, fileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
         ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then  ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
             checkQuestionMark partialStringKey, fileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
@@ -5751,7 +5754,7 @@ Private Sub readToolSettings()
     On Error GoTo readToolSettings_Error
     'If debugflg = 1 Then debugLog "%" & "readToolSettings"
    
-    If Not FExists(toolSettingsFile) Then Exit Sub ' does the tool's own settings.ini exist?
+    If Not fFExists(toolSettingsFile) Then Exit Sub ' does the tool's own settings.ini exist?
     
     'test to see if the tool has ever been run before
     sfirst = GetINISetting("Software\SteamyDockSettings", "First", toolSettingsFile)
@@ -5795,20 +5798,20 @@ End Sub
 '    dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
 '
 '    'if the folder does not exist then create the folder
-'    If Not DirExists(dockSettingsDir) Then
+'    If Not fDirExists(dockSettingsDir) Then
 '        MkDir dockSettingsDir
 '    End If
 '
 '    'if the settings.ini does not exist then create the file by copying
-'    If Not FExists(dockSettingsFile) Then
-'        If FExists(App.Path & "\defaultDockSettings.ini") Then
+'    If Not fFExists(dockSettingsFile) Then
+'        If fFExists(App.Path & "\defaultDockSettings.ini") Then
 '            FileCopy App.Path & "\defaultDockSettings.ini", dockSettingsFile
 '            MsgBox ("Creating default sample dock, feel free to Edit/Delete items as you require.")
 '        End If
 '    End If
 '
 '    'confirm the settings file exists, if not use the version in the app itself
-'    If Not FExists(dockSettingsFile) Then
+'    If Not fFExists(dockSettingsFile) Then
 '            dockSettingsFile = App.Path & "\settings.ini"
 '    End If
 '
@@ -5931,11 +5934,11 @@ Private Sub locateThemeSettingsFile()
     rdThemeSkinFile = App.Path & "\Skins\" & rDtheme & "\background.ini"
     rdThemeSeparatorFile = App.Path & "\Skins\" & rDtheme & "\separator.ini"
     ' test existence of the set theme file
-    If Not FExists(rdThemeSkinFile) Then
+    If Not fFExists(rdThemeSkinFile) Then
         validTheme = False
         Exit Sub
     End If
-    If Not FExists(rdThemeSeparatorFile) Then
+    If Not fFExists(rdThemeSeparatorFile) Then
         validTheme = False
         Exit Sub
     End If
@@ -7283,11 +7286,11 @@ Private Sub checkTargetCommandValidity()
         If sCommandArray(useloop) = vbNullString Then GoTo l_next_iteration
         thisCommand = sCommandArray(useloop)
 
-        If FExists(thisCommand) Then
+        If fFExists(thisCommand) Then
             GoTo l_next_iteration ' when we match a condition we loop over the subsequent conditions to iterate over the next item.
         End If
                     
-        If DirExists(thisCommand) Then         ' is it a folder?
+        If fDirExists(thisCommand) Then         ' is it a folder?
             GoTo l_next_iteration
         End If
 
@@ -7298,7 +7301,7 @@ Private Sub checkTargetCommandValidity()
         If InStr(thisCommand, "%userprofile%") Then
             userprof = Environ$("USERPROFILE")
             thisCommand = Replace(thisCommand, "%userprofile%", userprof)
-            If FExists(thisCommand) Then
+            If fFExists(thisCommand) Then
                 GoTo l_next_iteration
             End If
         End If
@@ -7306,12 +7309,12 @@ Private Sub checkTargetCommandValidity()
         If InStr(thisCommand, "%systemroot%") Then
             userprof = Environ$("SYSTEMROOT")
             thisCommand = Replace(thisCommand, "%systemroot%", userprof)
-            If FExists(thisCommand) Then
+            If fFExists(thisCommand) Then
                 GoTo l_next_iteration
             End If
         End If
         
-        If DirExists(thisCommand) Then         ' is it a folder? for the second time
+        If fDirExists(thisCommand) Then         ' is it a folder? for the second time
             GoTo l_next_iteration
         End If
         
@@ -7339,7 +7342,7 @@ Private Sub checkTargetCommandValidity()
         End If
 
         ' check in the windows folder, this is also done in the PATH check below but this one is quicker.
-        If DirExists(Environ$("windir") & thisCommand) Then
+        If fDirExists(Environ$("windir") & thisCommand) Then
             GoTo l_next_iteration
         End If
         
@@ -7364,11 +7367,11 @@ Private Sub checkTargetCommandValidity()
                 currentCommand = thisCommand
             End If
             
-            If FExists(currentCommand) Then ' if the file exists and is valid
+            If fFExists(currentCommand) Then ' if the file exists and is valid
                     GoTo l_next_iteration
             Else
                 For Each pathElement In pathArray
-                    If FExists(pathElement & "\" & currentCommand) Then
+                    If fFExists(pathElement & "\" & currentCommand) Then
                         GoTo l_next_iteration
                     End If
                 Next pathElement
@@ -7564,7 +7567,7 @@ Private Function reportMissingDir(ByVal folderToCheck As String) As Boolean
     On Error GoTo reportMissingDir_Error
 
     reportMissingDir = True
-    If Not DirExists(folderToCheck) Then
+    If Not fDirExists(folderToCheck) Then
         MsgBox "Essential component missing. Unable to find this folder: " & vbCr & vbCr & folderToCheck & vbCr & _
              vbCr & "Please re-install as some functions may not work properly." & _
              vbCr & "SteamyDock will now attempt to run but you may have to kill the steamydock process manually."
@@ -7596,7 +7599,7 @@ Private Function reportMissingFile(ByVal fileToCheck As String) As Boolean
     On Error GoTo reportMissingFile_Error
 
     reportMissingFile = True
-    If Not FExists(fileToCheck) Then
+    If Not fFExists(fileToCheck) Then
         MsgBox "Essential component missing. Unable to find this folder: " & vbCr & vbCr & fileToCheck & vbCr & _
              vbCr & "Please re-install as some functions may not work properly." & _
              vbCr & "SteamyDock will now attempt to run but you may have to kill the steamydock process manually."
@@ -7722,3 +7725,5 @@ Private Sub setSomeValues()
     sDBounceInterval = 5
     
 End Sub
+
+

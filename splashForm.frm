@@ -114,7 +114,7 @@ Private Sub Form_Load()
     splashTimerCount = 0
     splashFormWidth = splashForm.Width
         
-    If FExists(App.Path & "\steamydock-splash.jpg") Then
+    If fFExists(App.Path & "\steamydock-splash.jpg") Then
         Set pic = LoadPicture(App.Path & "\steamydock-splash.jpg")
     End If
     

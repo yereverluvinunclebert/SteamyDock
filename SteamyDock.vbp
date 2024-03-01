@@ -22,8 +22,8 @@ Module=mdlUnusedCode; mdlUnusedCode.bas
 Module=Module1; monitorModule.bas
 Module=common3; common3.bas
 Form=message.frm
-Module=common; common.bas
 Class=cwMainIcon; cwIcon.cls
+Module=common; common.bas
 IconForm="dock"
 Startup="dock"
 HelpFile=""
@@ -38,7 +38,7 @@ Description="A FOSS dock for Windows"
 CompatibleMode="0"
 MajorVer=0
 MinorVer=0
-RevisionVer=2735
+RevisionVer=2751
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Pre-release version. Alpha."
@@ -1050,5 +1050,3 @@ Description=create a manifest for the program
 Status=0
 Priority=1
 Comment=There is a DPI aware manifest at the bottom of the program
-
-

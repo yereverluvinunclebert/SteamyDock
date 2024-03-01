@@ -202,7 +202,7 @@ Public Property Let propButtonVal(ByVal buttonVal As Integer)
         
         ' .86 DAEB 06/06/2022 rDIConConfig.frm Add a sound to the msgbox for critical and exclamations? ting and belltoll.wav files
         fileToPlay = "ting.wav"
-        If FExists(App.Path & "\resources\sounds\" & fileToPlay) Then
+        If fFExists(App.Path & "\resources\sounds\" & fileToPlay) Then
             PlaySound App.Path & "\resources\sounds\" & fileToPlay, ByVal 0&, SND_FILENAME Or SND_ASYNC
         End If
     ElseIf buttonVal >= 32 Then '    vbQuestion
@@ -214,7 +214,7 @@ Public Property Let propButtonVal(ByVal buttonVal As Integer)
         
         ' .86 DAEB 06/06/2022 rDIConConfig.frm Add a sound to the msgbox for critical and exclamations? ting and belltoll.wav files
         fileToPlay = "belltoll01.wav"
-        If FExists(App.Path & "\resources\sounds\" & fileToPlay) Then
+        If fFExists(App.Path & "\resources\sounds\" & fileToPlay) Then
             PlaySound App.Path & "\resources\sounds\" & fileToPlay, ByVal 0&, SND_FILENAME Or SND_ASYNC
         End If
     End If

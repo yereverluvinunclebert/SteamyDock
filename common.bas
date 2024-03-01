@@ -225,6 +225,7 @@ Public rDShowRunning As String
 Public rDManageWindows As String
 Public rDDisableMinAnimation As String
 Public rDDefaultEditor As String
+Public rDDebugFlg As String
 
 Public sixtyFourBit As Boolean
 Public rDCustomIconFolder As String
@@ -307,6 +308,22 @@ Public msgLogOut As Boolean
 Public windowsVersionString As String
 Public sDShowIconSettings As String ' .14 DAEB 01/05/2021 docksettings added checkbox and values to show icon settings utility when adding an icon to the dock
 
+
+'------------------------------------------------------ STARTS
+' For determining dir existence
+Private Declare Function GetFileAttributes Lib "kernel32.dll" Alias "GetFileAttributesA" (ByVal lpFileName As String) As Long
+Private Declare Function GetFileAttributesW Lib "kernel32.dll" (ByVal lpFileName As Long) As Long
+'------------------------------------------------------ ENDS
+
+'------------------------------------------------------ STARTS
+' Constants for playing sounds
+Public Const SND_ASYNC As Long = &H1         '  play asynchronously
+Public Const SND_FILENAME As Long = &H20000     '  name is a file name
+
+' APIs for playing sounds
+Public Declare Function PlaySound Lib "winmm.dll" Alias "PlaySoundA" (ByVal lpszName As String, ByVal hModule As Long, ByVal dwFlags As Long) As Long
+'------------------------------------------------------ ENDS
+
 '
 '---------------------------------------------------------------------------------------
 ' Procedure : checkLicenceState
@@ -319,12 +336,12 @@ Public Sub checkLicenceState()
     Dim slicence As String: slicence = "0"
 
     On Error GoTo checkLicenceState_Error
-    If debugflg = 1 Then debugLog "%" & " sub checkLicenceState"
+    If debugFlg = 1 Then debugLog "%" & " sub checkLicenceState"
 
-    toolSettingsFile = App.Path & "\settings.ini"
+    'toolSettingsFile = App.Path & "\settings.ini"
     ' read the tool's own settings file (
-    If FExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
-        slicence = GetINISetting("Software\SteamyDockSettings", "Licence", toolSettingsFile)
+    If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
+        slicence = GetINISetting("Software\DockSettings", "Licence", toolSettingsFile)
         ' if the licence state is not already accepted then display the licence form
         
         If slicence = "0" Then
@@ -370,10 +387,10 @@ Public Function LoadFileToTB(ByRef TxtBox As Object, ByVal FilePath As String, O
     Dim s As String: s = vbNullString
     
    On Error GoTo LoadFileToTB_Error
-      'If debugflg = 1 Then debugLog "%" & "LoadFileToTB"
+      'If debugFlg = 1 Then debugLog "%" & "LoadFileToTB"
    
    
-   'If debugflg = 1 Then debugLog "%" & LoadFileToTB
+   'If debugFlg = 1 Then debugLog "%" & LoadFileToTB
 
     If Dir$(FilePath) = vbNullString Then Exit Function
     
@@ -504,7 +521,7 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
     
     'MsgBox windowsVersionString
     
-    If debugflg = 1 Then debugLog "%" & " sub classicThemeCapable"
+    If debugFlg = 1 Then debugLog "%" & " sub classicThemeCapable"
 
     'Get the value of "ProgramFiles", or "ProgramFilesDir"
     
@@ -541,11 +558,11 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
 
     ProgramFilesDir = strString
     If ProgramFilesDir = vbNullString Then ProgramFilesDir = prg ' 64bit systems
-    If Not DirExists(ProgramFilesDir) Then
+    If Not fDirExists(ProgramFilesDir) Then
         ProgramFilesDir = "c:\program files" ' 32 bit systems
     End If
     
-    'If debugflg = 1 Then debugLog "%" & "ProgramFilesDir = " & ProgramFilesDir
+    'If debugFlg = 1 Then debugLog "%" & "ProgramFilesDir = " & ProgramFilesDir
     
 
 
@@ -614,51 +631,57 @@ PutINISetting_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : FExists
+' Procedure : fFExists
 ' Author    : beededea
 ' Date      : 17/10/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Function FExists(ByRef OrigFile As String) As Boolean
-    Dim FS As Object ' not going to initialise an object here
+Public Function fFExists(ByRef OrigFile As String) As Boolean
+    'Dim FS As Object ' not going to initialise an object here
     
-    On Error GoTo FExists_Error
-   'If debugflg = 1 Then Debug.Print "%FExists"
+    On Error GoTo fFExists_Error
+   'If debugFlg = 1 Then debugLog "%fFExists"
 
-    Set FS = CreateObject("Scripting.FileSystemObject")
-    FExists = FS.FileExists(OrigFile)
+'    Set FS = CreateObject("Scripting.FileSystemObject")
+'    fFExists = FS.FileExists(OrigFile)
+    
+    ' test to see if a file exists
+    Const INVALID_HANDLE_VALUE = -1&
+    fFExists = Not (GetFileAttributesW(StrPtr(OrigFile)) = INVALID_HANDLE_VALUE)
 
    On Error GoTo 0
    Exit Function
 
-FExists_Error:
+fFExists_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure FExists of Module Common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fFExists of Module Common"
 End Function
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : DirExists
+' Procedure : fDirExists
 ' Author    : beededea
 ' Date      : 17/10/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Function DirExists(ByRef OrigFile As String) As Boolean
-    Dim FS As Object ' not going to initialise an object here
-    On Error GoTo DirExists_Error
-   'If debugflg = 1 Then debugLog "%DirExists"
+Public Function fDirExists(ByRef OrigFile As String) As Boolean
+    'Dim FS As Object ' not going to initialise an object here
+    On Error GoTo fDirExists_Error
+   'If debugFlg = 1 Then debugLog "%fDirExists"
 
-    Set FS = CreateObject("Scripting.FileSystemObject")
-    DirExists = FS.FolderExists(OrigFile)
+'    Set FS = CreateObject("Scripting.FileSystemObject")
+'    fDirExists = FS.FolderExists(OrigFile)
 
+   fDirExists = (GetFileAttributes(OrigFile) And vbDirectory + vbVolume) = vbDirectory
+   
    On Error GoTo 0
    Exit Function
 
-DirExists_Error:
+fDirExists_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure DirExists of Module Common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fDirExists of Module Common"
 End Function
 '---------------------------------------------------------------------------------------
 ' Procedure : SpecialFolder
@@ -674,7 +697,7 @@ Dim objShell  As Object  ' not going to initialise an object here
 Dim objFolder As Object
 
    On Error GoTo SpecialFolder_Error
-   'If debugflg = 1 Then debugLog "%SpecialFolder"
+   'If debugFlg = 1 Then debugLog "%SpecialFolder"
 
   Set objShell = CreateObject("Shell.Application")
   Set objFolder = objShell.NameSpace(CLng(pFolder))
@@ -722,7 +745,7 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
     Dim ExitCode As Long: ExitCode = 0
     
     On Error GoTo checkAndKill_Error
-    'If debugflg = 1 Then debugLog "%checkAndKill"
+    'If debugFlg = 1 Then debugLog "%checkAndKill"
 
     checkAndKill = False
     MyProcess = GetCurrentProcessId()
@@ -916,7 +939,7 @@ Public Function ExtractSuffix(ByVal strPath As String) As String
     Dim Max As Integer: Max = 0
     
     On Error GoTo ExtractSuffix_Error
-    'If debugflg = 1 Then debugLog "%" & "ExtractSuffix"
+    'If debugFlg = 1 Then debugLog "%" & "ExtractSuffix"
    
     If strPath = vbNullString Then
         ExtractSuffix = vbNullString
@@ -949,7 +972,7 @@ End Function
 Public Function getFolderNameFromPath(ByRef Path As String) As String
 
    On Error GoTo getFolderNameFromPath_Error
-   'If debugflg = 1 Then debugLog "%" & "getFolderNameFromPath"
+   'If debugFlg = 1 Then debugLog "%" & "getFolderNameFromPath"
 
     If InStrRev(Path, "\") = 0 Then
         getFolderNameFromPath = vbNullString
@@ -980,7 +1003,7 @@ Public Function getFileNameFromPath(ByRef strFullPath As String) As String
    On Error GoTo getFileNameFromPath_Error
       
    ' returns the remainder of the path from the final backslash which can be a file or a folder
-   If Not FExists(strFullPath) Then ' tests to see if a file or a folder of the same name in the same location
+   If Not fFExists(strFullPath) Then ' tests to see if a file or a folder of the same name in the same location
         getFileNameFromPath = ""    ' if a file does not exist then what remains must be a folder
         Exit Function               ' if a file does exist get its name below
    End If
@@ -1008,7 +1031,7 @@ Public Function ExtractSuffixWithDot(ByVal strPath As String) As String
     Dim Max As Integer:    Max = 0
     
     On Error GoTo ExtractSuffixWithDot_Error
-    'If debugflg = 1 Then debugLog "%" & "ExtractSuffixWithDot"
+    'If debugFlg = 1 Then debugLog "%" & "ExtractSuffixWithDot"
    
     If strPath = vbNullString Then
         ExtractSuffixWithDot = vbNullString
@@ -1052,7 +1075,7 @@ Public Function driveCheck(ByRef folder As String, Filename As String) As String
    
   'get the list of all drives
    On Error GoTo driveCheck_Error
-   'If debugflg = 1 Then debugLog "%" & "driveCheck"
+   'If debugFlg = 1 Then debugLog "%" & "driveCheck"
 
    'sAllDrives = GetDriveString() ' redundant call - now happens using getdrives at form init
     
@@ -1068,10 +1091,10 @@ Public Function driveCheck(ByRef folder As String, Filename As String) As String
         sDrv = sDrives(cnt)
         ' on 32bit windows the folder is "Program Files\steamydock"
         folderString = sDrv & folder
-        If DirExists(folderString) = True Then
+        If fDirExists(folderString) = True Then
            'test for the steamydock binary
             testAppPath = folderString
-            If FExists(testAppPath & "\" & Filename) Then
+            If fFExists(testAppPath & "\" & Filename) Then
                 'MsgBox "steamydock binary exists"
                 driveCheck = testAppPath
                 Exit Function
@@ -1187,7 +1210,7 @@ Public Sub writeIconSettingsIni(ByVal location As String, ByVal iconNumberToWrit
     'Writes an .INI File (SETTINGS.INI)
     
    On Error GoTo writeIconSettingsIni_Error
-   'If debugflg = 1 Then debugLog "%writeIconSettingsIni"
+   'If debugFlg = 1 Then debugLog "%writeIconSettingsIni"
 
 
         PutINISetting location, iconNumberToWrite & "-FileName", sFilename, settingsFile
@@ -1283,7 +1306,7 @@ Public Sub checkRocketdockInstallation()
     
     ' check where rocketdock is installed
     On Error GoTo checkRocketdockInstallation_Error
-    If debugflg = 1 Then debugLog "% sub checkRocketdockInstallation"
+    If debugFlg = 1 Then debugLog "% sub checkRocketdockInstallation"
 
     RD86installed = driveCheck("Program Files (x86)\Rocketdock", "RocketDock.exe")
     RDinstalled = driveCheck("Program Files\Rocketdock", "RocketDock.exe")
@@ -1345,7 +1368,7 @@ End Sub
 Public Sub readRegistryIconValues(ByVal iconNumberToRead As Integer)
     ' read the settings from the registry
     On Error GoTo readRegistryOnce_Error
-    'If debugflg = 1 Then debugLog "%" & "readRegistryOnce"
+    'If debugFlg = 1 Then debugLog "%" & "readRegistryOnce"
 
     sFilename = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-FileName")
     sFileName2 = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-FileName2")
@@ -1402,7 +1425,7 @@ Public Sub getAllDriveNames(sDriveStrings As String)
     
     On Error GoTo getAllDriveNames_Error
     
-    If debugflg = 1 Then debugLog "% sub sDriveStrings"
+    If debugFlg = 1 Then debugLog "% sub sDriveStrings"
 
     For Each vDrive In GetDrives(sDriveStrings) ' getdrives is a collection of drive name strings C:\, D:\ &c
         sDeviceName = GetNtDeviceNameForDrive(vDrive) ' \Device\HarddiskVolume1 are the default naming conventions for Windows drives
@@ -1536,7 +1559,7 @@ Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) 
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
 
     On Error GoTo IsRunning_Error
-    'If debugflg = 1 Then debugLog "%IsRunning"
+    'If debugFlg = 1 Then debugLog "%IsRunning"
     
     ' ignore a Windows binary that can persist
     If InStr("RUNDLL32.exe", NameProcess) > 0 Then
@@ -1641,7 +1664,7 @@ Public Sub checkSteamyDockInstallation()
     ' check where SteamyDock is installed
     On Error GoTo checkSteamyDockInstallation_Error
     
-    If debugflg = 1 Then debugLog "% sub checkSteamyDockInstallation"
+    If debugFlg = 1 Then debugLog "% sub checkSteamyDockInstallation"
 
     SD86installed = driveCheck("Program Files (x86)\SteamyDock", "steamyDock.exe")
     SDinstalled = driveCheck("Program Files\SteamyDock", "steamyDock.exe")
@@ -1695,23 +1718,23 @@ Public Sub locateDockSettingsFile()
     Dim s As String: s = 0
         
     On Error GoTo locateDockSettingsFile_Error
-    If debugflg = 1 Then debugLog "% sub locateDockSettingsFile"
+    If debugFlg = 1 Then debugLog "% sub locateDockSettingsFile"
     
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
     dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
 
     'if the folder does not exist then create the folder
-    If Not DirExists(dockSettingsDir) Then
+    If Not fDirExists(dockSettingsDir) Then
         MkDir dockSettingsDir
     End If
     
     'if the settings.ini does not exist then create the file by copying
-    If Not FExists(dockSettingsFile) Then
+    If Not fFExists(dockSettingsFile) Then
     '    if it does not exist
     '    it will read the defaultDocksettings.ini line by line and create the new one, changing any occurrence of [defaultDockLocation]
     '    with the updated actual location
 
-        If FExists(App.Path & "\defaultDockSettings.ini") Then
+        If fFExists(App.Path & "\defaultDockSettings.ini") Then
             ' read the defaultDocksettings.ini line by line
             
             Open App.Path & "\defaultDockSettings.ini" For Input As #1
@@ -1724,7 +1747,7 @@ Public Sub locateDockSettingsFile()
                     s = Replace(inputData, "[defaultDockLocation]", sdAppPath)
                 End If
                 Write #2, outputData     ' write the line to the new docksettings.ini
-                'Debug.Print outputData
+                'debugLog outputData
             Loop
             
             Close #1
@@ -1735,7 +1758,7 @@ Public Sub locateDockSettingsFile()
     End If
     
     'confirm the settings file exists, if not use the version in the app itself
-    If Not FExists(dockSettingsFile) Then
+    If Not fFExists(dockSettingsFile) Then
             dockSettingsFile = App.Path & "\settings.ini"
     End If
 
@@ -2114,44 +2137,7 @@ End Function 'fnGetDateInUniversalFormat
 
 
             
-'---------------------------------------------------------------------------------------
-' Procedure : toggleDebugging
-' Author    : beededea
-' Date      : 07/07/2020
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Sub toggleDebugging()
-            
-    On Error GoTo toggleDebugging_Error
-    
-    debugLog "% sub toggleDebugging"
 
-'    NameProcess = "PersistentdebugLog.exe"
-'    debugPath = App.Path() & "\" & NameProcess
-    
-    If debugflg = 0 Then
-        debugflg = 1
-        'menuForm.mnuDebug.Caption = "Turn Debugging OFF"
-'        If FExists(debugPath) Then
-'            execStatus = ShellExecute(hWnd, "Open", debugPath, vbNullString, App.Path, 1)
-'            If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
-'            Sleep (500) ' a 1/2 sec delay is required before the process is ready to listen to debugLog statements
-'        End If
-    Else
-        debugflg = 0
-        'menuForm.mnuDebug.Caption = "Turn Debugging ON"
-'        checkAndKill NameProcess, False
-    End If
-
-   On Error GoTo 0
-   Exit Sub
-
-toggleDebugging_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure toggleDebugging of Module mdlMain"
-
-End Sub
 
 
 '---------------------------------------------------------------------------------------
@@ -2244,3 +2230,130 @@ msgBoxA_Error:
 
 End Function
 
+
+' .89 DAEB 13/06/2022 rDIConConfig.frm Moved backup-related private routines to modules to make them public
+'---------------------------------------------------------------------------------------
+' Procedure : getFileNameAndTitle
+' Author    : beededea
+' Date      : 02/09/2019
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub getFileNameAndTitle(ByRef retFileName As String, ByRef retfileTitle As String)
+   On Error GoTo getFileNameAndTitle_Error
+   If debugFlg = 1 Then debugLog "%getFileNameAndTitle"
+
+  If GetOpenFileName(x_OpenFilename) <> 0 Then
+    If x_OpenFilename.lpstrFile = "*.*" Then
+        'txtTarget.Text = savLblTarget
+    Else
+        retfileTitle = x_OpenFilename.lpstrFileTitle
+        retFileName = x_OpenFilename.lpstrFile
+    End If
+  Else
+    'The CANCEL button was pressed
+    'MsgBox "Cancel"
+  End If
+
+   On Error GoTo 0
+   Exit Sub
+
+getFileNameAndTitle_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFileNameAndTitle of Form rDIconConfigForm"
+End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : addTargetProgram
+' Author    : beededea
+' Date      : 30/05/2019
+' Purpose   : open a dialogbox to select a file as the target, normally a binary
+'---------------------------------------------------------------------------------------
+'
+Public Function addTargetProgram(ByVal targetText As String)
+    Dim iconPath As String: iconPath = vbNullString
+    Dim dllPath As String: dllPath = vbNullString
+    Dim dialogInitDir As String: dialogInitDir = vbNullString
+    Dim retFileName As String: retFileName = vbNullString
+    Dim retfileTitle As String: retfileTitle = vbNullString
+    
+    Const x_MaxBuffer = 256
+    
+    'On Error GoTo addTargetProgram_Error
+    If debugFlg = 1 Then debugLog "%" & "addTargetProgram"
+    
+    'On Error GoTo l_err1
+    'savLblTarget = txtTarget.Text
+    
+    On Error Resume Next
+    
+    ' set the default folder to the existing reference
+    If Not targetText = vbNullString Then
+        If fFExists(targetText) Then
+            ' extract the folder name from the string
+            iconPath = getFolderNameFromPath(targetText)
+            ' set the default folder to the existing reference
+            dialogInitDir = iconPath 'start dir, might be "C:\" or so also
+        ElseIf fDirExists(targetText) Then ' this caters for the entry being just a folder name
+            ' set the default folder to the existing reference
+            dialogInitDir = targetText 'start dir, might be "C:\" or so also
+        Else
+            If defaultDock = 0 Then ' ' .19 DAEB 01/03/2021 rDIConConfigForm.frm Separated the Rocketdock/Steamydock specific actions
+                dialogInitDir = rdAppPath 'start dir, might be "C:\" or so also
+            Else
+                dialogInitDir = sdAppPath 'start dir, might be "C:\" or so also
+            End If
+        End If
+    Else
+    ' .85 DAEB 06/06/2022 rDIConConfig.frm  Second app button should open in the program files folder
+    If fDirExists("c:\program files") Then
+            dialogInitDir = "c:\program files"
+        End If
+    End If
+    
+    If Not sDockletFile = vbNullString Then
+        If fFExists(sDockletFile) Then
+            ' extract the folder name from the string
+            dllPath = getFolderNameFromPath(sDockletFile)
+            ' set the default folder to the existing reference
+            dialogInitDir = dllPath 'start dir, might be "C:\" or so also
+        ElseIf fDirExists(sDockletFile) Then ' this caters for the entry being just a folder name
+            ' set the default folder to the existing reference
+            dialogInitDir = sDockletFile 'start dir, might be "C:\" or so also
+        Else
+            If defaultDock = 0 Then ' .14 DAEB 27/02/2021 rdIConConfigForm.frm Added default dock check to ensure it works without RD installed
+                dialogInitDir = rdAppPath & "\docklets"  'start dir, might be "C:\" or so also
+            Else
+                dialogInitDir = sdAppPath & "\docklets"  'start dir, might be "C:\" or so also
+            End If
+        End If
+    End If
+    
+  With x_OpenFilename
+'    .hwndOwner = Me.hWnd
+    .hInstance = App.hInstance
+    .lpstrTitle = "Select a File Target for this icon to call"
+    .lpstrInitialDir = dialogInitDir
+    
+    .lpstrFilter = "Text Files" & vbNullChar & "*.txt" & vbNullChar & "All Files" & vbNullChar & "*.*" & vbNullChar & vbNullChar
+    .nFilterIndex = 2
+    
+    .lpstrFile = String$(x_MaxBuffer, 0)
+    .nMaxFile = x_MaxBuffer - 1
+    .lpstrFileTitle = .lpstrFile
+    .nMaxFileTitle = x_MaxBuffer - 1
+    .lStructSize = Len(x_OpenFilename)
+  End With
+
+  Call getFileNameAndTitle(retFileName, retfileTitle) ' retfile will be buffered to 256 bytes
+
+  addTargetProgram = retFileName
+
+   On Error GoTo 0
+   
+   Exit Function
+
+addTargetProgram_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addTargetProgram of Form rDIconConfigForm"
+ 
+End Function

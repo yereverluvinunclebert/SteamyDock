@@ -201,7 +201,7 @@ End Sub
 '
 '    'now we add the new icon to the current position in the dictionary
 '    partialStringKey = LTrim$(Str$(selectedIconIndex))
-'    If FExists(newFileName) Then
+'    If fFExists(newFileName) Then
 '        ' we use the existing resizeAndLoadImgToDict to read the icon format
 '         resizeAndLoadImgToDict thisCollection, partialStringKey, newFileName, sDisabled, (0), (0), (thisByteSize), (thisByteSize), , imageOpacity
 '    End If

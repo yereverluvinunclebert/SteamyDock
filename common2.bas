@@ -75,7 +75,7 @@ Public sDContinuousHide As String 'nn
 Public sDBounceZone As String ' .05 DAEB 12/07/2021 common2.bas Add the BounceZone as a configurable variable.
     
 ' development
-Public sDDebug As String
+Public sDDebugFlg As String
 Public sDDefaultEditor As String
 
 Public Const SM_CMONITORS = 80
@@ -101,7 +101,7 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     On Error GoTo readDockSettingsFile_Error
     If debugflg = 1 Then debugLog "% sub readDockSettingsFile"
 
-    If FExists(dockSettingsFile) Then
+    If fFExists(dockSettingsFile) Then
         rDGeneralReadConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralReadConfig", dockSettingsFile)
         rDGeneralWriteConfig = GetINISetting("Software\SteamyDock\DockSettings", "GeneralWriteConfig", dockSettingsFile)
         rDRunAppInterval = GetINISetting("Software\SteamyDock\DockSettings", "RunAppInterval", dockSettingsFile)
@@ -119,9 +119,9 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
         sDBounceZone = GetINISetting("Software\SteamyDock\DockSettings", "BounceZone", settingsFile) ' .05 DAEB 12/07/2021 common2.bas Add the BounceZone as a configurable variable.
 
         ' development
-        sDDebug = GetINISetting(location, "debug", settingsFile)
         sDDefaultEditor = GetINISetting(location, "defaultEditor", settingsFile)
-
+        sDDebugFlg = GetINISetting(location, "debugFlg", settingsFile)
+        debugflg = Val(sDDebugFlg)
     End If
         
     sDSkinSize = Val(rDSkinSize)
@@ -173,7 +173,7 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDSide = GetINISetting(location, "Side", settingsFile)
     rDOffset = GetINISetting(location, "Offset", settingsFile)
     rDvOffset = GetINISetting(location, "vOffset", settingsFile)
-    rDOptionsTabIndex = GetINISetting(location, "OptionsTabIndex", toolSettingsFile)
+    rDOptionsTabIndex = GetINISetting("Software\DockSettings", "OptionsTabIndex", toolSettingsFile)
     '= GetINISetting("Software\SteamyDock\DockSettings\WindowFilters", "Count", 0, settingsFile)
     
    On Error GoTo 0
@@ -333,7 +333,7 @@ Public Sub validateRegistryStyle()
     MyPath = dockAppPath & "\Skins\" '"E:\Program Files (x86)\RocketDock\Skins\"
     'themePresent = False
 
-    If Not DirExists(MyPath) Then
+    If Not fDirExists(MyPath) Then
         MsgBox "WARNING - The skins folder is not present in the correct location " & dockAppPath
     End If
 
@@ -626,7 +626,7 @@ Public Sub validateRegistryGeneral()
     If Val(rDDisableMinAnimation) <= 0 And Val(rDDisableMinAnimation) > 1 Then rDDisableMinAnimation = "1" '
 
     ' development
-    If sDDebug = vbNullString Then sDDebug = "0"
+    If sDDebugFlg = vbNullString Then sDDebugFlg = "0"
     If sDDefaultEditor = vbNullString Then sDDefaultEditor = vbNullString
         
    On Error GoTo 0

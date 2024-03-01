@@ -53,14 +53,7 @@ Option Explicit
    Private Const SW_HIDE = 0
    Private Const SW_SHOWMINNOACTIVE = 7
 
-'------------------------------------------------------ STARTS
-' Constants for playing sounds
-Public Const SND_ASYNC As Long = &H1         '  play asynchronously
-Public Const SND_FILENAME As Long = &H20000     '  name is a file name
 
-' APIs for playing sounds
-Public Declare Function PlaySound Lib "winmm.dll" Alias "PlaySoundA" (ByVal lpszName As String, ByVal hModule As Long, ByVal dwFlags As Long) As Long
-'------------------------------------------------------ ENDS
 
 
 '---------------------------------------------------------------------------------------
@@ -117,7 +110,7 @@ Public Sub readIconRegistryWriteSettings(settingsFile As String)
     
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", dockSettingsFile
     
-    'If debugflg = 1 Then debugLog "%" & "readIconRegistryWriteSettings"
+    'If debugFlg = 1 Then debugLog "%" & "readIconRegistryWriteSettings"
  
     For useloop = 0 To rdIconMaximum
          ' get the relevant entries from the registry
@@ -147,7 +140,7 @@ End Sub
 Public Sub writeRegistryOnce(ByVal iconNumberToWrite As Integer)
         
    On Error GoTo writeRegistryOnce_Error
-    'If debugflg = 1 Then debugLog "%" & "writeRegistryOnce"
+    'If debugFlg = 1 Then debugLog "%" & "writeRegistryOnce"
     
     Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-FileName", sFilename)
     Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-FileName2", sFileName2)
@@ -193,7 +186,7 @@ End Sub
 Public Sub removeSettingsIni(ByVal iconNumberToWrite As Integer)
        
    On Error GoTo removeSettingsIni_Error
-   'If debugflg = 1 Then debugLog "%removeSettingsIni"
+   'If debugFlg = 1 Then debugLog "%removeSettingsIni"
 
         PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-FileName", vbNullString, dockSettingsFile
         PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-FileName2", vbNullString, dockSettingsFile
@@ -273,7 +266,7 @@ Public Function identifyAppIcons(iconCommand As String) As String
 
     
     strDelimiter = ","
-    If FExists(identFileName) Then
+    If fFExists(identFileName) Then
       fileH = FreeFile() 'get the next free file handle
       ' open the identFileName file
       Open identFileName For Input As #fileH
@@ -314,7 +307,7 @@ Public Function identifyAppIcons(iconCommand As String) As String
        ' check the icon exists
 
 
-        If FExists(iconFileName) Then
+        If fFExists(iconFileName) Then
             identifyAppIcons = iconFileName
         End If
     End If

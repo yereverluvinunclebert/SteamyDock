@@ -57,7 +57,7 @@ Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 ' APIs for querying processes END
 
 'Public Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal Image As Long, ByVal filename As String, clsidEncoder As CLSID, encoderParams As Any) As GpStatus
-Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal image As Long, ByVal x As Single, ByVal y As Single) As Long
+Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal image As Long, ByVal X As Single, ByVal Y As Single) As Long
 'Public Declare Function GdipLoadImageFromFile Lib "GdiPlus.dll" (ByVal filename As Long, GpImage As Long) As Long
 'Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClassName As String, ByVal lpszWindowName As String) As Long
 
@@ -79,7 +79,7 @@ Public Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInst
 Public Declare Function SelectObject Lib "gdi32.dll" (ByVal hdc As Long, ByVal hObject As Long) As Long
 Public Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
 Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
 Public Declare Function UpdateLayeredWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal hdcDst As Long, pptDst As Any, psize As Any, ByVal hdcSrc As Long, pptSrc As Any, ByVal crKey As Long, ByRef pblend As BLENDFUNCTION, ByVal dwFlags As Long) As Long
 Public Declare Function DrawIconEx Lib "user32" (ByVal hdc As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 ' API to obtain correct screen width (to correct VB6 bug)
@@ -113,7 +113,7 @@ Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As 
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, encoders As Any) As GpStatus
 ' APIs image cropping
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal image As Long, ByRef PixelFormat As Long) As Long
-Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long, ByVal PixelFormat As Long, ByVal srcBitmap As Long, dstBitmap As Long) As GpStatus
+Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long, ByVal PixelFormat As Long, ByVal srcBitmap As Long, dstBitmap As Long) As GpStatus
 
 'Public APIs for GDI+
 
@@ -129,7 +129,7 @@ Public Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal fontFamily As 
 Public Declare Function GdipDeleteGraphics Lib "GdiPlus.dll" (ByVal Graphics As Long) As Long
 Public Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal StringFormat As Long) As Long
 Public Declare Function GdipDisposeImage Lib "GdiPlus.dll" (ByVal image As Long) As Long
-Public Declare Function GdipDrawImageRectI Lib "GdiPlus.dll" (ByVal Graphics As Long, ByVal img As Long, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long) As Long
+Public Declare Function GdipDrawImageRectI Lib "GdiPlus.dll" (ByVal Graphics As Long, ByVal img As Long, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long) As Long
 Public Declare Function GdipDrawImageRectRect Lib "GdiPlus.dll" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal callbackData As Long) As Long
 Public Declare Function GdipDrawString Lib "gdiplus" (ByVal Graphics As Long, ByVal Str As String, ByVal Length As Long, ByVal thefont As Long, layoutRect As RECTF, ByVal StringFormat As Long, ByVal brush As Long) As Long
 Public Declare Function GdipGetImageHeight Lib "GdiPlus.dll" (ByVal image As Long, Height As Long) As Long
@@ -275,8 +275,8 @@ Public Type GDIPLUS_STARTINPUT
 End Type
 
 Public Type POINTAPI
-    x As Long
-    y As Long
+    X As Long
+    Y As Long
 End Type
 
 Public Type RECTF
@@ -1173,7 +1173,7 @@ Public Sub readDockConfiguration()
          
 '    Else
 '
-'        If FExists(origSettingsFile) Then ' does the original settings.ini exist?
+'        If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
 '
 '            ' copy the original settings file to a duplicate that we will operate upon
 '            FileCopy origSettingsFile, rdSettingsFile
@@ -1235,7 +1235,7 @@ Private Sub adjustControls()
 
     MyPath = sdAppPath & "\Skins\" '"E:\Program Files (x86)\RocketDock\Skins\"
 
-    If Not DirExists(MyPath) Then
+    If Not fDirExists(MyPath) Then
         MsgBox "WARNING - The skins folder is not present in the correct location " & sdAppPath
     End If
 
@@ -1304,11 +1304,15 @@ Private Sub adjustControls()
         dock.autoHideChecker.Enabled = True
     End If
     
-       
-    If sDDefaultEditor <> vbNullString And sDDebug = "1" Then
-        menuForm.mnuEditWidget.Caption = "Edit Widget using " & sDDefaultEditor
+    If sDDefaultEditor <> vbNullString Then menuForm.mnuEditWidget.Caption = "Edit Program using " & sDDefaultEditor
+   
+    If sDDebugFlg = "1" Then
+        menuForm.mnuDebug.Caption = "Turn Debugging OFF"
+        menuForm.mnuAppFolder.Visible = True
         menuForm.mnuEditWidget.Visible = True
     Else
+        menuForm.mnuDebug.Caption = "Turn Debugging ON"
+        menuForm.mnuAppFolder.Visible = False
         menuForm.mnuEditWidget.Visible = False
     End If
     
@@ -1555,7 +1559,7 @@ Public Sub saveIconConfigurationToSource()
          
 '    Else ' rocketdock compatibility
 '        origSettingsFile = rdAppPath & "\settings.ini"
-'        If FExists(origSettingsFile) Then ' does the original settings.ini exist?
+'        If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
 '
 '            ' we don't need to write anything else to the intermediate rdsettings file as it has already been done in insertNewIconDataIntoCurrentPosition
 '
@@ -1602,7 +1606,7 @@ Public Sub readIconData(ByVal iconCount As Integer)
     On Error GoTo readIconData_Error
 '    If debugflg = 1 Then debugLog "%" & "readIconData"
 
-    'If FExists(rdSettingsFile) Then ' does the alternative settings.ini exist? '.nn removed for performance reasons
+    'If fFExists(rdSettingsFile) Then ' does the alternative settings.ini exist? '.nn removed for performance reasons
         'get the rocketdock alternative settings.ini for this icon alone
         'readIconSettingsIni "Software\RocketDock\Icons", iconCount, rdSettingsFile
     'End If
@@ -1681,7 +1685,7 @@ Public Sub addProgramDLLorEXE()
         Exit Sub
     End If
       
-    'If FExists(retFileName) Then
+    'If fFExists(retFileName) Then
     
   ' if the user drags an icon to the dock then RD takes a icon link of the following form:
     'FileName = "C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\vbexpress.exe?62453184"
@@ -1695,7 +1699,7 @@ Public Sub addProgramDLLorEXE()
         End If
         
         ' test the resulting filestring exists
-        If FExists(filestring) Then
+        If fFExists(filestring) Then
             ' extract the suffix
             suffix = ExtractSuffixWithDot(filestring)
 
@@ -1711,7 +1715,7 @@ Public Sub addProgramDLLorEXE()
             End If
         Else ' the file doesn't exist in any form with ? or otherwise as a valid path
             iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
-            If FExists(iconFileName) Then
+            If fFExists(iconFileName) Then
                 iconImage = iconFileName
             Else
                 iconImage = App.Path & "\iconSettings\Icons\help.png"
@@ -1736,11 +1740,11 @@ Public Sub addProgramDLLorEXE()
            
         iconFileName = identifyAppIcons(retFileName) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                     
-        If FExists(iconFileName) Then
+        If fFExists(iconFileName) Then
           iconImage = iconFileName
         Else
             iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
-            If FExists(iconFileName) Then
+            If fFExists(iconFileName) Then
                 iconImage = iconFileName
             Else
                 iconImage = App.Path & "\iconSettings\Icons\help.png"
@@ -2035,24 +2039,24 @@ Public Sub loadAdditionalImagestoDictionary()
         imageOpacity = Val(rDThemeOpacity)
         ' load the theme background image into the collection sDSkinLeft is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDleft.png"
-        If FExists(themeName) Then
+        If fFExists(themeName) Then
             resizeAndLoadImgToDict collLargeIcons, "sDSkinLeft", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, , imageOpacity
         End If
     '
     '    ' load the theme background image into the collection sDSkinMid is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDmiddle.png"
-        If FExists(themeName) Then
+        If fFExists(themeName) Then
             resizeAndLoadImgToDict collLargeIcons, "sDSkinMid", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, , imageOpacity
         End If
 
     '    ' load the theme background image into the collection sDSkinRight is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDright.png"
-        If FExists(themeName) Then
+        If fFExists(themeName) Then
             resizeAndLoadImgToDict collLargeIcons, "sDSkinRight", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, , imageOpacity
         End If
         
         ' load the theme separator image into the collection sDSeparator is the unique key
-    '    If FExists(App.path & "\skins\" & rDtheme & "\" & rDThemeImage) Then
+    '    If fFExists(App.path & "\skins\" & rDtheme & "\" & rDThemeImage) Then
     '        resizeAndLoadImgToDict collLargeIcons, "sDSeparator", App.path & "\skins\" & rDtheme & "\" & rDThemeImage, vbNullString, CLng(0), CLng(0), CLng(128), CLng(128)
     '    End If
     
@@ -2061,47 +2065,47 @@ Public Sub loadAdditionalImagestoDictionary()
     imageOpacity = Val(rDIconOpacity)
     
     ' load a transparent 128 x 128 image into the collection, used to stop click-throughs
-    If FExists(App.Path & "\blankSquare.png") Then
+    If fFExists(App.Path & "\blankSquare.png") Then
         resizeAndLoadImgToDict collLargeIcons, "blank", App.Path & "\blankSquare.png", sDisabled, (0), (0), (128), (128), , 1
     End If
     
     ' .11 DAEB 01/05/2021 mdlMain.bas load a transparent 128 x 128 image into the collection, used to highlight the position of a drag/drop
-    If FExists(App.Path & "\red.png") Then
+    If fFExists(App.Path & "\red.png") Then
         resizeAndLoadImgToDict collLargeIcons, "red", App.Path & "\red.png", sDisabled, (0), (0), (256), (256), , imageOpacity
     End If
     
     ' load a small circle image into the collection, used to signify running process
     '                           thisDictionary, key ,strFilename, strName,thisDisabled ,Left, ByVal Top As Long,Width, Height,fullStringKey)
-    If FExists(App.Path & "\tinyCircle.png") Then
+    If fFExists(App.Path & "\tinyCircle.png") Then
         resizeAndLoadImgToDict collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
     
-    If FExists(App.Path & "\smallGoldCoin.png") Then
+    If fFExists(App.Path & "\smallGoldCoin.png") Then
         resizeAndLoadImgToDict collLargeIcons, "smallgoldCoin", App.Path & "\smallGoldCoin.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
     
     ' load a small circle image into the collection, used to signify running process
-    If FExists(App.Path & "\red-X.png") Then
+    If fFExists(App.Path & "\red-X.png") Then
         resizeAndLoadImgToDict collLargeIcons, "redx", App.Path & "\red-X.png", sDisabled, (0), (0), (64), (64), , imageOpacity
     End If
     
     ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
-    If FExists(App.Path & "\busy-F1-32x32x24.png") Then
+    If fFExists(App.Path & "\busy-F1-32x32x24.png") Then
         resizeAndLoadImgToDict collLargeIcons, "hourglass1", App.Path & "\busy-F1-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
-    If FExists(App.Path & "\busy-F2-32x32x24.png") Then
+    If fFExists(App.Path & "\busy-F2-32x32x24.png") Then
         resizeAndLoadImgToDict collLargeIcons, "hourglass2", App.Path & "\busy-F2-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
-    If FExists(App.Path & "\busy-F3-32x32x24.png") Then
+    If fFExists(App.Path & "\busy-F3-32x32x24.png") Then
         resizeAndLoadImgToDict collLargeIcons, "hourglass3", App.Path & "\busy-F3-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
-    If FExists(App.Path & "\busy-F4-32x32x24.png") Then
+    If fFExists(App.Path & "\busy-F4-32x32x24.png") Then
         resizeAndLoadImgToDict collLargeIcons, "hourglass4", App.Path & "\busy-F4-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
-    If FExists(App.Path & "\busy-F5-32x32x24.png") Then
+    If fFExists(App.Path & "\busy-F5-32x32x24.png") Then
         resizeAndLoadImgToDict collLargeIcons, "hourglass5", App.Path & "\busy-F5-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
-    If FExists(App.Path & "\busy-F6-32x32x24.png") Then
+    If fFExists(App.Path & "\busy-F6-32x32x24.png") Then
         resizeAndLoadImgToDict collLargeIcons, "hourglass6", App.Path & "\busy-F6-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
 
@@ -2276,7 +2280,7 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
 
     'now we add the new icon image giving it a key relating to the topmost position in the dictionary locating array
     partialStringKey = LTrim$(Str$(dictionaryLocationArrayUpperBound))
-    If FExists(newFileName) Then
+    If fFExists(newFileName) Then
         ' we use the existing resizeAndLoadImgToDict to read the icon format and load into the two dictionaries
          resizeAndLoadImgToDict collLargeIcons, partialStringKey, newFileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , imageOpacity
          resizeAndLoadImgToDict collSmallIcons, partialStringKey, newFileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , imageOpacity
@@ -2729,12 +2733,12 @@ Public Function setWindowCharacteristics()
     End If
     
     ' point structure that specifies the location of the layer updated in UpdateLayeredWindow
-    apiPoint.x = 0
-    apiPoint.y = 0
+    apiPoint.X = 0
+    apiPoint.Y = 0
     
     ' point structure that specifies the size of the window in pixels
-    apiWindow.x = screenWidthPixels ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    apiWindow.y = screenHeightPixels  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    apiWindow.X = screenWidthPixels ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    apiWindow.Y = screenHeightPixels  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     
     ' the third parameter to UpdateLayeredWindow is a pointer to a structure that specifies the new screen position of the layered window.
     ' If the current position is not changing, pptDst can be NULL. It is null.
@@ -3128,7 +3132,7 @@ Public Sub restartSteamydock()
 
     thisCommand = App.Path & "\restartSteamyDock.exe"
     
-    If FExists(thisCommand) Then
+    If fFExists(thisCommand) Then
         If userLevel <> "runas" Then userLevel = "open"
         Call dock.runCommand("focus", thisCommand)
     Else
@@ -3147,5 +3151,41 @@ restartSteamydock_Error:
             Resume Next
           End If
     End With
+
+End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : toggleDebugging
+' Author    : beededea
+' Date      : 07/07/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub toggleDebugging()
+
+    On Error GoTo toggleDebugging_Error
+
+    debugLog "% sub toggleDebugging"
+    
+    If debugflg = 0 Then
+        debugflg = 1
+        menuForm.mnuDebug.Caption = "Turn Debugging OFF"
+        menuForm.mnuAppFolder.Visible = True
+        menuForm.mnuEditWidget.Visible = True
+    Else
+        debugflg = 0
+        menuForm.mnuDebug.Caption = "Turn Debugging ON"
+        menuForm.mnuAppFolder.Visible = False
+        menuForm.mnuEditWidget.Visible = False
+    End If
+    
+    PutINISetting "Software\SteamyDock\DockSettings", "debugFlg", debugflg, dockSettingsFile
+    
+
+   On Error GoTo 0
+   Exit Sub
+
+toggleDebugging_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure toggleDebugging of Module mdlMain"
 
 End Sub
