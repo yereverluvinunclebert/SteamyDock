@@ -192,6 +192,7 @@ Public usedMenuFlag As Boolean
 
 Public dockSettingsFile As String
 Public toolSettingsFile  As String
+
 'Public origSettingsFile As String
 Public RDinstalled As String
 Public RD86installed As String
@@ -224,7 +225,11 @@ Public rDOpenRunning As String
 Public rDShowRunning As String
 Public rDManageWindows As String
 Public rDDisableMinAnimation As String
-Public rDDefaultEditor As String
+
+Public sDDockSettingsDefaultEditor As String
+Public sDIconSettingsDefaultEditor As String
+Public sDDockDefaultEditor As String
+
 Public rDDebugFlg As String
 
 Public sixtyFourBit As Boolean
@@ -336,7 +341,7 @@ Public Sub checkLicenceState()
     Dim slicence As String: slicence = "0"
 
     On Error GoTo checkLicenceState_Error
-    If debugFlg = 1 Then debugLog "%" & " sub checkLicenceState"
+    If debugflg = 1 Then debugLog "%" & " sub checkLicenceState"
 
     'toolSettingsFile = App.Path & "\settings.ini"
     ' read the tool's own settings file (
@@ -521,7 +526,7 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
     
     'MsgBox windowsVersionString
     
-    If debugFlg = 1 Then debugLog "%" & " sub classicThemeCapable"
+    If debugflg = 1 Then debugLog "%" & " sub classicThemeCapable"
 
     'Get the value of "ProgramFiles", or "ProgramFilesDir"
     
@@ -1306,7 +1311,7 @@ Public Sub checkRocketdockInstallation()
     
     ' check where rocketdock is installed
     On Error GoTo checkRocketdockInstallation_Error
-    If debugFlg = 1 Then debugLog "% sub checkRocketdockInstallation"
+    If debugflg = 1 Then debugLog "% sub checkRocketdockInstallation"
 
     RD86installed = driveCheck("Program Files (x86)\Rocketdock", "RocketDock.exe")
     RDinstalled = driveCheck("Program Files\Rocketdock", "RocketDock.exe")
@@ -1425,7 +1430,7 @@ Public Sub getAllDriveNames(sDriveStrings As String)
     
     On Error GoTo getAllDriveNames_Error
     
-    If debugFlg = 1 Then debugLog "% sub sDriveStrings"
+    If debugflg = 1 Then debugLog "% sub sDriveStrings"
 
     For Each vDrive In GetDrives(sDriveStrings) ' getdrives is a collection of drive name strings C:\, D:\ &c
         sDeviceName = GetNtDeviceNameForDrive(vDrive) ' \Device\HarddiskVolume1 are the default naming conventions for Windows drives
@@ -1664,7 +1669,7 @@ Public Sub checkSteamyDockInstallation()
     ' check where SteamyDock is installed
     On Error GoTo checkSteamyDockInstallation_Error
     
-    If debugFlg = 1 Then debugLog "% sub checkSteamyDockInstallation"
+    If debugflg = 1 Then debugLog "% sub checkSteamyDockInstallation"
 
     SD86installed = driveCheck("Program Files (x86)\SteamyDock", "steamyDock.exe")
     SDinstalled = driveCheck("Program Files\SteamyDock", "steamyDock.exe")
@@ -1713,13 +1718,15 @@ Public Sub locateDockSettingsFile()
         
     ' variables declared
     Dim dockSettingsDir As String: dockSettingsDir = vbNullString
+    
     Dim inputData As String:  inputData = vbNullString
     Dim outputData As String: outputData = vbNullString
     Dim s As String: s = 0
         
     On Error GoTo locateDockSettingsFile_Error
-    If debugFlg = 1 Then debugLog "% sub locateDockSettingsFile"
+    If debugflg = 1 Then debugLog "% sub locateDockSettingsFile"
     
+    ' dock Settings main docksettings.ini
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
     dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
 
@@ -2241,7 +2248,7 @@ End Function
 '
 Public Sub getFileNameAndTitle(ByRef retFileName As String, ByRef retfileTitle As String)
    On Error GoTo getFileNameAndTitle_Error
-   If debugFlg = 1 Then debugLog "%getFileNameAndTitle"
+   If debugflg = 1 Then debugLog "%getFileNameAndTitle"
 
   If GetOpenFileName(x_OpenFilename) <> 0 Then
     If x_OpenFilename.lpstrFile = "*.*" Then
@@ -2279,7 +2286,7 @@ Public Function addTargetProgram(ByVal targetText As String)
     Const x_MaxBuffer = 256
     
     'On Error GoTo addTargetProgram_Error
-    If debugFlg = 1 Then debugLog "%" & "addTargetProgram"
+    If debugflg = 1 Then debugLog "%" & "addTargetProgram"
     
     'On Error GoTo l_err1
     'savLblTarget = txtTarget.Text
