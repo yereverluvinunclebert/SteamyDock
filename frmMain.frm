@@ -1609,7 +1609,7 @@ Public lPressed As Long '.nn
 
 Private dockZorder As String '.nn
 ' .58 DAEB 21/04/2021 frmMain.frm added timer and vars to check to see if the system has just emerged from sleep
-Private strTimeThen As String
+Private strTimeThen As Date
 
 ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
 Private hourglassimage As String
@@ -2074,7 +2074,7 @@ Public Sub initialiseGlobalVars()
     delayRunTimerCount = 0
     autoHideProcessName = vbNullString
     userLevel = vbNullString
-    strTimeThen = vbNullString
+    strTimeThen = Now()
     nMinuteExposeTimerCount = 0
     msgBoxOut = False
     msgLogOut = False
@@ -7166,30 +7166,26 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub sleepTimer_Timer()
-    Dim strTimeNow As String: strTimeNow = vbNullString 'set a variable to compare for the NOW time
+    Dim strTimeNow As Date: strTimeNow = #1/1/2000 12:00:00 PM#  'set a variable to compare for the NOW time
     Dim lngSecondsGap As Long: lngSecondsGap = 0  ' set a variable for the difference in time
     
     On Error GoTo sleepTimer_Timer_Error
 
+    sleepTimer.Enabled = False
     strTimeNow = Now()
     
     lngSecondsGap = DateDiff("s", strTimeThen, strTimeNow)
+    strTimeThen = Now()
 
     If lngSecondsGap > 30 Then
         'MsgBox "System has just woken up from a sleep"
-        MessageBox Me.hwnd, "System has just woken up from a sleep - animatedIconsRaised =" & animatedIconsRaised, "SteamyDock Information Message", vbOKOnly
+        'MessageBox Me.hwnd, "System has just woken up from a sleep - animatedIconsRaised =" & animatedIconsRaised, "SteamyDock Information Message", vbOKOnly
 
         ' at this point we should lower the dock and redraw the small icons.
-        'If animatedIconsRaised = True Then
-        
-        ' the dock thinks the animatedIconsRaised is false!
-        'Call sequentialBubbleAnimation 'here deanie
         Call animateTimer_Timer
-        strTimeThen = Now
-    Else
-        strTimeThen = Now
     End If
     
+    sleepTimer.Enabled = True
 
     On Error GoTo 0
     Exit Sub
@@ -7717,7 +7713,7 @@ Private Sub setSomeValues()
     bounceZone = 75 ' .82 DAEB 12/07/2021 frmMain.frm Add the BounceZone as a configurable variable.
     msgBoxOut = True
     msgLogOut = True
-    strTimeThen = Now
+    strTimeThen = Now()
     autoHideMode = "fadeout"
     selectedIconIndex = 999 ' sets the icon to bounce index to something that will never occur
     bounceTimerRun = 1

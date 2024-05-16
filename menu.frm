@@ -80,6 +80,9 @@ Begin VB.Form menuForm
          Begin VB.Menu mnuAddShutdown 
             Caption         =   "Add Shutdown"
          End
+         Begin VB.Menu mnuAddHibernate 
+            Caption         =   "Add Hibernate"
+         End
          Begin VB.Menu mnuAddReboot 
             Caption         =   "Add Reboot"
          End
@@ -2140,6 +2143,53 @@ Private Sub mnuAddShutdown_click()
 mnuAddShutdown_click_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddShutdown_click of Form rDIconConfigForm"
+    
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : mnuAddHibernate_click
+' Author    : beededea
+' Date      : 18/08/2019
+' Purpose   : Add a shutdown icon on an Icon map right click.
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuAddHibernate_click()
+    Dim iconImage As String
+    Dim iconFileName As String
+    
+   On Error GoTo mnuAddHibernate_click_Error
+      'If debugflg = 1 Then debugLog "%" & "mnuAddHibernate_click"
+   
+   
+    ' check the icon exists
+    iconFileName = App.Path & "\iconSettings\my collection" & "\shutdown.png"
+    If fFExists(iconFileName) Then
+        iconImage = iconFileName
+    Else
+        iconImage = App.Path & "\iconSettings\Icons\help.png"
+    End If
+           
+    If fFExists(iconImage) Then
+        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+        Call insertNewIconDataIntoCurrentPosition(iconImage, "Hibernate", "C:\Windows\System32\shutdown.exe", "/h", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Hibernate")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
+    Else
+         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+         MessageBox Me.hwnd, "Unable to add hibernate image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         '        MsgBox "Unable to add shutdown image as it does not exist"
+    End If
+       
+    On Error GoTo 0
+   Exit Sub
+
+mnuAddHibernate_click_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddHibernate_click of Form rDIconConfigForm"
     
 End Sub
 '---------------------------------------------------------------------------------------
