@@ -8847,3 +8847,61 @@
 2024-07-06 11:51:31.072 ******************************
 2024-07-06 11:51:31.072 % SteamyDock startup complete.
 2024-07-06 11:51:31.073 ******************************
+2024-07-06 12:49:05.226 % sub toggleDebugging
+2024-07-06 12:49:05.237 *****************************
+2024-07-06 12:49:05.237 % SteamyDock program started.
+2024-07-06 12:49:05.237 *****************************
+2024-07-06 12:49:05.237 % sub sDriveStrings
+2024-07-06 12:49:05.238 % sub testDockRunning
+2024-07-06 12:49:05.238 % sub checkLicenceState
+2024-07-06 12:49:05.271 % sub classicThemeCapable
+2024-07-06 12:49:05.271 % sub disableAdmin
+2024-07-06 12:49:05.271 % sub checkSteamyDockInstallation
+2024-07-06 12:49:05.272 % sub locateDockSettingsFile
+2024-07-06 12:49:05.277 % sub readDockConfiguration
+2024-07-06 12:49:05.278 % sub readDockSettingsFile
+2024-07-06 12:49:05.531 % sub setUserHotKey
+2024-07-06 12:49:05.532 % func monitorProperties
+2024-07-06 12:49:05.532 % sub resolveVB6SizeBug
+2024-07-06 12:49:05.536 % sub setLocalConfigurationVars
+2024-07-06 12:49:05.537 % sub initialiseGDIStartup
+2024-07-06 12:49:05.537 % sub createDictionaryObjects
+2024-07-06 12:49:05.541 % sub prepareArraysAndCollections
+2024-07-06 12:49:07.333 % sub createGDIPlusElements
+2024-07-06 12:49:07.334 % sub showSplashScreen
+2024-07-06 12:49:07.391 % sub readyGDIPlus
+2024-07-06 12:49:07.392 % sub setAutoHide
+2024-07-06 12:49:07.392 % sub setWindowCharacteristics
+2024-07-06 12:49:07.410 % sub setUpProcessTimers
+2024-07-06 12:49:07.415 ******************************
+2024-07-06 12:49:07.415 % SteamyDock startup complete.
+2024-07-06 12:49:07.416 ******************************
+2024-07-06 12:56:54.230 % sub toggleDebugging
+2024-07-06 12:56:54.245 *****************************
+2024-07-06 12:56:54.245 % SteamyDock program started.
+2024-07-06 12:56:54.245 *****************************
+2024-07-06 12:56:54.245 % sub sDriveStrings
+2024-07-06 12:56:54.245 % sub testDockRunning
+2024-07-06 12:56:54.246 % sub checkLicenceState
+2024-07-06 12:56:54.276 % sub classicThemeCapable
+2024-07-06 12:56:54.276 % sub disableAdmin
+2024-07-06 12:56:54.276 % sub checkSteamyDockInstallation
+2024-07-06 12:56:54.277 % sub locateDockSettingsFile
+2024-07-06 12:56:54.278 % sub readDockConfiguration
+2024-07-06 12:56:54.279 % sub readDockSettingsFile
+2024-07-06 12:56:54.528 % sub setUserHotKey
+2024-07-06 12:56:54.528 % func monitorProperties
+2024-07-06 12:56:54.528 % sub resolveVB6SizeBug
+2024-07-06 12:56:54.531 % sub setLocalConfigurationVars
+2024-07-06 12:56:54.532 % sub initialiseGDIStartup
+2024-07-06 12:56:54.533 % sub createDictionaryObjects
+2024-07-06 12:56:54.534 % sub prepareArraysAndCollections
+2024-07-06 12:56:56.227 % sub createGDIPlusElements
+2024-07-06 12:56:56.227 % sub showSplashScreen
+2024-07-06 12:56:56.278 % sub readyGDIPlus
+2024-07-06 12:56:56.279 % sub setAutoHide
+2024-07-06 12:56:56.279 % sub setWindowCharacteristics
+2024-07-06 12:56:56.294 % sub setUpProcessTimers
+2024-07-06 12:56:56.299 ******************************
+2024-07-06 12:56:56.300 % SteamyDock startup complete.
+2024-07-06 12:56:56.300 ******************************

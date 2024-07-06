@@ -3961,7 +3961,7 @@ Private Sub drawDockByCursorEntryPosition()
     rightIconWidthPxls = iconWidthPxls
 
     ' small icons to the left shown in small mode
-    'Call sizeAndShowSmallIconsToLeftByCEP(iconIndex, leftmostResizedIcon, showsmall)
+    Call sizeAndShowSmallIconsToLeftByCEP(iconIndex, leftmostResizedIcon, showsmall)
 
     ' small icons to the right shown in small mode
     Call sizeAndShowSmallIconsToRightByCEP(iconIndex, rightmostResizedIcon, rightIconWidthPxls, showsmall)
