@@ -2792,6 +2792,7 @@ Private Sub Form_Unload(Cancel As Integer)
     Unload menuForm
     Unload showAndTell
     Unload splashForm
+    Unload dock
     
     ' remove all variable references to each form in turn
     
@@ -2802,7 +2803,8 @@ Private Sub Form_Unload(Cancel As Integer)
     Set showAndTell = Nothing
     Set splashForm = Nothing
     Set licence = Nothing
-
+    Set dock = Nothing
+    
     RemoveHotKey lHotKey
 
     ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
@@ -3959,7 +3961,7 @@ Private Sub drawDockByCursorEntryPosition()
     rightIconWidthPxls = iconWidthPxls
 
     ' small icons to the left shown in small mode
-    Call sizeAndShowSmallIconsToLeftByCEP(iconIndex, leftmostResizedIcon, showsmall)
+    'Call sizeAndShowSmallIconsToLeftByCEP(iconIndex, leftmostResizedIcon, showsmall)
 
     ' small icons to the right shown in small mode
     Call sizeAndShowSmallIconsToRightByCEP(iconIndex, rightmostResizedIcon, rightIconWidthPxls, showsmall)
