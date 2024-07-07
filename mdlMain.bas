@@ -584,7 +584,7 @@ Public oldScreenHeightPixels As Long
 Public iconStoreLeftPixels() As Double ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
 Public iconStoreRightPixels() As Double ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-Public iconStoreTopPixels() As Double ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
+'Public iconStoreTopPixels() As Double ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
 Public iconStoreBottomPixels() As Double ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 
 ' Left  Right
@@ -1942,7 +1942,7 @@ Public Sub deleteThisIcon()
                 ' unused vars now
                 iconStoreLeftPixels(useloop) = iconStoreLeftPixels(useloop + 1)
                 iconStoreRightPixels(useloop) = iconStoreRightPixels(useloop + 1)
-                iconStoreTopPixels(useloop) = iconStoreTopPixels(useloop + 1)
+                'iconStoreTopPixels(useloop) = iconStoreTopPixels(useloop + 1)
                 iconStoreBottomPixels(useloop) = iconStoreBottomPixels(useloop + 1)
             End If
             
@@ -2271,7 +2271,7 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
     ReDim Preserve iconStoreLeftPixels(rdIconMaximum) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
     ReDim Preserve iconStoreRightPixels(rdIconMaximum) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    ReDim Preserve iconStoreTopPixels(rdIconMaximum) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
+    'ReDim Preserve iconStoreTopPixels(rdIconMaximum) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
     ReDim Preserve iconStoreBottomPixels(rdIconMaximum) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 
 '    If debugflg = 1 Then debugLog "%" & "addNewImageToDictionary "

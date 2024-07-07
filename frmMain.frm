@@ -825,6 +825,12 @@ Attribute VB_Exposed = False
 ' Current Task:
 ' =============
 
+' the problem of the main icon overlapping the left/right hand icons causing a 'jitter' between main and secondary icon:
+' this is due to the positions of all the icons being calculated dynamically and the math being inprecise on the 'edges' will cause
+' one pr other of the icons to become 'main'. Solution: The main icon does not need to have its start position calculated in relation to the others,
+' it should be calculated on its own according to the cursor position across its fixed width. The other icons are calculated in relation to it, not
+' from the left hand side!
+
 ' blinked-out icon when right clicking.
 
 ' unsure what causes the dock to sometimes be in full admin mode, does not appear to be the restart nor the privilege level of the
@@ -1527,6 +1533,9 @@ Private Const VERTRES = 10
 'Private lngWidth As Long
 Private lngCursor As Long
 Private iconIndex As Single
+Private iconProportion As Double
+Private iconXOffset As Double
+
 
 Private dynamicSizeModifierPxls As Double
 Private differenceFromLeftMostResizedIconPxls As Double
@@ -3324,9 +3333,16 @@ Private Sub animateTimer_Timer()
     For useloop = 0 To iconArrayUpperBound
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
         insideDock = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
-    
+        
         If insideDock Then
             iconIndex = useloop ' this is the current icon number being hovered over
+            
+            'Dim iAmount As Long
+            'iWidth = iconStoreRightPixels(useloop) - iconStoreLeftPixels(useloop)
+            'iWidth = iconWidthPxls
+            'iAmount = apiMouse.X - iconStoreLeftPixels(useloop)
+            'iconProportion = (apiMouse.X - iconStoreLeftPixels(useloop)) / iconWidthPxls
+            iconXOffset = apiMouse.X - iconStoreLeftPixels(useloop)
             Exit For ' as soon as we have the index we no longer have to stay in the loop
         End If
     Next useloop
@@ -3469,7 +3485,7 @@ Private Sub sequentialBubbleAnimation()
         If useloop = 0 Then Call sizeEachSmallIconToLeft(useloop, leftmostResizedIcon, showsmall)
 
         ' if the the main icon is icon zero
-         ' the main fullsize icon
+        ' the main fullsize icon
         Call sizeFullSizeIcon(useloop, showsmall)
         
         ' the group of icons to the left of the main icon, resized dynamically
@@ -3535,7 +3551,7 @@ Private Sub storeCurrentIconPositions(useloop)
         
         iconStoreLeftPixels(useloop) = Int(iconPosLeftPxls)
         iconStoreRightPixels(useloop) = Int(iconStoreLeftPixels(useloop) + iconWidthPxls) ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-        iconStoreTopPixels(useloop) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
+        'iconStoreTopPixels(useloop) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
         'iconStoreBottomPixels(useloop) =' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 End Sub
 
@@ -3841,8 +3857,10 @@ Private Sub showSmallIcon(ByVal useloop As Integer)
     End If
 End Sub
 
-Private Sub showLargeIconTypes(ByVal useloop As Integer)
+Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIconXOffset As Integer)
     Dim thiskey As String: thiskey = ""
+    
+    If thisIconXOffset <> 0 Then iconPosLeftPxls = iconPosLeftPxls - (thisIconXOffset / 5)
     
     '   check the recently disabled flag and display the transparent version instead
     If disabledArray(useloop) = 1 Then
@@ -3982,7 +4000,7 @@ Private Sub sizeAndShowFullSizeIconByCEP(ByVal thisIconIndex As Integer, ByRef s
 
     '===================
     ' the main fullsize icon
-    '==================
+    '===================
     iconHeightPxls = iconSizeLargePxls
     iconWidthPxls = iconSizeLargePxls
     mainIconWidthPxls = iconWidthPxls
@@ -3991,12 +4009,13 @@ Private Sub sizeAndShowFullSizeIconByCEP(ByVal thisIconIndex As Integer, ByRef s
 
     ' the following two lines  position the main icon initially to the main icon's leftmost start point when small
     ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    '
     iconPosLeftPxls = iconStoreLeftPixels(iconIndex)
     
     Call storeCurrentIconPositions(thisIconIndex)
     
     ' display the icon in the dock
-    Call showLargeIconTypes(thisIconIndex) ' display the larger size icon or the
+    Call showLargeIconTypes(thisIconIndex, iconXOffset) ' display the larger size icon or the
 
     'now draw the icon text above the selected icon
     Call drawTextAboveIcon(thisIconIndex, textWidth)
@@ -5723,7 +5742,7 @@ Public Sub prepareArraysAndCollections()
     ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     ReDim Preserve iconStoreLeftPixels(theCount)
     ReDim Preserve iconStoreRightPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-    ReDim Preserve iconStoreTopPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
+    'ReDim Preserve iconStoreTopPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
     ReDim Preserve iconStoreBottomPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
     
     iconArrayUpperBound = rdIconMaximum
@@ -7630,11 +7649,11 @@ Private Sub selectBubbleAnimation(ByVal animationType As Integer)
 
     Select Case animationType
         Case 1
-            Call sequentialBubbleAnimation ' the animation
+            Call sequentialBubbleAnimation ' the main animation
         Case 2
-            Call drawDockByCursorEntryPosition ' only dockJustEntered = True
+            Call drawDockByCursorEntryPosition ' only when dockJustEntered = True
         Case 3
-            Call drawSmallStaticIcons ' simple static redraw
+            Call drawSmallStaticIcons ' simple static redraw of the small icons
     End Select
 
     On Error GoTo 0

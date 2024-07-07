@@ -11,38 +11,154 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
-'Option Explicit
-'
-''Private WithEvents W As cWidgetBase '<- this is required in each cwImplementation...
-'
-'Private mainIconxo As Integer: Private mainIconyo As Integer
-'
-'
-'Private Sub Class_Initialize()
-'
-'    'Call initialiseVars
-'
-'    mainIconxo = 0: mainIconyo = 0
-'
-''    Set W = Cairo.WidgetBase '<- this is required in each cwImplementation...
-''        W.Alpha = 0.5
-'End Sub
-'
-''the following two Public Props also need to be exposed in each Widget-Implementation (but that was it)
-''Public Property Get Widget() As cWidgetBase: Set Widget = W: End Property
-''Public Property Get Widgets() As cWidgets:  Set Widgets = W.Widgets: End Property
-'Private Sub W_MouseDown(Button As Integer, Shift As Integer, ByVal X As Single, ByVal Y As Single)
-'    If Button = vbRightButton Then
-'         Call menuForm.PopupMenu(menuForm.mnuMainMenu)
-'    End If
-'End Sub
-'
-'Private Sub W_Paint(CC As cCairoContext, ByVal xAbs As Single, ByVal yAbs As Single, ByVal dx_Aligned As Single, ByVal dy_Aligned As Single, UserObj As Object)
-'    Draw CC, dx_Aligned, dy_Aligned
-'End Sub
-'
-'Private Sub Draw(CC As cCairoContext, dx, dy)
-'
-'    CC.RenderSurfaceContent "mainIcon", mainIconxo, mainIconyo
+Option Explicit
 
-'End Sub
+Private mHOffset As Long
+Private mVOffset As Long
+Private mIconWidth As Long
+Private mIconIndex As Integer
+Private mIconOpacity As Integer
+Private mIconImage As String
+
+Private Sub Class_Initialize()
+
+
+    'mainIconxo = 0: mainIconyo = 0
+
+End Sub
+'---------------------------------------------------------------------------------------
+' Property  : iconIndex
+' Author    : beededea
+' Date      : 17/05/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get iconIndex() As Integer
+   On Error GoTo iconIndexGet_Error
+
+   iconIndex = mIconIndex
+
+   On Error GoTo 0
+   Exit Property
+
+iconIndexGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconIndex of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : iconIndex
+' Author    : beededea
+' Date      : 10/05/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let iconIndex(ByVal newValue As Integer)
+   On Error GoTo iconIndexLet_Error
+
+    If mIconIndex <> newValue Then mIconIndex = newValue Else Exit Property
+    
+    If mIconIndex = True Then
+    
+    Else
+    
+    End If
+
+   On Error GoTo 0
+   Exit Property
+
+iconIndexLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconIndex of Class Module cwIcon"
+End Property
+'
+'---------------------------------------------------------------------------------------
+' Property  : hOffset
+' Author    : beededea
+' Date      : 17/05/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get hOffset() As Long
+   On Error GoTo hOffsetGet_Error
+
+   hOffset = mHOffset
+
+   On Error GoTo 0
+   Exit Property
+
+hOffsetGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property hOffset of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : hOffset
+' Author    : beededea
+' Date      : 10/05/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let hOffset(ByVal newValue As Long)
+   On Error GoTo hOffsetLet_Error
+
+    If mHOffset <> newValue Then mHOffset = newValue Else Exit Property
+    
+    If mHOffset = True Then
+    
+    Else
+    
+    End If
+
+   On Error GoTo 0
+   Exit Property
+
+hOffsetLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property hOffset of Class Module cwIcon"
+End Property
+
+
+'
+'---------------------------------------------------------------------------------------
+' Property  : vOffset
+' Author    : beededea
+' Date      : 17/05/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get vOffset() As Long
+   On Error GoTo vOffsetGet_Error
+
+   vOffset = mVOffset
+
+   On Error GoTo 0
+   Exit Property
+
+vOffsetGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property vOffset of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : vOffset
+' Author    : beededea
+' Date      : 10/05/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let vOffset(ByVal newValue As Long)
+   On Error GoTo vOffsetLet_Error
+
+    If mVOffset <> newValue Then mVOffset = newValue Else Exit Property
+    
+    If mVOffset = True Then
+    
+    Else
+    
+    End If
+
+   On Error GoTo 0
+   Exit Property
+
+vOffsetLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property vOffset of Class Module cwIcon"
+End Property
