@@ -1543,6 +1543,7 @@ Private animateStep As Single
 Private dockDrawingPositionPxls As Single
 'Private dockTopPxls As Single '.nn
 Private iconLeftmostPointPxls As Single
+Private iconRightmostPointPxls As Single
 Private lngFont As Long
 Private lngBrush As Long
 Private lngFontFamily As Long
@@ -1607,7 +1608,7 @@ Private yAxisModifier As Integer '.nn added for future Y axis animation
 Private autoHideMode As String
 Private autoSlideMode As String
 Private dockSlidOut As Boolean
-Private dockEntranceLocation As Integer
+Private dockYEntrancePoint As Integer
 Private nMinuteExposeTimerCount As Integer
 
 ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
@@ -2062,7 +2063,7 @@ Public Sub initialiseGlobalVars()
     screenHorizontalEdge = 0
     dockDrawingPositionPxls = 0
     iconLeftmostPointPxls = 0
-    dockEntranceLocation = 0
+    dockYEntrancePoint = 0
     differenceFromLeftMostResizedIconPxls = 0
     normalDockWidthPxls = 0
     expandedDockWidth = 0
@@ -2408,7 +2409,7 @@ Public Sub fMouseUp(Button As Integer)
                 
                 Else
                     
-                    If Val(rDHoverFX) = 1 Then Call selectBubbleAnimation(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
+                    If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
                 End If
 
                 ' we use the existing "add an icon" or icon deletion code to move the icon collection to a new temporary dock and write the new details there and then back again to the icon collection
@@ -2878,7 +2879,7 @@ Private Sub initiatedExplorerTimer_Timer()
                 ' .81 DAEB 28/05/2021 frmMain.frm Refresh the running process with a cog when the process is running, this had been removed earlier
                 bDrawn = False
                 If smallDockBeenDrawn = True Then
-                    If Val(rDHoverFX) = 1 Then Call selectBubbleAnimation(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
+                    If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
                 End If
             End If
         Next useloop
@@ -2935,7 +2936,7 @@ Private Sub initiatedProcessTimer_Timer()
                 ' .81 DAEB 28/05/2021 frmMain.frm Refresh the running process with a cog when the process is running, this had been removed earlier
                 bDrawn = False
                 If smallDockBeenDrawn = True Then
-                    If Val(rDHoverFX) = 1 Then Call selectBubbleAnimation(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
+                    If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
                 End If
             End If
         Next useloop
@@ -3004,7 +3005,7 @@ Private Sub responseTimer_Timer()
         
     currentDockHeightPxls = fSetDockUpperHeightLimit()
     Call tuneResponseTimerInterval
-    dockEntranceLocation = fDefineDockEntranceLocation()
+    dockYEntrancePoint = fDefineDockYEntrancePoint()
     
     lastPositionRelativeToDock = outsideDock
     outsideDock = fTestCursorWithinDockYPosition()
@@ -3106,13 +3107,13 @@ Private Sub tuneResponseTimerInterval()
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : defineDockEntranceLocation
+' Procedure : defineDockYEntrancePoint
 ' Author    : beededea
 ' Date      : 19/12/2022
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Function fDefineDockEntranceLocation() As Long
+Private Function fDefineDockYEntrancePoint() As Long
 
     Dim calcEntrance As Long: calcEntrance = 0
     
@@ -3129,7 +3130,7 @@ Private Function fDefineDockEntranceLocation() As Long
         End If
     'End If
     
-    fDefineDockEntranceLocation = calcEntrance
+    fDefineDockYEntrancePoint = calcEntrance
 End Function
 
 '---------------------------------------------------------------------------------------
@@ -3142,12 +3143,19 @@ End Function
 Private Function fTestCursorWithinDockYPosition() As Boolean
     Dim outsideDock  As Boolean: outsideDock = False
     
+    iconRightmostPointPxls = iconStoreRightPixels(UBound(iconStoreLeftPixels))
+    
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
     If dockPosition = vbBottom Then
-        outsideDock = apiMouse.Y < dockEntranceLocation Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels))    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        'outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels))    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+            outsideDock = True
+        Else
+            outsideDock = False
+        End If
     End If
     If dockPosition = vbtop Then
-        outsideDock = apiMouse.Y > dockEntranceLocation Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     End If
     
     fTestCursorWithinDockYPosition = outsideDock ' return
@@ -3260,7 +3268,7 @@ Private Sub stopAnimating()
 
         If animatedIconsRaised = False Then
             If smallDockBeenDrawn = False Then ' only draws the dock when it has not yet been drawn
-                If Val(rDHoverFX) = 1 Then Call selectBubbleAnimation(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
+                If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
             End If
             If animateTimer.Enabled = True Then
                 
@@ -3355,7 +3363,7 @@ Private Sub animateTimer_Timer()
     ' when the icons have been ordered correctly then sequentialBubbleAnimation provides the animation from that point on.
     
     If dockJustEntered = True Then
-        If Val(rDHoverFX) = 1 Then Call selectBubbleAnimation(2) ' select drawDockByCursorEntryPosition - finds horizontal start point for the dock and place icons accordingly
+        If Val(rDHoverFX) = 1 Then Call selectBubbleType(2) ' select drawDockByCursorEntryPosition - finds horizontal start point for the dock and place icons accordingly
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
         saveStartLeftPxls = iconStoreLeftPixels(0) ' we now have the dock start position for sequentialBubbleAnimation to do its stuff
         dockJustEntered = False
@@ -3370,7 +3378,7 @@ Private Sub animateTimer_Timer()
         If Val(rDHoverFX) = 0 Then
             ' the none choice, simply bounces the small icon without growing it at all
         ElseIf Val(rDHoverFX) = 1 Then
-            Call selectBubbleAnimation(1) ' select sequentialBubbleAnimation
+            Call selectBubbleType(1) ' select sequentialBubbleAnimation
         ElseIf Val(rDHoverFX) = 2 Then
             'Call sequentialBubbleAnimation ' the current zoom: Bubble animation
             ' the zoom plateau animation, as per the current animation makes n number of central icons assume the full size
@@ -3395,7 +3403,16 @@ animateTimer_Error:
 
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : updateGDIPlus
+' Author    : beededea
+' Date      : 08/07/2024
+' Purpose   : now update the image using GDI to draw all the placed GDiP elements
+'---------------------------------------------------------------------------------------
+'
 Private Sub updateGDIPlus()
+
+   On Error GoTo updateGDIPlus_Error
 
     Call GdipDeleteGraphics(lngImage)  'The graphics may now be deleted
     
@@ -3405,8 +3422,17 @@ Private Sub updateGDIPlus()
     'Update the specified window handle (hwnd) with a handle to our bitmap (dc) passing all the required characteristics
     UpdateLayeredWindow Me.hwnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
 
+   On Error GoTo 0
+   Exit Sub
+
+updateGDIPlus_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure updateGDIPlus of Form dock"
+
 End Sub
-'
+
+
+
 'Private Function Draw(Func As String) As Integer
 '  Dim i As Integer: i = 0
 '  Dim sinwave As Integer: sinwave = 0
@@ -3470,8 +3496,7 @@ Private Sub sequentialBubbleAnimation()
         
         ' this is the actual line that does the main animation
         dynamicSizeModifierPxls = ((apiMouse.X) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
-
-
+    
     Else
         usedMenuFlag = False ' the menu causes the mouse to move far away from the icon centre and so icon sizing was massive
     End If
@@ -3944,11 +3969,11 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub drawDockByCursorEntryPosition()
+
     Dim showsmall As Boolean: showsmall = False
     Dim textWidth As Integer: textWidth = 0
     Dim leftmostResizedIcon As Integer: leftmostResizedIcon = 0
     Dim rightmostResizedIcon As Integer: rightmostResizedIcon = 0
-    
     Dim useloop As Integer: useloop = 0
     Dim rightIconWidthPxls As Integer: rightIconWidthPxls = 0
     Dim mainIconWidthPxls  As Integer: mainIconWidthPxls = 0
@@ -3959,6 +3984,7 @@ Private Sub drawDockByCursorEntryPosition()
     Dim offsetProportion As Double: offsetProportion = 0
     
     On Error GoTo drawDockByCursorEntryPosition_Error
+    
     'If debugflg = 1 Then debugLog "%drawDockByCursorEntryPosition"
     
     ' the small icon dock placement is inevitably incorrect at this point as the left most position of the dock, icon one,
@@ -3967,6 +3993,8 @@ Private Sub drawDockByCursorEntryPosition()
     
     DeleteObject bmpMemory ' the bitmap deleted
     Call readyGDIPlus ' clears the whole previously drawn image section and the animation continues
+    
+    ' iconRightmostPointPxls =
     
     If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth)
     
@@ -3989,6 +4017,7 @@ Private Sub drawDockByCursorEntryPosition()
     ' small icons to the right shown in small mode
     Call sizeAndShowSmallIconsToRightByCEP(iconIndex, rightmostResizedIcon, rightIconWidthPxls, showsmall)
    
+    ' now update the image using GDI to draw all the placed GDiP elements
     Call updateGDIPlus
    
    On Error GoTo 0
@@ -4099,18 +4128,6 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
         iconPosLeftPxls = iconStoreLeftPixels(thisIconIndex - 1)
 
         For leftLoop = thisIconIndex - 2 To 0 Step -1
-'            iconHeightPxls = iconSizeSmallPxls
-'            iconWidthPxls = iconSizeSmallPxls
-'
-'            If dockPosition = vbbottom Then
-'                ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'                iconCurrentTopPxls = dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
-'        ' .50 DAEB 01/04/2021 frmMain.frm Pruned all the redundant code for positioniong according to the slideIn/Out state, not done here
-'            End If
-'
-'            If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-'                iconCurrentTopPxls = dockDrawingPositionPxls
-'            End If
 
             ' small icons to the left shown in small mode, we only need to do this on the first small icon
             If sized = False Then
@@ -6639,7 +6656,7 @@ Private Sub autoFadeOutTimer_Timer()
         autoFadeOutTimerCount = 0
         'autoHideChecker.Enabled = True
         
-        dockEntranceLocation = screenHeightPixels - 10
+        dockYEntrancePoint = screenHeightPixels - 10
     End If
     
     bDrawn = False
@@ -7646,15 +7663,15 @@ reportMissingFile_Error:
 End Function
 
 '---------------------------------------------------------------------------------------
-' Procedure : selectBubbleAnimation
+' Procedure : selectBubbleType
 ' Author    : beededea
 ' Date      : 09/01/2023
 ' Purpose   : there are three animation subroutines for the bubble animation
 '---------------------------------------------------------------------------------------
 '
-Private Sub selectBubbleAnimation(ByVal animationType As Integer)
+Private Sub selectBubbleType(ByVal animationType As Integer)
 
-    On Error GoTo selectBubbleAnimation_Error
+    On Error GoTo selectBubbleType_Error
 
     Select Case animationType
         Case 1
@@ -7668,11 +7685,11 @@ Private Sub selectBubbleAnimation(ByVal animationType As Integer)
     On Error GoTo 0
     Exit Sub
 
-selectBubbleAnimation_Error:
+selectBubbleType_Error:
 
     With Err
          If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure selectBubbleAnimation of Form dock"
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure selectBubbleType of Form dock"
             Resume Next
           End If
     End With
