@@ -3599,11 +3599,10 @@ End Sub
 
 
 Private Sub sizeEachSmallIconToLeft(ByVal useloop As Integer, ByVal leftmostResizedIcon As Integer, ByRef showsmall As Boolean)
-                
         If useloop < leftmostResizedIcon Then  'small icons to the left shown in small mode
             iconHeightPxls = iconSizeSmallPxls
             iconWidthPxls = iconSizeSmallPxls
-
+            
             If dockPosition = vbBottom Then
                 
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
@@ -3644,6 +3643,12 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
 
     Dim useloop2 As Integer: useloop2 = 0
 '    Dim resizeProportion As Double: resizeProportion = 0
+
+            Dim a As Long
+            If iconHeightPxls > 18 Then
+                a = iconHeightPxls
+            End If
+
         
     ' the group of icons to the left of the main icon, resized dynamically
     If useloop < iconIndex And useloop >= leftmostResizedIcon Then
@@ -4031,7 +4036,7 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
         ' the icon to the left is currently sized full as the other on the right hand side is sized small.
         iconHeightPxls = iconSizeLargePxls
         iconWidthPxls = iconSizeLargePxls
-
+            
         If dockPosition = vbBottom Then
             iconCurrentTopPxls = dockDrawingPositionPxls
         End If
@@ -4085,6 +4090,7 @@ End Sub
 Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByRef leftmostResizedIcon As Integer, ByRef showsmall As Boolean)
     Dim leftLoop As Integer: leftLoop = 0
     Dim thiskey As String: thiskey = vbNullString
+    Dim sized As Boolean: sized = False
 
     ' all icons to the left
     '==================
@@ -4107,7 +4113,10 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
 '            End If
 
             ' small icons to the left shown in small mode, we only need to do this on the first small icon
-            If leftLoop = 0 Then Call sizeEachSmallIconToLeft(leftLoop, leftmostResizedIcon, showsmall)
+            If sized = False Then
+                Call sizeEachSmallIconToLeft(leftLoop, leftmostResizedIcon, showsmall)
+                sized = True
+            End If
 
             iconPosLeftPxls = iconPosLeftPxls - iconWidthPxls
 '            iconStoreLeftPixels(leftLoop) = iconPosLeftPxls ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
