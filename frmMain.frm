@@ -1613,7 +1613,6 @@ Private nMinuteExposeTimerCount As Integer
 
 ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
 ' .23 DAEB frmMain.frm 08/02/2021 Changed from an array to a single var
-Private lHotKey As Long
 Public lPressed As Long '.nn
 
 
@@ -2424,7 +2423,7 @@ Public Sub fMouseUp(Button As Integer)
             ' it would be nice to lock the x axis during the bounce animation
             If userLevel <> "runas" Then userLevel = "open"
                         
-            ' the runCommand is called from within the bounceDownTimer
+            ' the runCommand is called from within the bounceDownTimer, itself called by the bounceUpTimer
             
             bounceUpTimer.Enabled = True
             'animateTimer.Enabled = True
@@ -2781,56 +2780,10 @@ End Sub
 
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : Form_Unload
-' Author    : beededea
-' Date      : 07/04/2020
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
+
 Private Sub Form_Unload(Cancel As Integer)
-   On Error GoTo Form_Unload_Error
-
-    Call dock.shutdwnGDI
-
-    ' unload the other native VB6forms
-    
-    Unload about
-    Unload licence
-    Unload frmMessage
-    Unload hiddenForm
-    Unload menuForm
-    Unload showAndTell
-    Unload splashForm
-    Unload dock
-    
-    ' remove all variable references to each form in turn
-    
-    Set about = Nothing
-    Set frmMessage = Nothing
-    Set hiddenForm = Nothing
-    Set menuForm = Nothing
-    Set showAndTell = Nothing
-    Set splashForm = Nothing
-    Set licence = Nothing
-    Set dock = Nothing
-    
-    RemoveHotKey lHotKey
-
-    ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
-
-   On Error GoTo 0
-   Exit Sub
-
-Form_Unload_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Unload of Form dock"
+    Call thisFormUnload
 End Sub
-
-
-
-
-
 
 'Private Sub iconGrowthTimer_Timer()
 '    ' starting at a low level we increase a sizeModifier that will allow the icon to grow rather than just appear at full size
@@ -3900,7 +3853,6 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
         thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
     End If
         
-    
     ' add a 1% opaque background to the expanded image to catch click-throughs, blankresizedImg128 is the key name
     updateDisplayFromDictionary collLargeIcons, vbNullString, "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconWidthPxls)
 
@@ -3909,11 +3861,11 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
         updateDisplayFromDictionary collLargeIcons, vbNullString, "redresizedImg256", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     End If
     
-    ' show the icon image itself
+    ' show the icon image itself or a brief glimpse of the low res smaller version on a click event
     If selectedIconIndex = useloop And blankClickEvent = True Then
-            updateDisplayFromDictionary collLargeIcons, vbNullString, "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
+        updateDisplayFromDictionary collSmallIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     Else
-            updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
+        updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     End If
                          
     ' a small rotating hourglass for 'running' actions ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions

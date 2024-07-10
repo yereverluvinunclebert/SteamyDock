@@ -611,6 +611,9 @@ Public smallDockBeenDrawn As Boolean
 
 Public hdcScreen As Long
 
+Public lHotKey As Long
+
+
 
 
 '---------------------------------------------------------------------------------------
@@ -3192,3 +3195,58 @@ toggleDebugging_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure toggleDebugging of Module mdlMain"
 
 End Sub
+
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : thisFormUnload
+' Author    : beededea
+' Date      : 07/04/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub thisFormUnload()
+   On Error GoTo thisFormUnload_Error
+
+    Call dock.shutdwnGDI
+
+    ' unload the other native VB6forms
+    
+    Unload about
+    Unload licence
+    Unload frmMessage
+    Unload hiddenForm
+    Unload menuForm
+    Unload showAndTell
+    Unload splashForm
+    Unload dock
+    
+    ' remove all variable references to each form in turn
+    
+    Set about = Nothing
+    Set frmMessage = Nothing
+    Set hiddenForm = Nothing
+    Set menuForm = Nothing
+    Set showAndTell = Nothing
+    Set splashForm = Nothing
+    Set licence = Nothing
+    Set dock = Nothing
+    
+    RemoveHotKey lHotKey
+
+    ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
+    
+    End
+
+   On Error GoTo 0
+   Exit Sub
+
+thisFormUnload_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure thisFormUnload of Form dock"
+End Sub
+
+
+
+

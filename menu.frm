@@ -1451,25 +1451,9 @@ Private Sub mnuQuit_Click()
     Dim frm As Form
     On Error GoTo mnuQuit_Click_Error
         
-    Call dock.shutdwnGDI
-        
-'    For Each frm In Forms
-'        Unload frm
-'        Set frm = Nothing
-'    Next
+    'Call dock.shutdwnGDI
     
-
-    
-    '   If gdipFullScreenBitmap Then
-    '        GdipReleaseDC gdipFullScreenBitmap, dcMemory
-    '        GdipDeleteGraphics gdipFullScreenBitmap
-    '    End If
-    '    If iconBitmap Then GdipDisposeImage iconBitmap
-    '    If lngGDI Then GdiplusShutdown lngGDI
-        
-    End
-    
-    
+    Call thisFormUnload
 
    On Error GoTo 0
    Exit Sub

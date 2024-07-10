@@ -16,7 +16,7 @@ Private Type POINTAPI
 End Type
 
 Private Type Msg
-    hWnd As Long
+    hwnd As Long
     message As Long
     wParam As Long
     lParam As Long
@@ -25,8 +25,8 @@ Private Type Msg
 End Type
 
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Destination As Any, Source As Any, ByVal Length As Long)
-Private Declare Function RegisterHotKey Lib "user32" (ByVal hWnd As Long, ByVal id As Long, ByVal fsModifiers As Long, ByVal vk As Long) As Long
-Private Declare Function UnregisterHotKey Lib "user32" (ByVal hWnd As Long, ByVal id As Long) As Long
+Private Declare Function RegisterHotKey Lib "user32" (ByVal hwnd As Long, ByVal id As Long, ByVal fsModifiers As Long, ByVal vk As Long) As Long
+Private Declare Function UnregisterHotKey Lib "user32" (ByVal hwnd As Long, ByVal id As Long) As Long
 Private Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hmod As Long, ByVal dwThreadId As Long) As Long
 Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
 Private Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, lParam As Any) As Long
@@ -39,7 +39,7 @@ Public Const MOD_CONTROL = &H2
 Public Const MOD_SHIFT = &H4
     
 Private lHookID As Long
-Private lHotKeys As Long
+Public lHotKeys As Long
 
 
 ' .01 mdlhotkeys.bas DAEB 27/01/2021 Added the hotkeys module to support system wide keypresses

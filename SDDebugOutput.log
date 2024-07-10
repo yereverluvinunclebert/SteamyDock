@@ -9398,3 +9398,119 @@
 2024-07-10 13:13:22.805 ******************************
 2024-07-10 13:13:22.806 % SteamyDock startup complete.
 2024-07-10 13:13:22.806 ******************************
+2024-07-10 17:47:49.675 % sub toggleDebugging
+2024-07-10 17:47:49.691 *****************************
+2024-07-10 17:47:49.691 % SteamyDock program started.
+2024-07-10 17:47:49.691 *****************************
+2024-07-10 17:47:49.691 % sub sDriveStrings
+2024-07-10 17:47:49.692 % sub testDockRunning
+2024-07-10 17:47:49.693 % sub checkLicenceState
+2024-07-10 17:47:49.733 % sub classicThemeCapable
+2024-07-10 17:47:49.733 % sub disableAdmin
+2024-07-10 17:47:49.734 % sub checkSteamyDockInstallation
+2024-07-10 17:47:49.736 % sub locateDockSettingsFile
+2024-07-10 17:47:49.741 % sub readDockConfiguration
+2024-07-10 17:47:49.742 % sub readDockSettingsFile
+2024-07-10 17:47:50.035 % sub setUserHotKey
+2024-07-10 17:47:50.035 % func monitorProperties
+2024-07-10 17:47:50.040 % sub resolveVB6SizeBug
+2024-07-10 17:47:50.044 % sub setLocalConfigurationVars
+2024-07-10 17:47:50.045 % sub initialiseGDIStartup
+2024-07-10 17:47:50.046 % sub createDictionaryObjects
+2024-07-10 17:47:50.050 % sub prepareArraysAndCollections
+2024-07-10 17:47:52.224 % sub createGDIPlusElements
+2024-07-10 17:47:52.225 % sub showSplashScreen
+2024-07-10 17:47:52.276 % sub createNewGDIPBitmap
+2024-07-10 17:47:52.276 % sub setAutoHide
+2024-07-10 17:47:52.277 % sub setWindowCharacteristics
+2024-07-10 17:47:52.295 % sub setUpProcessTimers
+2024-07-10 17:47:52.309 ******************************
+2024-07-10 17:47:52.309 % SteamyDock startup complete.
+2024-07-10 17:47:52.309 ******************************
+2024-07-10 18:56:14.292 % sub toggleDebugging
+2024-07-10 18:56:14.306 *****************************
+2024-07-10 18:56:14.306 % SteamyDock program started.
+2024-07-10 18:56:14.306 *****************************
+2024-07-10 18:56:14.307 % sub sDriveStrings
+2024-07-10 18:56:14.307 % sub testDockRunning
+2024-07-10 18:56:14.307 % sub checkLicenceState
+2024-07-10 18:56:14.341 % sub classicThemeCapable
+2024-07-10 18:56:14.341 % sub disableAdmin
+2024-07-10 18:56:14.341 % sub checkSteamyDockInstallation
+2024-07-10 18:56:14.343 % sub locateDockSettingsFile
+2024-07-10 18:56:14.347 % sub readDockConfiguration
+2024-07-10 18:56:14.348 % sub readDockSettingsFile
+2024-07-10 18:56:14.611 % sub setUserHotKey
+2024-07-10 18:56:14.612 % func monitorProperties
+2024-07-10 18:56:14.612 % sub resolveVB6SizeBug
+2024-07-10 18:56:14.617 % sub setLocalConfigurationVars
+2024-07-10 18:56:14.618 % sub initialiseGDIStartup
+2024-07-10 18:56:14.618 % sub createDictionaryObjects
+2024-07-10 18:56:14.622 % sub prepareArraysAndCollections
+2024-07-10 18:56:16.828 % sub createGDIPlusElements
+2024-07-10 18:56:16.828 % sub showSplashScreen
+2024-07-10 18:56:16.880 % sub createNewGDIPBitmap
+2024-07-10 18:56:16.880 % sub setAutoHide
+2024-07-10 18:56:16.880 % sub setWindowCharacteristics
+2024-07-10 18:56:16.897 % sub setUpProcessTimers
+2024-07-10 18:56:16.912 ******************************
+2024-07-10 18:56:16.912 % SteamyDock startup complete.
+2024-07-10 18:56:16.913 ******************************
+2024-07-10 18:57:15.648 % sub toggleDebugging
+2024-07-10 18:57:15.663 *****************************
+2024-07-10 18:57:15.663 % SteamyDock program started.
+2024-07-10 18:57:15.663 *****************************
+2024-07-10 18:57:15.664 % sub sDriveStrings
+2024-07-10 18:57:15.664 % sub testDockRunning
+2024-07-10 18:57:15.664 % sub checkLicenceState
+2024-07-10 18:57:15.697 % sub classicThemeCapable
+2024-07-10 18:57:15.698 % sub disableAdmin
+2024-07-10 18:57:15.698 % sub checkSteamyDockInstallation
+2024-07-10 18:57:15.699 % sub locateDockSettingsFile
+2024-07-10 18:57:15.701 % sub readDockConfiguration
+2024-07-10 18:57:15.701 % sub readDockSettingsFile
+2024-07-10 18:57:15.992 % sub setUserHotKey
+2024-07-10 18:57:15.992 % func monitorProperties
+2024-07-10 18:57:15.994 % sub resolveVB6SizeBug
+2024-07-10 18:57:16.000 % sub setLocalConfigurationVars
+2024-07-10 18:57:16.002 % sub initialiseGDIStartup
+2024-07-10 18:57:16.002 % sub createDictionaryObjects
+2024-07-10 18:57:16.005 % sub prepareArraysAndCollections
+2024-07-10 18:57:18.076 % sub createGDIPlusElements
+2024-07-10 18:57:18.076 % sub showSplashScreen
+2024-07-10 18:57:18.133 % sub createNewGDIPBitmap
+2024-07-10 18:57:18.134 % sub setAutoHide
+2024-07-10 18:57:18.134 % sub setWindowCharacteristics
+2024-07-10 18:57:18.146 % sub setUpProcessTimers
+2024-07-10 18:57:18.159 ******************************
+2024-07-10 18:57:18.159 % SteamyDock startup complete.
+2024-07-10 18:57:18.159 ******************************
+2024-07-10 19:06:26.600 % sub toggleDebugging
+2024-07-10 19:06:26.615 *****************************
+2024-07-10 19:06:26.615 % SteamyDock program started.
+2024-07-10 19:06:26.615 *****************************
+2024-07-10 19:06:26.615 % sub sDriveStrings
+2024-07-10 19:06:26.615 % sub testDockRunning
+2024-07-10 19:06:26.616 % sub checkLicenceState
+2024-07-10 19:06:26.649 % sub classicThemeCapable
+2024-07-10 19:06:26.650 % sub disableAdmin
+2024-07-10 19:06:26.650 % sub checkSteamyDockInstallation
+2024-07-10 19:06:26.651 % sub locateDockSettingsFile
+2024-07-10 19:06:26.652 % sub readDockConfiguration
+2024-07-10 19:06:26.653 % sub readDockSettingsFile
+2024-07-10 19:06:26.910 % sub setUserHotKey
+2024-07-10 19:06:26.910 % func monitorProperties
+2024-07-10 19:06:26.911 % sub resolveVB6SizeBug
+2024-07-10 19:06:26.915 % sub setLocalConfigurationVars
+2024-07-10 19:06:26.916 % sub initialiseGDIStartup
+2024-07-10 19:06:26.917 % sub createDictionaryObjects
+2024-07-10 19:06:26.918 % sub prepareArraysAndCollections
+2024-07-10 19:06:29.037 % sub createGDIPlusElements
+2024-07-10 19:06:29.037 % sub showSplashScreen
+2024-07-10 19:06:29.095 % sub createNewGDIPBitmap
+2024-07-10 19:06:29.095 % sub setAutoHide
+2024-07-10 19:06:29.096 % sub setWindowCharacteristics
+2024-07-10 19:06:29.111 % sub setUpProcessTimers
+2024-07-10 19:06:29.126 ******************************
+2024-07-10 19:06:29.126 % SteamyDock startup complete.
+2024-07-10 19:06:29.126 ******************************
