@@ -24,6 +24,7 @@ Module=common3; common3.bas
 Form=message.frm
 Class=cwMainIcon; cwIcon.cls
 Module=common; common.bas
+RelatedDoc=buglist.txt
 IconForm="dock"
 Startup="dock"
 HelpFile=""

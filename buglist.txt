@@ -1,0 +1,798 @@
+
+
+
+' =====================================
+' Functional changes since last release
+' =====================================
+'
+' Auto generation of dock items in iconSettings is progressing
+' Automatic finding of the correct icon to use using an application compatibility list
+' After a system sleep the raised dock is lowered. No, not quite yet
+' Runs well on a system that has never had Rocketdock installed upon it
+' If the docksettings is running it is brought to the fore rather than closed and re-opened as before.
+' addition and deletion of icons is no longer a very slow operation
+' The rotating hourglass timer displayed during a drag and drop operation to the dock
+' Now possible to drag an icon from the dock to delete it permanently
+' The dock icon bounce effect is now using an easeIN function
+' A smaller icon image is displayed during a drag and delete operation from the dock
+' Dragging and dropping from one part of the dock to another
+' Added Quick Launch functionality to run an app more quickly half way through the bounce animation
+' Added autohide dock after running an app
+' Added automatic running of secondary app.
+' Implement the old bounce as a separate bounce type called miserable
+' Implemented an icon cache for older, slower machines
+' Fixed window height issues on Win 10/11
+' Added menu option to clone current item
+' A misconfigured or non-existent target shows a red X over the icon
+' Allows you to set a secondary app to run.
+' Confirms when deleting multiple instances of a program.
+' Deletion and addition of icons is now much faster.
+' Add a sound option when initiating an icon mouseDown.
+' Improved some drag/drop animations.
+' No longer takes a long time for the dock to fully close.
+' Fixed memory Leaks causing usage of memory to climb.
+
+'========================================================================================================
+' Change History
+' ==============
+' Changes: dates in UK DD/MM/YYYY format
+
+' 22/10/2020 .01 DAEB frmMain.frm responsetimer fix the incorrect check of the timer state to determine the dock upper limit when entering and triggering the main animation
+' 23/10/2020 .02 DAEB frmMain.frm move the dock position behind the icons 8 pixels to the left to position the icons correctly on the dock
+' 26/10/2020 .03 DAEB frmMain.frm removed declarations required by IsRunning since the move of this function to common.bas
+' 27/10/2020 .04 DAEB frmMain.frm alternative animations to zoom: Bubble enabled as options
+'            .05 DAEB frmMain.frm null
+' 17/11/2020 .06 DAEB frmMain.frm Fixed the sequentialBubbleAnimation
+
+' 01/07/2020 add a favicon so that it appears in shortcuts &c     1hr problems with the 16x16 icon when run in 32 bit windows must be 16x16 icon 256bit
+' 01/07/2020 blankresizedImg128 allowing click through            removed the hard edges from the blank image
+' 01/07/2020 memory usage doubles when a new icon is added            It has nothing to do with the collection being doubled or memory failing to be released there.  The problem exists within LoadAndSavePictureGDIPlus:  finding a workaround using three collections  
+' 01/07/2020 subscript bug when adding a new icon         the icon position array was not being referenced correctly nor bein populated with the final icon position.
+' 01/07/2020 the current icon was being overwritten when populating a dictionary
+' 01/09/2020 animation by cursor both ends in the wrong place
+' 01/09/2020 animation by cursor start position
+' 01/09/2020 background theme size change causes the bg to appear in the wrong place, right-shifted
+' 02/07/2020 bugs with the incorrect value of count and rdmaximumicon during adding and deleting icons, now fixed       now adds and deletes as designed
+' 02/07/2020 change the scope of the large and small collections so that they are local, then perhaps they will free the memory         had no effect
+' 02/08/2020 BAT file existence test added to run command
+' 03/07/2020 adding task manager via dock causes two icons to appear and the naming to be screwed up on all subsequent icons
+' 03/07/2020 all the add icon options need to have the image availability checked and error checking added
+' 03/07/2020 check addition of icon survives a restart after adding through the dock itself. through each method
+' 03/08/2020 added test for sworkingdirectory as it was not been used at all by binaries
+' 03/08/2020 determine the correct screen size            When a full screen game is played, then the screen format /type/size changes. That causes the dock to be located in the incorrect place. This is a bug in VB6 that returns screen.width incorrectly after a resolution change
+' 03/08/2020 Newer method of checking processes that captures all processes CPU-Z was not bein captured on Dell E6410         ' processCheckArray(a) = isProcessInTaskList(sCommand) replaced by         processCheckArray(a) = IsRunning(sCommand)
+' 03/09/2020 Force window to top when an application is already running       16hrs
+' 03/09/2020 new menu item to open an additional instance of running app
+' 03/09/2020 open existing instance does not open windows that are minimised to the systray         these windows are not visible as normally minimised windows are
+' 04/07/2020 if the 3rd config option does not exist then create a docksettings.ini file          it does this any way but I now have some default settings in the file, if rocketdock hasn' t been installed then it uses this by default
+' 04/07/2020 menuAddSummat old items are being left behind when deleting          menuAddSummat old items are being left behind when deleting
+' 04/07/2020 the code to check that the icon settings utility does to test for a first run (and licence display) can be moved to the dock entirely.
+' 04/08/2020 '  DebugPrint themeing of the pop-up panel
+' 04/08/2020 change shell execute to createProcess API so that we can tell when the process dies and mark it as such    1 day   change shell execute to createProcess API so that we can tell when the process dies and mark it as such, this avoids the use of the timer to test for the existence of running processes  this has been handled in a different manner, keeping track of dock-initiated processes vian an array
+' 04/08/2020 restart must not cause memory usage and must be quick            restart has been removed
+' 04/08/2020 running tasks appearing in the dock    5-6 hrs
+' 04/09/2020 add run another instance of this App to the menu   1hr
+' 04/09/2020 when the user' s cursor enters the dock it jumps to the icon stored left position     8hrs actual 4hrs    when the dock moves itself to accommodate the larger icons it should do so from the current position
+' 05/07/2020 fixed some typing errors and conversions
+' 05/07/2020 menuAddSummat is writing incorrectly to the 3rd config file sometimes writes data to the rocketdock section
+' 05/08/2020 Added modification to the rescaled image quality
+' 07/07/2020 add debug to the dock
+' 07/07/2020 Cbool error testing        '    Dim ab As String '    Dim b As Boolean ' '    ab = "true" '    b = CBool(ab) ' '    ab = "True" '    b = CBool(ab) ' '    ab = "True" '    b = CBool(LCase(ab))  The final two options were used in the program and functioned as expected in Win 7. It appeared that under Win10 this caused mismatch errors.   BASIC Line numbers were used to identify which exact line was failing at runtime  The solution was to remove all use of the CBool function and use if then statements to assign a bool value on another variable or to test the string as as a string containing "True".
+' 07/07/2020 now tests for running application as soon as an application is bounced, ie. run  Completed   Low     There was no running of the process timer when a command was run, now fixed. Prior to this if the dock was high then it did not perform the process test, it now does as this check has been removed.
+' 07/09/2020 Set an additional block on pointless activity by excluding movement in the y axis alone from triggering animation      0.5hrs
+' 07/09/2020 When an application is already running suppress the bounce animation and open immediately      0.5
+' 08/02/2021 implement themeing       10hrs estimated 25hrs   28 themes converted 90% complete
+' 09/07/2020 implement the RocketDock theme settings files
+' 09/07/2020 128 blank image made transparent          Created a 1% opaque image, then reopened it and did the same so that it is now .1% opaque and 99.9% trasansparent so invisible to the naked eye
+' 14/08/2020 create 28 replacement rocketdock themes
+' 14/08/2020 Medieval total war will not run from the dock
+' 14/08/2020 Quake I will not run at all but will run from the map in rocket1.exe
+' 14/08/2020 Quake II has trouble starting
+' 14/08/2020 Quake III has trouble starting
+' 16/08/2020 add the capability to resize the dock itself independently
+' 16/08/2020 added code to read the dock size from the configuration
+' 16/08/2020 dock is centred around the middle of the dock
+' 16/08/2020 dock skin lifts itself at the right hand end of the dock animating upwards         ther calculation of the top is no longer dynamic for the skin theme
+' 17/08/2020 add a sleep option to the menu
+' 17/08/2020 Allow dock theme background sizing
+' 17/08/2020 shutdown command is not executed
+' 17/09/2020 Opacity for different elements, theme, icons and text        7hrs estimated - 5hrs so far    New config option for font opacity added, slider, save and read &c, implemented and tested
+' 17/09/2020 Smoothing added to icon quality
+' 18/06/2020 addImageToDictionary  made to accept any dictionary name via thisDictionary          this was LoadAndSaveGDIplusImage, now loadImageToDictionary
+' 18/09/2020 remove unnecessary code the form initialise
+' 18/09/2020 sort out the form initialise, tidying up a lot of mess into new routines x 7
+' 19/08/2020 checkAndKill added current process PID check agains the killed process to prevent the process killing itself       to prevent the process killing itself
+' 19/09/2020 Added Confirmation Dialog functionality
+' 20/08/2020 moved checkAndKill to common.bas and removed other references to the new location
+' 20/08/2020 moved is64bit to common.bas and removed other references to the new location         and did the same for ALL other common programs
+' 21/07/2020 add a config item to allow the dock animation interval to be modified from 1ms to 20ms
+' 21/07/2020 runcommand - add the process to a list of processes initiated by the dock               ' add the process to a list of processes initiated by the dock     ' instead of checking all the dock executable names to the running processes     ' we could test just those in the limited list     ' it would make the regular checks less intensive of i/o
+' 22/10/2020 .01 responsetimer fix the incorrect check of the timer state to determine the dock upper limit when entering and triggering the main animation
+' 23/07/2020 ANIMATION BUG in the validation that failed to fix a corruption in rdanimatetimer
+' 23/10/2020 .02 move the dock position behind the icons 8 pixels to the left to position the icons correctly on the dock
+' 24/09/2020 move all setting of the the window characteristic from a function that is run unnecessarily during the animation         Moved to the initialisation phase and renamed accordignly
+' 24/09/2020 move the funcBlend.constantalpha setting to where the dock opacity is altered            The var is a module wide var and only needs to be set rarely.
+' 25/08/2020 if an executable is found in the running process list, then check its folder name also matches before adding the cog         when you are running two apps with the same name, this is a useful second check
+' 25/08/2020 if an executable is found in the running process list, then check its folder name also matches before allowing it to be killed
+' 25/08/2020 implement new getDrives code that uses Windows APIs to get the details           affects all programs
+' 25/08/2020 Remove dependency on a IDE-built list box for storing drive types, now uses a multi-dimensional array            this means that the code can be shared and each program does not need a graphical IDE-time control built in
+' 25/08/2020 remove old getDrives code that used error suppression            affects all programs
+' 25/09/2020 Added a timer delay to the dock opacity decrease       The timer exits if the reveal timer is running or if the cursor is in the dock area
+' 25/09/2020 256x256 icons? change the loading into memory of the 128 icon size or change the background blank icon to 256 or allow the slider to state 256 o allow the validation to be 256 - possibly only when the user data settings.ini has been implemented as RD might not like the setting to be 256 - worth trying though 
+' 26/10/2020 .03 DAEB removed declarations required by IsRunning since the move of this function to common.bas
+' 27/07/2020 fixed the code to remove cogged processes from the dock without the mouse being tested for movement in the cog area
+' 27/08/2020 dock skin right hand end is not placed correctly when animating by cursor position
+' 27/08/2020 Dock skin start position is incorrect most of the time when the dock is static
+' 27/08/2020 dock skin start position is not placed correctly when animating by cursor position
+' 27/08/2020 Since the addition of the check running process'  folder, killing any unwanted process has failed         Added a boolean parameter to test for whether we need to check for folders before killing any process.
+' 28/07/2020 Added menu option to delet the currently running application
+' 28/07/2020 added support to display sample themes   Completed   Low
+' 28/07/2020 changed the default animation interval to 10ms as this seems the optimal
+' 28/09/2020 animate the dock background as well as the icons during a slide in/out
+' 28/09/2020 draw a diagram of what occurs using libreoffice and add it to the documentation
+' 28/09/2020 move the dock activation point when auto sliding/instant to the bottom of the screen
+' 29/08/2020 fix issue where dock loses its skin after adding or deleting an icon  the dictionary is rebuilt after an add or delete and the images were not being re-added back to the dictionary
+' 30/08/2020 change the sng vars to better names including Pxls and Twp &c      1hr
+
+' Add a restart to the dock menu
+' add a test to the getDirectory function to check for no path
+' add an about window and menu link
+' Add drag and drop         drag and drop for exe, images and other executable types
+' add right click menu options as per other programs
+' add shortcut handling - rocket1.exe will also need to the same code
+' Add the ability to read the original RD settings file - SD could ONLY read the reistry...
+' add validation to the input methods
+' added $ symbol to sll string functions to speed them up
+' Added open app folder
+' added the functionality to open an EXE or DLL
+' adding all the icon types as per the enhanced settings utility        take the code from the enhanced settings screen
+' allows the autohide check timer to lower the dock after a short delay during startup
+' bumpanimation bug trying to display an icon to the left of position zero and to the right of the last icon
+' check all writes to the registry during adding new icons are also written to the settings/docksettings.ini
+' check to see if each process is running and store the result
+' configure debug print so that the config is always as desired
+' create a rocket around a globe icon to replace the Rocketdock ones
+' create icons based upon their type for dragging and dropping          audio done  video done exe  done and done again batch done cpl done msc done
+' Created language type document-icon files. BAS &c         xml, kon, log, cfg, ini, txt and ost &c
+' delete the second to last item in the dock, then move to the right over the last icon and it grows massively            the icon to the left goes negative in the y axis, the cemtre icon grows to normal full size but the final icon grows ridiculously this occurs whenever an items is deleted from the dock in any position possibly due to the maximum no of icons being used to calculate the size but not being updated dynamically
+' deleting an icon          o take the code from the enhanced settings screen and add or enable the facilitiy to write the settings.ini files so the changes can be written  o requires a dock refresh
+' drag and drop for folders
+' drag and drop from one location in the dock to another      16hrs
+' drag and drop If it is a shortcut we have some code to investigate the shortcut for the link details
+' drag and drop if it is a URL then give it a HTML document icon        if it is a URL then give it a HTML document icon
+' Ensure the descriptive text is centred upon the icon
+' ensure the process search matches the full process path and not just the filename
+' fixed bug where font outline opacity was set to 65512
+' fixed logic bug in converting icon colours from decimal to string to long         The bug was in my brain. The decimal value used by RD is sufficient. It did not need to be converted to string then back again to decimal. The vb5 conversion from string to a number was just stupid and pointless. It did nothing useful.  decimal value needed to be expressed as a long integer, that' s it, no conversion required.
+' fixed msc files run that do not have a folder path
+' fixed run as administrator
+' fixed the cog icon not appearing for small items in the dock when part of the dock is raised
+' fixed the file selection dialog not opening when attached to the dock menu form       that form is hidden, moved it to a non-hidden form and it displayed correctly
+' Fixed the text size and placement
+' IImplement the new configuration file in the user data area     16hrs   much more work than expected
+' improve the bounce animation      4 hrs estimated 4hrs so far We have the VB6 easing bounce code and an partial understanding of how it works.
+' occasionally it sits there even when ordered to fade          perhaps another occasional timer check?
+' place the icons GDI redrawing into a routine so it can be called when required    30mins
+' position top - reinstate functionality    4hrs
+' Question Mark icon
+' restarting the dock after a local configuration change
+' Rocketdock only reveals a hidden dock when the mouse position is in the very bottom of the screen         requires a change to the response timer
+' run as administrator          an option to enhanced icon settings and perhaps on the dock right click?
+' select and add a folder image for dragged folders
+' small delay before auto-hide - perhaps the duration of the animation?         o do a delete of the dock refreshGDI o then call the responseTimer
+' speed up the whole dock.fInitilaise   8hrs
+' synchronised adding folder by drag/drop and menu
+' taskmgr does not appear  in the list of running processes
+' test steamydock without Rocketdock installed at all       remove RD prog folder remove registry entries remove settings file  - and test!
+' test the deletion of the bitmap       causes a crah each time
+' the icon bounce when at the top of the screen bounces the whole dock      2-3hrs
+' the icon bounce when the icon is not in focus     3hrs
+' When autohiding on startup - have a delay so the dock can be seen for the usual delay period    Completed   Low
+' when set to auto-hide, sometimes a massive icon is shown briefly    '
+
+' Changes 2021
+' ============
+
+' .07 DAEB frmMain.frm 24/01/2021 modified to handle the new timer name
+' .08 DAEB frmMain.frm 24/01/2021 removed the fade in functions from the fade out function
+' .09 DAEB frmMain.frm 24/01/2021 created a separate fade in timer and function
+' .10 DAEB frmMain.frm 25/01/2021 Added new parameter autoFadeInTimerCount for the new fade in timer
+' .11 DAEB frmMain.frm 25/01/2021 changed the setting of the dock top to a better place
+' .12 DAEB frmMain.frm 25/01/2021 Change to sdAppPath
+' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
+' .14 DAEB frmMain.frm 27/01/2021 Add new subroutine to make the dock transparent and shutdown timers
+' .15 DAEB frmMain.frm 27/01/2021 Add new subroutine to show the dock after it has been manually hidden by the user
+' .16 DAEB frmMain.frm 27/01/2021 Added the user set parameter sDContinuousHide
+' .17 DAEB frmMain.frm 27/01/2021 Moved disabling admin to a separate routine
+' .18 DAEB frmMain.frm 31/01/2021 reinstated checks of fade out and slide timers to set a more frequent respnse timer to improve animation
+' .19 DAEB frmMain.frm 02/02/2021 added sArguments field to the confirmation dialog
+' .20 DAEB frmMain.frm 02/02/2021 added variable initialisation after declaration
+' .21 DAEB frmMain.frm 07/02/2021 slight improvement to the the confirmation dialog
+' .22 DAEB frmMain.frm 08/02/2021 changes to replace old method of enumerating all windows with enumerate improved Windows function STARTS
+' .23 DAEB frmMain.frm 08/02/2021 Changed from an array to a single var
+' .24 DAEB frmMain.frm 09/02/2021 handling any potential divide by zero
+' .25 DAEB frmMain.frm 10/02/2021 added API and vars to test to see if a window is zoomed
+' .26 DAEB frmMain.frm 10/02/2021 added test to check window state and alter it accordingly
+' .27 DAEB frmMain.frm 11/02/2021 now operates like the standard Windows dock on a click, minimising then restoring
+' .28 DAEB frmMain.frm 16/02/2021 Seperated the autoSlide Timers to in and out versions
+' .29 DAEB frmMain.frm 20/02/2021 Added new mdlSysTray module containing the code required to analyse the icons in the systray
+' .30 DAEB 03/03/2021 frmMain.frm replaced the inIDE function that used a variant to one without
+' .31 DAEB 03/03/2021 frmMain.frm Check return value from any GDI++ function
+' .32 DAEB 03/03/2021 frmMain.frm Placing the dock back in the defined z-order
+' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+' .34 DAEB 08/02/2021 frmMain.frm - commented out the extra unwanted ShowWindow(hwnd, SW_RESTORE)
+' .35 DAEB 03/03/2021 frmMain.frm check whether the prefix command required to access a Windows class ID is present
+' .36 DAEB 03/03/2021 frmMain.frm check whether the prefix is present that indicates a Windows class ID is present
+' .37 DAEB 03/03/2021 frmMain.frm removed the individual references to a Windows class ID
+' .38 DAEB 18/03/2021 frmMain.frm utilised SetActiveWindow to give window focus without bringing it to fore
+' .39 DAEB 18/03/2021 frmMain.frm utilised BringWindowToTop instead of SetWindowPos & HWND_TOP as that was used by a C program that worked perfectly.
+' .40 DAEB 18/03/2021 frmMain.frm Added SWP_NOOWNERZORDER as an additional flag as that was used by a C program that worked perfectly, fixing the z-order position problems
+' .41 DAEB 18/03/2021 frmMain.frm utilised ShowWindowAsync instead of ShowWindow as the C program utilised it and it seemed to make sense to do so too
+' .42 DAEB 03/03/2021 frmMain.frm To support new receive focus menu option
+' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
+' .44 DAEB 01/04/2021 frmMain.frm put the control panel reference back
+' .45 DAEB 01/04/2021 frmMain.frm Changed the logic to remove the code around a folder path existing...
+' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
+' .47 DAEB 01/04/2021 frmMain.frm autoSlideMode is now undefined at startup - this allowed the top position to operate as expected
+' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
+' .49 DAEB 01/04/2021 frmMain.frm added the vertical adjustment for sliding in and out STARTS
+' .50 DAEB 01/04/2021 frmMain.frm Pruned all the redundant code for positioning according to the slideIn/Out state, not done here
+' .51 DAEB 08/04/2021 frmMain.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+' .52 DAEB 09/04/2021 frmMain.frm add code to increase the timer to 120 minutes
+' .53 DAEB 11/04/2021 frmMain.frm changed all occurrences of sCommand to thisCommand to attain more compatibility with rdIconConfigFrm menuRun_click
+' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
+' .55 DAEB 19/04/2021 frmMain.frm Added call to the older function to identify an icon using the shell object
+' .56 DAEB 19/04/2021 frmMain.frm Added a faded red background to the current image when the drag and drop is in operation.
+' .57 DAEB 19/04/2021 frmMain.frm modifedAmountToSlide renamed to xAxisModifier for clarity's sake
+' .58 DAEB 21/04/2021 frmMain.frm added timer and vars to check to see if the system has just emerged from sleep
+' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+' .60 DAEB 29/04/2021 frmMain.frm Improved the speed of the deletion of icons from the dictionary collections
+' .61 DAEB 26/04/2021 frmMain.frm size modifier moved to the sequential bump animation
+' .62 DAEB 29/04/2021 frmMain.frm Improved the speed of the addition of icons to the dictionary collections
+' .63 DAEB 30/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
+' .64 DAEB 30/04/2021 frmMain.frm Deleted the temporary collection, now unused.
+' .65 DAEB 30/04/2021 frmMain.frm Added mouseDown event to capture the time of first press and code to simulate a drag and drop of an icon from the dock
+' .66 DAEB 01/05/2021 frmMain.frm huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
+' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD.
+' .68 DAEB 05/05/2021 frmMain.frm Cause the docksettings utility to reopen if it has already been initiated.
+' .69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position.
+' .70 DAEB 06/05/2021 frmMain.frm Removed all references to Clng() in all the occurrences of updateDisplayFromDictionary to speed up animation, no references in the code will be found
+' .71 DAEB 06/05/2021 frmMain.frm Changed bounceIndex to selectedIconIndex throughput the code, no references in the code will be found
+' .72 DAEB 06/05/2021 frmMain.frm Created two timers that controls the bouncing when the icon is clicked, replacing the old timers
+' .73 DAEB 11/05/2021 frmMain.frm sngBottom renamed to screenHorizontalEdge
+' .74 DAEB 12/05/2021 frmMain.frm Displays a smaller size icon at the cursor position when a drag from the dock is underway.
+' .75 DAEB 12/05/2021 frmMain.frm Changed Form_MouseMove to act as the correct event to a drag and drop operating from the dock
+' .76 DAEB 20/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
+' .77 DAEB 20/05/2021 frmMain.frm Added new check box to allow a quick launch of the chosen app
+' .78 DAEB 21/05/2021 frmMain.frm Added new field for second program to be run
+' .79 DAEB 21/05/2021 frmMain.frm Disable any active bounce
+' .80 DAEB 28/05/2021 frmMain.frm Keep the animateTimer and therefore the bounceTimers operating in order to run the chosen app.
+' .81 DAEB 28/05/2021 frmMain.frm Refresh the running process with a cog when the process is running, this had been removed earlier
+' .82 DAEB 12/07/2021 frmMain.frm Add the BounceZone as a configurable variable.
+' .83 DAEB 14/07/2021 frmMain.frm Modified the BounceZone and bouncetimers to run 50% slower.
+
+' Changes 2022
+' ============
+
+' .84 DAEB 20/07/2021 frmMain.frm Added prevention of the dock returning until the hiding application is no longer running.
+' .85 DAEB 16/04/2022 frmMain.frm Added new timer to allow auto-reveal of the dock once the chosen app has closed within 1.5 secs
+' .86 DAEB 08/12/2022 frmMain.frm Added new timer to inspect each target command in turn and highlight if missing.
+' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
+' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+' .89 DAEB 08/12/2022 frmMain.frm Fixed duplicate run of .msc files.
+' .90 DAEB 08/12/2022 frmMain.frm Added routine to check for an array that has already been initialised
+' .91 DAEB 08/12/2022 frmMain.frm SteamyDock responds to %systemroot% environment variables during runCommand
+'   Add a sound ting option when initiating a dock click
+'   The menu separators should call the utilities immediately below
+'   remove all references to rocketdock
+'   remove all references to the rdSettings file should no longer refer to these using only docksettings.ini
+' In all functions/subroutines in the dock form module - all vars initialised - done
+' In all functions/subroutines in the dock form module - all parameters to be determined as bval or byref - done
+' deleting multiple instances of a program, if multiple instances exist then it should pop up a modal box that
+'  requests confirmation of each process to kill.
+' delay on triggering the second app - implemented
+' add comment - selected index is 999 - indicating that we do not want to store the second app as a cogged item in this apps stored binary location...
+' common module - all vars initialised - done
+' common module - all parameters to be determined as bval or byref - done
+' override on opening the running application for individual applications in runCommand.
+' validation of tool components - missing folders and essential files
+' common2 module - all vars to be initialised
+' common3 module - all vars to be initialised
+' common2 module - all parameters to be determined as bval or byref
+' sequentialBubbleAnimation - rewritten to simplify and create shared code
+' drawDockByCursorEntryPosition - rewritten to simplify and use shared code from the main animation routine
+' drawSmallStaticIcons - rewritten to use shared code from the main animation routine
+' if the icon is dragged within the dock or back to the dock then show the busytimer and the red background on the target icon.
+' Quick launch of an app should mean instant. Not an incomplete partial bounce - DONE. Instant launch and subsequent bounce would require a state monitor - so NO.
+' Fixed bug causing ghosting, after several minutes
+' Added GDI ready and tidying within each animation to ensure no dropping of handles.
+' Added logic to only call the three current animation types when the bubble animation is selected
+' Prevented the general hang when SD was closed using the Quit command (unloading all forms in a loop).
+' common3 module - byval/byref
+' Fixed the slow update of the dock after deletion by creating an array and monitoring the icon to be shown.
+' Fixed the slow update of the dock after adding an icon by creating an array and monitoring the icon to be shown.
+' Fixed the slow update of the dock after re-ordering of the icons as it uses adding/deletion by default.
+' Add the steamy dock project to Github.
+' Fixed the ArrayUpperBound variables to prevent array errors.
+' Fixed the dragIcon to correspond to the latest use of the dictionaryArray, extract the correct image to drag.
+' sShowCmd coerced into an integer causing problem on new folder icon bypassing strong typing, added a val().
+' When doing a process kill for an application that has been brought to the front, the msgbox is underneath, dock/msgbox now to the front.
+' Created setWindowZorder subroutine and added it to each iconise type.
+
+' Changes 2023
+' ============
+
+' Added sDisabled option in settings.ini for all icons
+' Added right click code to test for opacity and set the menu options, caption and check state. runCommand modified to exit when disabled.
+' Created new duplicate routines to checkAndKill processes whilst bringing windows to front/back specifically for SD, non-shared.
+' Created a reboot icon and modified the code to use that as default image.
+' Created a menu option and utility to kill and restart steamydock - required to operate under the SD menu.
+' Added disable icon option.
+' Added change of the opacity of the disabled icons on startup.
+' Second application to read setting to determine running it beforehand or afterward.
+' Application to automatically terminate, capability added.
+' Test on E5400 - done, runs beautifully!
+' changed logout add icon option to lock workstation
+' created new logout add icon option with shutdown /l
+' created new logout icons x 2
+' added administrative sub menu options with associated icons, one new.
+' fixed the missing last icon after an icon deletion.
+' fixed the missing last icon after an icon addition.
+' The dock notes if the screen resolution has changed and restarts.
+' fixed the runCommand function, when split into subroutines, will no longer re-open apps currently running.
+' added support for running cpl files
+' the icon settings tool only starts after a new icon addition and not for an icon clone
+' checks to see whether iconSettings is running already and starts it only when not running
+' write the last icon changed to the settings file, this will allow the icon settings tool to refresh after reading the current icon
+' making all the recent functions work at the top of the screen as well as the bottom, specifically, background theme, cog, slideout/in
+' improved some of the variable names and changed some subroutines to functions as they return values.
+' disable Icon - change opacity dynamically
+' Reviewed use of "run as" - certain it isn't being over-used
+' add menu options to run specific apps elevated using "run as"
+' dock click - replaces the current icon with a blank icon for a discrete 100ms or so, via a timer that changes the file reference to blank.png
+' If IsUserAnAdmin() = 0 then try to kill the detached process - does that work? Yes.
+' do not restart the dock on resolution change when the dock has been deliberately hidden, preventing SD restarting during a game.
+' runCommand now loops through executable file names (bat, cpl, msc, exe and lnk) for commands without suffixes in windows\system32 - eg. control
+' fixed failure to clear all icon params when copying another icon, a new icon was picking up secondAppToRun from neighbour.
+' run as admin menu option - only for binaries
+' catch the click-throughs on transparent parts of the form, create a new blank square PNG and show that at 1% opacity, size it correctly as per the large icon.
+' added new icons - reboot, logout, disc management
+' The dock background on wide docks or high DPI screens, loading the scaled image to dictionary failed when the image needed to be stretched beyong 2000 pixels.
+' The dock width was incorrect for the small icons as the calculation was only for the larger icons within a wider dock, fixed.
+' When adding a new program to the dock using add DLL/exe, the name should be the exe name extracted from the path
+' dock_OLEDragDrop to be updated to match the RDiconSettings code improvements.
+' RDiconSettings test run should match the improvements now in SteamyDock, split exe,bat,cpl &c
+' When you delete an icon, the transparency array is not currently updated so the wrong icon is left transparent after deletion - FIXED.
+' When you add an icon, the transparency array is not currently updated so the wrong icon is left transparent after the addition - FIXED.
+' made some fixes to SD to cater for retaining the other semi-opaque icons in the list when deleting and adding icons elsewhere.
+' Messagebox msgBoxA module as per iconSettings - ship the code to FCW to replace the native msgboxes for deletion
+' Replaced several of the modal msgbox pop ups with non-modal msgboxA types where applicable - and tested
+' Replaced several of the non-modal messagebox API pop ups with non-modal msgboxA types where applicable - and tested
+' msgboxA Added icon image reveals to each of the possible button types currently not showing anything.
+' Adding a cog above a running folder window for explorer.exe. New timers for newly initiated explorers and regular checking.
+' Tuned the checkExplorerRunning process to prevent it running for every icon entry. Now runs just once and compares the sCommandArray.
+' test to see if we can use checkTargetCommandValidity to add targets that are folders to the known folder array, no need.
+' Dock settings must NOT restart the dock as admin.
+' Document the explorer cog stuff in the html, explain that the window cannot be enumerated until it displays on screen.
+' Closing Explorer windows from the dock - https://www.vbforums.com/showthread.php?898235-VB6-twinBASIC-Code-snippet-Close-Explorer-window-by-path
+' Menus altered to remove the send to front/back and the open new instance, not possible with Explorer Windows
+' Menus altered to remove the run elevated option, not possible with Explorer Windows.
+' run new instance of this app is suppressed
+
+' icon temporarily grows too big when dock approached from the right  - done
+' blinked-out icon when right clicking - done
+' unsure what causes the dock to sometimes be in full admin mode, does not appear to be the restart nor the privilege level of the
+' restartSteamydock.exe - currently unsure why it find itself running in admin mode. A. In Win 11 it reflects the running user's admin level.
+
+' SERIOUS: occasionally, when starting iconSettings, explorer dies taking all programs with it, incl systray apps. This occurred since we added the explorer cog testing code from Faf.
+'   check it is not something to do with iconSettings needing admin rights - it shouldn't but it might.
+' deletion confirmation during move operation remove - done
+
+' Current Task:
+' =============
+
+' encapsulate an icon as an object using classes
+' create a class, for type icon
+' assign it properties left, top, width, height, opacity
+
+
+
+
+' Main Tasks:  ' see the separate bug/task list provided by vBAdvance
+' ============
+
+'     1.
+'     2. Graphics Next Technology Cairo/RC5 - WIP - testing in the Pz Earth widget - done
+'     3. Add known identifiers to the known apps list - WIP
+'     4. dockSettings, regular process check reduce to 5 secs minimum.
+'     5. adding the autoscaling feature on the two utilities as per generate utility
+'     6. creating new icons WIP
+'     8.
+'     9. Animating more than just the three icons - WIP
+'    10. Dock entering and leaving RIGHT/LEFT - see below.
+'    11. DPIawareness in the manifest - research
+'    12. WIP - Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser.
+'    13. Running on a second monitor
+'    14. Graphics Next Technology D2D?
+
+' Detail of General Status
+' ========================
+
+' pushing the Windows taskbar to the top programatically a registry change then a restart of explorer.
+
+' Creation of a default DockSettings.ini for a new user of the dock where the application has never been run before.
+'
+'  How to create a desktop shortcut with a good quality icon.
+'  icons - add icon references to the resource file and code to show on the forms themselves.
+'   http://www.vbaccelerator.com/home/VB/Tips/Setting_the_App_Icon_Correctly/article.asp
+'
+' the docksettings tool should have some separate code that allows migration from RD to SD but the rest should use SdSettings
+'
+' reorganise windows menu option? send all windows to front/back
+'
+' finish the icons
+    ' droptypes to deal with by having an associated document
+
+    ' installation packages
+
+    '.xpi done
+    '.xar
+    '.bz2
+'    .bak
+'    .bck
+'    .pup
+'    .bkp
+
+'    .7z
+'    .zl
+'    .s7z
+'    .sfx
+'    .arc
+'    .ace
+'    .ufs
+
+'    .xz
+'    .gz
+'    .lz
+
+' parcel with a zip in it
+'    .bzip2
+'    .gzip
+'    .zipx
+
+'    .lzx
+'    .lzm
+'    .mint
+'
+' look at the custom icon tool and see which you need to recreate WIP
+' modify the zipfile icons to the correct type above
+' create a zipped icon
+
+' Animating more than three icons
+' ================================
+' showing more than three icons in the current BUMP animation - it is possible.
+' Currently the left and right icons are modified in proportion to the cursor position across a fixed length, ie. the main icon.
+' from 0-100% over the small icon size.
+' for two additional icons on the left/right we need extend the proportion over the two icons
+' ie. 0-100% over the two icons rather than the one.
+'
+    
+' SD will not support Zoom: Flat as it is a rubbish animation - documentation updated
+
+' The current dock stores only the left hand position of each icon and as such advanced animation cannot take place due to
+' that limitation. The icons to the left and right, their size is a proportion of how far the cursor is across the central icon.
+'
+' No advanced animation can be performed as the properties of each icon are not known so we cannot currently transform them.
+' When we store the left hand position of the icon, we have also started to gather the icon's right hand location
+' iconStoreRightPixels. So, we are already holding two x values, left and right, we now need only to store the Y values,
+' top and bottom. Storage for those have been added but we still need to populate those values during the icon drawing
+' routines:
+
+    ' drawSmallStaticIcons - quick and simple routine using little cpu that keeps the dock on screen in small mode at a reduced interval
+    ' drawDockByCursorEntryPosition - calculates and draws ONCE using the initial dock position from the cursor entry point
+    ' sequentialBubbleAnimation - performs the regular animation of the central three icons.
+'
+'When you enter an icon in Rocketdock it is not full size, it does not grow to full size until the middle of the icon is reached.
+'This is unlike SD that makes sure that the centre icon is full size so that when you traverse across it you have
+'a fixed size icon to use to calculate the distance across the central icon.
+'
+'When you scroll further across the icon mid-point it then starts to decrease in size.
+'
+' This implies that RD is calculating from the icon's left hand size to the middle 0-100% to determine the icon sizes and not calculating across one icon's width as SD is currently doing.
+
+
+' Current Bugs and Regressions
+' ============================
+
+' When animating, the boundary between the two main icons is jittery
+'    is that because we set the limits of the left hand icon before we set the limits of the main icon causing overlap?
+'    the two are sized one following on from the other but we have to ensure the boundary of the left hand icon is not overlapping the main icon
+'     we can only do that if we only set the left hand icon's boundaries when we know the exact extent of the main icon's boundaries.
+'     at the moment we are setting the leftmost position of each icon at the end of the animation with no checks.
+'     The checks only need to be carried out for the main animated icons.
+'     might be as simple as checking that the icon leftpos plus width does not extend beyond main icon left pos.
+'     This will be fixed by using a new method of animating the dock.
+
+' the problem of the main icon overlapping the left/right hand icons causing a 'jitter' between main and secondary icon:
+' this is due to the positions of all the icons being calculated dynamically and the math being imprecise on the 'edges' will cause
+' one or other of the icons to become 'main'. Solution: The main icon does not need to have its start position calculated in relation to the others,
+' it should be calculated on its own according to the cursor position across its fixed width. The other icons are calculated in relation to it, not
+' from the left hand side!
+
+
+
+
+' Running on a second monitor
+' ============================
+
+' obtain virtual size - we already have code to do this that can determine the 2nd monitor location
+
+' You'll have to use Windows API to determine the virtual screen size for a multi-monitor setup:
+'
+    'Private Const SM_CXVIRTUALSCREEN = 78
+    'Private Const SM_CYVIRTUALSCREEN = 79
+    'Private Const SM_CMONITORS = 80
+    'Private Const SM_SAMEDISPLAYFORMAT = 81
+    '
+    'Private Declare Function GetSystemMetrics Lib "user32" ( _
+    '   ByVal nIndex As Long) As Long
+    '
+    'Public Property Get VirtualScreenWidth() As Long
+    '   VirtualScreenWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN)
+    'End Property
+    'Public Property Get VirtualScreenHeight() As Long
+    '   VirtualScreenHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN)
+    'End Property
+    'Public Property Get DisplayMonitorCount() As Long
+    '   DisplayMonitorCount = GetSystemMetrics(SM_CMONITORS)
+    'End Property
+    'Public Property Get AllMonitorsSame() As Long
+    '   AllMonitorsSame = GetSystemMetrics(SM_SAMEDISPLAYFORMAT)
+    'End Property
+
+
+    ' the form needs to fill the whole virtual screen area, currently it is only filling the default form...
+
+    ' monitors have different twip per pixel ratios and that has to be taken into account, we have a tool for that
+    ' screen.twipsperpixel X & Y have been modified
+    ' the monitors run in a square virtual screen and you can position the monitors within that virtual space
+    ' the current monitor is determined by where you are in that virtual space
+    ' if the monitor number two is set then we use the left hand position of that monitor as the left start point for the dock
+    ' we determine the bounds of monitor 0? x = -1024
+    ' then see if the monitor is set to 1
+    ' it may affect the other two tools in the way they deal with positioning certain elements - need to test that
+
+    ' tested placing the dock using absolute positioning and it will not display on the second monitor so GDI+ is not using the virtual screen for multiple monitors
+    ' some research shows C++ code that tells me to enumerate the monitos and get the device context for each and then supply that to GDI+ initialisation
+    ' routine that sets the device context. I think I can do that.
+    
+    ' GDI+ is still not placing the output on the second monitor, send a forum post after contacting Olaf.
+    ' the dock positioning occurs during setWindowCharacteristics the setWindowsPos call puts it at 0,0 as well as layering it
+    ' when it was moved the dock is cut off at the edge of the window. We need to see the dock on the next monitor
+    ' when a change is made then the mouse positioning needs to be moved by the same amount as it is specifying the wrong icon.
+    ' consider extending GDI to cover the whole virtual screen.
+    
+    ' it might be useful to make the dock slightly visible so we can see where it is, the method is on the net.
+    
+    ' NOTE: Should simply use absolute co-ords, anything that deviates from the current monitor has a co-ord from - to +
+
+
+
+
+' Advanced animations
+' ===================
+
+' All the advanced animation improvements will require me to create icon objects
+
+' Timers - In VB6 you cannot obtain a 1 millisecond timer. The clock resolution on Windows is not high enough.
+' By default it increments 64 times per second. The smallest interval you can get is therefore 16 milliseconds.
+
+' Look at the Russian's game to see how he achieves the animations, most likely he has a graphics library... he uses
+' GDI+ for reading and saving PNGs, nothing more, all the rest is D3D.
+
+' Look at Baka's GDI+ offerings
+'
+
+
+' TOP TIP: avoid strings in the animation routines - integers are quicker
+' TOP TIP: avoid public routines in the animation routines - private are quicker
+
+' Dock entering
+' ==============
+' entering the dock at the right hand side & leaving the dock from the left hand side
+' cannot use existing animations because the resizing of the main object interferes with the core animation and it goes haywire.
+
+' animating the entry of the cursor into the dock from the top
+    ' the timer modifies a grow value by incrementing a value
+    ' this value is subtracted from the maxbyte value in the bump animations
+    ' until the value reaches the maximum maxbyte value when the timer is stopped
+    ' this will cause the icon size of the current icon to grow and not just appear instantly
+    ' the same growth value will be applied to the icons to two the left and right
+    ' probably as a percentage of growth
+    ' we should modify dynamicSizeModifierPxls for this to work using the current animateTimer
+    ' the concept is that the animate timer is animating according to the horizontal diffference using dynamicSizeModifierPxls
+    ' so it should be able to animate the vertical aspect too, all we need to do is to increase dynamicSizeModifierPxls
+    ' rocketdock only grows the selected icon when when the small icons have been entered
+
+' we can use a new animation that grows the center icons and when complete calls the main animation afterwards and lets that take over afterwards
+' use a separate animation to pull the dock up, when it is done, hand over to the main routine.
+
+' adding a blank icon to the existing dock works as a temporary workaround
+' create a timer, when you leave the dock it animates the first dock downward, same with end.
+
+' when bouncing should take into account the time in ms and not just the speed of the cpu to accomplish the bounce.
+'
+' dock icon bounce new animation height, tweak and the timer interval too
+
+' An animation could be added to the addition of an icon.
+
+' An animation could be added to the deletion of an icon.
+
+' When icon clicked and bouncing the dock should not animate when moving the cursor left/right - option to lock? - WIP when the animation is
+'   re-jigged and rewritten.
+
+' the bounce animation is much slower in Rocketdock
+
+
+' Drag and drop
+' ==============
+' Drag and drop needs prettying, a gap
+' when the dragged item leaves the dock area it should leave an empty place in the dock from whence it came
+' when the dragged item leaves the dock area the animation timer needs to continue but the dock itself should return to small state
+' when an icon is dragged to the dock it should open up
+' speeding up drag and drop - It could also be that the writing of the data has been moved to the quit command in RD. To speed up the drag and drop I could set a flag and then
+' move the saving of the data to a timer driven by that flag. Check other timers are operating.
+
+' when dragging from the dock the main icons should not animate when dragging - option to lock? - WIP when the animation is
+' a separate animation?
+'   re-jigged and rewritten.
+'   use smallicon sub?
+
+
+' Graphics Next Technology
+' ========================
+' Avant manager - test the animation routine for the dock, circledock might be worth looking
+
+' A next step is to convert the dock to direct2D for GPU accceleration.
+
+' Tutorial
+' https://www.gamedev.net/tutorials/programming/graphics/directx-graphics-for-visual-basic-part-1-r1308/
+' https://www.vbforums.com/showthread.php?891874-VB6-Directx8-Question-DirectX-gives-EXCLUSIVE-screen-access&highlight=
+
+' Direct3D dock - we have the code already and a sample dock to use a crib. The dock however has a
+' black background, supposedly that is perfectly normal as D3D is meant to run on a canvas and not
+' meant to run in a transparent context. A workaround is to render the image onto a context then use updateLayeredWindow on a transparent form
+' just as done with GDI+.
+
+' Note: Attempting to make the background form transparent as we do with GDI+ does not work.
+
+' Direct 2D Jacob Roman's training utilities to implement 2D graphics in place of GDI+
+' Direct2D is GPU enabled
+
+'    create layered window (link, link)
+'    draw the scene to texture
+'    copy this texture to window contents (via UpdateLayeredWindow function)
+
+'Direct2D is an ActiveX object that can draw to an HWND or to an HDC. For this to work, the steps are:
+'
+'    Instantiate an ID2D1Factory by creating D2D1CreateFactory() from D2D1.DLL (I suggest you link to this dynamically using LoadLibrary/GetProcAddress so your code runs in any Windows version).
+'    Call ID2D1Factory :: CreateHwndRenderTarget() to target an HWND, or call ID2D1Factory :: CreateDCRenderTarget() to target an HDC.
+'    Use the returned ID2D1RenderTarget interface to draw:
+'        Call ID2D1RenderTarget::BeginDraw()
+'        Draw stuff
+'        Call ID2D1RenderTarget::EndDraw()
+'Then you should create a texture, lock it in the memory, copy the pixels data there and unlock texture (look the sources where i use textures).
+'For rendering on a form, you need to create a quad that represents the rendering surface. Then you need specify the texture coordinates to the quad's vertex (look text rendering source).
+'Cls - it just Clear method of IDirect3DDevice9 interface.
+
+' https://copyprogramming.com/howto/how-do-you-use-direct2d-to-render-cleartype-text-on-a-transparent-background#transparent-window-using-direct2d
+' https://www.unknowncheats.me/forum/programming-for-beginners/126003-transparent-overlay-direct2d.html
+
+' We have an example of the D3D dock in DirectX8 which uses SetLayeredWindowAttributes to retrieve the opacity
+' and transparency color key of a layered window.
+
+' A layered window is created by specifying WS_EX_LAYERED when creating the window with the CreateWindowEx function or by setting WS_EX_LAYERED via SetWindowLong after the window has been created.
+'
+'
+' public const int GWL_EXSTYLE = -20;
+'    public const int WS_EX_LAYERED = 0x80000;
+'    public const int LWA_ALPHA = 0x2;
+'    public const int LWA_COLORKEY = 0x1;
+'
+'    //set the window style to alpha appearance
+'    private void button4_Click(object sender, EventArgs e)
+'    {
+'        SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) ^ WS_EX_LAYERED);
+'        SetLayeredWindowAttributes(Handle, 0, 128, LWA_ALPHA);
+'    }
+'
+'Alternative Managed API:
+'
+'If you just want to change the transparency of a Form you own, then use the Opacity property.
+'Sample PB Code:
+'
+'  // Tip submitted by Olivier Citeau (ociteau@yahoo.fr)
+'  // Combined it with the numeric module from Simon Harris (simon@addease.com.au)
+'  // As found on the PBDR.com website
+'
+'  //Open event of your window
+'  Constant long LWA_COLORKEY = 1, LWA_ALPHA = 2
+'  Constant long GWL_EXSTYLE = - 20
+'  Constant long WS_EX_LAYERED = 524288 //2^19
+'  Long ll_Ret, ll_handle
+'
+'  n_cst_numerical lnc_N
+'
+'  // Set the window style to 'Layered'
+'  ll_handle = handle(this)
+'  ll_Ret = GetWindowLong(ll_handle, GWL_EXSTYLE)
+'
+'  //ll_Ret = ll_Ret Or WS_EX_LAYERED
+'  ll_Ret = lnc_N.of_bitwiseor(ll_Ret, WS_EX_LAYERED)
+'
+'  SetWindowLong (ll_handle, GWL_EXSTYLE, ll_Ret)
+'
+'  // Set the opacity of the layered window to 128
+'  SetLayeredWindowAttributes (ll_handle, 0, char(128),LWA_ALPHA)
+'
+'  //Note that if you set opacity to 0, your window will be
+'  //invisible. With 255, it will be a "normal" window.
+
+' GDI+ 75% useful for SteamyDock Future
+' =====
+' It is quick and requires nothing more than an imagelist, some PNGs and an array of y locations. Requires significant enhancement for complex animations,
+' that will require the code to be rewritten. The main icons will need properties and encapsulisation - see RC5 as an example. Only the main icons
+' require this.
+
+
+' Cairo and RC5 - 75% useful for SteamyDock Future
+' ==============
+' Cairo will provide an open source replacement for vector graphics, Cairo is still cpu-bound and will require translation
+' of the graphics created using Cairo to open GL in order to use the GPU. No GPU usage. Cairo is probably not a good solution for replacing GDI+ in this
+' whole program as it is CPU bound and RC5 adds a lot more steps and therefore a lot more CPU usage.
+
+' Each icon image would comprise a 'widget' that would display an image from an imagelist. The icons can have transparency and that allows
+' click-through to the desktop but not click through to an other widget when overlapped (if that ever occurred). The overhead for each icon
+' would be considerable if we did each and every one, so we would 'widgetise' only the main 3-5 animated icons. The imagelist we currently
+' use might need to be supplemented by the RC5 imagelist. Possibly we might need to replace the scripting dictionary altogether with
+' Olaf's RC imagelist. The RC5 icons would provide a click event to replace the current hit location compare and click, so that a new property
+' might possibly have to be added to handle that. Some thinking there. The right click event will also need to be handled differently.
+
+' The smaller icons are being handled very efficiently at the moment using just GDI+ and an array location to position each, so it makes zero
+' sense to replace each of the smaller icons with a RC5 widget. However, RC6 Cairo will have complex animation available for the central animated widgets.
+' so it seems like a good idea. Note that this combination does not bode well for portability, a mix of GDI+ and Cairo as GDI+ will never be multi platform.
+
+' In addition, Olaf is supposedly working on implementing the same advances that are occurring within pyCairo where some of the work is handed over to D3D or OpenGL
+ 
+ 
+ 
+' Extracting embedded icons from DLLs and EXEs
+' ==============================================
+
+' Status - Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser
+'
+' See the GDI+Icons note in Cintanotes
+
+
+'
+' Other
+' ======
+'
+' test running with a blank tool settings file
+'
+' test running with a blank dock settings file
+
+' code signing certificate
+
+' multi threading using TwinBasic/RadBasic some of what RD achieves may be to do with multi-threading, being able to perform
+' two tasks concurrently without any delay apparent to the user. In VB6 mode can we farm any task to another thread?
+'
+' Build the setup2go binary for SD and the sub-components
+
+' We need to selectively add tops and tails to all recently created routines and take into account the potential effect on any animations
+    
+' rubberduck, tidy the API declarations and global vars, document each and every
+
+' mdlSdMain - tidy declarations and initialisation, provide error trapping
+    
+    

@@ -1893,10 +1893,13 @@ Public Sub deleteThisIcon()
             Exit Sub
         End If
     Else
-        dMessage = "This will delete the currently selected entry from the dock, " & vbCr & align(itemName, 90, " ", "both") & vbCr & " It will remove it permanently -  are you sure?"
-        answer = msgBoxA(dMessage, vbQuestion + vbYesNo, "Deleting an Icon", True, "deleteThisIcon")
-        If answer = vbNo Then
-            Exit Sub
+        
+        If dragInsideDockOperating = False Then
+            dMessage = "This will delete the currently selected entry from the dock, " & vbCr & align(itemName, 90, " ", "both") & vbCr & " It will remove it permanently -  are you sure?"
+            answer = msgBoxA(dMessage, vbQuestion + vbYesNo, "Deleting an Icon", True, "deleteThisIcon")
+            If answer = vbNo Then
+                Exit Sub
+            End If
         End If
     
     End If

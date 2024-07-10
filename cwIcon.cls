@@ -21,6 +21,8 @@ Private mIconOpacity As Integer
 Private mIconImage As String
 
 Private Sub Class_Initialize()
+' Only the main icons
+' require this.
 
 
     'mainIconxo = 0: mainIconyo = 0
