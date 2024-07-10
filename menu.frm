@@ -1460,11 +1460,11 @@ Private Sub mnuQuit_Click()
     
 
     
-    '   If lngImage Then
-    '        GdipReleaseDC lngImage, dcMemory
-    '        GdipDeleteGraphics lngImage
+    '   If gdipFullScreenBitmap Then
+    '        GdipReleaseDC gdipFullScreenBitmap, dcMemory
+    '        GdipDeleteGraphics gdipFullScreenBitmap
     '    End If
-    '    If lngBitmap Then GdipDisposeImage lngBitmap
+    '    If iconBitmap Then GdipDisposeImage iconBitmap
     '    If lngGDI Then GdiplusShutdown lngGDI
         
     End

@@ -489,8 +489,8 @@ Public rctText As RECTF
 
 
 ' GDI+ globals variables START
-Public lngBitmap As Long
-Public lngImage As Long
+Public iconBitmap As Long
+Public gdipFullScreenBitmap As Long
 Public lngGDI As Long
 Public lngReturn As Long
 Public dockPosition As TASKBAR_POSITION
@@ -2430,14 +2430,14 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
         
         ' Create a new Bitmap object by cropping a portion of the long 2000px bitmap to the calculated dock width - x, y, width, height
         Call GdipCloneBitmapAreaI(0, 0, cropWidth, dy, lngPixelFormat, img, imgCrop) '
-        lngBitmap = createScaledImg(imgCrop, cropWidth, dy, cropWidth, Height, imageOpacity)
+        iconBitmap = createScaledImg(imgCrop, cropWidth, dy, cropWidth, Height, imageOpacity)
     Else
-        lngBitmap = createScaledImg(img, dx, dy, Width, Height, imageOpacity) ' <consumes memory 100k approx.
+        iconBitmap = createScaledImg(img, dx, dy, Width, Height, imageOpacity) ' <consumes memory 100k approx.
     End If
     
     ' Save as a PNG file no longer required but retained here for reference purposes
 '    If key = "sDSkinMid" Then
-'        saveStatus = GdipSaveImageToFile(lngBitmap, StrConv(App.path & "\cache\" & LTrim$(str$(Width)) & strName, vbUnicode), encoderCLSID, ByVal 0)
+'        saveStatus = GdipSaveImageToFile(iconBitmap, StrConv(App.path & "\cache\" & LTrim$(str$(Width)) & strName, vbUnicode), encoderCLSID, ByVal 0)
 '    End If
     
     'override the key
@@ -2452,7 +2452,7 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
     If thisDictionary.Exists(thiskey) Then
         thisDictionary.Remove thiskey
     End If
-    thisDictionary.Add thiskey, lngBitmap
+    thisDictionary.Add thiskey, iconBitmap
 
    On Error GoTo 0
    Exit Function
@@ -2614,7 +2614,7 @@ Public Function updateDisplayFromDictionary(thisCollection As Object, strFilenam
    On Error GoTo updateDisplayFromDictionary_Error
 
     If thisCollection(key) <> 0 Then
-        lngBitmap = thisCollection(key) ' get the stored image from the collection
+        iconBitmap = thisCollection(key) ' get the stored image from the collection
     Else
         'MsgBox "help - no bitmap for " & key
         'End
@@ -2622,11 +2622,11 @@ Public Function updateDisplayFromDictionary(thisCollection As Object, strFilenam
     End If
     
     ' the old method, retained for documentation was to load a disc file into a bitmap
-    'GdipLoadImageFromFile StrPtr(strFilename), lngBitmap
+    'GdipLoadImageFromFile StrPtr(strFilename), iconBitmap
 
     If Width = -1 Or Height = -1 Then
-        Call GdipGetImageHeight(lngBitmap, Height)
-        Call GdipGetImageWidth(lngBitmap, Width)
+        Call GdipGetImageHeight(iconBitmap, Height)
+        Call GdipGetImageWidth(iconBitmap, Width)
     End If
 
 '    Dim opacity As String
@@ -2645,7 +2645,7 @@ Public Function updateDisplayFromDictionary(thisCollection As Object, strFilenam
 '        clrMatrix.m(3, 3) = 1 * Val(opacity) / 100 ' 0.5 'Alpha transform (50%)
 '        clrMatrix.m(4, 4) = 1
 '
-''       Dim lngBitmap2 As Long
+''       Dim iconBitmap2 As Long
 '
 ''       'Create storage for the image attributes struct used below
 '        Call GdipCreateImageAttributes(imgAttr)
@@ -2653,9 +2653,10 @@ Public Function updateDisplayFromDictionary(thisCollection As Object, strFilenam
 ''       'Setup the image attributes using the color matrix  'ColorAdjustTypeDefault
 '        Call GdipSetImageAttributesColorMatrix(imgAttr, ColorAdjustTypeBitmap, 1, clrMatrix, graMatrix, ColorMatrixFlagsDefault)
 ''
-'        Call GdipDrawImageRectRect(lngImage, lngBitmap, Left, Top, Width, Height, 0, 0, Width, Height, 2, imgAttr, 0, 0)
+'        Call GdipDrawImageRectRect(gdipFullScreenBitmap, iconBitmap, Left, Top, Width, Height, 0, 0, Width, Height, 2, imgAttr, 0, 0)
 '    Else
-        Call GdipDrawImageRectI(lngImage, lngBitmap, Left, Top, Width, Height)  ' shrinks the bitmap into the image object
+        'draws a GDIP image on the
+        Call GdipDrawImageRectI(gdipFullScreenBitmap, iconBitmap, Left, Top, Width, Height)  ' shrinks the bitmap into the image object
 '    End If
     
    Exit Function
@@ -2668,33 +2669,34 @@ End Function
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
 '---------------------------------------------------------------------------------------
-' Procedure : readyGDIPlus
+' Procedure : createNewGDIPBitmap
 ' Author    : beededea
 ' Date      : 07/04/2020
-' Purpose   : creates a bitmap section in memory that applications can write to directly
+' Purpose   : Create a gdi bitmap with width and height of what we are going to draw into it. This is the entire drawing area for everything,
+'             creating a bitmap in memory that our VB6/GDIP application writes to directly. Called each animation interval.
 '---------------------------------------------------------------------------------------
 '
-Public Function readyGDIPlus()
+Public Function createNewGDIPBitmap()
+        
+    On Error GoTo createNewGDIPBitmap_Error
+    ''If debugflg = 1 Then debugLog "%" & "createNewGDIPBitmap" ' commented out to avoid too many debug errors
     
-    ' Create a gdi bitmap with width and height of what we are going to draw into it. This is the entire drawing area for everything
-    ' creates a bitmap in memory that applications can write to directly.
-    On Error GoTo readyGDIPlus_Error
-    ''If debugflg = 1 Then debugLog "%" & "readyGDIPlus" ' commented out to avoid too many debug errors
-    
+    ' create a device independent bitmap and return a handle bmpMemory, giving it a handle to dcMemory and providing any attributes to the new bitmap
+    ' (dcMemory previously created with CreateCompatibleDC)
     bmpMemory = CreateDIBSection(dcMemory, bmpInfo, DIB_RGB_COLORS, ByVal 0, 0, 0)
     
     ' Make the device context use the bitmap.
-    SelectObject dcMemory, bmpMemory
+    Call SelectObject(dcMemory, bmpMemory)
     
-    ' Get a pointer to the graphics of the bitmap, for use with drawing functions
-    Call GdipCreateFromHDC(dcMemory, lngImage)
+    ' Creates a GDIP graphic object and provides a pointer 'gdipFullScreenBitmap' using a handle to the bitmap graphic section assigned to the device context
+    Call GdipCreateFromHDC(dcMemory, gdipFullScreenBitmap)
 
    On Error GoTo 0
    Exit Function
 
-readyGDIPlus_Error:
+createNewGDIPBitmap_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readyGDIPlus of module mdlMain.bas"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure createNewGDIPBitmap of module mdlMain.bas"
     
 End Function
 
@@ -2756,10 +2758,11 @@ Public Function setWindowCharacteristics()
     funcBlend32bpp.SourceConstantAlpha = 255 * Val(dockOpacity) / 100 ' this calc can be done elsewhere and we just use a passed var
     ' the above line is also replicated where the dock opacity requires dynamic modification, ie. during an autohide and reveal
 
-    'GdipDeleteGraphics lngImage 'The graphics may now be deleted
+    GdipDeleteGraphics gdipFullScreenBitmap 'The graphics may now be deleted
             
     'Update the specified window handle (hwnd) with a handle to our bitmap (dc) passing all the required characteristics
     UpdateLayeredWindow dock.hwnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
+    
     ' The UpdateLayeredWindow API call above does not need really to be run here as it is run repeatedly by the animate timer and the function to draw the icons small
     
    On Error GoTo 0

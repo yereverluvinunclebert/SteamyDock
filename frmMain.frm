@@ -1834,8 +1834,8 @@ Private Sub Form_Load()
     Call showSplashScreen ' has to be at the end of the start up as we need to read the config file but also so as to not cause a clear outline to appear where the splash screen should be
     
     'creates a bitmap section in memory that applications can write to directly
-    If debugflg = 1 Then debugLog "% sub readyGDIPlus" ' the debug needs to be here
-    Call readyGDIPlus
+    If debugflg = 1 Then debugLog "% sub createNewGDIPBitmap" ' the debug needs to be here
+    Call createNewGDIPBitmap
         
     ' set autohide characteristics, needs to be exactly here
     Call setAutoHide
@@ -3147,12 +3147,12 @@ Private Function fTestCursorWithinDockYPosition() As Boolean
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
     If dockPosition = vbBottom Then
-        'outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels))    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-            outsideDock = True
-        Else
-            outsideDock = False
-        End If
+        outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'            outsideDock = True
+'        Else
+'            outsideDock = False
+'        End If
     End If
     If dockPosition = vbtop Then
         outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
@@ -3404,30 +3404,31 @@ animateTimer_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : updateGDIPlus
+' Procedure : updateScreenUsingGDIBitmap
 ' Author    : beededea
 ' Date      : 08/07/2024
-' Purpose   : now update the image using GDI to draw all the placed GDiP elements
+' Purpose   : now update the image using GDIP to draw all the placed GDiP elements
 '---------------------------------------------------------------------------------------
 '
-Private Sub updateGDIPlus()
+Private Sub updateScreenUsingGDIBitmap()
 
-   On Error GoTo updateGDIPlus_Error
+   On Error GoTo updateScreenUsingGDIBitmap_Error
 
-    Call GdipDeleteGraphics(lngImage)  'The graphics may now be deleted
+    Call GdipDeleteGraphics(iconBitmap)  'The GDIP graphics are deleted first
+    Call GdipDeleteGraphics(gdipFullScreenBitmap)  'The GDIP graphics are deleted first
     
     ' the third parameter is a pointer to a structure that specifies the new screen position of the layered window.
     ' If the current position is not changing, pptDst can be NULL. It is null. We can play with it to move the screen
     
-    'Update the specified window handle (hwnd) with a handle to our bitmap (dc) passing all the required characteristics
+    'Update the specified whole window using the window handle (me.hwnd) selecting a handle to the bitmap (dc) and passing all the required characteristics
     UpdateLayeredWindow Me.hwnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
 
    On Error GoTo 0
    Exit Sub
 
-updateGDIPlus_Error:
+updateScreenUsingGDIBitmap_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure updateGDIPlus of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure updateScreenUsingGDIBitmap of Form dock"
 
 End Sub
 
@@ -3480,7 +3481,7 @@ Private Sub sequentialBubbleAnimation()
     On Error GoTo sequentialBubbleAnimation_Error
     
     DeleteObject bmpMemory ' the bitmap deleted
-    Call readyGDIPlus ' clears the whole previously drawn image section and the animation continues
+    Call createNewGDIPBitmap ' clears the whole previously drawn image section and the animation continues
 
     ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecessary twip conversion
     iconPosLeftPxls = saveStartLeftPxls
@@ -3545,7 +3546,7 @@ Private Sub sequentialBubbleAnimation()
         updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplay, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
     End If
     
-    Call updateGDIPlus
+    Call updateScreenUsingGDIBitmap
     
 '    If debugflg = 1 Then
 '       DrawTheText "animateTimer.Enabled " & animateTimer.Enabled, 200, 50, 300, rDFontName, Val(Abs(rDFontSize))
@@ -3992,7 +3993,7 @@ Private Sub drawDockByCursorEntryPosition()
     ' this will be replaced by an animation timer that redraws the dock from the old to the current size.
     
     DeleteObject bmpMemory ' the bitmap deleted
-    Call readyGDIPlus ' clears the whole previously drawn image section and the animation continues
+    Call createNewGDIPBitmap ' clears the whole previously drawn image section and the animation continues
     
     ' iconRightmostPointPxls =
     
@@ -4018,7 +4019,7 @@ Private Sub drawDockByCursorEntryPosition()
     Call sizeAndShowSmallIconsToRightByCEP(iconIndex, rightmostResizedIcon, rightIconWidthPxls, showsmall)
    
     ' now update the image using GDI to draw all the placed GDiP elements
-    Call updateGDIPlus
+    Call updateScreenUsingGDIBitmap
    
    On Error GoTo 0
    Exit Sub
@@ -5171,11 +5172,11 @@ End Sub
 Public Sub shutdwnGDI()
    On Error GoTo shutdwnGDI_Error
 
-    If lngImage Then
-        Call GdipReleaseDC(lngImage, dcMemory)
-        Call GdipDeleteGraphics(lngImage)
+    If gdipFullScreenBitmap Then
+        Call GdipReleaseDC(gdipFullScreenBitmap, dcMemory)
+        Call GdipDeleteGraphics(gdipFullScreenBitmap)
     End If
-    If lngBitmap Then Call GdipDisposeImage(lngBitmap)
+    If iconBitmap Then Call GdipDisposeImage(iconBitmap)
     If lngGDI Then Call GdiplusShutdown(lngGDI)
 
    On Error GoTo 0
@@ -5500,7 +5501,7 @@ Public Sub drawSmallStaticIcons()
         'Call drawSmallIconDockWithFadeEffects
                                             
         DeleteObject bmpMemory ' the bitmap deleted
-        Call readyGDIPlus ' clears the whole previously drawn image section and the animation continues
+        Call createNewGDIPBitmap ' clears the whole previously drawn image section and the animation continues
     
         If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth, True)
                 
@@ -5530,7 +5531,7 @@ Public Sub drawSmallStaticIcons()
                     
         Call storeCurrentIconPositions(UBound(iconStoreLeftPixels))
         
-        Call updateGDIPlus
+        Call updateScreenUsingGDIBitmap
             
         smallDockBeenDrawn = True
         bDrawn = True
@@ -5569,7 +5570,7 @@ End Sub
 '   'If debugflg = 1 Then debugLog "%drawSmallIconDockWithFadeEffects"
 '
 '            DeleteObject bmpMemory ' Now the bitmap may be deleted
-'            Call readyGDIPlus
+'            Call createNewGDIPBitmap
 '
 '            If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth)
 '
@@ -6900,10 +6901,7 @@ Public Sub HideDockNow()
     
     funcBlend32bpp.SourceConstantAlpha = 0
     
-    Call GdipDeleteGraphics(lngImage)  'The graphics may now be deleted
-
-    'Update the specified window handle (hwnd) with a handle to our bitmap (dc) passing all the required characteristics
-    UpdateLayeredWindow Me.hwnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
+    Call updateScreenUsingGDIBitmap
     
     dockHidden = True
     
@@ -6941,10 +6939,7 @@ Public Sub ShowDockNow()
         
         funcBlend32bpp.SourceConstantAlpha = 255
         
-        Call GdipDeleteGraphics(lngImage)  'The graphics may now be deleted
-
-        'Update the specified window handle (hwnd) with a handle to our bitmap (dc) passing all the required characteristics
-        UpdateLayeredWindow Me.hwnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
+        Call updateScreenUsingGDIBitmap
         
         responseTimer.Enabled = True
 
