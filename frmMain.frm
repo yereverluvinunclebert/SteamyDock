@@ -35,7 +35,7 @@ Begin VB.Form dock
    End
    Begin VB.Timer clickBlankTimer 
       Enabled         =   0   'False
-      Interval        =   20
+      Interval        =   50
       Left            =   255
       Tag             =   "used to make the main icon invisible for a very brief period of 100ms or less"
       Top             =   3075
@@ -3063,7 +3063,7 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
     
     ' show the icon image itself or a brief glimpse of the low res smaller version on a click event
     If selectedIconIndex = useloop And blankClickEvent = True Then
-        updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
+        updateDisplayFromDictionary collLargeIcons, vbNullString, "busycogResizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     Else
         updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     End If
@@ -6724,6 +6724,8 @@ Private Function fValidateComponents() As Boolean
     fValidateComponents = reportMissingFile(sdAppPath & "\blank.png")
     If fValidateComponents = False Then Exit Function
     fValidateComponents = reportMissingFile(sdAppPath & "\separator.png")
+    If fValidateComponents = False Then Exit Function
+    fValidateComponents = reportMissingFile(sdAppPath & "\busycog.png")
     If fValidateComponents = False Then Exit Function
     fValidateComponents = reportMissingFile(sdAppPath & "\tinyCircle.png")
     If fValidateComponents = False Then Exit Function

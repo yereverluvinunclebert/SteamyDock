@@ -2086,6 +2086,10 @@ Public Sub loadAdditionalImagestoDictionary()
         resizeAndLoadImgToDict collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
     
+    If fFExists(App.Path & "\busycog.png") Then
+        resizeAndLoadImgToDict collLargeIcons, "busycog", App.Path & "\busycog.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+    End If
+    
     If fFExists(App.Path & "\smallGoldCoin.png") Then
         resizeAndLoadImgToDict collLargeIcons, "smallgoldCoin", App.Path & "\smallGoldCoin.png", sDisabled, (0), (0), (128), (128), , imageOpacity
     End If
