@@ -119,7 +119,7 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
         sDBounceZone = GetINISetting("Software\SteamyDock\DockSettings", "BounceZone", settingsFile) ' .05 DAEB 12/07/2021 common2.bas Add the BounceZone as a configurable variable.
 
         ' development
-        sDDefaultEditor = GetINISetting(location, "defaultEditor", settingsFile)
+        sDDefaultEditor = GetINISetting(location, "dockDefaultEditor", settingsFile)
         sDDebugFlg = GetINISetting(location, "debugFlg", settingsFile)
         debugflg = Val(sDDebugFlg)
     End If

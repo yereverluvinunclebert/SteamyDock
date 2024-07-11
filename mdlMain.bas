@@ -3074,6 +3074,7 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
     If NameProcess <> vbNullString Then
           AppCount = 0
           
+          binaryName = getFileNameFromPath(NameProcess)
           'Aborted
           If binaryName = vbNullString Then Exit Function ' catchall to prevent closure of unknown processes if the name is malformed
           

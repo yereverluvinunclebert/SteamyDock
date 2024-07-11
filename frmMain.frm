@@ -2702,6 +2702,7 @@ Private Sub sequentialBubbleAnimation()
     Call updateScreenUsingGDIBitmap
     
 '    If debugflg = 1 Then
+
 '       DrawTheText "animateTimer.Enabled " & animateTimer.Enabled, 200, 50, 300, rDFontName, Val(Abs(rDFontSize))
 '        DrawTheText "bounceHeight " & bounceHeight, 580, 50, 300, rDFontName, Val(Abs(rDFontSize))
 '    End If
@@ -2832,26 +2833,18 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
     ' the group of icons to the left of the main icon, resized dynamically
     If useloop < iconIndex And useloop >= leftmostResizedIcon Then
        For useloop2 = leftmostResizedIcon To (iconIndex - 1)
-'            resizeProportion = 1 / ((rDZoomWidth - 1) / 2) ' 33, .50 &c
-'            resizeProportion = 1 ' override
-            
-'            If useloop = 0 Then
-'                iconHeightPxls = iconSizeSmallPxls - (dynamicSizeModifierPxls * resizeProportion) 'dynamicSizeModifierPxls is the difference from the midpoint of the current icon in the x axis
-'                iconWidthPxls = iconSizeSmallPxls - (dynamicSizeModifierPxls * resizeProportion)
-'            Else
-                iconHeightPxls = iconSizeLargePxls - (dynamicSizeModifierPxls) '* resizeProportion) 'dynamicSizeModifierPxls is the difference from the midpoint of the current icon in the x axis
-                iconWidthPxls = iconSizeLargePxls - (dynamicSizeModifierPxls) ' * resizeProportion)
-'            End If
+
+            iconHeightPxls = iconSizeLargePxls - (dynamicSizeModifierPxls) '* resizeProportion) 'dynamicSizeModifierPxls is the difference from the midpoint of the current icon in the x axis
               
-             If dockPosition = vbBottom Then
-                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = (dockDrawingPositionPxls + dynamicSizeModifierPxls) + xAxisModifier '.nn
-                ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = (dockDrawingPositionPxls + dynamicSizeModifierPxls) - xAxisModifier '.nn
-                Else
-                    iconCurrentTopPxls = (dockDrawingPositionPxls + dynamicSizeModifierPxls) '.nn
-                End If
-             End If
+            If dockPosition = vbBottom Then
+               If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
+                   iconCurrentTopPxls = (dockDrawingPositionPxls + dynamicSizeModifierPxls) + xAxisModifier '.nn
+               ElseIf autoSlideMode = "slidein" Then
+                   iconCurrentTopPxls = (dockDrawingPositionPxls + dynamicSizeModifierPxls) - xAxisModifier '.nn
+               Else
+                   iconCurrentTopPxls = (dockDrawingPositionPxls + dynamicSizeModifierPxls) '.nn
+               End If
+            End If
              
             If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
@@ -2862,6 +2855,16 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
                     iconCurrentTopPxls = dockDrawingPositionPxls
                 End If
             End If
+            
+            ' debug
+            ' iconCurrentTopPxls =
+            ' DrawTheText " " & iconCurrentTopPxls, 100, 100, 100, rDFontName, Val(Abs(rDFontSize))
+        
+            If iconHeightPxls < iconSizeSmallPxls Then
+                iconHeightPxls = iconSizeSmallPxls
+                iconCurrentTopPxls = dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
+            End If
+            iconWidthPxls = iconHeightPxls
             
              'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeLargePxls - dynamicSizeModifierPxls)
             
@@ -2923,6 +2926,7 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
                 If selectedIconIndex = iconIndex Then iconCurrentTopPxls = dockDrawingPositionPxls + bounceHeight
             End If
         
+        
             'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - iconSizeLargePxls
 '            If useloop = 0 Then
                 showsmall = False
@@ -2963,6 +2967,7 @@ Private Sub sizeEachResizedIconToRight(ByVal useloop As Integer, ByVal rightmost
                 iconCurrentTopPxls = dockDrawingPositionPxls
             End If
         End If
+        
         
         'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)
         expandedDockWidth = expandedDockWidth + iconWidthPxls
@@ -3107,7 +3112,6 @@ Private Sub drawTextAboveIcon(ByVal useloop As Integer, ByVal textWidth As Integ
                 End If
             End If
         End If
-
 
 End Sub
 
@@ -4765,7 +4769,7 @@ End Sub
 '                iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
 '            Next useloop
 '
-''       DrawTheText "responseTimer.Enabled " & responseTimer.Enabled, 440, 50, 300, rDFontName, Val(Abs(rDFontSize))
+'       DrawTheText "iconCurrentTopPxls " & iconCurrentTopPxls, 440, 50, 300, rDFontName, Val(Abs(rDFontSize))
 ''       DrawTheText "responseTimer.interval " & responseTimer.Interval, 460, 50, 300, rDFontName, Val(Abs(rDFontSize))
 '
 '
