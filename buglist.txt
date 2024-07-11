@@ -395,14 +395,14 @@
 ' create a class, for type icon
 ' assign it properties left, top, width, height, opacity
 
-
+Killing a process from the menu does not seem to work at the moment.
 
 
 ' Main Tasks:  ' see the separate bug/task list provided by vBAdvance
 ' ============
 
 '     1.
-'     2. Graphics Next Technology Cairo/RC5 - WIP - testing in the Pz Earth widget - done
+'     2. Identify Graphics Next Technology Cairo/RC5 - WIP - testing in the Pz Earth widget - done
 '     3. Add known identifiers to the known apps list - WIP
 '     4. dockSettings, regular process check reduce to 5 secs minimum.
 '     5. adding the autoscaling feature on the two utilities as per generate utility
