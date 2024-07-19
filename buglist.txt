@@ -1,4 +1,429 @@
+Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
+Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
 
+' Current Task:
+' =============
+
+ 
+' Extracting embedded icons from DLLs and EXEs
+' ==============================================
+
+' Status - Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser
+'
+' See the GDI+Icons note in Cintanotes
+
+' reading from an embedded icon within a DLL, extracting to a PNG fior GDI+ to pick up. Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser.
+ 
+ Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity
+ 
+ when a dock is wider than 2000 pixels - stitch two docks together
+ 
+ when the dock is over a certain size the background does not appear
+
+' Main Tasks:  
+' ============
+
+'     1. Running on a second monitor
+'     2. Graphics Next Technology D2D/RC6, investigate - WIP
+'     3. Add known identifiers to the known apps list - WIP
+'     4. dockSettings, regular process check reduce to 5 secs minimum.
+'     5. adding the autoscaling feature on the two utilities as per generate utility
+'     6. creating new icons WIP
+'     8. Animating more than just the three icons - WIP
+'     9. DPIawareness in the manifest - research
+'    10. 
+'    11. 
+'    12. 
+'    13. 
+'    14. 
+
+' Detail of General Status
+' ========================
+
+' Pushing the Windows taskbar to the top programatically a registry change then a restart of explorer.
+
+'  Creation of a default DockSettings.ini for a new user of the dock where the application has never been run before.
+'
+'  How to create a desktop shortcut with a good quality icon.
+'  icons - add icon references to the resource file and code to show on the forms themselves.
+'  http://www.vbaccelerator.com/home/VB/Tips/Setting_the_App_Icon_Correctly/article.asp
+'
+'  the docksettings tool should have some separate code that allows migration from RD to SD but the rest should use SdSettings
+'
+' reorganise windows menu option? send all windows to front/back
+'
+' finish the icons
+    ' droptypes to deal with by having an associated document
+
+    shortcuts...
+    ' installation packages
+
+    '.xpi done
+    '.xar
+    '.bz2
+'    .bak
+'    .bck
+'    .pup
+'    .bkp
+
+'    .7z
+'    .zl
+'    .s7z
+'    .sfx
+'    .arc
+'    .ace
+'    .ufs
+
+'    .xz
+'    .gz
+'    .lz
+
+'    .lzx
+'    .lzm
+'    .mint
+'
+' look at the custom icon tool and see which you need to recreate WIP
+' modify the zipfile icons to the correct type above
+
+
+
+
+' Animating more than three icons
+' ===========================
+
+' showing more than three icons in the current BUMP animation - it is possible.
+' Currently the left and right icons are modified in proportion to the cursor position across a fixed length, ie. the main icon.
+' from 0-100% over the small icon size.
+' for two additional icons on the left/right we need extend the proportion over the two icons
+' ie. 0-100% over the two icons rather than the one.
+    
+' SD will not support Zoom: Flat as it is a rubbish animation - documentation updated
+
+' The current dock stores only the left hand position of each icon and as such advanced animation cannot take place due to
+' that limitation. The icons to the left and right, their size is a proportion of how far the cursor is across the central icon.
+'
+' No advanced animation can be performed as the properties of each icon are not known so we cannot currently transform them.
+' When we store the left hand position of the icon, we have also started to gather the icon's right hand location
+' iconStoreRightPixels. So, we are already holding two x values, left and right, we now need only to store the Y values,
+' top and bottom. Storage for those have been added but we still need to populate those values during the icon drawing
+' routines:
+
+    ' drawSmallStaticIcons - quick and simple routine using little cpu that keeps the dock on screen in small mode at a reduced interval
+    ' drawDockByCursorEntryPosition - calculates and draws ONCE using the initial dock position from the cursor entry point
+    ' sequentialBubbleAnimation - performs the regular animation of the central three icons.
+'
+'When you enter an icon in Rocketdock it is not full size, it does not grow to full size until the middle of the icon is reached.
+'This is unlike SD that makes sure that the centre icon is full size so that when you traverse across it you have
+'a fixed size icon to use to calculate the distance across the central icon.
+'
+'When you scroll further across the icon mid-point it then starts to decrease in size.
+'
+' This implies that RD is calculating from the icon's left hand size to the middle 0-100% to determine the icon sizes and not calculating across one icon's width as SD is currently doing.
+
+
+
+' Current Bugs and Regressions
+' ============================
+
+he zoom: none choice, simply bounces the small icon without growing it at all
+
+' Running on a second monitor
+' ============================
+
+' obtain virtual size - we already have code to do this that can determine the 2nd monitor location
+
+' You'll have to use Windows API to determine the virtual screen size for a multi-monitor setup:
+'
+    'Private Const SM_CXVIRTUALSCREEN = 78
+    'Private Const SM_CYVIRTUALSCREEN = 79
+    'Private Const SM_CMONITORS = 80
+    'Private Const SM_SAMEDISPLAYFORMAT = 81
+    '
+    'Private Declare Function GetSystemMetrics Lib "user32" ( _
+    '   ByVal nIndex As Long) As Long
+    '
+    'Public Property Get VirtualScreenWidth() As Long
+    '   VirtualScreenWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN)
+    'End Property
+    'Public Property Get VirtualScreenHeight() As Long
+    '   VirtualScreenHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN)
+    'End Property
+    'Public Property Get DisplayMonitorCount() As Long
+    '   DisplayMonitorCount = GetSystemMetrics(SM_CMONITORS)
+    'End Property
+    'Public Property Get AllMonitorsSame() As Long
+    '   AllMonitorsSame = GetSystemMetrics(SM_SAMEDISPLAYFORMAT)
+    'End Property
+
+
+    ' the form needs to fill the whole virtual screen area, currently it is only filling the default form...
+
+    ' monitors have different twip per pixel ratios and that has to be taken into account, we have a tool for that
+    ' screen.twipsperpixel X & Y have been modified
+    ' the monitors run in a square virtual screen and you can position the monitors within that virtual space
+    ' the current monitor is determined by where you are in that virtual space
+    ' if the monitor number two is set then we use the left hand position of that monitor as the left start point for the dock
+    ' we determine the bounds of monitor 0? x = -1024
+    ' then see if the monitor is set to 1
+    ' it may affect the other two tools in the way they deal with positioning certain elements - need to test that
+
+    ' tested placing the dock using absolute positioning and it will not display on the second monitor so GDI+ is not using the virtual screen for multiple monitors
+    ' some research shows C++ code that tells me to enumerate the monitos and get the device context for each and then supply that to GDI+ initialisation
+    ' routine that sets the device context. I think I can do that.
+    
+    ' GDI+ is still not placing the output on the second monitor, send a forum post after contacting Olaf.
+    ' the dock positioning occurs during setWindowCharacteristics the setWindowsPos call puts it at 0,0 as well as layering it
+    ' when it was moved the dock is cut off at the edge of the window. We need to see the dock on the next monitor
+    ' when a change is made then the mouse positioning needs to be moved by the same amount as it is specifying the wrong icon.
+    ' consider extending GDI to cover the whole virtual screen.
+    
+    ' it might be useful to make the dock slightly visible so we can see where it is, the method is on the net.
+    
+    ' NOTE: Should simply use absolute co-ords, anything that deviates from the current monitor has a co-ord from - to +
+
+
+
+
+' Advanced animations
+' ===================
+
+' All the advanced animation improvements will require me to create icon objects
+
+' Timers - In VB6 you cannot obtain a 1 millisecond timer. The clock resolution on Windows is not high enough.
+' By default it increments 64 times per second. The smallest interval you can get is therefore 16 milliseconds.
+
+' Look at the Russian's game to see how he achieves the animations, most likely he has a graphics library... he uses
+' GDI+ for reading and saving PNGs, nothing more, all the rest is D3D.
+
+' Look at Baka's GDI+ offerings
+'
+animate the dock widening when it shifts from static to animatebyposition
+
+' TOP TIP: avoid strings in the animation routines - integers are quicker
+' TOP TIP: avoid public routines in the animation routines - private are quicker
+
+
+
+' When animating, the boundary between the two main icons is jittery
+'    is that because we set the limits of the left hand icon before we set the limits of the main icon causing overlap?
+'    the two are sized one following on from the other but we have to ensure the boundary of the left hand icon is not overlapping the main icon
+'     we can only do that if we only set the left hand icon's boundaries when we know the exact extent of the main icon's boundaries.
+'     at the moment we are setting the leftmost position of each icon at the end of the animation with no checks.
+'     The checks only need to be carried out for the main animated icons.
+'     might be as simple as checking that the icon leftpos plus width does not extend beyond main icon left pos.
+'     This will be fixed by using a new method of animating the dock.
+
+' the problem of the main icon overlapping the left/right hand icons causing a 'jitter' between main and secondary icon:
+' this is due to the positions of all the icons being calculated dynamically and the math being imprecise on the 'edges' will cause
+' one or other of the icons to become 'main'. Solution: The main icon does not need to have its start position calculated in relation to the others,
+' it should be calculated on its own according to the cursor position across its fixed width. The other icons are calculated in relation to it, not
+' from the left hand side!
+
+
+' Dock entering
+' ==============
+' entering the dock at the right hand side & leaving the dock from the left hand side
+' cannot use existing animations because the resizing of the main object interferes with the core animation and it goes haywire.
+
+' animating the entry of the cursor into the dock from the top
+    ' the timer modifies a grow value by incrementing a value
+    ' this value is subtracted from the maxbyte value in the bump animations
+    ' until the value reaches the maximum maxbyte value when the timer is stopped
+    ' this will cause the icon size of the current icon to grow and not just appear instantly
+    ' the same growth value will be applied to the icons to two the left and right
+    ' probably as a percentage of growth
+    ' we should modify dynamicSizeModifierPxls for this to work using the current animateTimer
+    ' the concept is that the animate timer is animating according to the horizontal diffference using dynamicSizeModifierPxls
+    ' so it should be able to animate the vertical aspect too, all we need to do is to increase dynamicSizeModifierPxls
+    ' rocketdock only grows the selected icon when when the small icons have been entered
+
+' we can use a new animation that grows the center icons and when complete calls the main animation afterwards and lets that take over afterwards
+' use a separate animation to pull the dock up, when it is done, hand over to the main routine.
+
+' adding a blank icon to the existing dock works as a temporary workaround
+' create a timer, when you leave the dock it animates the first dock downward, same with end.
+
+' when bouncing should take into account the time in ms and not just the speed of the cpu to accomplish the bounce.
+'
+' dock icon bounce new animation height, tweak and the timer interval too
+
+' An animation could be added to the addition of an icon.
+
+' An animation could be added to the deletion of an icon.
+
+' When icon clicked and bouncing the dock should not animate when moving the cursor left/right - option to lock? - WIP when the animation is
+'   re-jigged and rewritten.
+
+' the bounce animation is much slower in Rocketdock
+
+
+' Drag and drop
+' ==============
+' Drag and drop needs prettying, a gap
+' when the dragged item leaves the dock area it should leave an empty place in the dock from whence it came
+' when the dragged item leaves the dock area the animation timer needs to continue but the dock itself should return to small state
+' when an icon is dragged to the dock it should open up
+' speeding up drag and drop - It could also be that the writing of the data has been moved to the quit command in RD. To speed up the drag and drop I could set a flag and then
+' move the saving of the data to a timer driven by that flag. Check other timers are operating.
+
+' when dragging from the dock the main icons should not animate when dragging - option to lock? - WIP when the animation is
+' a separate animation?
+'   re-jigged and rewritten.
+'   use smallicon sub?
+
+
+' Graphics Next Technology
+' ========================
+' Avant manager - test the animation routine for the dock, circledock might be worth looking
+
+' A next step is to convert the dock to direct2D for GPU accceleration.
+
+' Tutorial
+' https://www.gamedev.net/tutorials/programming/graphics/directx-graphics-for-visual-basic-part-1-r1308/
+' https://www.vbforums.com/showthread.php?891874-VB6-Directx8-Question-DirectX-gives-EXCLUSIVE-screen-access&highlight=
+
+' Direct3D dock - we have the code already and a sample dock to use a crib. The dock however has a
+' black background, supposedly that is perfectly normal as D3D is meant to run on a canvas and not
+' meant to run in a transparent context. A workaround is to render the image onto a context then use updateLayeredWindow on a transparent form
+' just as done with GDI+.
+
+' Note: Attempting to make the background form transparent as we do with GDI+ does not work.
+
+' Direct 2D Jacob Roman's training utilities to implement 2D graphics in place of GDI+
+' Direct2D is GPU enabled
+
+'    create layered window (link, link)
+'    draw the scene to texture
+'    copy this texture to window contents (via UpdateLayeredWindow function)
+
+'Direct2D is an ActiveX object that can draw to an HWND or to an HDC. For this to work, the steps are:
+'
+'    Instantiate an ID2D1Factory by creating D2D1CreateFactory() from D2D1.DLL (I suggest you link to this dynamically using LoadLibrary/GetProcAddress so your code runs in any Windows version).
+'    Call ID2D1Factory :: CreateHwndRenderTarget() to target an HWND, or call ID2D1Factory :: CreateDCRenderTarget() to target an HDC.
+'    Use the returned ID2D1RenderTarget interface to draw:
+'        Call ID2D1RenderTarget::BeginDraw()
+'        Draw stuff
+'        Call ID2D1RenderTarget::EndDraw()
+'Then you should create a texture, lock it in the memory, copy the pixels data there and unlock texture (look the sources where i use textures).
+'For rendering on a form, you need to create a quad that represents the rendering surface. Then you need specify the texture coordinates to the quad's vertex (look text rendering source).
+'Cls - it just Clear method of IDirect3DDevice9 interface.
+
+' https://copyprogramming.com/howto/how-do-you-use-direct2d-to-render-cleartype-text-on-a-transparent-background#transparent-window-using-direct2d
+' https://www.unknowncheats.me/forum/programming-for-beginners/126003-transparent-overlay-direct2d.html
+
+' We have an example of the D3D dock in DirectX8 which uses SetLayeredWindowAttributes to retrieve the opacity
+' and transparency color key of a layered window.
+
+' A layered window is created by specifying WS_EX_LAYERED when creating the window with the CreateWindowEx function or by setting WS_EX_LAYERED via SetWindowLong after the window has been created.
+'
+'
+' public const int GWL_EXSTYLE = -20;
+'    public const int WS_EX_LAYERED = 0x80000;
+'    public const int LWA_ALPHA = 0x2;
+'    public const int LWA_COLORKEY = 0x1;
+'
+'    //set the window style to alpha appearance
+'    private void button4_Click(object sender, EventArgs e)
+'    {
+'        SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) ^ WS_EX_LAYERED);
+'        SetLayeredWindowAttributes(Handle, 0, 128, LWA_ALPHA);
+'    }
+'
+'Alternative Managed API:
+'
+'If you just want to change the transparency of a Form you own, then use the Opacity property.
+'Sample PB Code:
+'
+'  // Tip submitted by Olivier Citeau (ociteau@yahoo.fr)
+'  // Combined it with the numeric module from Simon Harris (simon@addease.com.au)
+'  // As found on the PBDR.com website
+'
+'  //Open event of your window
+'  Constant long LWA_COLORKEY = 1, LWA_ALPHA = 2
+'  Constant long GWL_EXSTYLE = - 20
+'  Constant long WS_EX_LAYERED = 524288 //2^19
+'  Long ll_Ret, ll_handle
+'
+'  n_cst_numerical lnc_N
+'
+'  // Set the window style to 'Layered'
+'  ll_handle = handle(this)
+'  ll_Ret = GetWindowLong(ll_handle, GWL_EXSTYLE)
+'
+'  //ll_Ret = ll_Ret Or WS_EX_LAYERED
+'  ll_Ret = lnc_N.of_bitwiseor(ll_Ret, WS_EX_LAYERED)
+'
+'  SetWindowLong (ll_handle, GWL_EXSTYLE, ll_Ret)
+'
+'  // Set the opacity of the layered window to 128
+'  SetLayeredWindowAttributes (ll_handle, 0, char(128),LWA_ALPHA)
+'
+'  //Note that if you set opacity to 0, your window will be
+'  //invisible. With 255, it will be a "normal" window.
+
+' GDI+ 75% useful for SteamyDock Future
+' =====
+' It is quick and requires nothing more than an imagelist, some PNGs and an array of y locations. Requires significant enhancement for complex animations,
+' that will require the code to be rewritten. The main icons will need properties and encapsulisation - see RC5 as an example. Only the main icons
+' require this.
+
+
+' Cairo and RC5/6 - 85% useful for SteamyDock Future
+' ==============
+' Cairo could provide an open source replacement for graphics, Cairo is still cpu-bound.
+
+'   RC Widget method
+' ================
+' Each icon image could comprise a 'widget' that would display an image from an imagelist. The icons can have transparency and that allows
+' click-through to the desktop but not click through to an other widget when overlapped (if that ever occurred). The overhead for each icon
+' would be considerable if we did each and every one, so we would 'widgetise' only the main 3-5 animated icons. The imagelist we currently
+' use might need to be supplemented by the RC5 imagelist. Possibly we might need to replace the scripting dictionary altogether with
+' Olaf's RC imagelist. The RC5 icons would provide a click event to replace the current hit location compare and click, so that a new property
+' might possibly have to be added to handle that. Some thinking there. The right click event will also need to be handled differently.
+'  Cairo is probably not a good solution for replacing GDI+ in this manner as the whole program as it is CPU bound and RC widgets adda a lot more 
+' steps and therefore a lot more CPU usage. It could be do-able just for the central three or five icons as the overhead would be minimal.
+
+' The smaller icons are being handled very efficiently at the moment using just GDI+ and an array location to position each, so it makes zero
+' sense to replace every one of the smaller icons with a RC5 widget. 
+
+' instead of graphical widgets you would just use the paint event to draw the individual images just as when populating the dock with GDI+. 
+' Use of the RC imagelist instead of the scripting dictionary might speed up splitting and rejoining collections.
+
+' RC Cairo will have complex animation available for the central animated widgets.
+' so it seems like a good idea. 
+
+' In addition, Olaf was supposedly working on implementing the same advances that are occurring within pyCairo where some of the work is 
+handed over to D3D or OpenGL but recent news states this has project has been abandoned.
+ 
+ 
+
+'
+' Other
+' ======
+'
+' test running with a blank tool settings file
+'
+' test running with a blank dock settings file
+
+' code signing certificate
+
+' multi threading using TwinBasic/RadBasic some of what RD achieves may be to do with multi-threading, being able to perform
+' two tasks concurrently without any delay apparent to the user. In VB6 mode can we farm any task to another thread?
+'
+' Build the setup2go binary for SD and the sub-components
+
+' We need to selectively add tops and tails to all recently created routines and take into account the potential effect on any animations
+    
+' rubberduck, tidy the API declarations and global vars, document each and every
+
+' mdlSdMain - tidy declarations and initialisation, provide error trapping
+    
+    
+    
+    
+    
+    
+    
 
 
 ' =====================================
@@ -387,412 +812,3 @@
 ' SERIOUS: occasionally, when starting iconSettings, explorer dies taking all programs with it, incl systray apps. This occurred since we added the explorer cog testing code from Faf.
 '   check it is not something to do with iconSettings needing admin rights - it shouldn't but it might.
 ' deletion confirmation during move operation remove - done
-
-' Current Task:
-' =============
-
-' encapsulate an icon as an object using classes
-' create a class, for type icon
-' assign it properties left, top, width, height, opacity
-
-Killing a process from the menu does not seem to work at the moment.
-
-
-' Main Tasks:  ' see the separate bug/task list provided by vBAdvance
-' ============
-
-'     1.
-'     2. Identify Graphics Next Technology Cairo/RC5 - WIP - testing in the Pz Earth widget - done
-'     3. Add known identifiers to the known apps list - WIP
-'     4. dockSettings, regular process check reduce to 5 secs minimum.
-'     5. adding the autoscaling feature on the two utilities as per generate utility
-'     6. creating new icons WIP
-'     8.
-'     9. Animating more than just the three icons - WIP
-'    10. Dock entering and leaving RIGHT/LEFT - see below.
-'    11. DPIawareness in the manifest - research
-'    12. WIP - Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser.
-'    13. Running on a second monitor
-'    14. Graphics Next Technology D2D?
-
-' Detail of General Status
-' ========================
-
-' pushing the Windows taskbar to the top programatically a registry change then a restart of explorer.
-
-' Creation of a default DockSettings.ini for a new user of the dock where the application has never been run before.
-'
-'  How to create a desktop shortcut with a good quality icon.
-'  icons - add icon references to the resource file and code to show on the forms themselves.
-'   http://www.vbaccelerator.com/home/VB/Tips/Setting_the_App_Icon_Correctly/article.asp
-'
-' the docksettings tool should have some separate code that allows migration from RD to SD but the rest should use SdSettings
-'
-' reorganise windows menu option? send all windows to front/back
-'
-' finish the icons
-    ' droptypes to deal with by having an associated document
-
-    ' installation packages
-
-    '.xpi done
-    '.xar
-    '.bz2
-'    .bak
-'    .bck
-'    .pup
-'    .bkp
-
-'    .7z
-'    .zl
-'    .s7z
-'    .sfx
-'    .arc
-'    .ace
-'    .ufs
-
-'    .xz
-'    .gz
-'    .lz
-
-' parcel with a zip in it
-'    .bzip2
-'    .gzip
-'    .zipx
-
-'    .lzx
-'    .lzm
-'    .mint
-'
-' look at the custom icon tool and see which you need to recreate WIP
-' modify the zipfile icons to the correct type above
-' create a zipped icon
-
-' Animating more than three icons
-' ================================
-' showing more than three icons in the current BUMP animation - it is possible.
-' Currently the left and right icons are modified in proportion to the cursor position across a fixed length, ie. the main icon.
-' from 0-100% over the small icon size.
-' for two additional icons on the left/right we need extend the proportion over the two icons
-' ie. 0-100% over the two icons rather than the one.
-'
-    
-' SD will not support Zoom: Flat as it is a rubbish animation - documentation updated
-
-' The current dock stores only the left hand position of each icon and as such advanced animation cannot take place due to
-' that limitation. The icons to the left and right, their size is a proportion of how far the cursor is across the central icon.
-'
-' No advanced animation can be performed as the properties of each icon are not known so we cannot currently transform them.
-' When we store the left hand position of the icon, we have also started to gather the icon's right hand location
-' iconStoreRightPixels. So, we are already holding two x values, left and right, we now need only to store the Y values,
-' top and bottom. Storage for those have been added but we still need to populate those values during the icon drawing
-' routines:
-
-    ' drawSmallStaticIcons - quick and simple routine using little cpu that keeps the dock on screen in small mode at a reduced interval
-    ' drawDockByCursorEntryPosition - calculates and draws ONCE using the initial dock position from the cursor entry point
-    ' sequentialBubbleAnimation - performs the regular animation of the central three icons.
-'
-'When you enter an icon in Rocketdock it is not full size, it does not grow to full size until the middle of the icon is reached.
-'This is unlike SD that makes sure that the centre icon is full size so that when you traverse across it you have
-'a fixed size icon to use to calculate the distance across the central icon.
-'
-'When you scroll further across the icon mid-point it then starts to decrease in size.
-'
-' This implies that RD is calculating from the icon's left hand size to the middle 0-100% to determine the icon sizes and not calculating across one icon's width as SD is currently doing.
-
-
-' Current Bugs and Regressions
-' ============================
-
-' When animating, the boundary between the two main icons is jittery
-'    is that because we set the limits of the left hand icon before we set the limits of the main icon causing overlap?
-'    the two are sized one following on from the other but we have to ensure the boundary of the left hand icon is not overlapping the main icon
-'     we can only do that if we only set the left hand icon's boundaries when we know the exact extent of the main icon's boundaries.
-'     at the moment we are setting the leftmost position of each icon at the end of the animation with no checks.
-'     The checks only need to be carried out for the main animated icons.
-'     might be as simple as checking that the icon leftpos plus width does not extend beyond main icon left pos.
-'     This will be fixed by using a new method of animating the dock.
-
-' the problem of the main icon overlapping the left/right hand icons causing a 'jitter' between main and secondary icon:
-' this is due to the positions of all the icons being calculated dynamically and the math being imprecise on the 'edges' will cause
-' one or other of the icons to become 'main'. Solution: The main icon does not need to have its start position calculated in relation to the others,
-' it should be calculated on its own according to the cursor position across its fixed width. The other icons are calculated in relation to it, not
-' from the left hand side!
-
-
-
-
-' Running on a second monitor
-' ============================
-
-' obtain virtual size - we already have code to do this that can determine the 2nd monitor location
-
-' You'll have to use Windows API to determine the virtual screen size for a multi-monitor setup:
-'
-    'Private Const SM_CXVIRTUALSCREEN = 78
-    'Private Const SM_CYVIRTUALSCREEN = 79
-    'Private Const SM_CMONITORS = 80
-    'Private Const SM_SAMEDISPLAYFORMAT = 81
-    '
-    'Private Declare Function GetSystemMetrics Lib "user32" ( _
-    '   ByVal nIndex As Long) As Long
-    '
-    'Public Property Get VirtualScreenWidth() As Long
-    '   VirtualScreenWidth = GetSystemMetrics(SM_CXVIRTUALSCREEN)
-    'End Property
-    'Public Property Get VirtualScreenHeight() As Long
-    '   VirtualScreenHeight = GetSystemMetrics(SM_CYVIRTUALSCREEN)
-    'End Property
-    'Public Property Get DisplayMonitorCount() As Long
-    '   DisplayMonitorCount = GetSystemMetrics(SM_CMONITORS)
-    'End Property
-    'Public Property Get AllMonitorsSame() As Long
-    '   AllMonitorsSame = GetSystemMetrics(SM_SAMEDISPLAYFORMAT)
-    'End Property
-
-
-    ' the form needs to fill the whole virtual screen area, currently it is only filling the default form...
-
-    ' monitors have different twip per pixel ratios and that has to be taken into account, we have a tool for that
-    ' screen.twipsperpixel X & Y have been modified
-    ' the monitors run in a square virtual screen and you can position the monitors within that virtual space
-    ' the current monitor is determined by where you are in that virtual space
-    ' if the monitor number two is set then we use the left hand position of that monitor as the left start point for the dock
-    ' we determine the bounds of monitor 0? x = -1024
-    ' then see if the monitor is set to 1
-    ' it may affect the other two tools in the way they deal with positioning certain elements - need to test that
-
-    ' tested placing the dock using absolute positioning and it will not display on the second monitor so GDI+ is not using the virtual screen for multiple monitors
-    ' some research shows C++ code that tells me to enumerate the monitos and get the device context for each and then supply that to GDI+ initialisation
-    ' routine that sets the device context. I think I can do that.
-    
-    ' GDI+ is still not placing the output on the second monitor, send a forum post after contacting Olaf.
-    ' the dock positioning occurs during setWindowCharacteristics the setWindowsPos call puts it at 0,0 as well as layering it
-    ' when it was moved the dock is cut off at the edge of the window. We need to see the dock on the next monitor
-    ' when a change is made then the mouse positioning needs to be moved by the same amount as it is specifying the wrong icon.
-    ' consider extending GDI to cover the whole virtual screen.
-    
-    ' it might be useful to make the dock slightly visible so we can see where it is, the method is on the net.
-    
-    ' NOTE: Should simply use absolute co-ords, anything that deviates from the current monitor has a co-ord from - to +
-
-
-
-
-' Advanced animations
-' ===================
-
-' All the advanced animation improvements will require me to create icon objects
-
-' Timers - In VB6 you cannot obtain a 1 millisecond timer. The clock resolution on Windows is not high enough.
-' By default it increments 64 times per second. The smallest interval you can get is therefore 16 milliseconds.
-
-' Look at the Russian's game to see how he achieves the animations, most likely he has a graphics library... he uses
-' GDI+ for reading and saving PNGs, nothing more, all the rest is D3D.
-
-' Look at Baka's GDI+ offerings
-'
-
-
-' TOP TIP: avoid strings in the animation routines - integers are quicker
-' TOP TIP: avoid public routines in the animation routines - private are quicker
-
-' Dock entering
-' ==============
-' entering the dock at the right hand side & leaving the dock from the left hand side
-' cannot use existing animations because the resizing of the main object interferes with the core animation and it goes haywire.
-
-' animating the entry of the cursor into the dock from the top
-    ' the timer modifies a grow value by incrementing a value
-    ' this value is subtracted from the maxbyte value in the bump animations
-    ' until the value reaches the maximum maxbyte value when the timer is stopped
-    ' this will cause the icon size of the current icon to grow and not just appear instantly
-    ' the same growth value will be applied to the icons to two the left and right
-    ' probably as a percentage of growth
-    ' we should modify dynamicSizeModifierPxls for this to work using the current animateTimer
-    ' the concept is that the animate timer is animating according to the horizontal diffference using dynamicSizeModifierPxls
-    ' so it should be able to animate the vertical aspect too, all we need to do is to increase dynamicSizeModifierPxls
-    ' rocketdock only grows the selected icon when when the small icons have been entered
-
-' we can use a new animation that grows the center icons and when complete calls the main animation afterwards and lets that take over afterwards
-' use a separate animation to pull the dock up, when it is done, hand over to the main routine.
-
-' adding a blank icon to the existing dock works as a temporary workaround
-' create a timer, when you leave the dock it animates the first dock downward, same with end.
-
-' when bouncing should take into account the time in ms and not just the speed of the cpu to accomplish the bounce.
-'
-' dock icon bounce new animation height, tweak and the timer interval too
-
-' An animation could be added to the addition of an icon.
-
-' An animation could be added to the deletion of an icon.
-
-' When icon clicked and bouncing the dock should not animate when moving the cursor left/right - option to lock? - WIP when the animation is
-'   re-jigged and rewritten.
-
-' the bounce animation is much slower in Rocketdock
-
-
-' Drag and drop
-' ==============
-' Drag and drop needs prettying, a gap
-' when the dragged item leaves the dock area it should leave an empty place in the dock from whence it came
-' when the dragged item leaves the dock area the animation timer needs to continue but the dock itself should return to small state
-' when an icon is dragged to the dock it should open up
-' speeding up drag and drop - It could also be that the writing of the data has been moved to the quit command in RD. To speed up the drag and drop I could set a flag and then
-' move the saving of the data to a timer driven by that flag. Check other timers are operating.
-
-' when dragging from the dock the main icons should not animate when dragging - option to lock? - WIP when the animation is
-' a separate animation?
-'   re-jigged and rewritten.
-'   use smallicon sub?
-
-
-' Graphics Next Technology
-' ========================
-' Avant manager - test the animation routine for the dock, circledock might be worth looking
-
-' A next step is to convert the dock to direct2D for GPU accceleration.
-
-' Tutorial
-' https://www.gamedev.net/tutorials/programming/graphics/directx-graphics-for-visual-basic-part-1-r1308/
-' https://www.vbforums.com/showthread.php?891874-VB6-Directx8-Question-DirectX-gives-EXCLUSIVE-screen-access&highlight=
-
-' Direct3D dock - we have the code already and a sample dock to use a crib. The dock however has a
-' black background, supposedly that is perfectly normal as D3D is meant to run on a canvas and not
-' meant to run in a transparent context. A workaround is to render the image onto a context then use updateLayeredWindow on a transparent form
-' just as done with GDI+.
-
-' Note: Attempting to make the background form transparent as we do with GDI+ does not work.
-
-' Direct 2D Jacob Roman's training utilities to implement 2D graphics in place of GDI+
-' Direct2D is GPU enabled
-
-'    create layered window (link, link)
-'    draw the scene to texture
-'    copy this texture to window contents (via UpdateLayeredWindow function)
-
-'Direct2D is an ActiveX object that can draw to an HWND or to an HDC. For this to work, the steps are:
-'
-'    Instantiate an ID2D1Factory by creating D2D1CreateFactory() from D2D1.DLL (I suggest you link to this dynamically using LoadLibrary/GetProcAddress so your code runs in any Windows version).
-'    Call ID2D1Factory :: CreateHwndRenderTarget() to target an HWND, or call ID2D1Factory :: CreateDCRenderTarget() to target an HDC.
-'    Use the returned ID2D1RenderTarget interface to draw:
-'        Call ID2D1RenderTarget::BeginDraw()
-'        Draw stuff
-'        Call ID2D1RenderTarget::EndDraw()
-'Then you should create a texture, lock it in the memory, copy the pixels data there and unlock texture (look the sources where i use textures).
-'For rendering on a form, you need to create a quad that represents the rendering surface. Then you need specify the texture coordinates to the quad's vertex (look text rendering source).
-'Cls - it just Clear method of IDirect3DDevice9 interface.
-
-' https://copyprogramming.com/howto/how-do-you-use-direct2d-to-render-cleartype-text-on-a-transparent-background#transparent-window-using-direct2d
-' https://www.unknowncheats.me/forum/programming-for-beginners/126003-transparent-overlay-direct2d.html
-
-' We have an example of the D3D dock in DirectX8 which uses SetLayeredWindowAttributes to retrieve the opacity
-' and transparency color key of a layered window.
-
-' A layered window is created by specifying WS_EX_LAYERED when creating the window with the CreateWindowEx function or by setting WS_EX_LAYERED via SetWindowLong after the window has been created.
-'
-'
-' public const int GWL_EXSTYLE = -20;
-'    public const int WS_EX_LAYERED = 0x80000;
-'    public const int LWA_ALPHA = 0x2;
-'    public const int LWA_COLORKEY = 0x1;
-'
-'    //set the window style to alpha appearance
-'    private void button4_Click(object sender, EventArgs e)
-'    {
-'        SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) ^ WS_EX_LAYERED);
-'        SetLayeredWindowAttributes(Handle, 0, 128, LWA_ALPHA);
-'    }
-'
-'Alternative Managed API:
-'
-'If you just want to change the transparency of a Form you own, then use the Opacity property.
-'Sample PB Code:
-'
-'  // Tip submitted by Olivier Citeau (ociteau@yahoo.fr)
-'  // Combined it with the numeric module from Simon Harris (simon@addease.com.au)
-'  // As found on the PBDR.com website
-'
-'  //Open event of your window
-'  Constant long LWA_COLORKEY = 1, LWA_ALPHA = 2
-'  Constant long GWL_EXSTYLE = - 20
-'  Constant long WS_EX_LAYERED = 524288 //2^19
-'  Long ll_Ret, ll_handle
-'
-'  n_cst_numerical lnc_N
-'
-'  // Set the window style to 'Layered'
-'  ll_handle = handle(this)
-'  ll_Ret = GetWindowLong(ll_handle, GWL_EXSTYLE)
-'
-'  //ll_Ret = ll_Ret Or WS_EX_LAYERED
-'  ll_Ret = lnc_N.of_bitwiseor(ll_Ret, WS_EX_LAYERED)
-'
-'  SetWindowLong (ll_handle, GWL_EXSTYLE, ll_Ret)
-'
-'  // Set the opacity of the layered window to 128
-'  SetLayeredWindowAttributes (ll_handle, 0, char(128),LWA_ALPHA)
-'
-'  //Note that if you set opacity to 0, your window will be
-'  //invisible. With 255, it will be a "normal" window.
-
-' GDI+ 75% useful for SteamyDock Future
-' =====
-' It is quick and requires nothing more than an imagelist, some PNGs and an array of y locations. Requires significant enhancement for complex animations,
-' that will require the code to be rewritten. The main icons will need properties and encapsulisation - see RC5 as an example. Only the main icons
-' require this.
-
-
-' Cairo and RC5 - 75% useful for SteamyDock Future
-' ==============
-' Cairo will provide an open source replacement for vector graphics, Cairo is still cpu-bound and will require translation
-' of the graphics created using Cairo to open GL in order to use the GPU. No GPU usage. Cairo is probably not a good solution for replacing GDI+ in this
-' whole program as it is CPU bound and RC5 adds a lot more steps and therefore a lot more CPU usage.
-
-' Each icon image would comprise a 'widget' that would display an image from an imagelist. The icons can have transparency and that allows
-' click-through to the desktop but not click through to an other widget when overlapped (if that ever occurred). The overhead for each icon
-' would be considerable if we did each and every one, so we would 'widgetise' only the main 3-5 animated icons. The imagelist we currently
-' use might need to be supplemented by the RC5 imagelist. Possibly we might need to replace the scripting dictionary altogether with
-' Olaf's RC imagelist. The RC5 icons would provide a click event to replace the current hit location compare and click, so that a new property
-' might possibly have to be added to handle that. Some thinking there. The right click event will also need to be handled differently.
-
-' The smaller icons are being handled very efficiently at the moment using just GDI+ and an array location to position each, so it makes zero
-' sense to replace each of the smaller icons with a RC5 widget. However, RC6 Cairo will have complex animation available for the central animated widgets.
-' so it seems like a good idea. Note that this combination does not bode well for portability, a mix of GDI+ and Cairo as GDI+ will never be multi platform.
-
-' In addition, Olaf is supposedly working on implementing the same advances that are occurring within pyCairo where some of the work is handed over to D3D or OpenGL
- 
- 
- 
-' Extracting embedded icons from DLLs and EXEs
-' ==============================================
-
-' Status - Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser
-'
-' See the GDI+Icons note in Cintanotes
-
-
-'
-' Other
-' ======
-'
-' test running with a blank tool settings file
-'
-' test running with a blank dock settings file
-
-' code signing certificate
-
-' multi threading using TwinBasic/RadBasic some of what RD achieves may be to do with multi-threading, being able to perform
-' two tasks concurrently without any delay apparent to the user. In VB6 mode can we farm any task to another thread?
-'
-' Build the setup2go binary for SD and the sub-components
-
-' We need to selectively add tops and tails to all recently created routines and take into account the potential effect on any animations
-    
-' rubberduck, tidy the API declarations and global vars, document each and every
-
-' mdlSdMain - tidy declarations and initialisation, provide error trapping
-    
-    

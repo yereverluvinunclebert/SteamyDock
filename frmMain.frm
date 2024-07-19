@@ -61,7 +61,7 @@ Begin VB.Form dock
       Top             =   3960
    End
    Begin VB.Timer ScreenResolutionTimer 
-      Interval        =   5000
+      Interval        =   3000
       Left            =   255
       Top             =   2595
    End
