@@ -6626,7 +6626,8 @@ End Function
 ' Procedure : ScreenResolutionTimer_Timer
 ' Author    : beededea
 ' Date      : 17/05/2021
-' Purpose   : This t
+' Purpose   : for handling rotation of the screen in tablet mode or a resolution change
+'             possibly due to an old game in full screen mode.
 '---------------------------------------------------------------------------------------
 '
 Private Sub ScreenResolutionTimer_Timer()
@@ -6642,6 +6643,11 @@ Private Sub ScreenResolutionTimer_Timer()
         If dockHidden = False Then
             Call restartSteamydock
         End If
+        
+        'store the resolution change
+        oldScreenHeightPixels = screenHeightPixels
+        oldScreenWidthPixels = screenWidthPixels
+        
     End If
     
     On Error GoTo 0

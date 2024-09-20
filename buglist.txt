@@ -4,6 +4,7 @@ Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop c
 ' Current Task:
 ' =============
 
+
  
 ' Extracting embedded icons from DLLs and EXEs
 ' ==============================================
@@ -182,6 +183,9 @@ he zoom: none choice, simply bounces the small icon without growing it at all
     ' NOTE: Should simply use absolute co-ords, anything that deviates from the current monitor has a co-ord from - to +
 
 
+use ShellExecute or ShellExecuteEx , supply an hWnd so the system will open any new windows on the same monitor as the calling application. 
+
+Cairo/GDI uses a device context that has objects like Fonts and Pens selected into it and the hBitmap is the surface that Cairo/GDI renders into, using the objects selected into the device context.
 
 
 ' Advanced animations
