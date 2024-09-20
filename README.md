@@ -83,6 +83,8 @@ installed. Only needed during development as the types are compiled in. Once
 your project is compiled, the TLB is no longer used. It does not need to be
 present on end user machines.
 
+![syswow64](https://github.com/user-attachments/assets/90a33027-0c6c-4db1-8d70-f32f40b4d077)
+
 From the command line, copy the tlb to a central location (system32 in a 32bit system or wow64
 folder in a 64bit system) and register it.
 
@@ -93,9 +95,9 @@ folder in a 64bit system) and register it.
 
 	' REGISTER THE TLB
  
-	REGTLIB %SystemRoot%\System32\OLEEXP.TLB
-	REGTLIBV12.EXE %SystemRoot%\SYSWOW64\OLEEXP.TLB
-	"library registered successfully"
+	REGTLIB %SystemRoot%\System32\OLEEXP.TLB ' 32bit
+	REGTLIBV12.EXE %SystemRoot%\SYSWOW64\OLEEXP.TLB  ' 64 bit
+	"Registration of C:\WINDOWS\SYSWOW64\OLEEXP.TLB successful"
 
 In the VB6 IDE select the menu - project - references, then browse and select the OLEEXP.tlb. You might have to restart the IDE to make 
 use of the TLB references.
