@@ -1567,7 +1567,7 @@ Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) 
     'If debugFlg = 1 Then debugLog "%IsRunning"
     
     ' ignore a Windows binary that can persist
-    If InStr(NameProcess, "RUNDLL32.exe") > 0 Then
+    If InStr(LCase$(NameProcess), "rundll32.exe") > 0 Then
         IsRunning = False
         Exit Function
     End If
