@@ -112,6 +112,9 @@ Project References:
 	Microsoft scripting runtime - for the scripting dictionary usage  
 	OLEEXP Modern Shell Interfaces for VB6, v5.1
 
+ ![oleexp](https://github.com/user-attachments/assets/a2c4cc48-b2fe-4467-9505-b76752690036)
+
+
 Other Dependencies:
 
 o Steamydock's configuration is achieved using two other VB6 utilities. Icon-Settings-for-Steamydock 
