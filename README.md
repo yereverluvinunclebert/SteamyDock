@@ -86,14 +86,16 @@ present on end user machines.
 From the command line, copy the tlb to a central location (system32 in a 32bit system or wow64
 folder in a 64bit system) and register it.
 
-' COPY TO CORRECT LOCATION
-COPY OLEEXP.TLB %SystemRoot%\System32\
-COPY OLEEXP.TLB %SystemRoot%\SYSWOW64\
+	' COPY TO CORRECT LOCATION
+ 
+	COPY OLEEXP.TLB %SystemRoot%\System32\
+	COPY OLEEXP.TLB %SystemRoot%\SYSWOW64\
 
-' REGISTER THE TLB
-REGTLIB %SystemRoot%\System32\OLEEXP.TLB
-REGTLIBV12.EXE %SystemRoot%\SYSWOW64\OLEEXP.TLB
-"library registered successfully"
+	' REGISTER THE TLB
+ 
+	REGTLIB %SystemRoot%\System32\OLEEXP.TLB
+	REGTLIBV12.EXE %SystemRoot%\SYSWOW64\OLEEXP.TLB
+	"library registered successfully"
 
 In the VB6 IDE select the menu - project - references, then browse and select the OLEEXP.tlb. You might have to restart the IDE to make 
 use of the TLB references.
