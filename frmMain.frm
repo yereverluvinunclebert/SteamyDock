@@ -147,7 +147,7 @@ Begin VB.Form dock
       Interval        =   10000
       Left            =   2895
       Tag             =   "this routine is used to identify an item in the dock as currently running even if not triggered by the dock"
-      Top             =   150
+      Top             =   135
    End
    Begin VB.Timer runTimer 
       Enabled         =   0   'False
@@ -838,7 +838,7 @@ Private currentDockHeightPxls As Long
 
 Private blankClickEvent As Boolean
 Private lastPositionRelativeToDock As Boolean
-Private outsideDock As Boolean
+
 'Private iconGrowthModifier As Integer
 
 
@@ -1303,7 +1303,7 @@ Public Sub initialiseGlobalVars()
     
     blankClickEvent = False
     lastPositionRelativeToDock = False
-    outsideDock = False
+    'outsideDock = False
     'iconGrowthModifier = 0
     
     sDDefaultEditor = "" ' "E:\vb6\rocketdock\iconsettings.vbp"
@@ -2073,7 +2073,7 @@ Private Sub initiatedProcessTimer_Timer()
             ' we loop through the array much quicker than looping through the temporary settings file.
             ' all we have to do is to remember to populate the array whenever an icon is added or deleted
             If Not initiatedProcessArray(useloop) = vbNullString Then
-                itIs = IsRunning(initiatedProcessArray(useloop), vbNull)
+                itIs = IsRunning(initiatedProcessArray(useloop))
                 If itIs = False Then
                     processCheckArray(useloop) = False ' the cog array
 
@@ -2150,9 +2150,11 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub responseTimer_Timer()
-    On Error GoTo responseTimer_Error
+
+    Dim lngReturn As Long: lngReturn = 0
+    Dim outsideDock As Boolean: outsideDock = False
     
-    'Dim outsideDock As Boolean: outsideDock = False
+    On Error GoTo responseTimer_Error
     
     lngReturn = GetCursorPos(apiMouse) ' return the mouse position every 4 - 200ms - sufficient
         
@@ -2467,9 +2469,7 @@ Private Sub animateTimer_Timer()
     'bumpFactor = 0' .61 DAEB 26/04/2021 frmMain.frm size modifier moved to the sequential bump animation
     
     On Error GoTo animateTimer_Error
-    
-    'lngReturn = GetCursorPos(apiMouse) ' not needed as it retruns a value in the response timer which is sufficient
-    
+        
     ' if the bounce or fade timere are running cause animation to continue even if the mouse is stationary.
     If bounceUpTimer.Enabled = True Or bounceDownTimer.Enabled = True Or hourGlassTimer.Enabled = True Or autoFadeOutTimer.Enabled = True Or autoFadeInTimer.Enabled = True Or autoSlideOutTimer.Enabled = True Or autoSlideInTimer.Enabled = True Then ' .nn Changed or added as part of the drag and drop functionality
         ' carry on as usual and animate when any animation timers are running
@@ -4917,7 +4917,7 @@ Public Sub prepareArraysAndCollections()
         
         ' check to see if each process is running and store the result away - this is also run on a 10s timer
         explorerCheckArray(useloop) = isExplorerRunning(sCommand)
-        processCheckArray(useloop) = IsRunning(sCommand, vbNull)
+        processCheckArray(useloop) = IsRunning(sCommand)
 
     Next useloop
     
@@ -6152,7 +6152,7 @@ Private Sub nMinuteExposeTimer_Timer()
         If autoHideProcessName <> vbNullString Then
             ' check to see if the process that hid the dock is still running
             ' the dock will not automatically appear until the process that hid it has finished (full screen games)
-            itIs = IsRunning(autoHideProcessName, vbNull)
+            itIs = IsRunning(autoHideProcessName)
             If itIs = True Then
                 ' the timer will continue to run
                 Exit Sub
@@ -6879,7 +6879,7 @@ Private Sub forceHideRevealTimer_Timer()
         
         ' check to see if the process that hid the dock is still running
         ' the dock will not automatically appear until the process that hid it has finished (full screen games)
-        itIs = IsRunning(autoHideProcessName, vbNull)
+        itIs = IsRunning(autoHideProcessName)
         If itIs = True Then
             ' the timer will continue to run
             Exit Sub

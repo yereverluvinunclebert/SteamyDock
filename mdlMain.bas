@@ -492,7 +492,7 @@ Public rctText As RECTF
 Public iconBitmap As Long
 Public gdipFullScreenBitmap As Long
 Public lngGDI As Long
-Public lngReturn As Long
+'Public lngReturn As Long
 Public dockPosition As TASKBAR_POSITION
 ' GDI+ globals variables END
 
@@ -844,7 +844,7 @@ Public Sub checkDockProcessesRunning()
         ' we loop through the array much quicker than looping through the temporary settings file and extracting the commands from each
         ' we must remember to populate the array whenever an icon is added or deleted
         If sCommandArray(useloop) <> "" Then
-            processCheckArray(useloop) = IsRunning(sCommandArray(useloop), vbNull)
+            processCheckArray(useloop) = IsRunning(sCommandArray(useloop))
         End If
 
     Next useloop
@@ -1462,7 +1462,7 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
         
         ' check to see if each process is running and store the result away
         explorerCheckArray(useloop) = isExplorerRunning(sCommand)
-        processCheckArray(useloop) = IsRunning(sCommand, vbNull)
+        processCheckArray(useloop) = IsRunning(sCommand)
 
         If sDisabled = "1" Then
             disabledArray(useloop) = 1
@@ -1937,7 +1937,7 @@ Public Sub deleteThisIcon()
             
             ' check to see if each process is running and store the result away
             explorerCheckArray(useloop) = isExplorerRunning(sCommand)
-            processCheckArray(useloop) = IsRunning(sCommand, vbNull)
+            processCheckArray(useloop) = IsRunning(sCommand)
             
             ' then copy the image array contents one location down
             If useloop + 1 <= rdIconMaximum Then
@@ -2191,7 +2191,7 @@ End Sub
 '
 '        ' check to see if each process is running and store the result away
 '        'processCheckArray(useloop) = isProcessInTaskList(sCommand)
-'        processCheckArray(useloop) = IsRunning(sCommand, vbNull)
+'        processCheckArray(useloop) = IsRunning(sCommand)
 '
 '    Next useloop
 '
@@ -2318,7 +2318,7 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
             
             ' check to see if each process is running and store the result away
             explorerCheckArray(useloop) = isExplorerRunning(sCommand)
-            processCheckArray(useloop) = IsRunning(sCommand, vbNull)
+            processCheckArray(useloop) = IsRunning(sCommand)
         Next useloop
         
         dictionaryLocationArray(selectedIconIndex) = dictionaryLocationArrayUpperBound
@@ -2634,10 +2634,10 @@ Public Function updateDisplayFromDictionary(thisCollection As Object, strFilenam
     ' the old method, retained for documentation was to load a disc file into a bitmap
     'GdipLoadImageFromFile StrPtr(strFilename), iconBitmap
 
-    If Width = -1 Or Height = -1 Then
-        Call GdipGetImageHeight(iconBitmap, Height)
-        Call GdipGetImageWidth(iconBitmap, Width)
-    End If
+'    If Width = -1 Or Height = -1 Then
+'        Call GdipGetImageHeight(iconBitmap, Height)
+'        Call GdipGetImageWidth(iconBitmap, Width)
+'    End If
 
 '    Dim opacity As String
 '    opacity = "100"
@@ -2719,13 +2719,14 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Function setWindowCharacteristics()
-
-   On Error GoTo setWindowCharacteristics_Error
+    Dim lngRet As Long
+    
+    On Error GoTo setWindowCharacteristics_Error
     If debugflg = 1 Then debugLog "% sub setWindowCharacteristics"
     
     'set the transparency of the underlying form with click through
-    lngReturn = GetWindowLong(dock.hwnd, GWL_EXSTYLE)
-    SetWindowLong dock.hwnd, GWL_EXSTYLE, lngReturn Or WS_EX_LAYERED
+    lngRet = GetWindowLong(dock.hwnd, GWL_EXSTYLE)
+    SetWindowLong dock.hwnd, GWL_EXSTYLE, lngRet Or WS_EX_LAYERED
     
     ' determine the z position of the dock with respect to other application and o/s windows.
     ' this also changes the window positioning and size:
@@ -3065,6 +3066,9 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
     Dim processToKill As Long: processToKill = 0
     Dim ExitCode As Long: ExitCode = 0
     
+    Dim thisHSnapshot As Long: thisHSnapshot = 0
+    Dim thisUProcess As PROCESSENTRY32
+    
     On Error GoTo checkAndKillPutWindowBehind_Error
     'If debugflg = 1 Then debugLog "%checkAndKillPutWindowBehind"
 
@@ -3081,26 +3085,26 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
           
           folderName = getFolderNameFromPath(NameProcess)
           
-          uProcess.dwSize = Len(uProcess)
-          hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
+          thisUProcess.dwSize = Len(thisUProcess)
+          thisHSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
 
-          'hSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
-          RProcessFound = ProcessFirst(hSnapshot, uProcess)
+          'thisHSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
+          RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
           Do
-            i = InStr(1, uProcess.szexeFile, Chr(0))
-            SzExename = LCase$(Left$(uProcess.szexeFile, i - 1))
+            i = InStr(1, thisUProcess.szexeFile, Chr(0))
+            SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
             'WinDirEnv = Environ("Windir") + "\"
             'WinDirEnv = LCase$(WinDirEnv)
 
             If Right$(SzExename, Len(binaryName)) = LCase$(binaryName) Then
 
                     AppCount = AppCount + 1
-                    processToKill = OpenProcess(PROCESS_ALL_ACCESS, False, uProcess.th32ProcessID)
-                    If uProcess.th32ProcessID = MyProcess Then
+                    processToKill = OpenProcess(PROCESS_ALL_ACCESS, False, thisUProcess.th32ProcessID)
+                    If thisUProcess.th32ProcessID = MyProcess Then
                        'MsgBox "hmmm" & MyProcess ' we never want to kill our own process...
                     Else
                         If checkForFolder = True Then ' only check the process actual run folder when killing an app from the dock
-                            procId = uProcess.th32ProcessID ' actual PID
+                            procId = thisUProcess.th32ProcessID ' actual PID
                             runningProcessFolder = getFolderNameFromPath(getExePathFromPID(procId))
                             If LCase$(runningProcessFolder) = LCase$(folderName) Then
                                 ' checkAndKillPutWindowBehind = TerminateProcess(processToKill, ExitCode)
@@ -3117,10 +3121,10 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
                         End If
                     End If
             End If
-            RProcessFound = ProcessNext(hSnapshot, uProcess)
+            RProcessFound = ProcessNext(thisHSnapshot, thisUProcess)
             
           Loop While RProcessFound
-          Call CloseHandle(hSnapshot)
+          Call CloseHandle(thisHSnapshot)
     End If
 
 

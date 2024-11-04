@@ -1164,7 +1164,7 @@ Private Sub mnuCloseApp_Click()
         ' if the open application is a standard binary then kill it this way
         If checkAndKillPutWindowBehind(NameProcess, True, True) = True Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
             Sleep 200 ' this ESSENTIAL small delay is required as it may take a moment or two for the system list to be updated.
-            If IsRunning(NameProcess, vbNull) = False Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
+            If IsRunning(NameProcess) = False Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
                 processCheckArray(selectedIconIndex) = False ' remove the entry from the cog array
                 initiatedProcessArray(selectedIconIndex) = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
             Else
@@ -1542,7 +1542,7 @@ Public Sub mnuIconSettings_Click_Event()
         thisCommand = prg & "\SteamyDock\iconSettings\iconsettings.exe"
     End If
     
-    If IsRunning(thisCommand, vbNull) = False Then
+    If IsRunning(thisCommand) = False Then
     
         If fFExists(thisCommand) Then
         

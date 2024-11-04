@@ -39,7 +39,7 @@ End Type
 
 Private Const PROCESS_ALL_ACCESS = &H1F0FFF
 Private Const TH32CS_SNAPPROCESS As Long = 2&
-Private uProcess   As PROCESSENTRY32
+Private uProcess  As PROCESSENTRY32
 Private hSnapshot As Long
 
 Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
@@ -749,6 +749,10 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
     Dim processToKill As Long: processToKill = 0
     Dim ExitCode As Long: ExitCode = 0
     
+    Dim thisHSnapshot As Long: thisHSnapshot = 0
+    Dim thisUProcess As PROCESSENTRY32
+    
+    
     On Error GoTo checkAndKill_Error
     'If debugFlg = 1 Then debugLog "%checkAndKill"
 
@@ -763,26 +767,26 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
            
           folderName = getFolderNameFromPath(NameProcess)
           
-          uProcess.dwSize = Len(uProcess)
-          hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
+          thisUProcess.dwSize = Len(thisUProcess)
+          thisHSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
 
           'hSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
-          RProcessFound = ProcessFirst(hSnapshot, uProcess)
+          RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
           Do
-            i = InStr(1, uProcess.szexeFile, Chr(0))
-            SzExename = LCase$(Left$(uProcess.szexeFile, i - 1))
+            i = InStr(1, thisUProcess.szexeFile, Chr(0))
+            SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
             'WinDirEnv = Environ("Windir") + "\"
             'WinDirEnv = LCase$(WinDirEnv)
 
             If Right$(SzExename, Len(binaryName)) = LCase$(binaryName) Then
 
                     AppCount = AppCount + 1
-                    processToKill = OpenProcess(PROCESS_ALL_ACCESS, False, uProcess.th32ProcessID)
-                    If uProcess.th32ProcessID = MyProcess Then
+                    processToKill = OpenProcess(PROCESS_ALL_ACCESS, False, thisUProcess.th32ProcessID)
+                    If thisUProcess.th32ProcessID = MyProcess Then
                        'MsgBox "hmmm" & MyProcess ' we never want to kill our own process...
                     Else
                         If checkForFolder = True Then ' only check the process actual run folder when killing an app from the dock
-                            procId = uProcess.th32ProcessID ' actual PID
+                            procId = thisUProcess.th32ProcessID ' actual PID
                             runningProcessFolder = getFolderNameFromPath(getExePathFromPID(procId))
                             If LCase$(runningProcessFolder) = LCase$(folderName) Then
                                 ' checkAndKill = TerminateProcess(processToKill, ExitCode)
@@ -796,10 +800,10 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
                         End If
                     End If
             End If
-            RProcessFound = ProcessNext(hSnapshot, uProcess)
+            RProcessFound = ProcessNext(thisHSnapshot, thisUProcess)
             
           Loop While RProcessFound
-          Call CloseHandle(hSnapshot)
+          Call CloseHandle(thisHSnapshot)
     End If
 
 
@@ -1550,7 +1554,7 @@ End Function
 ' Purpose   : determines if a process is running or not
 '---------------------------------------------------------------------------------------
 '
-Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) As Boolean
+Public Function IsRunning(ByVal NameProcess As String, Optional ByVal processID As Long) As Boolean
 
     Dim AppCount As Integer: AppCount = 0
     Dim RProcessFound As Long: RProcessFound = 0
@@ -1562,6 +1566,10 @@ Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) 
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
+        
+    Dim thisHSnapshot As Long: thisHSnapshot = 0
+    Dim thisUProcess As PROCESSENTRY32
+
 
     On Error GoTo IsRunning_Error
     'If debugFlg = 1 Then debugLog "%IsRunning"
@@ -1589,17 +1597,17 @@ Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) 
                 Exit Function  ' the target is a folder so also invalid
             End If
             
-            uProcess.dwSize = Len(uProcess)
-            hSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
-            RProcessFound = ProcessFirst(hSnapshot, uProcess)
+            thisUProcess.dwSize = Len(thisUProcess)
+            thisHSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
+            RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
             Do
-                i = InStr(1, uProcess.szexeFile, Chr$(0))
-                SzExename = LCase$(Left$(uProcess.szexeFile, i - 1))
+                i = InStr(1, thisUProcess.szexeFile, Chr$(0))
+                SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
     
                 If Right$(SzExename, Len(binaryName)) = LCase$(binaryName) Then
 
                         AppCount = AppCount + 1
-                        procId = uProcess.th32ProcessID
+                        procId = thisUProcess.th32ProcessID
 
                         runningProcessFolder = getFolderNameFromPath(getExePathFromPID(procId))
                         
@@ -1634,10 +1642,10 @@ Public Function IsRunning(ByRef NameProcess As String, ByRef processID As Long) 
                         
                         Exit Function
                 End If
-                RProcessFound = ProcessNext(hSnapshot, uProcess)
+                RProcessFound = ProcessNext(thisHSnapshot, thisUProcess)
     
             Loop While RProcessFound
-            Call CloseHandle(hSnapshot)
+            Call CloseHandle(thisHSnapshot)
     End If
 
 
