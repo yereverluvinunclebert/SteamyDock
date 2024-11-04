@@ -1640,6 +1640,7 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByVal processID 
 '                            IsRunning = False
 '                        End If
                         
+                        CloseHandle (thisHSnapshot)
                         Exit Function
                 End If
                 RProcessFound = ProcessNext(thisHSnapshot, thisUProcess)
