@@ -28,15 +28,15 @@ Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop c
 '     2. Graphics Next Technology D2D/RC6, investigate - WIP
 '     3. Add known identifiers to the known apps list - WIP
 '     4. dockSettings, regular process check reduce to 5 secs minimum.
-'     5. adding the autoscaling feature on the two utilities as per generate utility
+'     5. adding the autoscaling feature on the two utilities as per generate utility - wip
 '     6. creating new icons WIP
 '     8. Animating more than just the three icons - WIP
 '     9. DPIawareness in the manifest - research
 '    10. 
 '    11. 
 '    12. 
-'    13. 
-'    14. 
+'    13.
+'    14. when killing a process, the msgbox can appear underneath a full screen app. needs to sit on top.
 
 ' Detail of General Status
 ' ========================
