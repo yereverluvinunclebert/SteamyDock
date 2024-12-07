@@ -1,6 +1,6 @@
 # SteamyDock
 
-A VB6 GDI+ WoW64 dock for Reactos, XP, Win7, 8 and 10.
+A VB6 and TwinBasic GDI+ WoW64 dock for Reactos, XP, Win7, 8 and 10.
 
 ![cogs](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/ba617c24-0c77-4577-b211-47e1c05a4a5e)
 
@@ -24,7 +24,9 @@ to use on a production system - use at your own risk.
 BUILD: The program runs without any Microsoft plugins.
 
 Built using: VB6, MZ-TOOLS 3.0, VBAdvance, CodeHelp Core IDE Extender
-Framework 2.2 & Rubberduck 2.4.1
+Framework 2.2 & Rubberduck 2.4.1. 
+
+In addition, changes have been made to make it compatible with TwinBasic, so it now compiles and runs using TwinBasic.
 
 Links:
 
