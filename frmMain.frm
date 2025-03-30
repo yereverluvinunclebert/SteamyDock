@@ -841,6 +841,17 @@ Private lastPositionRelativeToDock As Boolean
 
 'Private iconGrowthModifier As Integer
 
+Private Enum PROCESS_DPI_AWARENESS
+    Process_DPI_Unaware = 0
+    Process_System_DPI_Aware = 1
+    Process_Per_Monitor_DPI_Aware = 2
+End Enum
+#If False Then
+    Dim Process_DPI_Unaware, Process_System_DPI_Aware, Process_Per_Monitor_DPI_Aware
+#End If
+
+Private Declare Function SetProcessDpiAwareness Lib "shcore.dll" (ByVal Value As PROCESS_DPI_AWARENESS) As Long
+
 
 Private Sub clickBlankTimer_Timer()
 ' In VB6 you cannot obtain a 1 millisecond timer. The clock resolution on Windows is not high enough.
@@ -925,6 +936,9 @@ Private Sub Form_Load()
     
     ' comment the following function back in only when debugging
     On Error GoTo Form_Load_Error
+                
+    ' set the application to be DPI aware using the 'forbidden' API.
+    Call setDPIAware
     
     ' Clear all the message box "show again" entries in the registry
     Call clearAllMessageBoxRegistryEntries
@@ -992,7 +1006,7 @@ Private Sub Form_Load()
 '
 '        ' set the device (screen) context default to primary monitor
 '        If hdcScreen = 0 Then
-            hdcScreen = Me.hdc
+            hdcScreen = Me.hDC
 '        End If
 '
 '        'CenterFormOnMonitorTwo dock
@@ -1701,7 +1715,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     ' ie. don't pop it up if layered underneath everything as no-one will see the msgbox
     If rDLockIcons = 1 And (rDzOrderMode = "0" Or rDzOrderMode = "1") Then
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Sorry, the dock is currently locked, so drag and drop is disabled!", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Sorry, the dock is currently locked, so drag and drop is disabled!", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Sorry, the dock is currently locked, so drag and drop is disabled!"
         Exit Sub
     End If
@@ -1718,7 +1732,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     ' ie. don't pop it up if layered underneath everything as no-one will see the msgbox
     If Data.Files.Count > 1 And (rDzOrderMode = "0" Or rDzOrderMode = "1") Then
        ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.Count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.Count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count
         Exit Sub
     End If
@@ -1938,7 +1952,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         
     Else
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, " unknown file Object OLE dropped onto SteamyDock.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, " unknown file Object OLE dropped onto SteamyDock.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         'MsgBox " unknown file Object OLE dropped onto SteamyDock."
     End If
     
@@ -2122,11 +2136,11 @@ Private Sub positionZTimer_Timer()
     
     If dockZorder = "high" Then
         If rDzOrderMode = "0" Then
-            SetWindowPos dock.hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+            SetWindowPos dock.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
         ElseIf rDzOrderMode = "1" Then
-            SetWindowPos dock.hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+            SetWindowPos dock.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
         ElseIf rDzOrderMode = "2" Then
-            SetWindowPos dock.hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
+            SetWindowPos dock.hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
         End If
         dockZorder = "low"
     End If
@@ -2384,7 +2398,7 @@ Private Sub startAnimating()
         
         animateTimer.Enabled = True
        
-        SetWindowPos Me.hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_SHOWWINDOW Or SWP_NOMOVE Or SWP_NOSIZE
+        SetWindowPos Me.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_SHOWWINDOW Or SWP_NOMOVE Or SWP_NOSIZE
         
         '.nn Set the cursor to a pointer, if for some reason it has been set to anything other than a normal pointy cursor
         lngCursor = LoadCursor(0, 32512&)
@@ -2574,7 +2588,7 @@ Private Sub updateScreenUsingGDIBitmap()
     ' If the current position is not changing, pptDst can be NULL. It is null. We can play with it to move the screen
     
     'Update the specified whole window using the window handle (me.hwnd) selecting a handle to the bitmap (dc) and passing all the required characteristics
-    UpdateLayeredWindow Me.hwnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
+    UpdateLayeredWindow Me.hWnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
 
    On Error GoTo 0
    Exit Sub
@@ -3639,7 +3653,7 @@ tryMSCFullPAth:
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
         Else
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-            MessageBox Me.hwnd, thisCommand & " - this batch file does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+            MessageBox Me.hWnd, thisCommand & " - this batch file does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
             ' MsgBox (thisCommand & " - this batch file does not exist")
         End If
         Exit Sub
@@ -3674,7 +3688,7 @@ tryMSCFullPAth:
                 Exit Sub
             ElseIf validURL = False Then
                 ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-                MessageBox Me.hwnd, thisCommand & " - That isn't valid as a target file or a folder, or it doesn't exist - so SteamyDock can't run it.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+                MessageBox Me.hWnd, thisCommand & " - That isn't valid as a target file or a folder, or it doesn't exist - so SteamyDock can't run it.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
             End If
         Next useloop
     End If
@@ -3720,7 +3734,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
     End If
    
     ' run the selected program
-    Call ShellExecute(hwnd, userLevel, sCommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
+    Call ShellExecute(hWnd, userLevel, sCommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
             
     userLevel = "open" ' return to default
     
@@ -3793,7 +3807,7 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
     ' call up a dialog box if required
     If sUseDialogAfter = "1" Then
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -5384,11 +5398,11 @@ Private Sub resolveVB6SizeBug()
 '    Me.Height = Screen.Height '16200 correct
 '    Me.Width = Screen.Width ' 16200 < VB6 bug here
 
-    screenHeightTwips = GetDeviceCaps(dock.hdc, VERTRES) * screenTwipsPerPixelY
-    screenWidthTwips = GetDeviceCaps(dock.hdc, HORZRES) * screenTwipsPerPixelX
+    screenHeightTwips = GetDeviceCaps(dock.hDC, VERTRES) * screenTwipsPerPixelY
+    screenWidthTwips = GetDeviceCaps(dock.hDC, HORZRES) * screenTwipsPerPixelX
     
-    screenHeightPixels = GetDeviceCaps(dock.hdc, VERTRES)
-    screenWidthPixels = GetDeviceCaps(dock.hdc, HORZRES)
+    screenHeightPixels = GetDeviceCaps(dock.hDC, VERTRES)
+    screenWidthPixels = GetDeviceCaps(dock.hDC, HORZRES)
     
     oldScreenHeightPixels = screenHeightPixels
     oldScreenWidthPixels = screenWidthPixels
@@ -6634,8 +6648,8 @@ Private Sub ScreenResolutionTimer_Timer()
 
     On Error GoTo ScreenResolutionTimer_Timer_Error
     
-    screenHeightPixels = GetDeviceCaps(dock.hdc, VERTRES)
-    screenWidthPixels = GetDeviceCaps(dock.hdc, HORZRES)
+    screenHeightPixels = GetDeviceCaps(dock.hDC, VERTRES)
+    screenWidthPixels = GetDeviceCaps(dock.hDC, HORZRES)
     
     If Not (screenHeightPixels = oldScreenHeightPixels) Or Not (screenWidthPixels = oldScreenWidthPixels) Then
         ' only restart the dock if the resolution has changed and the dock has not been deliberately hidden
@@ -6926,6 +6940,34 @@ Private Sub setSomeValues()
     sDBounceStep = 4 ' we can add a slider for this in the dockSettings later
     sDBounceInterval = 5
     
+End Sub
+
+
+ '---------------------------------------------------------------------------------------
+' Procedure : setDPIAware
+' Author    : beededea
+' Date      : 28/03/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub setDPIAware()
+    Const S_OK = &H0&, E_INVALIDARG = &H80070057, E_ACCESSDENIED = &H80070005
+
+   On Error GoTo setDPIAware_Error
+
+    Select Case SetProcessDpiAwareness(Process_System_DPI_Aware)
+        'Case S_OK:           MsgBox "The current process is set as dpi aware.", vbInformation
+        Case E_INVALIDARG:   MsgBox "The value passed in is not valid.", vbCritical
+        Case E_ACCESSDENIED: MsgBox "The DPI awareness is already set, either by calling this API " & _
+                                    "previously or through the application (.exe) manifest.", vbCritical
+    End Select
+
+   On Error GoTo 0
+   Exit Sub
+
+setDPIAware_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setDPIAware of Form rDIconConfigForm"
 End Sub
 
 

@@ -158,7 +158,7 @@ End Type
 Private Declare Function SHBrowseForFolderA Lib "shell32.dll" (binfo As BROWSEINFO) As Long
 Private Declare Function SHGetPathFromIDListA Lib "shell32.dll" (ByVal pidl&, ByVal szPath$) As Long
 Private Declare Function CoTaskMemFree Lib "ole32.dll" (lp As Any) As Long
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 ' APIs and structures for opening a common dialog box to select files without OCX dependencies STARTS
 
 ' Rocketdock compatible icon global variables START
@@ -210,7 +210,6 @@ Public defaultDock As Integer
 ' .02 ENDS DAEB 25/01/2021 Moved from mdlmain.bas to common to ensure the checkSteamyDockInstalled subroutine can be run from anywhere, specifically for the variable sdAppPath
 
 Public rdIconCount As Integer
-Public requiresAdmin As Boolean
 
 Public rDRunAppInterval As String
 Public rDAlwaysAsk As String
@@ -227,10 +226,10 @@ Public rDManageWindows As String
 Public rDDisableMinAnimation As String
 
 Public sDDockSettingsDefaultEditor As String
-Public sDIconSettingsDefaultEditor As String
+Public gblSdIconSettingsDefaultEditor As String
 Public sDDockDefaultEditor As String
 
-Public rDDebugFlg As String
+Public gblRdDebugFlg As String
 
 Public sixtyFourBit As Boolean
 Public rDCustomIconFolder As String
@@ -245,7 +244,7 @@ Public sAllDrives As String
 ' Steamydock global configuration variables END
 
 ' APIs for useful functions START
-Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 ' APIs for useful functions END
 
@@ -269,7 +268,7 @@ Private Declare Function GetDriveTypeA Lib "kernel32" (ByVal nDrive As String) A
 Public storeWindowHwnd As Long '.nn
 
 ' .05 DAEB 01/04/2021 common.bas Added declaration to allow replacement of some modal msgbox with the non-modal versions
-Public Declare Function MessageBox Lib "user32" Alias "MessageBoxA" (ByVal hwnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
+Public Declare Function MessageBox Lib "user32" Alias "MessageBoxA" (ByVal hWnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
 
 ' Flag for debug mode '.06 DAEB 19/04/2021 common.bas moved to the common area so that it can be used by each of the utilities
 Private mbDebugMode As Boolean ' .30 DAEB 03/03/2021 frmMain.frm replaced the inIDE function that used a variant to one without
@@ -329,6 +328,27 @@ Public Const SND_FILENAME As Long = &H20000     '  name is a file name
 Public Declare Function PlaySound Lib "winmm.dll" Alias "PlaySoundA" (ByVal lpszName As String, ByVal hModule As Long, ByVal dwFlags As Long) As Long
 '------------------------------------------------------ ENDS
 
+
+Public pvtBIsWinVistaOrGreater As Boolean
+Public pvtBIsWin7OrGreater As Boolean
+Public pvtBIsWin8OrGreater As Boolean
+Public pvtBIsWin10OrGreater As Boolean
+Public pvtBIsWinRS5OrGreater As Boolean
+Public pvtBIsWin11OrGreater As Boolean
+
+
+'------------------------------------------------------ STARTS
+' Private Types for determining  sizing
+'Public gblResizeRatio As Double
+'Public gblFormResizedInCode As Boolean
+Public gblDoNotResize As Boolean
+'
+'Public gblAdjustedFormHeight As Long
+'Public gblAdjustedFormWidth  As Long
+'
+'Public gblDockSettingsFormOldHeight As Long
+'Public gblDockSettingsFormOldWidth As Long
+'------------------------------------------------------ ENDS
 '
 '---------------------------------------------------------------------------------------
 ' Procedure : checkLicenceState
@@ -516,15 +536,15 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
     ' other variable assignments
     classicThemeCapable = False
     windowsVersionString = vbNullString
+    
+    ' ******  note that when running in compatibility mode the o/s will always respond with "Windows XP"
 
     strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProductName")
     windowsVersionString = strString
-    requiresAdmin = False
     
-    ' ******  note that when running in compatibility mode the o/s will respond with "Windows XP"
+    Call readWindowsVersion ' <- this does the heavy lifting
+    
     ' ******  The IDE runs in compatibility mode so it will report the wrong version and thence the incorrect working folder
-    
-    'MsgBox windowsVersionString
     
     If debugflg = 1 Then debugLog "%" & " sub classicThemeCapable"
 
@@ -544,20 +564,17 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
         classicThemeCapable = True
         strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProgramFilesDir")
     Case "Microsoft Vista"
-        requiresAdmin = True
         classicThemeCapable = True
         strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProgramFilesDir")
     Case "Microsoft 7"
-        requiresAdmin = True
         classicThemeCapable = True
         strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows NT\CurrentVersion", "ProgramFilesDir")
     Case Else ' Windows 8/10/11+
-        requiresAdmin = True
         classicThemeCapable = False
         strString = getstring(HKEY_LOCAL_MACHINE, "SOFTWARE\Microsoft\Windows\CurrentVersion", "ProgramFilesDir")
     End Select
-
-    'MsgBox strString
+    
+    If pvtBIsWin8OrGreater = True Then classicThemeCapable = False
     
     prg = Environ$("ProgramFiles")
 
@@ -570,7 +587,6 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
     'If debugFlg = 1 Then debugLog "%" & "ProgramFilesDir = " & ProgramFilesDir
     
 
-
     '======================================================
     'END routine error handler
     '======================================================
@@ -582,6 +598,44 @@ testWindowsVersion_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure testWindowsVersion of Module Common"
 
+End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : ReadWindowsVersion
+' Author    : Fafalone
+' Date      : 25/03/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub readWindowsVersion()
+    Dim dwMajor As Long: dwMajor = 0
+    Dim dwMinor As Long: dwMinor = 0
+    Dim dwBuild As Long: dwBuild = 0
+    
+    On Error GoTo ReadWindowsVersion_Error
+
+    CopyMemory dwMajor, ByVal &H7FFE026C, 4
+    CopyMemory dwMinor, ByVal &H7FFE0270, 4
+    CopyMemory dwBuild, ByVal &H7FFE0260, 4
+    If dwMajor >= 6 Then
+        pvtBIsWinVistaOrGreater = True
+        If dwMinor >= 1& Then pvtBIsWin7OrGreater = True
+        If dwMinor >= 2& Then pvtBIsWin8OrGreater = True
+        If (dwMinor = 4) Or (dwMajor >= 10) Then pvtBIsWin10OrGreater = True
+        If (dwMajor >= 10) And (dwBuild >= 17763) Then
+            pvtBIsWinRS5OrGreater = True
+            If dwBuild >= 22000 Then pvtBIsWin11OrGreater = True
+        End If
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+ReadWindowsVersion_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ReadWindowsVersion of Module common"
 End Sub
 
 '
@@ -1132,13 +1186,13 @@ End Function
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Function BrowseCallbackProc(ByVal hwnd&, ByVal Msg&, ByVal lp&, ByVal initDir$) As Long
+Private Function BrowseCallbackProc(ByVal hWnd&, ByVal Msg&, ByVal lp&, ByVal initDir$) As Long
    Const BFFM_INITIALIZED As Long = 1
    Const BFFM_SETSELECTION As Long = &H466
    On Error GoTo BrowseCallbackProc_Error
 
    If (Msg = BFFM_INITIALIZED) And (initDir <> vbNullString) Then
-      Call SendMessage(hwnd, BFFM_SETSELECTION, 1, ByVal initDir$)
+      Call SendMessage(hWnd, BFFM_SETSELECTION, 1, ByVal initDir$)
    End If
    BrowseCallbackProc = 0
 
@@ -1727,6 +1781,7 @@ Public Sub locateDockSettingsFile()
         
     ' variables declared
     Dim dockSettingsDir As String: dockSettingsDir = vbNullString
+    Dim dockSettingsBackupDir As String: dockSettingsBackupDir = vbNullString
     
     Dim inputData As String:  inputData = vbNullString
     Dim outputData As String: outputData = vbNullString
@@ -1737,11 +1792,17 @@ Public Sub locateDockSettingsFile()
     
     ' dock Settings main docksettings.ini
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
+    dockSettingsBackupDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\backup" ' just for this user alone
     dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
 
     'if the folder does not exist then create the folder
     If Not fDirExists(dockSettingsDir) Then
         MkDir dockSettingsDir
+    End If
+    
+    'if the folder does not exist then create the folder
+    If Not fDirExists(dockSettingsBackupDir) Then
+        MkDir dockSettingsBackupDir
     End If
     
     'if the settings.ini does not exist then create the file by copying

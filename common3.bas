@@ -599,7 +599,16 @@ GetShellShortcutInfo_Error:
 End Function
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : zeroAllIconCharacteristics
+' Author    : beededea
+' Date      : 27/03/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Sub zeroAllIconCharacteristics()
+
+   On Error GoTo zeroAllIconCharacteristics_Error
 
     sFilename = vbNullString
     sFileName2 = vbNullString
@@ -620,6 +629,13 @@ Public Sub zeroAllIconCharacteristics()
     sRunSecondAppBeforehand = "0"
     sAppToTerminate = vbNullString
     sRunElevated = "0"
+
+   On Error GoTo 0
+   Exit Sub
+
+zeroAllIconCharacteristics_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure zeroAllIconCharacteristics of Module common3"
             
 End Sub
 

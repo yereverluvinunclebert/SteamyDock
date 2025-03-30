@@ -48,11 +48,11 @@ Public Type tagMONITORINFO
     dwFlags     As Long 'Flags
 End Type
 
-Private Declare Function EnumDisplayMonitors Lib "user32" (ByVal hdc As Long, lprcClip As Any, ByVal lpfnEnum As Long, dwData As Long) As Long
+Private Declare Function EnumDisplayMonitors Lib "user32" (ByVal hDC As Long, lprcClip As Any, ByVal lpfnEnum As Long, dwData As Long) As Long
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hdc As Long) As Long
-Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hdc As Long, ByVal nIndex As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hDC As Long) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Private Declare Function CreateDC Lib "gdi32" Alias "CreateDCA" (ByVal lpDriverName As String, ByVal lpDeviceName As String, ByVal lpOutput As String, ByVal lpInitData As Long) As Long
 Private Declare Function UnionRect Lib "user32" (lprcDst As RECT, lprcSrc1 As RECT, lprcSrc2 As RECT) As Long
 Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal X As Long, ByVal Y As Long) As Long
@@ -160,7 +160,7 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Function fTwipsPerPixelX() As Single
-    Dim hdc As Long: hdc = 0
+    Dim hDC As Long: hDC = 0
     Dim lPixelsPerInch As Long: lPixelsPerInch = 0
     
     Const LOGPIXELSX = 88        '  Logical pixels/inch in X
@@ -170,10 +170,10 @@ Public Function fTwipsPerPixelX() As Single
     On Error GoTo fTwipsPerPixelX_Error
     
     ' 23/01/2021 .01 monitorModule.bas DAEB added if then else if you can't get device context
-    hdc = GetDC(0)
-    If hdc <> 0 Then
-        lPixelsPerInch = GetDeviceCaps(hdc, LOGPIXELSX)
-        ReleaseDC 0, hdc
+    hDC = GetDC(0)
+    If hDC <> 0 Then
+        lPixelsPerInch = GetDeviceCaps(hDC, LOGPIXELSX)
+        ReleaseDC 0, hDC
         fTwipsPerPixelX = TWIPS_PER_POINT * (POINTS_PER_INCH / lPixelsPerInch) ' Cancel units to see it.
     Else
         fTwipsPerPixelX = Screen.TwipsPerPixelX
@@ -195,7 +195,7 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Function fTwipsPerPixelY() As Single
-    Dim hdc As Long: hdc = 0
+    Dim hDC As Long: hDC = 0
     Dim lPixelsPerInch As Long: lPixelsPerInch = 0
     
     Const LOGPIXELSY = 90        '  Logical pixels/inch in Y
@@ -205,10 +205,10 @@ Public Function fTwipsPerPixelY() As Single
    On Error GoTo fTwipsPerPixelY_Error
    
     ' 23/01/2021 .01 monitorModule.bas DAEB added if then else if you can't get device context
-    hdc = GetDC(0)
-    If hdc <> 0 Then
-        lPixelsPerInch = GetDeviceCaps(hdc, LOGPIXELSY)
-        ReleaseDC 0, hdc
+    hDC = GetDC(0)
+    If hDC <> 0 Then
+        lPixelsPerInch = GetDeviceCaps(hDC, LOGPIXELSY)
+        ReleaseDC 0, hDC
         fTwipsPerPixelY = TWIPS_PER_POINT * (POINTS_PER_INCH / lPixelsPerInch) ' Cancel units to see it.
     Else
         fTwipsPerPixelY = Screen.TwipsPerPixelY
@@ -271,6 +271,8 @@ Public Sub adjustFormPositionToCorrectMonitor(ByRef hwnd As Long, ByVal Left As 
     If rc.Top < mi.rcWork.Top Then OffsetRect rc, 0, mi.rcWork.Top - rc.Top
     If rc.Bottom > mi.rcWork.Bottom Then OffsetRect rc, 0, mi.rcWork.Bottom - rc.Bottom
     
+    'gblDynamicSizingFlg = False
+    gblDoNotResize = True
     'move the window to new calculated position
     MoveWindow hwnd, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, 0
 

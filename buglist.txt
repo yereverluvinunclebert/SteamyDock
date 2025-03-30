@@ -4,6 +4,11 @@ Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop c
 ' Current Task:
 ' =============
 
+The recent change to make public vars to private, regarding isRunning changed how a click on a running program responds, it no longer brings the running window to the front
+
+msgbox when killing apps needs to be on top!
+
+try adding 1- 5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
  
 ' Extracting embedded icons from DLLs and EXEs
@@ -190,6 +195,8 @@ Cairo/GDI uses a device context that has objects like Fonts and Pens selected in
 
 ' Advanced animations
 ' ===================
+
+https://github.com/miorsoft/VB6-2D-Physic-Engine
 
 ' All the advanced animation improvements will require me to create icon objects
 
@@ -404,6 +411,8 @@ handed over to D3D or OpenGL but recent news states this has project has been ab
 '
 ' Other
 ' ======
+
+' adding a tray icon    using https://github.com/Planet-Source-Code/duncan-jones-enhanced-vb-forms-v2__1-27576
 '
 ' test running with a blank tool settings file
 '
