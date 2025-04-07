@@ -36,6 +36,8 @@ Public rDvOffset      As String
 Public rDtheme      As String
 Public rDWallpaper      As String
 Public rDWallpaperStyle      As String
+Public rDWallpaperTimer As String
+Public rDWallpaperTimerInterval As String
 
 Public rDThemeOpacity      As String
 Public rDHideLabels      As String
@@ -138,6 +140,9 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDtheme = GetINISetting(location, "Theme", settingsFile)
     rDWallpaper = GetINISetting(location, "Wallpaper", settingsFile)
     rDWallpaperStyle = GetINISetting(location, "WallpaperStyle", settingsFile)
+    rDWallpaperTimer = GetINISetting(location, "WallpaperTimer", settingsFile)
+    rDWallpaperTimerInterval = GetINISetting(location, "WallpaperTimerInterval", settingsFile)
+    
     rDThemeOpacity = GetINISetting(location, "ThemeOpacity", settingsFile)
     rDIconOpacity = GetINISetting(location, "IconOpacity", settingsFile)
     rDFontSize = GetINISetting(location, "FontSize", settingsFile)
@@ -289,6 +294,11 @@ Public Sub validateInputs()
    On Error GoTo validateInputs_Error
 
     If Val(rDRunAppInterval) * 1000 >= 65536 Then rDRunAppInterval = "65"
+        
+    If rDWallpaper = "" Then rDWallpaper = "none selected"
+    If rDWallpaperStyle = "" Then rDWallpaperStyle = "Centre"
+    If rDWallpaperTimer = "" Then rDWallpaperTimer = "0"
+    If rDWallpaperTimerInterval = "" Then rDWallpaperTimerInterval = "4" ' 1 hour
 
     ' validate the relevant entries from whichever source
     validateRegistryGeneral
@@ -429,6 +439,9 @@ Public Sub readRegistryStyle()
     rDtheme = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Theme")
     rDWallpaper = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Wallpaper")
     rDWallpaperStyle = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperStyle")
+    rDWallpaperTimer = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperTimer")
+    rDWallpaperTimerInterval = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperTimerInterval")
+
     rDThemeOpacity = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ThemeOpacity")
     rDHideLabels = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "HideLabels")
     rDFontName = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "FontName")
