@@ -163,10 +163,26 @@ CreateToolTip_Error:
     End With
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : DestroyToolTip
+' Author    :
+' Date      : 31/03/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Sub DestroyToolTip()
     ' It's not a bad idea to put this in the Form_Unload event just to make sure.
+   On Error GoTo DestroyToolTip_Error
+
     If hwndTT <> 0& Then DestroyWindow hwndTT
     hwndTT = 0&
+
+   On Error GoTo 0
+   Exit Sub
+
+DestroyToolTip_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure DestroyToolTip of Module modTooltips"
 End Sub
 
 '---------------------------------------------------------------------------------------

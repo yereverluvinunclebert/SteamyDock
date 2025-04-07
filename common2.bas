@@ -34,6 +34,9 @@ Public rDzOrderMode      As String
 Public rDOffset      As String
 Public rDvOffset      As String
 Public rDtheme      As String
+Public rDWallpaper      As String
+Public rDWallpaperStyle      As String
+
 Public rDThemeOpacity      As String
 Public rDHideLabels      As String
 Public rDFontName      As String
@@ -133,6 +136,8 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDHotKeyToggle = GetINISetting(location, "HotKey-Toggle", settingsFile)
             
     rDtheme = GetINISetting(location, "Theme", settingsFile)
+    rDWallpaper = GetINISetting(location, "Wallpaper", settingsFile)
+    rDWallpaperStyle = GetINISetting(location, "WallpaperStyle", settingsFile)
     rDThemeOpacity = GetINISetting(location, "ThemeOpacity", settingsFile)
     rDIconOpacity = GetINISetting(location, "IconOpacity", settingsFile)
     rDFontSize = GetINISetting(location, "FontSize", settingsFile)
@@ -422,7 +427,8 @@ Public Sub readRegistryStyle()
    On Error GoTo readRegistryStyle_Error
 
     rDtheme = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Theme")
-
+    rDWallpaper = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Wallpaper")
+    rDWallpaperStyle = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperStyle")
     rDThemeOpacity = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ThemeOpacity")
     rDHideLabels = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "HideLabels")
     rDFontName = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "FontName")
