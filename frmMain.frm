@@ -12,6 +12,12 @@ Begin VB.Form dock
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   368
    ShowInTaskbar   =   0   'False
+   Begin VB.Timer wallpaperTimer 
+      Enabled         =   0   'False
+      Interval        =   30000
+      Left            =   2835
+      Top             =   6660
+   End
    Begin VB.Timer explorerTimer 
       Enabled         =   0   'False
       Interval        =   10000
@@ -841,6 +847,12 @@ Private lastPositionRelativeToDock As Boolean
 
 'Private iconGrowthModifier As Integer
 
+
+'------------------------------------------------------ STARTS
+' Private Types for determining whether the app is already DPI aware, most useful when operating within the IDE, stops "already DPI aware " messages.
+
+Private Declare Function IsProcessDPIAware Lib "user32.dll" () As Boolean
+
 Private Enum PROCESS_DPI_AWARENESS
     Process_DPI_Unaware = 0
     Process_System_DPI_Aware = 1
@@ -850,7 +862,10 @@ End Enum
     Dim Process_DPI_Unaware, Process_System_DPI_Aware, Process_Per_Monitor_DPI_Aware
 #End If
 
+' this sets DPI awareness for the scope of this process, be it the binary or the IDE
 Private Declare Function SetProcessDpiAwareness Lib "shcore.dll" (ByVal Value As PROCESS_DPI_AWARENESS) As Long
+
+'------------------------------------------------------ ENDS
 
 
 Private Sub clickBlankTimer_Timer()
@@ -938,7 +953,7 @@ Private Sub Form_Load()
     On Error GoTo Form_Load_Error
                 
     ' set the application to be DPI aware using the 'forbidden' API.
-    Call setDPIAware
+    If IsProcessDPIAware() = False Then Call setDPIAware
     
     ' Clear all the message box "show again" entries in the registry
     Call clearAllMessageBoxRegistryEntries
@@ -1064,6 +1079,9 @@ Private Sub Form_Load()
     
     ' set the sound selection for any mouse click
     Call setSounds
+    
+    'start timers
+    wallpaperTimer.Enabled = True
     
     'add to the initiated ProcessArray
     'Call checkDockProcessesRunning ' trigger a test of running processes in half a second
@@ -6970,4 +6988,163 @@ setDPIAware_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setDPIAware of Form rDIconConfigForm"
 End Sub
 
+    
+'---------------------------------------------------------------------------------------
+' Procedure : wallpaperTimer_Timer
+' Author    : beededea
+' Date      : 06/05/2025
+' Purpose   : derive the next wallpaper from the current, alphabetically returned by Dir(), sort not guaranteed - but fine for this, no need to be quick
+'             if background auto-switching is enabled and the interval exceeds the specified timer then change the wallpaper
+'---------------------------------------------------------------------------------------
+'
+Private Sub wallpaperTimer_Timer()
+    Dim wallpaperLastTimeChangedInSecs As Double: wallpaperLastTimeChangedInSecs = 0
+    Dim intervalInSecs As Double: intervalInSecs = 0
+    Dim currentTimeInSecs As Double: currentTimeInSecs = 0
+    Dim MyPath  As String: MyPath = vbNullString
+    Dim myName As String: myName = vbNullString
+    Dim wallpaperFileArray() As String
+    Dim fileCount As Integer: fileCount = 0
+    Dim wallpaperIndex As Integer: wallpaperIndex = 0
+    Dim currentWallpaperIndex As Integer: currentWallpaperIndex = 0
+    Dim wallpaperFullPath As String: wallpaperFullPath = vbNullString
 
+    On Error GoTo wallpaperTimer_Timer_Error
+    
+    rDAutomaticWallpaperChange = GetINISetting("Software\SteamyDock\DockSettings", "AutomaticWallpaperChange", dockSettingsFile)
+    If rDAutomaticWallpaperChange <> "1" Then Exit Sub
+    
+    ' derive the last wallpaper change and other values in seconds
+    wallpaperLastTimeChangedInSecs = fSecondsFromDateString(rDWallpaperLastTimeChanged) ' eg. rDWallpaperLastTimeChanged="2022-02-03 13:18:08.185"
+    currentTimeInSecs = fSecondsFromDateString(Now())
+    intervalInSecs = CDbl(rDWallpaperTimerInterval)
+    
+    ' compare current time to the last changed time along with the specified interval
+    If currentTimeInSecs > (wallpaperLastTimeChangedInSecs + intervalInSecs) Then
+    
+        MyPath = sdAppPath & "\Wallpapers"
+        If Not fDirExists(MyPath) Then
+            MsgBox "WARNING - The Wallpapers folder is not present in the correct location " & App.Path
+        End If
+        
+        fileCount = fCountFilesDir(MyPath)
+        ReDim wallpaperFileArray(fileCount - 1)
+        
+        ' derive a list of the files in the wallpaper folder
+        myName = Dir(MyPath & "\", vbDirectory)   ' Retrieve the first entry.
+        Do While myName <> ""   ' Start the loop.
+           ' Ignore the current directory and the encompassing directory.
+           If myName <> "." And myName <> ".." Then
+              ' Use bitwise comparison to make sure MyName is a directory.
+              If (GetAttr(MyPath & "\" & myName) And vbDirectory) = vbDirectory Then
+                 'Debug.Print MyName   ' Display entry only if it
+              End If   ' it represents a directory.
+           End If
+           myName = Dir   ' Get next entry.
+           If myName <> "." And myName <> ".." And myName <> "" Then
+                wallpaperFileArray(wallpaperIndex) = myName
+                
+               
+                'if the current wallpaper is found in the list then store the current index
+                If wallpaperFileArray(wallpaperIndex) = rDWallpaper Then
+                    currentWallpaperIndex = wallpaperIndex
+                End If
+        
+                wallpaperIndex = wallpaperIndex + 1
+           End If
+        Loop
+        
+        ' increment the wallpaper index by one and select that wallpaper file
+        currentWallpaperIndex = currentWallpaperIndex + 1
+        If currentWallpaperIndex >= fileCount - 1 Then currentWallpaperIndex = 0
+        rDWallpaper = wallpaperFileArray(currentWallpaperIndex)
+    
+        wallpaperFullPath = sdAppPath & "\wallpapers\" & rDWallpaper
+            
+        ' save the last time the wallpaper changed
+        rDWallpaperLastTimeChanged = CStr(Now())
+        
+        ' change the wallpaper
+        If fFExists(wallpaperFullPath) Then
+            Call changeWallpaper(wallpaperFullPath, rDWallpaperStyle)
+        End If
+        
+        ' save the new wallpaper name
+        PutINISetting "Software\SteamyDock\DockSettings", "Wallpaper", rDWallpaper, dockSettingsFile
+        PutINISetting "Software\SteamyDock\DockSettings", "WallpaperLastTimeChanged", rDWallpaperLastTimeChanged, dockSettingsFile
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+wallpaperTimer_Timer_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure wallpaperTimer_Timer of Form dock"
+
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : fCountFilesDir
+' Author    : beededea
+' Date      : 06/05/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Function fCountFilesDir(ByVal thisFolder As String) As Long
+   Dim s As String: s = vbNullString
+   Dim z As Long: z = 0
+
+   On Error GoTo fCountFilesDir_Error
+
+      s = Dir(thisFolder & "\*.*")
+      Do
+         If Len(s) = 0 Then
+            Exit Do
+         End If
+         If (GetAttr(thisFolder & "\" & s) And vbDirectory) = 0 Then
+            z = z + 1
+          End If
+         s = Dir()
+      Loop
+      
+      fCountFilesDir = z
+
+   On Error GoTo 0
+   Exit Function
+
+fCountFilesDir_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fCountFilesDir of Form dock"
+End Function
+'---------------------------------------------------------------------------------------
+' Procedure : fSecondsFromDateString
+' Author    : Olaf Schmidt
+' Date      : 18/03/2022
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Function fSecondsFromDateString(ByVal dateString As String, Optional msFrac As Integer) As Currency
+Const Estart As Double = #1/1/1970#
+
+    Dim C As String
+    Dim E As String
+    Dim d As Date
+    
+    C = Mid$(dateString, 1, 19)
+    d = CDate(C)
+    msFrac = Val(Mid$(dateString, 21, 3))
+    
+    fSecondsFromDateString = CLng((d - Estart) * 86400) '  1643899670
+
+    On Error GoTo 0
+    Exit Function
+
+fSecondsFromDateString_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fSecondsFromDateString of Module modCommon"
+            Resume Next
+          End If
+    End With
+End Function

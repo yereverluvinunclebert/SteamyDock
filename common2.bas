@@ -36,8 +36,11 @@ Public rDvOffset      As String
 Public rDtheme      As String
 Public rDWallpaper      As String
 Public rDWallpaperStyle      As String
-Public rDWallpaperTimer As String
+Public rDAutomaticWallpaperChange As String
 Public rDWallpaperTimerInterval As String
+Public rDWallpaperLastTimeChanged As String
+
+Public rDMoveWinTaskbar As String
 
 Public rDThemeOpacity      As String
 Public rDHideLabels      As String
@@ -88,7 +91,17 @@ Public Const SM_CMONITORS = 80
 'API to test the system, specifically the number of monitors
 Public Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 
+'------------------------------------------------------ STARTS
+' Wallpaper changing functions and vars
 
+'Retrieves or sets the value of one of the system-wide parameters
+Public Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoA" (ByVal uAction As Long, _
+ByVal uParam As Long, ByVal lpvParam As Any, ByVal fuWinIni As Long) As Long
+
+Public Const SPIF_SENDWININICHANGE = &H2 'Send Change Message
+Public Const SPIF_UPDATEINIFILE = &H1 'Update INI File
+Public Const SPI_SETDESKWALLPAPER = 20 'Change Wallpaper
+'------------------------------------------------------ ENDS
 
 ' Rocketdock global configuration variables END
 
@@ -140,8 +153,11 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDtheme = GetINISetting(location, "Theme", settingsFile)
     rDWallpaper = GetINISetting(location, "Wallpaper", settingsFile)
     rDWallpaperStyle = GetINISetting(location, "WallpaperStyle", settingsFile)
-    rDWallpaperTimer = GetINISetting(location, "WallpaperTimer", settingsFile)
+    rDAutomaticWallpaperChange = GetINISetting(location, "AutomaticWallpaperChange", settingsFile)
     rDWallpaperTimerInterval = GetINISetting(location, "WallpaperTimerInterval", settingsFile)
+    rDWallpaperLastTimeChanged = GetINISetting(location, "WallpaperLastTimeChanged", settingsFile)
+    
+    rDMoveWinTaskbar = GetINISetting(location, "MoveWinTaskbar", settingsFile)
     
     rDThemeOpacity = GetINISetting(location, "ThemeOpacity", settingsFile)
     rDIconOpacity = GetINISetting(location, "IconOpacity", settingsFile)
@@ -297,9 +313,12 @@ Public Sub validateInputs()
         
     If rDWallpaper = "" Then rDWallpaper = "none selected"
     If rDWallpaperStyle = "" Then rDWallpaperStyle = "Centre"
-    If rDWallpaperTimer = "" Then rDWallpaperTimer = "0"
+    If rDAutomaticWallpaperChange = "" Then rDAutomaticWallpaperChange = "0"
     If rDWallpaperTimerInterval = "" Then rDWallpaperTimerInterval = "4" ' 1 hour
-
+    If rDWallpaperLastTimeChanged = "" Then rDWallpaperLastTimeChanged = Now()
+    
+    If rDMoveWinTaskbar = "" Then rDMoveWinTaskbar = "1"
+        
     ' validate the relevant entries from whichever source
     validateRegistryGeneral
     validateRegistryIcons
@@ -339,7 +358,7 @@ Public Sub validateRegistryStyle()
     'Dim myName As String
     
     Dim MyPath As String: MyPath = ""
-    Dim i As Integer: i = 0
+    Dim I As Integer: I = 0
     Dim fontPresent As Boolean: fontPresent = False
 
     On Error GoTo validateRegistryStyle_Error
@@ -360,9 +379,9 @@ Public Sub validateRegistryStyle()
 
 
     fontPresent = False
-    For i = 0 To Screen.FontCount - 1 ' Determine number of fonts.
-        If rDFontName = Screen.Fonts(i) Then fontPresent = True
-    Next i
+    For I = 0 To Screen.FontCount - 1 ' Determine number of fonts.
+        If rDFontName = Screen.Fonts(I) Then fontPresent = True
+    Next I
     If fontPresent = False Then rDFontName = "Times New Roman" '
 
     If Abs(Val(rDFontSize)) < 2 Or Abs(Val(rDFontSize)) > 29 Then rDFontSize = "-29" '
@@ -437,10 +456,10 @@ Public Sub readRegistryStyle()
    On Error GoTo readRegistryStyle_Error
 
     rDtheme = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Theme")
-    rDWallpaper = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Wallpaper")
-    rDWallpaperStyle = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperStyle")
-    rDWallpaperTimer = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperTimer")
-    rDWallpaperTimerInterval = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperTimerInterval")
+'    rDWallpaper = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Wallpaper")
+'    rDWallpaperStyle = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperStyle")
+'    rDAutomaticWallpaperChange = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "AutomaticWallpaperChange")
+'    rDWallpaperTimerInterval = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperTimerInterval")
 
     rDThemeOpacity = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ThemeOpacity")
     rDHideLabels = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "HideLabels")
@@ -744,3 +763,44 @@ readRegistry_Error:
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : changeWallpaper
+' Author    : HanneSThEGreaT https://forums.codeguru.com/showthread.php?497353-VB6-How-Do-I-Change-The-Windows-WallPaper
+' Date      : 07/04/2025
+' Purpose   : Routine to change the windows wallpaper
+'---------------------------------------------------------------------------------------
+'
+Public Sub changeWallpaper(ByVal SelectedWallpaper As String, ByVal WallpaperStyle As String)
+
+    Dim lReturn As Long: lReturn = 0 'Return of SysParInfo API
+
+    On Error GoTo changeWallpaper_Error
+    
+    'Determine default WallPaper 'Style', ie. positioning
+    If WallpaperStyle <> "Centre" And WallpaperStyle <> "Tile" And WallpaperStyle <> "Stretch" Then
+        WallpaperStyle = "Stretch"
+    End If
+    
+    'Write to the registry to allow Windows to determine wallpaper placement
+    If WallpaperStyle = "Centre" Then
+        savestring HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "0"
+        savestring HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "0"
+    ElseIf WallpaperStyle = "Tile" Then
+        savestring HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "1"
+        savestring HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "0"
+    ElseIf WallpaperStyle = "Stretch" Then
+        savestring HKEY_CURRENT_USER, "Control Panel\Desktop", "TileWallpaper", "0"
+        savestring HKEY_CURRENT_USER, "Control Panel\Desktop", "WallpaperStyle", "2"
+    End If
+    
+    'Set the WallPaper and trigger the system to apply it to the desktop
+    lReturn = SystemParametersInfo(SPI_SETDESKWALLPAPER, 0&, SelectedWallpaper, SPIF_UPDATEINIFILE Or SPIF_SENDWININICHANGE)
+
+   On Error GoTo 0
+   Exit Sub
+
+changeWallpaper_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure changeWallpaper of Form dockSettings"
+
+End Sub
