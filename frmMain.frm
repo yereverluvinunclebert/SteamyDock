@@ -14,7 +14,7 @@ Begin VB.Form dock
    ShowInTaskbar   =   0   'False
    Begin VB.Timer wallpaperTimer 
       Enabled         =   0   'False
-      Interval        =   30000
+      Interval        =   60000
       Left            =   2835
       Top             =   6660
    End
@@ -7011,16 +7011,25 @@ Private Sub wallpaperTimer_Timer()
 
     On Error GoTo wallpaperTimer_Timer_Error
     
+    ' re-read the values of this switch as this value may change dynamically using dockSettings
     rDAutomaticWallpaperChange = GetINISetting("Software\SteamyDock\DockSettings", "AutomaticWallpaperChange", dockSettingsFile)
     If rDAutomaticWallpaperChange <> "1" Then Exit Sub
+    
+    ' re-read the values of these values as theymay change dynamically using dockSettings
+    rDWallpaperTimerInterval = GetINISetting("Software\SteamyDock\DockSettings", "WallpaperTimerInterval", dockSettingsFile)
     
     ' derive the last wallpaper change and other values in seconds
     wallpaperLastTimeChangedInSecs = fSecondsFromDateString(rDWallpaperLastTimeChanged) ' eg. rDWallpaperLastTimeChanged="2022-02-03 13:18:08.185"
     currentTimeInSecs = fSecondsFromDateString(Now())
-    intervalInSecs = CDbl(rDWallpaperTimerInterval)
+    
+    intervalInSecs = CDbl(rDWallpaperTimerInterval * 60)
     
     ' compare current time to the last changed time along with the specified interval
     If currentTimeInSecs > (wallpaperLastTimeChangedInSecs + intervalInSecs) Then
+    
+        ' re-read the values of these values as theymay change dynamically using dockSettings
+        rDWallpaper = GetINISetting("Software\SteamyDock\DockSettings", "Wallpaper", dockSettingsFile)
+        rDWallpaperStyle = GetINISetting("Software\SteamyDock\DockSettings", "WallpaperStyle", dockSettingsFile)
     
         MyPath = sdAppPath & "\Wallpapers"
         If Not fDirExists(MyPath) Then

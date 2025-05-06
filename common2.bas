@@ -37,6 +37,7 @@ Public rDtheme      As String
 Public rDWallpaper      As String
 Public rDWallpaperStyle      As String
 Public rDAutomaticWallpaperChange As String
+Public rDWallpaperTimerIntervalIndex As String
 Public rDWallpaperTimerInterval As String
 Public rDWallpaperLastTimeChanged As String
 
@@ -154,6 +155,7 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDWallpaper = GetINISetting(location, "Wallpaper", settingsFile)
     rDWallpaperStyle = GetINISetting(location, "WallpaperStyle", settingsFile)
     rDAutomaticWallpaperChange = GetINISetting(location, "AutomaticWallpaperChange", settingsFile)
+    rDWallpaperTimerIntervalIndex = GetINISetting(location, "WallpaperTimerIntervalIndex", settingsFile)
     rDWallpaperTimerInterval = GetINISetting(location, "WallpaperTimerInterval", settingsFile)
     rDWallpaperLastTimeChanged = GetINISetting(location, "WallpaperLastTimeChanged", settingsFile)
     
@@ -314,7 +316,9 @@ Public Sub validateInputs()
     If rDWallpaper = "" Then rDWallpaper = "none selected"
     If rDWallpaperStyle = "" Then rDWallpaperStyle = "Centre"
     If rDAutomaticWallpaperChange = "" Then rDAutomaticWallpaperChange = "0"
-    If rDWallpaperTimerInterval = "" Then rDWallpaperTimerInterval = "4" ' 1 hour
+    If rDWallpaperTimerIntervalIndex = "" Then rDWallpaperTimerIntervalIndex = "4" ' 1 hour
+    If rDWallpaperTimerInterval = "" Then rDWallpaperTimerIntervalIndex = "60" ' 1 hour
+    
     If rDWallpaperLastTimeChanged = "" Then rDWallpaperLastTimeChanged = Now()
     
     If rDMoveWinTaskbar = "" Then rDMoveWinTaskbar = "1"
@@ -459,7 +463,7 @@ Public Sub readRegistryStyle()
 '    rDWallpaper = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Wallpaper")
 '    rDWallpaperStyle = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperStyle")
 '    rDAutomaticWallpaperChange = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "AutomaticWallpaperChange")
-'    rDWallpaperTimerInterval = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperTimerInterval")
+'    rdWallpaperTimerIntervalIndex = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperTimerIntervalIndex")
 
     rDThemeOpacity = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ThemeOpacity")
     rDHideLabels = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "HideLabels")
