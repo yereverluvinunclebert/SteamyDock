@@ -1608,7 +1608,7 @@ End Function
 ' Purpose   : determines if a process is running or not
 '---------------------------------------------------------------------------------------
 '
-Public Function IsRunning(ByVal NameProcess As String, Optional ByVal processID As Long) As Boolean
+Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID As Long) As Boolean
 
     Dim AppCount As Integer: AppCount = 0
     Dim RProcessFound As Long: RProcessFound = 0

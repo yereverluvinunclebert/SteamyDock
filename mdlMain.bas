@@ -492,7 +492,7 @@ Public rctText As RECTF
 Public iconBitmap As Long
 Public gdipFullScreenBitmap As Long
 Public lngGDI As Long
-'Public lngReturn As Long
+Public windowLngReturn As Long
 Public dockPosition As TASKBAR_POSITION
 ' GDI+ globals variables END
 
@@ -650,7 +650,7 @@ Public lHotKey As Long
 Public Function GetEncoderClsid(strMimeType As String, ClassID As CLSID)
    Dim num As Long
    Dim Size As Long
-   Dim i As Long
+   Dim I As Long
 
    Dim ICI() As ImageCodecInfo
    Dim Buffer() As Byte
@@ -673,11 +673,11 @@ Public Function GetEncoderClsid(strMimeType As String, ClassID As CLSID)
    Call CopyMemory(ICI(1), Buffer(1), (Len(ICI(1)) * num))
 
    ' Loop through all the codecs
-   For i = 1 To num
+   For I = 1 To num
       ' Must convert the pointer into a usable string
-      If StrComp(PtrToStrW(ICI(i).MimeType), strMimeType, vbTextCompare) = 0 Then
-         ClassID = ICI(i).ClassID   ' Save the class id
-         GetEncoderClsid = i        ' return the index number for success
+      If StrComp(PtrToStrW(ICI(I).MimeType), strMimeType, vbTextCompare) = 0 Then
+         ClassID = ICI(I).ClassID   ' Save the class id
+         GetEncoderClsid = I        ' return the index number for success
          Exit For
       End If
    Next
@@ -2719,14 +2719,14 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Function setWindowCharacteristics()
-    Dim lngRet As Long
+    'Dim lngRet As Long
     
     On Error GoTo setWindowCharacteristics_Error
     If debugflg = 1 Then debugLog "% sub setWindowCharacteristics"
     
     'set the transparency of the underlying form with click through
-    lngRet = GetWindowLong(dock.hWnd, GWL_EXSTYLE)
-    SetWindowLong dock.hWnd, GWL_EXSTYLE, lngRet Or WS_EX_LAYERED
+    windowLngReturn = GetWindowLong(dock.hWnd, GWL_EXSTYLE)
+    SetWindowLong dock.hWnd, GWL_EXSTYLE, windowLngReturn Or WS_EX_LAYERED
     
     ' determine the z position of the dock with respect to other application and o/s windows.
     ' this also changes the window positioning and size:
@@ -2958,7 +2958,7 @@ Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As 
 
     Dim Count As Long: Count = 0
     Dim hIcon() As Long: 'hIcon() = 0
-    Dim i As Long: i = 0
+    Dim I As Long: I = 0
     Dim pid As Long: pid = 0
 
     On Error GoTo isSysTray_Error
@@ -2969,11 +2969,11 @@ Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As 
         Call GetIconHandles(hTray, Count, hIcon)
     End If
 
-    For i = 0 To Count - 1
-        pid = GetPidByWindow(hIcon(i))
+    For I = 0 To Count - 1
+        pid = GetPidByWindow(hIcon(I))
         'if the extracted pid matches the supplied processID then we have the window handle
         If pid = processID Then
-            hWnd = hIcon(i)
+            hWnd = hIcon(I)
             Exit Function
         End If
     Next
@@ -3058,7 +3058,7 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
     Dim RProcessFound As Long: RProcessFound = 0
     Dim SzExename As String: SzExename = vbNullString
     Dim MyProcess As Long: MyProcess = 0
-    Dim i As Integer: i = 0
+    Dim I As Integer: I = 0
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim procId As Long: procId = 0
@@ -3091,8 +3091,8 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
           'thisHSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
           RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
           Do
-            i = InStr(1, thisUProcess.szexeFile, Chr(0))
-            SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
+            I = InStr(1, thisUProcess.szexeFile, Chr(0))
+            SzExename = LCase$(Left$(thisUProcess.szexeFile, I - 1))
             'WinDirEnv = Environ("Windir") + "\"
             'WinDirEnv = LCase$(WinDirEnv)
 
