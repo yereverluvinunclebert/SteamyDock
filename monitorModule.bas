@@ -50,14 +50,14 @@ End Type
 
 Private Declare Function EnumDisplayMonitors Lib "user32" (ByVal hDC As Long, lprcClip As Any, ByVal lpfnEnum As Long, dwData As Long) As Long
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hwnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hwnd As Long, ByVal hDC As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Private Declare Function CreateDC Lib "gdi32" Alias "CreateDCA" (ByVal lpDriverName As String, ByVal lpDeviceName As String, ByVal lpOutput As String, ByVal lpInitData As Long) As Long
 Private Declare Function UnionRect Lib "user32" (lprcDst As RECT, lprcSrc1 As RECT, lprcSrc2 As RECT) As Long
 Private Declare Function OffsetRect Lib "user32" (lpRect As RECT, ByVal X As Long, ByVal Y As Long) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hwnd As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
-Private Declare Function GetWindowRect Lib "user32.dll" (ByVal hwnd As Long, lpRect As RECT) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function GetWindowRect Lib "user32.dll" (ByVal hWnd As Long, lpRect As RECT) As Long
 Private Declare Function MonitorFromRect Lib "user32" (rc As RECT, ByVal dwFlags As dwFlags) As Long
 Private Declare Function GetMonitorInfo Lib "user32" Alias "GetMonitorInfoA" (ByVal hMonitor As Long, MonInfo As tagMONITORINFO) As Long
 
@@ -98,7 +98,7 @@ Public screenHeightTwips As Long
 'End Function
 
 
-Public Function fVirtualScreenWidth()
+Public Function fVirtualScreenWidth() As Long
     ' This works even on Tablet PC.  The problem is: when the tablet screen is rotated, the "Screen" object of VB doesn't pick it up.
     Dim Pixels As Long: Pixels = 0
     Const SM_CXVIRTUALSCREEN = 78
@@ -107,7 +107,7 @@ Public Function fVirtualScreenWidth()
     fVirtualScreenWidth = Pixels * fTwipsPerPixelX
 End Function
 
-Public Function fVirtualScreenHeight(Optional bSubtractTaskbar As Boolean = False)
+Public Function fVirtualScreenHeight(Optional bSubtractTaskbar As Boolean = False) As Long
     ' This works even on Tablet PC.  The problem is: when the tablet screen is rotated, the "Screen" object of VB doesn't pick it up.
     Dim Pixels As Long: Pixels = 0
     Const CYVIRTUALSCREEN = 79
@@ -243,7 +243,7 @@ End Function
 '             if the form finds itself offscreen due to monitor position/resolution changes.
 '---------------------------------------------------------------------------------------
 '
-Public Sub adjustFormPositionToCorrectMonitor(ByRef hwnd As Long, ByVal Left As Long, ByVal Top As Long)
+Public Sub adjustFormPositionToCorrectMonitor(ByRef hWnd As Long, ByVal Left As Long, ByVal Top As Long)
 
     Dim rc As RECT
 '    Dim Left As Long: Left = 0
@@ -253,7 +253,7 @@ Public Sub adjustFormPositionToCorrectMonitor(ByRef hwnd As Long, ByVal Left As 
     
     On Error GoTo adjustFormPositionToCorrectMonitor_Error
 
-    GetWindowRect hwnd, rc 'obtain the current form's window rectangle co-ords and assign it a handle
+    GetWindowRect hWnd, rc 'obtain the current form's window rectangle co-ords and assign it a handle
         
     'move the window rectangle to position saved previously
     OffsetRect rc, Left - rc.Left, Top - rc.Top
@@ -274,7 +274,7 @@ Public Sub adjustFormPositionToCorrectMonitor(ByRef hwnd As Long, ByVal Left As 
     'gblDynamicSizingFlg = False
     gblDoNotResize = True
     'move the window to new calculated position
-    MoveWindow hwnd, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, 0
+    MoveWindow hWnd, rc.Left, rc.Top, rc.Right - rc.Left, rc.Bottom - rc.Top, 0
 
     On Error GoTo 0
     Exit Sub
@@ -309,7 +309,7 @@ Public Function monitorProperties(frm As Form) As UDTMonitor
     ' reads the size and position of the window
     On Error GoTo monitorProperties_Error
    
-    If debugFlg = 1 Then debugLog "%" & " func monitorProperties"
+    If debugflg = 1 Then debugLog "%" & " func monitorProperties"
 
 '    GetWindowRect frm.hwnd, Frect
 '    hMonitor = MonitorFromRect(Frect, MONITOR_DEFAULTTOPRIMARY) ' get handle for monitor containing most of Frm

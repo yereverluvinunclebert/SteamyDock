@@ -276,7 +276,7 @@ Public Property Let propButtonVal(ByVal buttonVal As Integer)
         
 End Property
 
-Public Property Get propReturnedValue()
+Public Property Get propReturnedValue() As Boolean
 
     propReturnedValue = yesNoReturnValue
     

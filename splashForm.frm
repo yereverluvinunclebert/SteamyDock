@@ -60,6 +60,8 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+Option Explicit
+
 ' .01 DAEB splashForm new splashShrinkerTimer_Timer
 ' .02 DAEB splashForm new form load subroutine
 ' .03 DAEB splashForm.frm 09/02/2021 handling any potential divide by zero
@@ -160,6 +162,9 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub splashShrinkerTimer_Timer()
+
+   Dim sngRatio As Double: sngRatio = 0
+   
    On Error GoTo splashShrinkerTimer_Timer_Error
     
     If splashForm.Height > 51 Then splashForm.Height = splashForm.Height - 50

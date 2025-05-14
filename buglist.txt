@@ -1,16 +1,25 @@
+ DPIawareness 
+ The recent change to make public vars to private, regarding isRunning changed how a click on a running program responds, it no longer brings the running window to the front - done
+
+fixed functions with no return type specified
+fixed vars with no type specified
+
+-oOo-
+
 Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
 Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
 
 ' Current Task:
 ' =============
 
-The recent change to make public vars to private, regarding isRunning changed how a click on a running program responds, it no longer brings the running window to the front
-
 msgbox when killing apps needs to be on top!
 
 try adding 1- 5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
- 
+moving the windows taskbar, take the code from dock settings and migrate it to the dock.
+
+
+
 ' Extracting embedded icons from DLLs and EXEs
 ' ==============================================
 
@@ -36,7 +45,7 @@ try adding 1- 5 pixels to the icons to the right/left to see if it stops oscilla
 '     5. adding the autoscaling feature on the two utilities as per generate utility - wip
 '     6. creating new icons WIP
 '     8. Animating more than just the three icons - WIP
-'     9. DPIawareness in the manifest - research
+'     9.
 '    10. 
 '    11. 
 '    12. 

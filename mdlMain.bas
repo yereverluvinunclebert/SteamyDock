@@ -647,10 +647,10 @@ Public lHotKey As Long
 'the index of the ImageCodecInfo object and copies the CLSID into the variable pointed to by
 'pClsid. If the function fails, it returns –1.
 
-Public Function GetEncoderClsid(strMimeType As String, ClassID As CLSID)
+Public Function GetEncoderClsid(strMimeType As String, ClassID As CLSID) As Long
    Dim num As Long
    Dim Size As Long
-   Dim I As Long
+   Dim i As Long
 
    Dim ICI() As ImageCodecInfo
    Dim Buffer() As Byte
@@ -673,11 +673,11 @@ Public Function GetEncoderClsid(strMimeType As String, ClassID As CLSID)
    Call CopyMemory(ICI(1), Buffer(1), (Len(ICI(1)) * num))
 
    ' Loop through all the codecs
-   For I = 1 To num
+   For i = 1 To num
       ' Must convert the pointer into a usable string
-      If StrComp(PtrToStrW(ICI(I).MimeType), strMimeType, vbTextCompare) = 0 Then
-         ClassID = ICI(I).ClassID   ' Save the class id
-         GetEncoderClsid = I        ' return the index number for success
+      If StrComp(PtrToStrW(ICI(i).MimeType), strMimeType, vbTextCompare) = 0 Then
+         ClassID = ICI(i).ClassID   ' Save the class id
+         GetEncoderClsid = i        ' return the index number for success
          Exit For
       End If
    Next
@@ -1034,7 +1034,7 @@ If hWnd <> dock.hWnd Then
             End If
             ' .05 DAEB mdlMain.bas 10/02/2021 changes to handle invisible windows that exist in the known apps systray list STARTS
 '           .06 DAEB 03/03/2021 mdlMain.bas  removed the appSystrayTypes feature, no longer needed to access the systray apps
-'        Else ' not IsWindowVisible(hwnd)
+        Else ' not IsWindowVisible(hwnd)
 '
 '            ' Some windows are top level but not visible, such as GPU-z that minimise to the systray.
 '            ' this section is for these types of apps.
@@ -1042,17 +1042,34 @@ If hWnd <> dock.hWnd Then
 '            ' we cannot currently identify a process in the systray, so we have a kludge that is a temporary list of
 '            ' apps that can minimise to the systray. We use the program's captions to compare.
 '
-'            'GetWindowThreadProcessId finds the process ID given for the thread which owns the window
-'            Thread_ID = GetWindowThreadProcessId(hwnd, test_pid)
+'            GetWindowThreadProcessId finds the process ID given for the thread which owns the window
+'            Thread_ID = GetWindowThreadProcessId(hWnd, test_pid)
+'
 '
 '            If test_pid = pid Then
-'                If GetParent(hwnd) = 0 Then
-'                    bNoOwner = (GetWindow(hwnd, GW_OWNER) = 0)
-'                    lExStyle = GetWindowLong(hwnd, GWL_EXSTYLE)
+'                If GetParent(hWnd) = 0 Then
+'                    bNoOwner = (GetWindow(hWnd, GW_OWNER) = 0)
+'                    lExStyle = GetWindowLong(hWnd, GWL_EXSTYLE)
+'
+'                        If (((lExStyle And WS_EX_TOOLWINDOW) = 0) And bNoOwner) Or _
+'                            ((lExStyle And WS_EX_APPWINDOW) And Not bNoOwner) Then
+'
+'                                hWnd = GetAncestor(hWnd, GA_ROOT)
+'
+'                                storeWindowHwnd = hWnd ' a bit of a kludge, a global var that carries the window handle to the calling function
+'                                Exit Function
+'                        End If
+'                End If
+'            End If
+''
+'            If test_pid = pid Then
+'                If GetParent(hWnd) = 0 Then
+'                    bNoOwner = (GetWindow(hWnd, GW_OWNER) = 0)
+'                    lExStyle = GetWindowLong(hWnd, GWL_EXSTYLE)
 '
 '
 '                    sWindowText = Space$(256) ' pad the string to 256 chars
-'                    lReturn = GetWindowText(hwnd, sWindowText, Len(sWindowText)) ' obtain the caption
+'                    lReturn = GetWindowText(hWnd, sWindowText, Len(sWindowText)) ' obtain the caption
 '
 '                    For i = 0 To UBound(appSystray) ' search through all the potential systray apps in the manually populated array
 '                        If InStr(sWindowText, appSystray(i)) Then
@@ -1060,9 +1077,9 @@ If hWnd <> dock.hWnd Then
 '                            If (((lExStyle And WS_EX_TOOLWINDOW) = 0) And bNoOwner) Or _
 '                                ((lExStyle And WS_EX_APPWINDOW) And Not bNoOwner) Then
 '
-'                                    hwnd = GetAncestor(hwnd, GA_ROOT)
+'                                    hWnd = GetAncestor(hWnd, GA_ROOT)
 '
-'                                    storeWindowHwnd = hwnd ' a bit of a kludge, a global var that carries the window handle to the calling function
+'                                    storeWindowHwnd = hWnd ' a bit of a kludge, a global var that carries the window handle to the calling function
 '                                    Exit Function
 '                            End If
 '                        End If
@@ -1380,7 +1397,7 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     ByVal thisShowCmd As String, ByVal thisOpenRunning As String, _
     ByVal thisSeparator As String, ByVal thisDockletFile As String, _
     ByVal thisUseContext As String, ByVal thisUseDialog As String, _
-    ByVal thisUseDialogAfter, ByVal thisQuickLaunch, ByVal thisDisabled As String)
+    ByVal thisUseDialogAfter As String, ByVal thisQuickLaunch As String, ByVal thisDisabled As String)
     
     Dim useloop As Integer
     Dim thisIcon As Integer
@@ -2524,7 +2541,7 @@ End Function
 ' Purpose   : Creates the scaled image with quality and opacity attributes
 '---------------------------------------------------------------------------------------
 '
-Public Function createScaledImg(SrcImg As Long, dxSrc, dySrc, dxDst, dyDst, opacity As Integer) As Long
+Public Function createScaledImg(SrcImg As Long, dxSrc As Long, dySrc As Long, dxDst As Long, dyDst As Long, opacity As Integer) As Long
     Dim img As Long
     Dim Ctx As Long
     Dim imgQuality As Long
@@ -2686,7 +2703,7 @@ End Function
 '             creating a bitmap in memory that our VB6/GDIP application writes to directly. Called each animation interval.
 '---------------------------------------------------------------------------------------
 '
-Public Function createNewGDIPBitmap()
+Public Sub createNewGDIPBitmap()
         
     On Error GoTo createNewGDIPBitmap_Error
     ''If debugflg = 1 Then debugLog "%" & "createNewGDIPBitmap" ' commented out to avoid too many debug errors
@@ -2702,13 +2719,13 @@ Public Function createNewGDIPBitmap()
     Call GdipCreateFromHDC(dcMemory, gdipFullScreenBitmap)
 
    On Error GoTo 0
-   Exit Function
+   Exit Sub
 
 createNewGDIPBitmap_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure createNewGDIPBitmap of module mdlMain.bas"
     
-End Function
+End Sub
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
 '---------------------------------------------------------------------------------------
@@ -2718,7 +2735,7 @@ End Function
 ' Purpose   : update some characteristics for the window we will be updating using UpdateLayeredWindow API
 '---------------------------------------------------------------------------------------
 '
-Public Function setWindowCharacteristics()
+Public Sub setWindowCharacteristics()
     'Dim lngRet As Long
     
     On Error GoTo setWindowCharacteristics_Error
@@ -2777,12 +2794,12 @@ Public Function setWindowCharacteristics()
     ' The UpdateLayeredWindow API call above does not need really to be run here as it is run repeatedly by the animate timer and the function to draw the icons small
     
    On Error GoTo 0
-   Exit Function
+   Exit Sub
 
 setWindowCharacteristics_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setWindowCharacteristics of module mdlMain.bas"
-End Function
+End Sub
 
 
 
@@ -2954,11 +2971,11 @@ End Sub
 ' Purpose   : .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
 '---------------------------------------------------------------------------------------
 '
-Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As Long)
+Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As Long) As Boolean
 
     Dim Count As Long: Count = 0
     Dim hIcon() As Long: 'hIcon() = 0
-    Dim I As Long: I = 0
+    Dim i As Long: i = 0
     Dim pid As Long: pid = 0
 
     On Error GoTo isSysTray_Error
@@ -2969,11 +2986,11 @@ Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As 
         Call GetIconHandles(hTray, Count, hIcon)
     End If
 
-    For I = 0 To Count - 1
-        pid = GetPidByWindow(hIcon(I))
+    For i = 0 To Count - 1
+        pid = GetPidByWindow(hIcon(i))
         'if the extracted pid matches the supplied processID then we have the window handle
         If pid = processID Then
-            hWnd = hIcon(I)
+            hWnd = hIcon(i)
             Exit Function
         End If
     Next
@@ -3058,7 +3075,7 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
     Dim RProcessFound As Long: RProcessFound = 0
     Dim SzExename As String: SzExename = vbNullString
     Dim MyProcess As Long: MyProcess = 0
-    Dim I As Integer: I = 0
+    Dim i As Integer: i = 0
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim procId As Long: procId = 0
@@ -3091,8 +3108,8 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
           'thisHSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
           RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
           Do
-            I = InStr(1, thisUProcess.szexeFile, Chr(0))
-            SzExename = LCase$(Left$(thisUProcess.szexeFile, I - 1))
+            i = InStr(1, thisUProcess.szexeFile, Chr(0))
+            SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
             'WinDirEnv = Environ("Windir") + "\"
             'WinDirEnv = LCase$(WinDirEnv)
 
