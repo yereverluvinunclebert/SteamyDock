@@ -23,7 +23,7 @@ to use on a production system - use at your own risk.
 
 BUILD: The program runs without any Microsoft plugins.
 
-Built using: VB6, MZ-TOOLS 3.0, VBAdvance, CodeHelp Core IDE Extender
+Built using: VB6, TWINBASIC, MZ-TOOLS 3.0, VBAdvance, CodeHelp Core IDE Extender
 Framework 2.2 & Rubberduck 2.4.1. 
 
 In addition, changes have been made to make it compatible with TwinBasic, so it now compiles and runs using TwinBasic.
