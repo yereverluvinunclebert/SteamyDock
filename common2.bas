@@ -104,6 +104,42 @@ Public Const SPIF_UPDATEINIFILE = &H1 'Update INI File
 Public Const SPI_SETDESKWALLPAPER = 20 'Change Wallpaper
 '------------------------------------------------------ ENDS
 
+'------------------------------------------------------ STARTS
+' Private Types for reading/writing binary data from the registry
+
+'Opens the specified registry key
+Private Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
+
+'Writes all the attributes of the specified open registry key into the registry
+Private Declare Function RegFlushKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
+
+Private Enum REG_TOPLEVEL_KEYS
+ HKEY_CLASSES_ROOT = &H80000000
+ HKEY_CURRENT_CONFIG = &H80000005
+ HKEY_CURRENT_USER = &H80000001
+ HKEY_DYN_DATA = &H80000006
+ HKEY_LOCAL_MACHINE = &H80000002
+ HKEY_PERFORMANCE_DATA = &H80000004
+ HKEY_USERS = &H80000003
+End Enum
+
+'Sets the data and type of a specified value under a registry key - do not Change this! Check as ANY
+Private Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, lpData As Any, ByVal cbData As Long) As Long
+
+'The RegCloseKey function releases the handle of the specified key
+Private Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
+
+'Creates the specified registry key
+Private Declare Function RegCreateKey Lib "advapi32.dll" Alias "RegCreateKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
+
+Private lDataSize As Long
+Private ByteasByte() As Byte
+Private Const REG_BINARY = 3
+Private Const REG_SZ = 1
+'------------------------------------------------------ ENDS
+
+Public gblRegistrySempahoreRaised As String
+
 ' Rocketdock global configuration variables END
 
 
@@ -780,6 +816,17 @@ Public Sub changeWallpaper(ByVal SelectedWallpaper As String, ByVal WallpaperSty
 
     On Error GoTo changeWallpaper_Error
     
+    ' check the semaphore to see whether the docksettings tool is modifying the registry already
+    gblRegistrySempahoreRaised = GetINISetting("Software\SteamyDock\DockSettings", "RegistrySempahoreRaised", dockSettingsFile)
+    If gblRegistrySempahoreRaised = "True" Then
+        Sleep 5000 ' sleep for 5 seconds
+    End If
+
+    ' raising and lowering the flag here rather than in setWindowsTaskbarPosition as I want to give the o/s enough time to write the registry key and set the wallpaper.
+    gblRegistrySempahoreRaised = "True"
+    PutINISetting "Software\SteamyDock\DockSettings", "RegistrySempahoreRaised", gblRegistrySempahoreRaised, dockSettingsFile
+
+
     'Determine default WallPaper 'Style', ie. positioning
     If WallpaperStyle <> "Centre" And WallpaperStyle <> "Tile" And WallpaperStyle <> "Stretch" Then
         WallpaperStyle = "Stretch"
@@ -799,12 +846,262 @@ Public Sub changeWallpaper(ByVal SelectedWallpaper As String, ByVal WallpaperSty
     
     'Set the WallPaper and trigger the system to apply it to the desktop
     lReturn = SystemParametersInfo(SPI_SETDESKWALLPAPER, 0&, SelectedWallpaper, SPIF_UPDATEINIFILE Or SPIF_SENDWININICHANGE)
+    
+    'lower the sempahore signifying the registry is no longer being modified
+    gblRegistrySempahoreRaised = "False"
+    PutINISetting "Software\SteamyDock\DockSettings", "RegistrySempahoreRaised", gblRegistrySempahoreRaised, dockSettingsFile
+
 
    On Error GoTo 0
    Exit Sub
 
 changeWallpaper_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure changeWallpaper of Form dockSettings"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure changeWallpaper of module common2"
 
 End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : repositionWindowsTaskbar
+' Author    : beededea
+' Date      : 01/03/2020
+' Purpose   : This routine will place taskbar where the dock isn't - to avoid overlap
+'---------------------------------------------------------------------------------------
+'
+Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal oldSide As Integer)
+    Dim oldTaskbarPosition As Integer: oldTaskbarPosition = 0
+    Dim newTaskbarPosition As Integer: newTaskbarPosition = 0
+    Dim triggerTaskbarChange As Boolean: triggerTaskbarChange = False
+    Dim rmessage As String: rmessage = ""
+    Dim answer As VbMsgBoxResult: answer = vbNo
+    Dim NameProcess As String: NameProcess = vbNullString
+   
+    On Error GoTo repositionWindowsTaskbar_Error
+    If debugflg = 1 Then Debug.Print "%repositionWindowsTaskbar"
+    
+    ' steamydock avoids taskbar/dock position conflict.
+    If rDMoveWinTaskbar = "1" Then
+   
+        oldTaskbarPosition = readWindowsTaskbarPosition
+    
+    '   Windows taskbar position values
+    '    03 for bottom (default).
+    '    01 for top.
+    '    00 for left.
+    '    02 for right.
+       
+    '   Steamydock position values - newDockPosition (left over from Rocketdock) Enum TASKBAR_POSITION
+    '    0 for top (default) vbtop
+    '    1 for bottom vbBottom
+    '    2 for left vbLeft
+    '    3 for right vbRight
+    '
+        'if the dock is at the bottom (1) and the windows taskbar is bottom (3) we have a conflict
+        
+        If newDockPosition = "1" And oldTaskbarPosition = 3 Then
+            newTaskbarPosition = 1
+            triggerTaskbarChange = True
+        ElseIf newDockPosition = "0" And oldTaskbarPosition = 1 Then
+            newTaskbarPosition = 3
+            triggerTaskbarChange = True
+        End If
+        
+        ' check the registryLastTimeChanged, if another registry change occurred within the last 45 seconds then simply exit
+
+       
+        If triggerTaskbarChange = True Then
+            ' check the semaphore to see whether the docksettings tool is modifying the registry already
+            gblRegistrySempahoreRaised = GetINISetting("Software\SteamyDock\DockSettings", "RegistrySempahoreRaised", dockSettingsFile)
+            If gblRegistrySempahoreRaised = "True" Then
+                Sleep 5000 ' sleep for 5 seconds
+            End If
+            
+            ' raising and lowering the flag here rather than in setWindowsTaskbarPosition as I want to give the o/s enough time to write the registry key and settle down.
+            gblRegistrySempahoreRaised = "True"
+            PutINISetting "Software\SteamyDock\DockSettings", "RegistrySempahoreRaised", gblRegistrySempahoreRaised, dockSettingsFile
+            
+            ' ask and then restart explorer
+            rmessage = "Steamydock is in the same location as the Windows taskbar. In order to move the Windows taskbar we need to kill Explorer.exe. It will restart automatically but in the process will flicker the desktop once or twice." & vbCrLf & vbCrLf & "Confirm now that you are happy to kill Explorer? "
+            answer = msgBoxA(rmessage, vbYesNo, "Killing explorer", True, "repositionWindowsTaskbar")
+    
+            If answer = vbYes Then
+            
+                Call setWindowsTaskbarPosition(newTaskbarPosition)
+                
+                ' here we kill explorer.exe
+                NameProcess = "explorer.exe"
+                checkAndKill NameProcess, True, False, False
+                
+            Else
+            
+                Call setWindowsTaskbarPosition(oldTaskbarPosition)
+                
+                rDSide = oldSide
+                PutINISetting "Software\SteamyDock\DockSettings", "Side", rDSide, dockSettingsFile
+            End If
+            
+            'lower the sempahore signifying the registry is no longer being modified
+            gblRegistrySempahoreRaised = "False"
+            PutINISetting "Software\SteamyDock\DockSettings", "RegistrySempahoreRaised", gblRegistrySempahoreRaised, dockSettingsFile
+
+            
+        End If
+    End If
+    
+   On Error GoTo 0
+   Exit Sub
+
+repositionWindowsTaskbar_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure repositionWindowsTaskbar of Form common2"
+End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : readWindowsTaskbarPosition
+' Author    : beededea
+' Date      : 08/04/2025
+' Purpose   : To Read BINARY values from the registry
+'---------------------------------------------------------------------------------------
+'
+Private Function readWindowsTaskbarPosition() As Integer
+
+    Dim binaryValue As Variant
+    Dim Value As Variant
+    Dim I As Long: I = 0
+
+    On Error GoTo readWindowsTaskbarPosition_Error
+    
+    'Binary values are returned as a variant of type byte array.
+    With CreateObject("WScript.Shell")
+        Value = .RegRead("HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3\Settings")
+    End With
+    lDataSize = UBound(Value)
+    ReDim ByteasByte(0 To lDataSize - 1) As Byte
+    
+    For I = 0 To lDataSize - 1
+        ByteasByte(I) = Value(I)
+    Next
+
+'    03 for bottom (default).
+'    01 for top.
+'    00 for left.
+'    02 for right.
+
+    readWindowsTaskbarPosition = CInt(ByteasByte(12))
+      
+   On Error GoTo 0
+   Exit Function
+
+readWindowsTaskbarPosition_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readWindowsTaskbarPosition of Form dockSettings"
+
+End Function
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : setWindowsTaskbarPosition
+' Author    : beededea
+' Date      : 08/04/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Function setWindowsTaskbarPosition(ByVal taskbarPosition As Integer) As Boolean
+
+    Dim bAns As Boolean: bAns = False
+    Dim keyhand As Long: keyhand = 0
+    Dim b As String: b = vbNullString
+    Dim hKey As REG_TOPLEVEL_KEYS
+    Dim strPath As String: strPath = vbNullString
+    Dim strvalue As String: strvalue = vbNullString
+       
+    On Error GoTo setWindowsTaskbarPosition_Error
+    
+    hKey = HKEY_CURRENT_USER
+    strPath = "Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"
+    strvalue = "Settings"
+
+    b = ByteasByte(12)
+    
+'    03 for bottom (default).
+'    01 for top.
+'    00 for left.
+'    02 for right.
+
+    ByteasByte(12) = CByte(taskbarPosition)
+      
+    Dim R As Long
+    R = RegCreateKey(hKey, strPath, keyhand)
+    If R = 0 Then
+        R = RegSetValueEx(keyhand, strvalue, 0, _
+           REG_BINARY, ByteasByte(0), lDataSize + 1)
+        R = RegCloseKey(keyhand)
+    End If
+    
+    setWindowsTaskbarPosition = (R = 0)
+
+   On Error GoTo 0
+   Exit Function
+   
+setWindowsTaskbarPosition_Error:
+
+    setWindowsTaskbarPosition = False
+    
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setWindowsTaskbarPosition of Form dockSettings"
+    
+   Exit Function
+End Function
+
+
+' c++ code to move the windows taskbar, couple that with the registry change and it ought to work
+
+'#include <stdio.h>
+'#include <windows.h>
+'#include <shellapi.h>
+'
+'int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR
+'lpCmdLine, int nShowCmd)
+'{
+'
+'RECT rect;
+'RECT deskTopRect;
+'HWND hDesktopWindow;
+'char* strMessage = "Your Taskbar is now refreshed.";
+'
+'
+'HWND hWnd = FindWindow("Shell_TrayWnd", NULL);
+'APPBARDATA abd;
+'
+'ZeroMemory(&abd, sizeof(APPBARDATA));
+'abd.cbSize = sizeof(APPBARDATA);
+'
+'SHAppBarMessage(ABM_GETTASKBARPOS, &abd);
+'GetWindowRect(hWnd, &rect);
+'SetWindowPos(hWnd, NULL, rect.left, 0, rect.right, rect.bottom-rect.top,
+'SWP_NOSENDCHANGING);
+'
+'ShowWindow(hWnd, SW_SHOW);
+'UpdateWindow(hWnd);
+'GetWindowRect(hWnd, &rect);
+'
+'hDesktopWindow = GetDesktopWindow();
+'
+'GetWindowRect(hDesktopWindow, &deskTopRect);
+'deskTopRect.top = rect.bottom;
+'
+'
+'RedrawWindow(hDesktopWindow, NULL, NULL,
+'RDW_FRAME|RDW_INVALIDATE|RDW_UPDATENOW|RDW_ALLCHILDREN);
+'
+'SystemParametersInfo(SPI_SETWORKAREA, 0, (LPVOID)&deskTopRect,
+'SPIF_SENDCHANGE);
+'
+'//SystemParametersInfo(SPI_SETWORKAREA, 0, NULL, SPIF_SENDCHANGE);
+'UpdateWindow(hDesktopWindow);
+'
+'MessageBox(NULL, strMessage, "Taskbar Refresh", MB_OK);
+'return 0;
+'}

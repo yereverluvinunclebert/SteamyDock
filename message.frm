@@ -121,7 +121,7 @@ Private Sub btnButtonOne_Click()
     Me.Visible = False
     If formShowAgainChkBox = True Then SaveSetting App.EXEName, "Options", "Show message" & formMsgContext, chkShowAgain.Value
     yesNoReturnValue = 6
-    Unload Me
+    Me.Hide
 End Sub
 
 Public Sub Display()
@@ -276,7 +276,7 @@ Public Property Let propButtonVal(ByVal buttonVal As Integer)
         
 End Property
 
-Public Property Get propReturnedValue() As Boolean
+Public Property Get propReturnedValue() As Integer
 
     propReturnedValue = yesNoReturnValue
     

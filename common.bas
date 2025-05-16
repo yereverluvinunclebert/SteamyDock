@@ -788,14 +788,14 @@ End Function
 '             separate copy for DockSettings and Enhance Icon Settings to run that it would not share with the other utilities.
 '---------------------------------------------------------------------------------------
 '
-Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder As Boolean, ByVal confirmEachProcessKill As Boolean) As Boolean
+Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformCheck As Boolean, ByVal checkForFolder As Boolean, ByVal confirmEachProcessKill As Boolean) As Boolean
 
     ' variables declared
     Dim AppCount As Integer: AppCount = 0
     Dim RProcessFound As Long: RProcessFound = 0
     Dim SzExename As String: SzExename = vbNullString
     Dim MyProcess As Long: MyProcess = 0
-    Dim i As Integer: i = 0
+    Dim I As Integer: I = 0
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim procId As Long: procId = 0
@@ -816,8 +816,14 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
     If NameProcess <> vbNullString Then
           AppCount = 0
           
-          binaryName = getFileNameFromPath(NameProcess)
-          If binaryName = vbNullString Then Exit Function ' catchall to prevent closure of unknown processes if the name is malformed
+          If bypassMalformCheck = True Then ' only do this when testing for explorer
+                
+                binaryName = NameProcess
+          Else
+                binaryName = getFileNameFromPath(NameProcess)
+                If binaryName = vbNullString Then Exit Function ' catchall to prevent closure of unknown processes if the name is malformed
+            
+          End If
            
           folderName = getFolderNameFromPath(NameProcess)
           
@@ -827,8 +833,8 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal checkForFolder A
           'hSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
           RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
           Do
-            i = InStr(1, thisUProcess.szexeFile, Chr(0))
-            SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
+            I = InStr(1, thisUProcess.szexeFile, Chr(0))
+            SzExename = LCase$(Left$(thisUProcess.szexeFile, I - 1))
             'WinDirEnv = Environ("Windir") + "\"
             'WinDirEnv = LCase$(WinDirEnv)
 
@@ -920,18 +926,18 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Function NoNulls(ByVal Strng As String) As String
-    Dim i As Integer: i = 0
+    Dim I As Integer: I = 0
     On Error GoTo NoNulls_Error
 
     If Len(Strng) > 0 Then
-        i = InStr(Strng, vbNullChar)
-        Select Case i
+        I = InStr(Strng, vbNullChar)
+        Select Case I
             Case 0
                 NoNulls = Strng
             Case 1
                 NoNulls = vbNullString
             Case Else
-                NoNulls = Left$(Strng, i - 1)
+                NoNulls = Left$(Strng, I - 1)
         End Select
     End If
 
@@ -1616,7 +1622,7 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
     Dim ExitCode As Long: ExitCode = 0
     Dim procId As Long: procId = 0
     Dim a As Integer: a = 0
-    Dim i As Integer: i = 0
+    Dim I As Integer: I = 0
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
@@ -1655,8 +1661,8 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
             thisHSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
             RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
             Do
-                i = InStr(1, thisUProcess.szexeFile, Chr$(0))
-                SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
+                I = InStr(1, thisUProcess.szexeFile, Chr$(0))
+                SzExename = LCase$(Left$(thisUProcess.szexeFile, I - 1))
     
                 If Right$(SzExename, Len(binaryName)) = LCase$(binaryName) Then
 

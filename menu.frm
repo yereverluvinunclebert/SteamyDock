@@ -386,7 +386,7 @@ Private Sub mnuAddCache_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Clear Cache image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Clear Cache image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         'MsgBox "Unable to add Clear Cache image as it does not exist"
     End If
    On Error GoTo 0
@@ -436,7 +436,7 @@ Private Sub mnuAddEventViewer_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Event Viewer image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Event Viewer image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Administration Tools image as it does not exist"
     End If
     
@@ -494,7 +494,7 @@ Private Sub mnuAddMyDocuments_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add my Documents image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add my Documents image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add my Documents image as it does not exist"
     End If
         
@@ -555,7 +555,7 @@ Private Sub mnuAddMyMusic_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add my Music image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add my Music image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '                MsgBox "Unable to add my Music image as it does not exist"
     End If
         
@@ -613,7 +613,7 @@ Private Sub mnuAddMyPictures_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add my Pictures image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add my Pictures image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add my Pictures image as it does not exist"
     End If
         
@@ -671,7 +671,7 @@ Private Sub mnuAddMyVideos_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add my Videos image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add my Videos image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add my Videos image as it does not exist"
     End If
         
@@ -720,7 +720,7 @@ Private Sub mnuAddPerfMon_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Performance Monitor image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Performance Monitor image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Administration Tools image as it does not exist"
     End If
 
@@ -796,7 +796,7 @@ Private Sub mnuAddServices_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Services Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Services Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Administration Tools image as it does not exist"
     End If
 
@@ -846,7 +846,7 @@ Private Sub mnuAddSleep_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add sleep image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add sleep image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add sleep image as it does not exist"
     End If
 
@@ -894,7 +894,7 @@ Private Sub mnuAddTaskSched_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Task Scheduler image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Task Scheduler image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Administration Tools image as it does not exist"
     End If
 
@@ -958,7 +958,7 @@ Private Sub mnuAppFolder_Click()
     folderPath = App.Path
     If fDirExists(folderPath) Then ' if it is a folder already
 
-        execStatus = ShellExecute(Me.hwnd, "open", folderPath, vbNullString, vbNullString, 1)
+        execStatus = ShellExecute(Me.hWnd, "open", folderPath, vbNullString, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
     Else
         MsgBox "Having a bit of a problem opening a folder for this widget - " & folderPath & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation
@@ -984,24 +984,24 @@ Private Sub mnuApplicationFolder_Click()
     If fDirExists(sCommand) Then ' if it is a folder already
         'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
         'Call ShellExecute(hwnd, "open", sCommand, sArguments, vbNullString, 1)
-        execStatus = ShellExecute(hwnd, "open", sCommand, sArguments, vbNullString, 1)
+        execStatus = ShellExecute(hWnd, "open", sCommand, sArguments, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
     Else
         'obtain the folder from the scommand
         folderPath = getFolderNameFromPath(sCommand)  ' extract the default folder from the batch full path
         If fDirExists(folderPath) Then
             'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
-            execStatus = ShellExecute(hwnd, "open", folderPath, sArguments, vbNullString, 1)
+            execStatus = ShellExecute(hWnd, "open", folderPath, sArguments, vbNullString, 1)
             If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
         Else
             'if that fails try and obtain the folder from the Working Directory
             If fDirExists(sWorkingDirectory) Then
-                execStatus = ShellExecute(hwnd, "open", sWorkingDirectory, sArguments, vbNullString, 1)
+                execStatus = ShellExecute(hWnd, "open", sWorkingDirectory, sArguments, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
             Else
                 ' if that fails, spit out an error.
                 '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-                MessageBox Me.hwnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+                MessageBox Me.hWnd, "Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
                 'MsgBox ("Having a bit of a problem opening a folder for that command - " & sCommand & " It doesn't seem to have a valid working directory set.")
             End If
         End If
@@ -1120,14 +1120,24 @@ Private Sub mnuBottom_Click()
     menuForm.mnuBottom.Checked = False
     menuForm.mnuLeft.Checked = False
     menuForm.mnuRight.Checked = False
+    
+    rDSide = GetINISetting("Software\SteamyDock\DockSettings", "Side", dockSettingsFile)
+    
+    ' if done already then exit without doing anything
+    If rDSide = vbbottom And dockPosition = vbbottom Then
+        menuForm.mnuBottom.Checked = True
+        Exit Sub
+    End If
 
-    rDSide = vbBottom
+    rDSide = vbbottom
     menuForm.mnuBottom.Checked = True
-    dockPosition = vbBottom
+    dockPosition = vbbottom
     
     PutINISetting "Software\SteamyDock\DockSettings", "Side", rDSide, dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", "9999", dockSettingsFile ' no icon changed
+    
+    Call repositionWindowsTaskbar(rDSide, vbtop)
 
     Call dock.drawSmallStaticIcons
 
@@ -1501,15 +1511,15 @@ Public Sub mnuIconSettings_Click() ' .14 DAEB 01/04/2021 menu.frm made public so
         
             'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
             If InStr(WindowsVer, "Windows XP") <> 0 Then
-                execStatus = ShellExecute(Me.hwnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
+                execStatus = ShellExecute(Me.hWnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             Else
-                execStatus = ShellExecute(hwnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
+                execStatus = ShellExecute(hWnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             End If
         Else
              '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-             MessageBox Me.hwnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+             MessageBox Me.hWnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
              '        MsgBox thisCommand & " is missing"
         End If
         
@@ -1556,15 +1566,15 @@ Public Sub mnuIconSettings_Click_Event()
         
             'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
             If InStr(WindowsVer, "Windows XP") <> 0 Then
-                execStatus = ShellExecute(Me.hwnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
+                execStatus = ShellExecute(Me.hWnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             Else
-                execStatus = ShellExecute(hwnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
+                execStatus = ShellExecute(hWnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             End If
         Else
              '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-             MessageBox Me.hwnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+             MessageBox Me.hWnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
              '        MsgBox thisCommand & " is missing"
         End If
         
@@ -1601,7 +1611,7 @@ Public Sub mnuDockSettings_Click()
 
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox thisCommand & " is missing"
     End If
 
@@ -1739,6 +1749,14 @@ Private Sub mnuTop_Click()
     menuForm.mnuBottom.Checked = False
     menuForm.mnuLeft.Checked = False
     menuForm.mnuRight.Checked = False
+    
+    rDSide = GetINISetting("Software\SteamyDock\DockSettings", "Side", dockSettingsFile)
+    
+    ' if done already then exit without doing anything
+    If rDSide = vbtop And dockPosition = vbtop Then
+        menuForm.mnuTop.Checked = True
+        Exit Sub
+    End If
 
     rDSide = vbtop
     menuForm.mnuTop.Checked = True
@@ -1747,6 +1765,8 @@ Private Sub mnuTop_Click()
     PutINISetting "Software\SteamyDock\DockSettings", "Side", rDSide, dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", "9999", dockSettingsFile
+    
+    Call repositionWindowsTaskbar(rDSide, vbbottom)
     
     Call dock.drawSmallStaticIcons ' here
 
@@ -1775,7 +1795,7 @@ Private Sub mnuCoffee_Click(index As Integer)
     answer = MsgBox(" Help support the creation of more widgets like this, send us a beer! This button opens a browser window and connects to the Paypal donate page for this widget). Will you be kind and proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hwnd, "Open", "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=info@lightquick.co.uk&currency_code=GBP&amount=2.50&return=&item_name=Donate%20a%20Beer", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hWnd, "Open", "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=info@lightquick.co.uk&currency_code=GBP&amount=2.50&return=&item_name=Donate%20a%20Beer", vbNullString, App.Path, 1)
     End If
 
     On Error GoTo 0
@@ -1801,7 +1821,7 @@ Private Sub mnuHelpPdf_click()
     answer = MsgBox("This option opens a browser window and displays this tool's help. Proceed?", vbExclamation + vbYesNo)
     If answer = vbYes Then
         If fFExists(App.Path & "\help\SteamyDock.html") Then
-            Call ShellExecute(Me.hwnd, "Open", App.Path & "\help\SteamyDock.html", vbNullString, App.Path, 1)
+            Call ShellExecute(Me.hWnd, "Open", App.Path & "\help\SteamyDock.html", vbNullString, App.Path, 1)
         Else
             MsgBox ("The help file - SteamyDock.html- is missing from the help folder.")
         End If
@@ -1831,7 +1851,7 @@ Private Sub mnuFacebook_Click()
 
     answer = MsgBox("Visiting the Facebook chat page - this button opens a browser window and connects to our Facebook chat page. Proceed?", vbExclamation + vbYesNo)
     If answer = vbYes Then
-        Call ShellExecute(Me.hwnd, "Open", "http://www.facebook.com/profile.php?id=100012278951649", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hWnd, "Open", "http://www.facebook.com/profile.php?id=100012278951649", vbNullString, App.Path, 1)
     End If
 
     On Error GoTo 0
@@ -1860,7 +1880,7 @@ Private Sub mnuLatest_Click()
     answer = MsgBox("Download latest version of the program - this button opens a browser window and connects to the widget download page where you can check and download the latest zipped file). Proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hwnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/art/Quartermaster-VB6-Desktop-784624943", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hWnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/art/Quartermaster-VB6-Desktop-784624943", vbNullString, App.Path, 1)
     End If
 
 
@@ -1912,7 +1932,7 @@ Private Sub mnuSupport_Click()
     answer = MsgBox("Visiting the support page - this button opens a browser window and connects to our contact us page where you can send us a support query or just have a chat). Proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hwnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/art/Quartermaster-VB6-Desktop-784624943", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hWnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/art/Quartermaster-VB6-Desktop-784624943", vbNullString, App.Path, 1)
     End If
 
     On Error GoTo 0
@@ -1941,7 +1961,7 @@ Private Sub mnuSweets_Click()
     answer = MsgBox(" Help support the creation of more widgets like this. Buy me a small item on my Amazon wishlist! This button opens a browser window and connects to my Amazon wish list page). Will you be kind and proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hwnd, "Open", "http://www.amazon.co.uk/gp/registry/registry.html?ie=UTF8&id=A3OBFB6ZN4F7&type=wishlist", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hWnd, "Open", "http://www.amazon.co.uk/gp/registry/registry.html?ie=UTF8&id=A3OBFB6ZN4F7&type=wishlist", vbNullString, App.Path, 1)
     End If
     
     On Error GoTo 0
@@ -1969,7 +1989,7 @@ Private Sub mnuWidgets_Click()
     answer = MsgBox(" This button opens a browser window and connects to the Steampunk widgets page on my site. Do you wish to proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
-        Call ShellExecute(Me.hwnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/gallery/59981269/yahoo-widgets", vbNullString, App.Path, 1)
+        Call ShellExecute(Me.hWnd, "Open", "https://www.deviantart.com/yereverluvinuncleber/gallery/59981269/yahoo-widgets", vbNullString, App.Path, 1)
     End If
 
     On Error GoTo 0
@@ -2070,7 +2090,7 @@ Private Sub menuAddBlank_Click()
         End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add blank image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add blank image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox "Unable to add blank image as it does not exist"
     End If
     
@@ -2117,7 +2137,7 @@ Private Sub mnuAddShutdown_click()
         End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add shutdown image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add shutdown image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox "Unable to add shutdown image as it does not exist"
     End If
        
@@ -2164,7 +2184,7 @@ Private Sub mnuAddHibernate_click()
         End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add hibernate image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add hibernate image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox "Unable to add shutdown image as it does not exist"
     End If
        
@@ -2209,7 +2229,7 @@ Private Sub mnuAddReboot_click()
         End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add Reboot image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add Reboot image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox "Unable to add Reboot image as it does not exist"
     End If
        
@@ -2256,7 +2276,7 @@ Private Sub mnuAddLockWorkstation_click()
         End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add Lock Workstation image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add Lock Workstation image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox "Unable to add log off image as it does not exist"
     End If
     
@@ -2301,7 +2321,7 @@ Private Sub mnuAddLogOut_click()
         End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add log off image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add log off image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '        MsgBox "Unable to add log off image as it does not exist"
     End If
     
@@ -2347,7 +2367,7 @@ Private Sub mnuAddNetwork_click()
         End If
     Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add network image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add network image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          '         MsgBox "Unable to add network image as it does not exist"
     End If
     On Error GoTo 0
@@ -2393,7 +2413,7 @@ Private Sub mnuAddWorkgroup_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add workgroup image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add workgroup image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          'MsgBox "Unable to add log off image as it does not exist"
     End If
    On Error GoTo 0
@@ -2438,7 +2458,7 @@ Private Sub mnuAddPrinters_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add printers image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add printers image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          'MsgBox "Unable to add printers image as it does not exist"
     End If
    On Error GoTo 0
@@ -2485,7 +2505,7 @@ Private Sub mnuAddTask_click()
             End If
         Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add Task Manager image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add Task Manager image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          'MsgBox "Unable to add Task Manager image as it does not exist"
         End If
     Else
@@ -2496,7 +2516,7 @@ Private Sub mnuAddTask_click()
             Call addImageToDictionaryAndCheckForRunningProcess(iconImage, "Task Manager")
         Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hwnd, "Unable to add Task Manager image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox Me.hWnd, "Unable to add Task Manager image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
          'MsgBox "Unable to add Task Manager image as it does not exist"
         End If
     End If
@@ -2541,7 +2561,7 @@ Private Sub mnuAddControl_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add control panel image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add control panel image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         ' MsgBox "Unable to add control panel image as it does not exist"
     End If
    On Error GoTo 0
@@ -2586,7 +2606,7 @@ Private Sub mnuAddPrograms_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Program and Features image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Program and Features image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '         MsgBox "Unable to add Program and Features image as it does not exist"
     End If
    On Error GoTo 0
@@ -2630,7 +2650,7 @@ Private Sub mnuAddDock_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Dock Settings image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Dock Settings image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Dock Settings image as it does not exist"
     End If
     
@@ -2676,7 +2696,7 @@ Private Sub mnuAddCompMgmt_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Computer Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Computer Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Administration Tools image as it does not exist"
     End If
    On Error GoTo 0
@@ -2720,7 +2740,7 @@ Private Sub mnuAddDevMgmt_Click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Device Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Device Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Administration Tools image as it does not exist"
     End If
     
@@ -2771,7 +2791,7 @@ Private Sub mnuAddDiscMgmt_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Disc Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Disc Management image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Administration Tools image as it does not exist"
     End If
    On Error GoTo 0
@@ -2814,7 +2834,7 @@ Private Sub mnuAddRecycle_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Recycle Bin image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Recycle Bin image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Recycle Bin image as it does not exist"
     End If
    On Error GoTo 0
@@ -2862,7 +2882,7 @@ Private Sub mnuAddQuit_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Quit image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Quit image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Quit image as it does not exist"
     End If
            
@@ -2908,7 +2928,7 @@ Private Sub mnuAddProgramFiles_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add Program Files image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add Program Files image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Program Files image as it does not exist"
     End If
     
@@ -2955,7 +2975,7 @@ Private Sub mnuAddSeparator_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add separator image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add separator image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add separator image as it does not exist"
     End If
 
@@ -2987,7 +3007,7 @@ Private Sub mnuaddFolder_click()
 
     dialogInitDir = App.Path 'start dir, might be "C:\" or so also
 
-    getFolder = BrowseFolder(hwnd, dialogInitDir) ' show the dialog box to select a folder
+    getFolder = BrowseFolder(hWnd, dialogInitDir) ' show the dialog box to select a folder
 
     If fDirExists(getFolder) Then
     
@@ -3013,7 +3033,7 @@ Private Sub mnuaddFolder_click()
             End If
         Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add folder image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add folder image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '            MsgBox "Unable to add folder image as it does not exist"
         End If
 
@@ -3064,7 +3084,7 @@ Private Sub mnuAddMyComputer_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add my computer  image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add my computer  image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '         MsgBox "Unable to add my computer image as it does not exist"
     End If
         
@@ -3117,7 +3137,7 @@ Private Sub mnuAddEnhanced_click()
         End If
     Else
         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Unable to add my Enhanced Icon Settings image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Unable to add my Enhanced Icon Settings image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Unable to add Enhanced Icon Settings image as it does not exist"
     End If
     
@@ -3275,7 +3295,7 @@ Private Sub mnuEditWidget_Click()
     If fFExists(sDDefaultEditor) Then
       
         ' run the selected program
-        execStatus = ShellExecute(Me.hwnd, "open", sDDefaultEditor, vbNullString, vbNullString, 1)
+        execStatus = ShellExecute(Me.hWnd, "open", sDDefaultEditor, vbNullString, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open the IDE for this widget failed."
     Else
         MsgBox "Having a bit of a problem opening an IDE for this widget - " & sDDefaultEditor & " It doesn't seem to have a valid working directory set.", "Panzer Earth Gauge Confirmation Message", vbOKOnly + vbExclamation

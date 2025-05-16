@@ -39,7 +39,7 @@ Description="A FOSS dock for Windows"
 CompatibleMode="0"
 MajorVer=0
 MinorVer=0
-RevisionVer=2855
+RevisionVer=2872
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Pre-release version. Alpha."
@@ -1067,3 +1067,5 @@ Status=
 Priority=
 Comment=
 AssignedTo=
+
+

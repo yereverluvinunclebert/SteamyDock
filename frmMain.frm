@@ -1341,6 +1341,8 @@ Public Sub initialiseGlobalVars()
     sDDefaultEditor = "" ' "E:\vb6\rocketdock\iconsettings.vbp"
     sDDebugFlg = ""
     
+    gblRegistrySempahoreRaised = False
+    
     On Error GoTo 0
     
     Exit Sub
@@ -3984,7 +3986,7 @@ End Sub
     
     If sAppToTerminate <> vbNullString Then
         If fFExists(sAppToTerminate) Then
-            checkAndKill sAppToTerminate, False, False
+            checkAndKill sAppToTerminate, False, False, False
         End If
     End If
     

@@ -1,8 +1,11 @@
- DPIawareness 
+ DPIawareness
  The recent change to make public vars to private, regarding isRunning changed how a click on a running program responds, it no longer brings the running window to the front - done
 
 fixed functions with no return type specified
 fixed vars with no type specified
+
+moving the windows taskbar, take the code from dock settings and migrate it to the dock.
+set a semaphore to indicate that the registry is already open when writing.
 
 -oOo-
 
@@ -16,7 +19,8 @@ msgbox when killing apps needs to be on top!
 
 try adding 1- 5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
-moving the windows taskbar, take the code from dock settings and migrate it to the dock.
+
+' add a timestamp to prevent registry changes during dock position change
 
 
 
@@ -412,7 +416,7 @@ animate the dock widening when it shifts from static to animatebyposition
 ' RC Cairo will have complex animation available for the central animated widgets.
 ' so it seems like a good idea. 
 
-' In addition, Olaf was supposedly working on implementing the same advances that are occurring within pyCairo where some of the work is 
+' In addition, Olaf was supposedly working on implementing the same advances that are occurring within pyCairo where some of the work is
 handed over to D3D or OpenGL but recent news states this has project has been abandoned.
  
  
