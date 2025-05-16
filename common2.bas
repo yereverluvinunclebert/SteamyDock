@@ -40,6 +40,7 @@ Public rDAutomaticWallpaperChange As String
 Public rDWallpaperTimerIntervalIndex As String
 Public rDWallpaperTimerInterval As String
 Public rDWallpaperLastTimeChanged As String
+Public rDTaskbarLastTimeChanged As String
 
 Public rDMoveWinTaskbar As String
 
@@ -194,6 +195,7 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDWallpaperTimerIntervalIndex = GetINISetting(location, "WallpaperTimerIntervalIndex", settingsFile)
     rDWallpaperTimerInterval = GetINISetting(location, "WallpaperTimerInterval", settingsFile)
     rDWallpaperLastTimeChanged = GetINISetting(location, "WallpaperLastTimeChanged", settingsFile)
+    rDTaskbarLastTimeChanged = GetINISetting(location, "TaskbarLastTimeChanged", settingsFile)
     
     rDMoveWinTaskbar = GetINISetting(location, "MoveWinTaskbar", settingsFile)
     
@@ -356,6 +358,7 @@ Public Sub validateInputs()
     If rDWallpaperTimerInterval = "" Then rDWallpaperTimerIntervalIndex = "60" ' 1 hour
     
     If rDWallpaperLastTimeChanged = "" Then rDWallpaperLastTimeChanged = Now()
+    If rDTaskbarLastTimeChanged = "" Then rDTaskbarLastTimeChanged = CStr(#1/1/2000 12:00:00 PM#)
     
     If rDMoveWinTaskbar = "" Then rDMoveWinTaskbar = "1"
         
@@ -826,7 +829,6 @@ Public Sub changeWallpaper(ByVal SelectedWallpaper As String, ByVal WallpaperSty
     gblRegistrySempahoreRaised = "True"
     PutINISetting "Software\SteamyDock\DockSettings", "RegistrySempahoreRaised", gblRegistrySempahoreRaised, dockSettingsFile
 
-
     'Determine default WallPaper 'Style', ie. positioning
     If WallpaperStyle <> "Centre" And WallpaperStyle <> "Tile" And WallpaperStyle <> "Stretch" Then
         WallpaperStyle = "Stretch"
@@ -908,7 +910,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal oldSi
         End If
         
         ' check the registryLastTimeChanged, if another registry change occurred within the last 45 seconds then simply exit
-
+        
        
         If triggerTaskbarChange = True Then
             ' check the semaphore to see whether the docksettings tool is modifying the registry already
@@ -927,12 +929,17 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal oldSi
     
             If answer = vbYes Then
             
+                ' check explorer.exe is running
+
                 Call setWindowsTaskbarPosition(newTaskbarPosition)
+                
+                ' save the last time the wallpaper changed
+                rDTaskbarLastTimeChanged = CStr(Now())
                 
                 ' here we kill explorer.exe
                 NameProcess = "explorer.exe"
                 checkAndKill NameProcess, True, False, False
-                
+                                
             Else
             
                 Call setWindowsTaskbarPosition(oldTaskbarPosition)
@@ -945,7 +952,6 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal oldSi
             gblRegistrySempahoreRaised = "False"
             PutINISetting "Software\SteamyDock\DockSettings", "RegistrySempahoreRaised", gblRegistrySempahoreRaised, dockSettingsFile
 
-            
         End If
     End If
     
@@ -1019,6 +1025,8 @@ Private Function setWindowsTaskbarPosition(ByVal taskbarPosition As Integer) As 
     Dim strvalue As String: strvalue = vbNullString
        
     On Error GoTo setWindowsTaskbarPosition_Error
+    
+    Exit Function
     
     hKey = HKEY_CURRENT_USER
     strPath = "Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"

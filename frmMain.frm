@@ -1342,6 +1342,7 @@ Public Sub initialiseGlobalVars()
     sDDebugFlg = ""
     
     gblRegistrySempahoreRaised = False
+    rDTaskbarLastTimeChanged = vbNullString
     
     On Error GoTo 0
     

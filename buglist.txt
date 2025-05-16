@@ -19,7 +19,6 @@ msgbox when killing apps needs to be on top!
 
 try adding 1- 5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
-
 ' add a timestamp to prevent registry changes during dock position change
 
 

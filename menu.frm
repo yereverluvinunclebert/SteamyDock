@@ -1124,14 +1124,20 @@ Private Sub mnuBottom_Click()
     rDSide = GetINISetting("Software\SteamyDock\DockSettings", "Side", dockSettingsFile)
     
     ' if done already then exit without doing anything
-    If rDSide = vbbottom And dockPosition = vbbottom Then
+    If rDSide = vbBottom And dockPosition = vbBottom Then
         menuForm.mnuBottom.Checked = True
         Exit Sub
     End If
+    
+    ' check the last taskbar change date is older than 1 minute
+    If DateDiff("n", CDate(rDTaskbarLastTimeChanged), Now()) < 1 Then
+        MsgBox ("Not moving the Windows taskbar twice within a minute, try again later.")
+        Exit Sub
+    End If
 
-    rDSide = vbbottom
+    rDSide = vbBottom
     menuForm.mnuBottom.Checked = True
-    dockPosition = vbbottom
+    dockPosition = vbBottom
     
     PutINISetting "Software\SteamyDock\DockSettings", "Side", rDSide, dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
@@ -1757,6 +1763,12 @@ Private Sub mnuTop_Click()
         menuForm.mnuTop.Checked = True
         Exit Sub
     End If
+    
+    ' check the last taskbar change date is older than 1 minute
+    If DateDiff("n", CDate(rDTaskbarLastTimeChanged), Now()) < 1 Then
+        MsgBox ("Not moving the Windows taskbar twice within a minute, try again later.")
+        Exit Sub
+    End If
 
     rDSide = vbtop
     menuForm.mnuTop.Checked = True
@@ -1766,7 +1778,7 @@ Private Sub mnuTop_Click()
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", "9999", dockSettingsFile
     
-    Call repositionWindowsTaskbar(rDSide, vbbottom)
+    Call repositionWindowsTaskbar(rDSide, vbBottom)
     
     Call dock.drawSmallStaticIcons ' here
 
