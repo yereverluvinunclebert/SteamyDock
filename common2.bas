@@ -871,8 +871,9 @@ End Sub
 ' Purpose   : This routine will place taskbar where the dock isn't - to avoid overlap
 '---------------------------------------------------------------------------------------
 '
-Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal oldSide As Integer)
-    Dim oldTaskbarPosition As Integer: oldTaskbarPosition = 0
+Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal currentSide As Integer)
+
+    Dim currentTaskbarPosition As Integer: currentTaskbarPosition = 0
     Dim newTaskbarPosition As Integer: newTaskbarPosition = 0
     Dim triggerTaskbarChange As Boolean: triggerTaskbarChange = False
     Dim rmessage As String: rmessage = ""
@@ -885,7 +886,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal oldSi
     ' steamydock avoids taskbar/dock position conflict.
     If rDMoveWinTaskbar = "1" Then
    
-        oldTaskbarPosition = readWindowsTaskbarPosition
+        currentTaskbarPosition = readWindowsTaskbarPosition
     
     '   Windows taskbar position values
     '    03 for bottom (default).
@@ -901,10 +902,10 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal oldSi
     '
         'if the dock is at the bottom (1) and the windows taskbar is bottom (3) we have a conflict
         
-        If newDockPosition = "1" And oldTaskbarPosition = 3 Then
+        If newDockPosition = "1" And currentTaskbarPosition = 3 Then
             newTaskbarPosition = 1
             triggerTaskbarChange = True
-        ElseIf newDockPosition = "0" And oldTaskbarPosition = 1 Then
+        ElseIf newDockPosition = "0" And currentTaskbarPosition = 1 Then
             newTaskbarPosition = 3
             triggerTaskbarChange = True
         End If
@@ -933,18 +934,21 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal oldSi
 
                 Call setWindowsTaskbarPosition(newTaskbarPosition)
                 
-                ' save the last time the wallpaper changed
+                ' save the last time the taskbar changed
                 rDTaskbarLastTimeChanged = CStr(Now())
+                
+                ' this is ESSENTIAL sleep to allow the registry to write
+                Sleep 3000
                 
                 ' here we kill explorer.exe
                 NameProcess = "explorer.exe"
-                checkAndKill NameProcess, True, False, False
+                Call checkAndKill(NameProcess, True, False, False)
                                 
             Else
             
-                Call setWindowsTaskbarPosition(oldTaskbarPosition)
+                'Call setWindowsTaskbarPosition(currentTaskbarPosition)
                 
-                rDSide = oldSide
+                rDSide = CStr(currentSide)
                 PutINISetting "Software\SteamyDock\DockSettings", "Side", rDSide, dockSettingsFile
             End If
             
@@ -1026,10 +1030,11 @@ Private Function setWindowsTaskbarPosition(ByVal taskbarPosition As Integer) As 
        
     On Error GoTo setWindowsTaskbarPosition_Error
     
-    Exit Function
+    'Exit Function
     
     hKey = HKEY_CURRENT_USER
     strPath = "Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"
+    'strPath = "Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects5"
     strvalue = "Settings"
 
     b = ByteasByte(12)

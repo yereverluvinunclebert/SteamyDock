@@ -7,10 +7,14 @@ fixed vars with no type specified
 moving the windows taskbar, take the code from dock settings and migrate it to the dock.
 set a semaphore to indicate that the registry is already open when writing.
 
+add a timestamp to prevent registry changes during dock position change
+
 -oOo-
 
 Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
 Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
+
+
 
 ' Current Task:
 ' =============
@@ -19,7 +23,10 @@ msgbox when killing apps needs to be on top!
 
 try adding 1- 5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
-' add a timestamp to prevent registry changes during dock position change
+
+
+GetWindowTextLength/GetWindowText to get window title of explorer process - does it match the taskbar
+I should have this already in the code that idenitifes the open explorer windows!
 
 
 
@@ -31,7 +38,7 @@ try adding 1- 5 pixels to the icons to the right/left to see if it stops oscilla
 ' See the GDI+Icons note in Cintanotes
 
 ' reading from an embedded icon within a DLL, extracting to a PNG fior GDI+ to pick up. Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser.
- 
+
  Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity
  
  when a dock is wider than 2000 pixels - stitch two docks together
