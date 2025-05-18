@@ -14,21 +14,19 @@ add a timestamp to prevent registry changes during dock position change
 Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
 Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
 
-
+FindWindow("Shell_TrayWnd", vbNullString) & GetWindowThreadProcessId identify explorer main process
+add code to kill the explorer.exe using the handle
+if explorer still not found after 1.5 seconds then restart explorer
 
 ' Current Task:
 ' =============
 
-GetDesktopWindow + GetWindowThreadProcessId identify explorer main process
 
 msgbox when killing apps needs to be on top!
 
 try adding 1- 5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
-
-
-GetWindowTextLength/GetWindowText to get window title of explorer process - does it match the taskbar
-I should have this already in the code that idenitifes the open explorer windows!
+click on an explorer icon should both minimise and unminimise the associated explorer window, at the moment it unminimises
 
 
 
@@ -54,7 +52,7 @@ I should have this already in the code that idenitifes the open explorer windows
 '     2. Graphics Next Technology D2D/RC6, investigate - WIP
 '     3. Add known identifiers to the known apps list - WIP
 '     4. dockSettings, regular process check reduce to 5 secs minimum.
-'     5. adding the autoscaling feature on the two utilities as per generate utility - wip
+'     5.
 '     6. creating new icons WIP
 '     8. Animating more than just the three icons - WIP
 '     9.
@@ -62,12 +60,10 @@ I should have this already in the code that idenitifes the open explorer windows
 '    11. 
 '    12. 
 '    13.
-'    14. when killing a process, the msgbox can appear underneath a full screen app. needs to sit on top.
+'    14.
 
 ' Detail of General Status
 ' ========================
-
-' Pushing the Windows taskbar to the top programatically a registry change then a restart of explorer.
 
 '  Creation of a default DockSettings.ini for a new user of the dock where the application has never been run before.
 '
@@ -152,7 +148,7 @@ I should have this already in the code that idenitifes the open explorer windows
 ' Current Bugs and Regressions
 ' ============================
 
-he zoom: none choice, simply bounces the small icon without growing it at all
+The zoom: none choice, simply bounces the small icon without growing it at all
 
 ' Running on a second monitor
 ' ============================
@@ -412,7 +408,7 @@ animate the dock widening when it shifts from static to animatebyposition
 ' use might need to be supplemented by the RC5 imagelist. Possibly we might need to replace the scripting dictionary altogether with
 ' Olaf's RC imagelist. The RC5 icons would provide a click event to replace the current hit location compare and click, so that a new property
 ' might possibly have to be added to handle that. Some thinking there. The right click event will also need to be handled differently.
-'  Cairo is probably not a good solution for replacing GDI+ in this manner as the whole program as it is CPU bound and RC widgets adda a lot more 
+'  Cairo is probably not a good solution for replacing GDI+ in this manner as the whole program as it is CPU bound and RC widgets adda a lot more
 ' steps and therefore a lot more CPU usage. It could be do-able just for the central three or five icons as the overhead would be minimal.
 
 ' The smaller icons are being handled very efficiently at the moment using just GDI+ and an array location to position each, so it makes zero

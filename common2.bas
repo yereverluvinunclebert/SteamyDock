@@ -142,8 +142,11 @@ Private Const REG_SZ = 1
 Public gblRegistrySempahoreRaised As String
 Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
 
+Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
 Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
+Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
+
 Private Const PROCESS_ALL_ACCESS = &H1F0FFF
 
 
@@ -940,6 +943,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
     
             If answer = vbYes Then
 
+                ' reads/writes a binary string into the registry providing the new taskbar position
                 Call setWindowsTaskbarPosition(newTaskbarPosition)
                 
                 ' save the last time the taskbar changed
@@ -951,7 +955,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
                 
                 Sleep 2500
                 
-                ' identify the process ID of the main explorer
+                ' identify the process ID of the main explorer.exe
                 explorerProcessId = fIdentifyMainExplorer
                 
                 ' obtain the process handle using the process ID
@@ -964,11 +968,13 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
                 ' if explorer still not found after 1.5 seconds then restart explorer
                 Sleep 1500
                 
-                ' check if explorer.exe is now running, sometimes explorer does not restart
+                ' check if explorer.exe is now running, on rare occasions windows does not restart explorer automatically
                 explorerProcessId = fIdentifyMainExplorer
                 If explorerProcessId = 0 Then
                     ' run a full version of explorer using the main path, this will cause a main explorer process to run
-                    execStatus = ShellExecute(dock.hWnd, "runas", "c:\windows\explorer.exe", vbNullString, vbNullString, 1)
+                    
+                    'execStatus = ShellExecute(dock.hWnd, "runas", "c:\windows\explorer.exe", vbNullString, vbNullString, 1)
+                    execStatus = executeSettings()
                     If execStatus <= 32 Then MsgBox "Attempt to run explorer failed."
                 End If
                                 
@@ -1044,7 +1050,7 @@ End Function
 ' Procedure : setWindowsTaskbarPosition
 ' Author    : beededea
 ' Date      : 08/04/2025
-' Purpose   :
+' Purpose   : reads a binary string from the registry, uses the new taskbar position, converts to a byte value and inserts that binary string back into the registry
 '---------------------------------------------------------------------------------------
 '
 Private Function setWindowsTaskbarPosition(ByVal taskbarPosition As Integer) As Boolean
@@ -1093,6 +1099,38 @@ setWindowsTaskbarPosition_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setWindowsTaskbarPosition of Form dockSettings"
     
    Exit Function
+End Function
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : fIdentifyMainExplorer
+' Author    : beededea
+' Date      : 18/05/2025
+' Purpose   : identify the process ID of the main explorer that owns the desktop and systray
+'---------------------------------------------------------------------------------------
+'
+Public Function fIdentifyMainExplorer() As Long
+
+    Dim processThread As Long: processThread = 0
+    Dim processID As Long: processID = 0
+    Dim ProcessHandle As Long: ProcessHandle = 0
+    
+    On Error GoTo fIdentifyMainExplorer_Error
+    
+    ' obtain the process handle from the systray owner
+    ProcessHandle = FindWindow("Shell_TrayWnd", vbNullString)
+
+    ' Get the thread and process ID for the main explorer process that owns the desktop
+    processThread = GetWindowThreadProcessId(ProcessHandle, processID)
+    fIdentifyMainExplorer = processID
+    
+   On Error GoTo 0
+   Exit Function
+
+fIdentifyMainExplorer_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fIdentifyMainExplorer of Module mdlSdMain"
+
 End Function
 
 

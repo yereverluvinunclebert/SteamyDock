@@ -2964,36 +2964,7 @@ End Function
 
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : fIdentifyMainExplorer
-' Author    : beededea
-' Date      : 18/05/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Function fIdentifyMainExplorer() As Long
 
-    Dim processThread As Long: processThread = 0
-    Dim processID As Long: processID = 0
-    Dim ProcessHandle As Long: ProcessHandle = 0
-    
-    On Error GoTo fIdentifyMainExplorer_Error
-    
-    ' obtain the process handle
-    ProcessHandle = FindWindow("Shell_TrayWnd", vbNullString)
-
-    ' Get the thread and process ID for the main explorer process that owns the desktop
-    processThread = GetWindowThreadProcessId(ProcessHandle, processID)
-    fIdentifyMainExplorer = processID
-    
-   On Error GoTo 0
-   Exit Function
-
-fIdentifyMainExplorer_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fIdentifyMainExplorer of Module mdlSdMain"
-
-End Function
 
 '---------------------------------------------------------------------------------------
 ' Procedure : setWindowZorder
@@ -3345,4 +3316,25 @@ End Sub
 
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : executeSettings
+' Author    : beededea
+' Date      : 18/05/2025
+' Purpose   : A routine of the same name exists in two places, mdlSDMain.bas and mdlMain.bas, called from repositionWindowsTaskbar in common2.bas
+'             The difference is the window handle name (hwnd) specific to the calling module
+'---------------------------------------------------------------------------------------
+'
+Public Function executeSettings() As Long
+   On Error GoTo executeSettings_Error
+
+    executeSettings = ShellExecute(dock.hWnd, "runas", "c:\windows\explorer.exe", vbNullString, vbNullString, 1)
+
+   On Error GoTo 0
+   Exit Function
+
+executeSettings_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure executeSettings of Module mdlMain"
+End Function
+    
 
