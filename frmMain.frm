@@ -2059,10 +2059,10 @@ Private Sub initiatedExplorerTimer_Timer()
             If Not initiatedExplorerArray(useloop) = vbNullString Then
                 itIs = isExplorerRunning(initiatedExplorerArray(useloop))
                 If itIs = False Then
-                    explorerCheckArray(useloop) = False ' the cog array
+                    explorerCheckArray(useloop) = False ' the cog array for explorer processes
                     initiatedExplorerArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
                 Else
-                    explorerCheckArray(useloop) = True ' the cog array
+                    explorerCheckArray(useloop) = True ' the cog array for explorer processes
                 End If
                 ' .81 DAEB 28/05/2021 frmMain.frm Refresh the running process with a cog when the process is running, this had been removed earlier
                 bDrawn = False

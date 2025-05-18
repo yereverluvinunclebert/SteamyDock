@@ -1115,7 +1115,7 @@ End Sub
 '
 Private Sub mnuBottom_Click()
    On Error GoTo mnuBottom_Click_Error
-
+   
     menuForm.mnuTop.Checked = False
     menuForm.mnuBottom.Checked = False
     menuForm.mnuLeft.Checked = False

@@ -140,6 +140,12 @@ Private Const REG_SZ = 1
 '------------------------------------------------------ ENDS
 
 Public gblRegistrySempahoreRaised As String
+Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
+
+Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
+Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
+Private Const PROCESS_ALL_ACCESS = &H1F0FFF
+
 
 ' Rocketdock global configuration variables END
 
@@ -879,7 +885,12 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
     Dim rmessage As String: rmessage = ""
     Dim answer As VbMsgBoxResult: answer = vbNo
     Dim NameProcess As String: NameProcess = vbNullString
-   
+    Dim explorerProcessId As Long: explorerProcessId = 0
+    Dim retval As Long: retval = 0
+    Dim execStatus As Long: execStatus = 0
+    Dim ExitCode As Long: ExitCode = 0
+    Dim ProcessHandle As Long: ProcessHandle = 0
+    
     On Error GoTo repositionWindowsTaskbar_Error
     If debugflg = 1 Then Debug.Print "%repositionWindowsTaskbar"
     
@@ -912,7 +923,6 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
         
         ' check the registryLastTimeChanged, if another registry change occurred within the last 45 seconds then simply exit
         
-       
         If triggerTaskbarChange = True Then
             ' check the semaphore to see whether the docksettings tool is modifying the registry already
             gblRegistrySempahoreRaised = GetINISetting("Software\SteamyDock\DockSettings", "RegistrySempahoreRaised", dockSettingsFile)
@@ -929,20 +939,38 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
             answer = msgBoxA(rmessage, vbYesNo, "Killing explorer", True, "repositionWindowsTaskbar")
     
             If answer = vbYes Then
-            
-                ' check explorer.exe is running
 
                 Call setWindowsTaskbarPosition(newTaskbarPosition)
                 
                 ' save the last time the taskbar changed
                 rDTaskbarLastTimeChanged = CStr(Now())
                 
-                ' this is ESSENTIAL sleep to allow the registry to write
-                Sleep 3000
+                ' this is an ESSENTIAL sleep to allow the registry time to write,
+                ' if this sleep line is removed explorer will try to read a locked registry key, the registry key write will also fail to write due to conflict
+                ' explorer will generate a divide by zero error - and explorer will fail to restart from that point on.
                 
-                ' here we kill explorer.exe
-                NameProcess = "explorer.exe"
-                Call checkAndKill(NameProcess, True, False, False)
+                Sleep 2500
+                
+                ' identify the process ID of the main explorer
+                explorerProcessId = fIdentifyMainExplorer
+                
+                ' obtain the process handle using the process ID
+                ProcessHandle = OpenProcess(PROCESS_ALL_ACCESS, CLng(0), explorerProcessId)
+                
+                ' here we kill explorer.exe using the process handle
+                retval = TerminateProcess(ProcessHandle, ExitCode)
+                CloseHandle ProcessHandle
+                
+                ' if explorer still not found after 1.5 seconds then restart explorer
+                Sleep 1500
+                
+                ' check if explorer.exe is now running, sometimes explorer does not restart
+                explorerProcessId = fIdentifyMainExplorer
+                If explorerProcessId = 0 Then
+                    ' run a full version of explorer using the main path, this will cause a main explorer process to run
+                    execStatus = ShellExecute(dock.hWnd, "runas", "c:\windows\explorer.exe", vbNullString, vbNullString, 1)
+                    If execStatus <= 32 Then MsgBox "Attempt to run explorer failed."
+                End If
                                 
             Else
             
@@ -1034,7 +1062,6 @@ Private Function setWindowsTaskbarPosition(ByVal taskbarPosition As Integer) As 
     
     hKey = HKEY_CURRENT_USER
     strPath = "Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"
-    'strPath = "Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects5"
     strvalue = "Settings"
 
     b = ByteasByte(12)

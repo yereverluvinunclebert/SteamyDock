@@ -19,6 +19,8 @@ Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop c
 ' Current Task:
 ' =============
 
+GetDesktopWindow + GetWindowThreadProcessId identify explorer main process
+
 msgbox when killing apps needs to be on top!
 
 try adding 1- 5 pixels to the icons to the right/left to see if it stops oscillation/instability

@@ -122,7 +122,7 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Sub enumerateExplorerWindows(ByRef openExplorerPaths() As String, ByRef windowCount As Integer)
-    Dim i As Long, j As Long
+    Dim I As Long, j As Long
     Dim siaSel As IShellItemArray
     Dim lpText As Long
     Dim sText As String
@@ -226,15 +226,15 @@ Public Sub CloseExplorerWindowByPath(sPath As String)
     Dim pFolder As IShellItem
     Dim lpPath As LongPtr, sCurPath As String
     Dim nCount As Long
-    Dim i As Long
+    Dim I As Long
     Dim hr As Long
     nCount = pWindows.Count
     If nCount < 1 Then
         Debug.Print "No open Explorer windows found."
         Exit Sub
     End If
-    For i = 0 To nCount - 1
-        Set pDisp = pWindows.Item(i)
+    For I = 0 To nCount - 1
+        Set pDisp = pWindows.Item(I)
         If (pDisp Is Nothing) = False Then
             Set pSP = pDisp
             If (pSP Is Nothing) = False Then

@@ -614,8 +614,6 @@ Public hdcScreen As Long
 Public lHotKey As Long
 
 
-
-
 '---------------------------------------------------------------------------------------
 ' Steamydock global configuration variables END
 '---------------------------------------------------------------------------------------
@@ -863,8 +861,10 @@ End Sub
 ' Procedure : checkExplorerRunning
 ' Author    : beededea
 ' Date      : 08/07/2020
-' Purpose   : it used to test all currently running explorer windows against all icon's target as stored
-'             in the sCommandArray. This routine is used to identify an Explorer Window in the dock as currently
+' Purpose   : This is used to test all currently running explorer windows against all icon targets as stored
+'             in the sCommandArray.
+'
+'             This routine is used to identify an Explorer Window in the dock as currently
 '             being open even if not triggered by the dock.
 '---------------------------------------------------------------------------------------
 '
@@ -2830,6 +2830,13 @@ End Function
 
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : handleWindowConditionAndZorder
+' Author    : beededea
+' Date      : 18/05/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Function handleWindowConditionAndZorder(ByVal processID As Long, ByVal runAction As String) As Long
 
     Dim windowHwnd As Long:  windowHwnd = 0
@@ -2840,6 +2847,8 @@ Public Function handleWindowConditionAndZorder(ByVal processID As Long, ByVal ru
     Dim hOverflow As Long: hOverflow = 0 ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
     ' .22 DAEB frmMain.frm 08/02/2021 changes to replace old method of enumerating all windows with enumerate improved Windows function STARTS
     
+   On Error GoTo handleWindowConditionAndZorder_Error
+
     hTray = FindWindow_NotifyTray() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
     hOverflow = FindWindow_NotifyOverflow() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
 
@@ -2943,9 +2952,59 @@ Public Function handleWindowConditionAndZorder(ByVal processID As Long, ByVal ru
     End If
     handleWindowConditionAndZorder = lngRetVal
 
+   On Error GoTo 0
+   Exit Function
+
+handleWindowConditionAndZorder_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure handleWindowConditionAndZorder of Module mdlSdMain"
+
 End Function
 
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : fIdentifyMainExplorer
+' Author    : beededea
+' Date      : 18/05/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function fIdentifyMainExplorer() As Long
+
+    Dim processThread As Long: processThread = 0
+    Dim processID As Long: processID = 0
+    Dim ProcessHandle As Long: ProcessHandle = 0
+    
+    On Error GoTo fIdentifyMainExplorer_Error
+    
+    ' obtain the process handle
+    ProcessHandle = FindWindow("Shell_TrayWnd", vbNullString)
+
+    ' Get the thread and process ID for the main explorer process that owns the desktop
+    processThread = GetWindowThreadProcessId(ProcessHandle, processID)
+    fIdentifyMainExplorer = processID
+    
+   On Error GoTo 0
+   Exit Function
+
+fIdentifyMainExplorer_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fIdentifyMainExplorer of Module mdlSdMain"
+
+End Function
+
+'---------------------------------------------------------------------------------------
+' Procedure : setWindowZorder
+' Author    : beededea
+' Date      : 18/05/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub setWindowZorder(ByVal windowHwnd As Long, ByVal runAction As String)
+
+   On Error GoTo setWindowZorder_Error
 
     If runAction = "focus" Then
         BringWindowToTop windowHwnd ' .39 DAEB 18/03/2021 frmMain.frm utilised BringWindowToTop instead of SetWindowPos & HWND_TOP as that was used by a C program that worked perfectly.
@@ -2963,6 +3022,13 @@ Private Sub setWindowZorder(ByVal windowHwnd As Long, ByVal runAction As String)
         ' .40 DAEB 18/03/2021 frmMain.frm Added SWP_NOOWNERZORDER as an additional flag as that was used by a C program that worked perfectly, fixing the z-order position problems
         SetWindowPos windowHwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_NOMOVE Or SWP_NOSIZE Or SWP_NOOWNERZORDER
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+setWindowZorder_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setWindowZorder of Module mdlSdMain"
 End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : isSysTray
