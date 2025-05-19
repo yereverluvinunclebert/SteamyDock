@@ -15,20 +15,24 @@ Overall status - Working, a good learning platform and it functions. New graphic
 Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
 
 FindWindow("Shell_TrayWnd", vbNullString) & GetWindowThreadProcessId identify explorer main process
-add code to kill the explorer.exe using the handle
+add code to kill the main explorer.exe using the handle
 if explorer still not found after 1.5 seconds then restart explorer
+
+add code to flush the registry in-memory hive, add a synchronous wait until complete, replacing the later sleep 3000
+add a prod to the explorer process to read changed settings
+
+separate code to restart main explorer window handle passed according to which form calls the restart.
 
 ' Current Task:
 ' =============
 
+click on an explorer icon should both minimise and unminimise the associated explorer window, at the moment it only unminimises
 
 msgbox when killing apps needs to be on top!
 
 try adding 1- 5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
-click on an explorer icon should both minimise and unminimise the associated explorer window, at the moment it unminimises
-
-
+ when the dock is over a certain size the background does not appear
 
 ' Extracting embedded icons from DLLs and EXEs
 ' ==============================================
@@ -37,13 +41,13 @@ click on an explorer icon should both minimise and unminimise the associated exp
 '
 ' See the GDI+Icons note in Cintanotes
 
-' reading from an embedded icon within a DLL, extracting to a PNG fior GDI+ to pick up. Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser.
+reading from an embedded icon within a DLL, extracting to a PNG fior GDI+ to pick up. Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser.
 
- Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity
+Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity
  
  when a dock is wider than 2000 pixels - stitch two docks together
  
- when the dock is over a certain size the background does not appear
+
 
 ' Main Tasks:  
 ' ============

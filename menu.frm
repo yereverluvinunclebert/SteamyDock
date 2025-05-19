@@ -1464,8 +1464,10 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuQuit_Click()
-    Dim frm As Form
+
     On Error GoTo mnuQuit_Click_Error
+    
+    dock.Hide
         
     'Call dock.shutdwnGDI
     

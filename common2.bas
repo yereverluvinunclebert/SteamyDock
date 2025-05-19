@@ -137,6 +137,27 @@ Private lDataSize As Long
 Private ByteasByte() As Byte
 Private Const REG_BINARY = 3
 Private Const REG_SZ = 1
+
+Private Declare Function RegNotifyChangeKeyValue Lib "advapi32" _
+ (ByVal hKey As Long, ByVal bWatchSubTree As Boolean, ByVal _
+  dwNotifyFilter As Long, ByVal hEvent As Long, ByVal _
+  fAsynchronous As Boolean) As Long
+
+Public Enum NOTIFY_EVENTS
+       REG_NOTIFY_CHANGE_NAME = &H1
+       REG_NOTIFY_CHANGE_ATTRIBUTES = &H2
+       REG_NOTIFY_CHANGE_LAST_SET = &H4
+       REG_NOTIFY_CHANGE_SECURITY = &H8
+End Enum
+
+Declare Sub SendMessageTimeout Lib "user32" Alias "SendMessageTimeoutA" ( _
+    ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, _
+    ByVal lParam As String, ByVal fuFlags As Long, ByVal uTimeout As Long, _
+    pdwResult As Long)
+
+Const HWND_BROADCAST = &HFFFF
+Const WM_SETTINGCHANGE = &H1A
+Const SMTO_ABORTIFHUNG = &H2
 '------------------------------------------------------ ENDS
 
 Public gblRegistrySempahoreRaised As String
@@ -893,6 +914,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
     Dim execStatus As Long: execStatus = 0
     Dim ExitCode As Long: ExitCode = 0
     Dim ProcessHandle As Long: ProcessHandle = 0
+    Dim dwRes As Long: dwRes = 0
     
     On Error GoTo repositionWindowsTaskbar_Error
     If debugflg = 1 Then Debug.Print "%repositionWindowsTaskbar"
@@ -938,7 +960,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
             PutINISetting "Software\SteamyDock\DockSettings", "RegistrySempahoreRaised", gblRegistrySempahoreRaised, dockSettingsFile
             
             ' ask and then restart explorer
-            rmessage = "Steamydock is in the same location as the Windows taskbar. In order to move the Windows taskbar we need to kill Explorer.exe. It will restart automatically but in the process will flicker the desktop once or twice." & vbCrLf & vbCrLf & "Confirm now that you are happy to kill Explorer? "
+            rmessage = "Steamydock is in the same location as the Windows taskbar. In order to move the Windows taskbar we need to kill Explorer.exe. It will restart automatically but in the process will flicker the desktop once or twice." & vbCrLf & vbCrLf & "Confirm now that you are happy to restart Explorer? "
             answer = msgBoxA(rmessage, vbYesNo, "Killing explorer", True, "repositionWindowsTaskbar")
     
             If answer = vbYes Then
@@ -949,11 +971,8 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
                 ' save the last time the taskbar changed
                 rDTaskbarLastTimeChanged = CStr(Now())
                 
-                ' this is an ESSENTIAL sleep to allow the registry time to write,
-                ' if this sleep line is removed explorer will try to read a locked registry key, the registry key write will also fail to write due to conflict
-                ' explorer will generate a divide by zero error - and explorer will fail to restart from that point on.
-                
-                Sleep 2500
+                ' give explorer a "settings have changed"ù poke
+                SendMessageTimeout HWND_BROADCAST, WM_SETTINGCHANGE, 0, "TraySettings", SMTO_ABORTIFHUNG, 500, dwRes
                 
                 ' identify the process ID of the main explorer.exe
                 explorerProcessId = fIdentifyMainExplorer
@@ -971,9 +990,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
                 ' check if explorer.exe is now running, on rare occasions windows does not restart explorer automatically
                 explorerProcessId = fIdentifyMainExplorer
                 If explorerProcessId = 0 Then
-                    ' run a full version of explorer using the main path, this will cause a main explorer process to run
-                    
-                    'execStatus = ShellExecute(dock.hWnd, "runas", "c:\windows\explorer.exe", vbNullString, vbNullString, 1)
+                    ' run a full version of explorer using the main path, this will cause a main explorer process to run rather than a detached file window
                     execStatus = executeSettings()
                     If execStatus <= 32 Then MsgBox "Attempt to run explorer failed."
                 End If
@@ -1082,10 +1099,17 @@ Private Function setWindowsTaskbarPosition(ByVal taskbarPosition As Integer) As 
     Dim R As Long
     R = RegCreateKey(hKey, strPath, keyhand)
     If R = 0 Then
+        ' commit the change to the in-memory registry hive
         R = RegSetValueEx(keyhand, strvalue, 0, _
            REG_BINARY, ByteasByte(0), lDataSize + 1)
+        ' flush the write from the in-memory registry hive to the disc
+        R = RegFlushKey(keyhand)
         R = RegCloseKey(keyhand)
     End If
+    
+    ' Synchronous wait blocks until the hive flush completes
+    R = RegNotifyChangeKeyValue( _
+        keyhand, False, REG_NOTIFY_CHANGE_LAST_SET, 0&, False)
     
     setWindowsTaskbarPosition = (R = 0)
 

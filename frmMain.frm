@@ -3659,11 +3659,11 @@ tryMSCFullPAth:
         Exit Sub
     End If
     
-    ' RocketdockEnhancedSettings.exe (the .NET version of this program)
-    If getFileNameFromPath(thisCommand) = "RocketdockEnhancedSettings.exe" Then
-        Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
-         Exit Sub
-    End If
+'    ' RocketdockEnhancedSettings.exe (the .NET version of this program)
+'    If getFileNameFromPath(thisCommand) = "RocketdockEnhancedSettings.exe" Then
+'        Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
+'         Exit Sub
+'    End If
 
     ' bat files
     If ExtractSuffixWithDot(UCase$(thisCommand)) = ".BAT" Then

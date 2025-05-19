@@ -3321,7 +3321,7 @@ End Sub
 ' Author    : beededea
 ' Date      : 18/05/2025
 ' Purpose   : A routine of the same name exists in two places, mdlSDMain.bas and mdlMain.bas, called from repositionWindowsTaskbar in common2.bas
-'             The difference is the window handle name (hwnd) specific to the calling module
+'             The difference is the window handle name (hwnd) is specific to the calling form, in this case, the dock.
 '---------------------------------------------------------------------------------------
 '
 Public Function executeSettings() As Long
