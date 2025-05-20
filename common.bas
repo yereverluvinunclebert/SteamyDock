@@ -697,17 +697,17 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Function fFExists(ByRef OrigFile As String) As Boolean
-    'Dim FS As Object ' not going to initialise an object here
     
     On Error GoTo fFExists_Error
    'If debugFlg = 1 Then debugLog "%fFExists"
 
-'    Set FS = CreateObject("Scripting.FileSystemObject")
-'    fFExists = FS.FileExists(OrigFile)
-    
     ' test to see if a file exists
     Const INVALID_HANDLE_VALUE = -1&
     fFExists = Not (GetFileAttributesW(StrPtr(OrigFile)) = INVALID_HANDLE_VALUE)
+    
+    ' the above test TRUE on a folder as well as a file, a file of the same name cannot exist within the same folder so if it tests TRUE as a folder,
+    ' then existence as a file cannot be TRUE
+    If fDirExists(OrigFile) = True Then fFExists = False
 
    On Error GoTo 0
    Exit Function

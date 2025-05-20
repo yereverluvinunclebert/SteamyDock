@@ -3477,6 +3477,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     Dim suffix As String: suffix = vbNullString
     Dim listOfTypes As String: listOfTypes = vbNullString
     Dim useloop As Integer: useloop = 0
+    Dim optionalParam As String: optionalParam = vbNullString
 
     'If debugflg = 1 Then debugLog "%runCommand"
     
@@ -3680,16 +3681,19 @@ tryMSCFullPAth:
         Exit Sub
     End If
     
-    'anything else remaining
+    optionalParam = "none"
+            
+    'anything else remaining, all normal programs
     If fFExists(thisCommand) Then ' checks the current filename for the named target
         'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
         If sWorkingDirectory <> vbNullString Then
-            Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
+            Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd, optionalParam)
             Exit Sub
         Else
-            Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, vbNullString, intShowCmd)
+            Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, vbNullString, intShowCmd, optionalParam)
             Exit Sub
         End If
+    ' folders only
     ElseIf fDirExists(thisCommand) Then ' checks if a folder of the same name exists in the current folder
         Call shellExecuteWithDialog("open", thisCommand, sArguments, sWorkingDirectory, intShowCmd, "folder")
         Exit Sub

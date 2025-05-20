@@ -23,12 +23,13 @@ add a prod to the explorer process to read changed settings
 
 separate code to restart main explorer window handle passed according to which form calls the restart.
 
+add a function to return an explorer threadID
+click on an explorer icon should both minimise and unminimise the associated explorer window
+
 ' Current Task:
 ' =============
 
-click on an explorer icon should both minimise and unminimise the associated explorer window, at the moment it only unminimises
-
-add a function to return an explorer threadID
+clicking on an explorer window should immediaetly trigger an entry into the explorerProceses
 
 msgbox when killing apps needs to be on top!
 

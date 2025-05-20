@@ -199,7 +199,7 @@ End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : findExplorerHwndByPath
-' Author    : fafalone
+' Author    : beededea based upon Fafalone's code
 ' Date      : 20/05/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
@@ -254,7 +254,6 @@ Public Function findExplorerHwndByPath(sPath As String) As Long
                             If LCase$(sCurPath) = LCase$(sPath) Then
                                 Set pWB2 = pDisp
                                 If (pWB2 Is Nothing) = False Then
-                                    ' pWB2.Quit
                                     
                                     lThisHwnd = pWB2.hWnd
                                     
