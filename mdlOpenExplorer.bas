@@ -15,12 +15,13 @@ Public Declare Sub CoTaskMemFree Lib "ole32.dll" (ByVal PV As Long) ' Frees memo
 Public Declare Function IUnknown_QueryService Lib "shlwapi" (ByVal pUnk As Long, guidService As UUID, riid As UUID, ppvOut As Any) As Long
 
 Public Declare Function vbaObjSetAddRef Lib "msvbvm60.dll" Alias "__vbaObjSetAddref" (ByRef objDest As Object, ByVal pObject As Long) As Long
+Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
 
 Public Function LPWSTRtoStr(lPtr As Long, Optional ByVal fFree As Boolean = True) As String
-SysReAllocString VarPtr(LPWSTRtoStr), lPtr
-If fFree Then
-    Call CoTaskMemFree(lPtr)
-End If
+    SysReAllocString VarPtr(LPWSTRtoStr), lPtr
+    If fFree Then
+        Call CoTaskMemFree(lPtr)
+    End If
 End Function
 
 '-----------------------------------------------------
@@ -89,7 +90,6 @@ Public Function isExplorerRunning(ByRef NameProcess As String) As Boolean
     
     On Error GoTo isExplorerRunning_Error
    
-    
     Call enumerateExplorerWindows(openExplorerPathArray(), windowCount)
     
     For useloop = 0 To windowCount - 1
@@ -122,27 +122,17 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Sub enumerateExplorerWindows(ByRef openExplorerPaths() As String, ByRef windowCount As Integer)
-    Dim I As Long, j As Long
-    Dim siaSel As IShellItemArray
-    Dim lpText As Long
-    Dim sText As String
-    Dim sItems() As String
     Dim punkitem As oleexp.IUnknown
-    Dim lPtr As Long
-    Dim pclt As Long
     Dim spsb As IShellBrowser
     Dim spsv As IShellView
     Dim spfv As IFolderView2
     Dim spsi As IShellItem
-    Dim lpPath As Long
-    Dim sPath As String
-    Dim lsiptr As Long
+    Dim lpPath As Long: lpPath = 0
+    Dim strPath As String: strPath = vbNullString
+    Dim lsiptr As Long: lsiptr = 0
     Dim openShellWindow As ShellWindows
-    Dim spev As oleexp.IEnumVARIANT
-    Dim spunkenum As oleexp.IUnknown
-    Dim pVar As Variant
     Dim pdp As oleexp.IDispatch
-    Dim useloop As Integer
+    Dim useloop As Integer: useloop = 0
     
     'On Error GoTo 0 ' l_start ' essential
     
@@ -177,8 +167,8 @@ l_start:
                             If (spsi Is Nothing) = False Then
                                 
                                 spsi.GetDisplayName SIGDN_DESKTOPABSOLUTEPARSING, lpPath
-                                sPath = LPWSTRtoStr(lpPath)
-                                openExplorerPaths(useloop) = sPath
+                                strPath = LPWSTRtoStr(lpPath)
+                                openExplorerPaths(useloop) = strPath
                             End If
                         End If
                     End If
@@ -207,17 +197,24 @@ enumerateExplorerWindows_Error:
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : findExplorerWindowThreadByPath
+' Author    : fafalone
+' Date      : 20/05/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function findExplorerWindowThreadByPath(sPath As String) As Long
 
-
-Public Sub CloseExplorerWindowByPath(sPath As String)
     On Error GoTo e0
+    
     Dim pWindows As ShellWindows
     Set pWindows = New ShellWindows
     Dim pWB2 As IWebBrowser2
     #If TWINBASIC Then
-    Dim pDisp As IDispatch
+        Dim pDisp As IDispatch
     #Else
-    Dim pDisp As oleexp.IDispatch
+        Dim pDisp As oleexp.IDispatch
     #End If
     Dim pSP As IServiceProvider
     Dim pSB As IShellBrowser
@@ -228,6 +225,103 @@ Public Sub CloseExplorerWindowByPath(sPath As String)
     Dim nCount As Long
     Dim I As Long
     Dim hr As Long
+    Dim lThisHwnd As Long: lThisHwnd = 0
+    Dim lProcessID As Long: lProcessID = 0
+    Dim lProcessThread As Long: lProcessThread = 0
+    
+    findExplorerWindowThreadByPath = 0
+    
+    nCount = pWindows.Count
+    If nCount < 1 Then
+        Debug.Print "No open Explorer windows found."
+        Exit Function
+    End If
+    For I = 0 To nCount - 1
+        Set pDisp = pWindows.Item(I)
+        If (pDisp Is Nothing) = False Then
+            Set pSP = pDisp
+            If (pSP Is Nothing) = False Then
+                pSP.QueryService SID_STopLevelBrowser, IID_IShellBrowser, pSB
+                If (pSB Is Nothing) = False Then
+                    pSB.QueryActiveShellView pSView
+                    If (pSView Is Nothing) = False Then
+                        Set pFView = pSView
+                        If (pFView Is Nothing) = False Then
+                            pFView.getFolder IID_IShellItem, pFolder
+                            pFolder.GetDisplayName SIGDN_FILESYSPATH, lpPath
+                            sCurPath = LPWSTRtoStr(lpPath)
+                            Debug.Print "CompPath " & sCurPath & "||" & sPath
+                            If LCase$(sCurPath) = LCase$(sPath) Then
+                                Set pWB2 = pDisp
+                                If (pWB2 Is Nothing) = False Then
+                                    ' pWB2.Quit
+                                    
+                                    lThisHwnd = pWB2.hWnd
+                                    ' Get the thread and process ID for this particular explorer process
+                                    lProcessThread = GetWindowThreadProcessId(lThisHwnd, lProcessID)
+                                    
+                                    findExplorerWindowThreadByPath = lProcessThread ' return
+                                    Exit Function
+                                Else
+                                    Debug.Print "Couldn't get IWebWebrowser2"
+                                End If
+                            End If
+                        Else
+                            Debug.Print "Couldn't get IFolderView"
+                        End If
+                    Else
+                        Debug.Print "Couldn't get IShellView"
+                    End If
+                Else
+                    Debug.Print "Couldn't get IShellBrowser"
+                End If
+            Else
+                Debug.Print "Couldn't get IServiceProvider"
+            End If
+        Else
+            Debug.Print "Couldn't get IDispatch"
+        End If
+    Next
+    Debug.Print "Couldn't find path."
+Exit Function
+e0:
+    Debug.Print "CloseExplorerPathByWindow.Error->0x" & Hex$(Err.Number) & ", " & Err.Description
+
+   On Error GoTo 0
+   Exit Function
+
+End Function
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : CloseExplorerWindowByPath
+' Author    : fafalone
+' Date      : 20/05/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub CloseExplorerWindowByPath(sPath As String)
+
+    On Error GoTo e0
+    
+    Dim pWindows As ShellWindows
+    Set pWindows = New ShellWindows
+    Dim pWB2 As IWebBrowser2
+    #If TWINBASIC Then
+        Dim pDisp As IDispatch
+    #Else
+        Dim pDisp As oleexp.IDispatch
+    #End If
+    Dim pSP As IServiceProvider
+    Dim pSB As IShellBrowser
+    Dim pSView As IShellView
+    Dim pFView As IFolderView2
+    Dim pFolder As IShellItem
+    Dim lpPath As LongPtr, sCurPath As String
+    Dim nCount As Long
+    Dim I As Long
+    Dim hr As Long
+    
     nCount = pWindows.Count
     If nCount < 1 Then
         Debug.Print "No open Explorer windows found."
@@ -252,6 +346,7 @@ Public Sub CloseExplorerWindowByPath(sPath As String)
                                 Set pWB2 = pDisp
                                 If (pWB2 Is Nothing) = False Then
                                     pWB2.Quit
+                                    'pWB2.
                                     Exit Sub
                                 Else
                                     Debug.Print "Couldn't get IWebWebrowser2"
@@ -277,4 +372,8 @@ Public Sub CloseExplorerWindowByPath(sPath As String)
 Exit Sub
 e0:
     Debug.Print "CloseExplorerPathByWindow.Error->0x" & Hex$(Err.Number) & ", " & Err.Description
+
+   On Error GoTo 0
+   Exit Sub
+
 End Sub

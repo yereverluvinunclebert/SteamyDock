@@ -2816,8 +2816,8 @@ Public Function checkWindowIconisationZorder(ByVal thisCommand As String, ByVal 
 
     If processCheckArray(selectedIconIndex) = True Or commandOverride <> vbNullString Then
         'the array check above is the quick way to check process is already running
-        'but we need to run IsRunning again to get the process PID
-        If IsRunning(thisCommand, processID) Then ' it checks again that the process is still running, as the check process timer that populates the processCheckArray is too infrequent to be relied upon
+        'but if it is running we need to run IsRunning again to get the process PID
+        If IsRunning(thisCommand, processID) Then  ' it checks again that the process is still running, returning the processID, as the check process timer that populates the processCheckArray is too infrequent to be relied upon
             
             lngRetVal = handleWindowConditionAndZorder(processID, runAction)
             checkWindowIconisationZorder = True ' return
@@ -2847,7 +2847,7 @@ Public Function handleWindowConditionAndZorder(ByVal processID As Long, ByVal ru
     Dim hOverflow As Long: hOverflow = 0 ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
     ' .22 DAEB frmMain.frm 08/02/2021 changes to replace old method of enumerating all windows with enumerate improved Windows function STARTS
     
-   On Error GoTo handleWindowConditionAndZorder_Error
+    On Error GoTo handleWindowConditionAndZorder_Error
 
     hTray = FindWindow_NotifyTray() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
     hOverflow = FindWindow_NotifyOverflow() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas

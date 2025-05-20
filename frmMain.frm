@@ -3513,13 +3513,13 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     ' bring an already running process to the fore and then exit
     If rDOpenRunning = "1" And forceRunNewAppFlag = False Or sOpenRunning = "1" Then
 
-    ' when the index is 999 this means that the cursor has left the area of the selected icon and is now 'browsing' the
-    ' rest of the dock. Normally, this could not happen and would not matter - but for the additional second app that has
-    ' a delayed start it is a normal condition. In this case we do not want to attempt to run an already-opened application so
-    ' we bypass the process checking of the array and do not add this application to the list of running apps.
-    
+        ' when the index is 999 this means that the cursor has left the area of the selected icon and is now 'browsing' the
+        ' rest of the dock. Normally, this could not happen and would not matter - but for the additional second app that has
+        ' a delayed start it is a normal condition. In this case we do not want to attempt to run an already-opened application so
+        ' we bypass the process checking of the array and do not add this application to the list of running apps.
+        
         If selectedIconIndex <> 999 Then
-            
+            ' check if the window is minimised, if so, bring it to the fore
             checki = checkWindowIconisationZorder(thisCommand, selectedIconIndex, commandOverride, runAction)
             If checki = True Then Exit Sub
             

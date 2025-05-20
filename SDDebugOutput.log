@@ -10471,3 +10471,119 @@
 2025-05-18 12:54:55.485 ******************************
 2025-05-18 12:54:55.489 % SteamyDock startup complete.
 2025-05-18 12:54:55.495 ******************************
+2025-05-20 06:39:27.899 % sub toggleDebugging
+2025-05-20 06:39:27.991 *****************************
+2025-05-20 06:39:27.992 % SteamyDock program started.
+2025-05-20 06:39:28.000 *****************************
+2025-05-20 06:39:28.009 % sub sDriveStrings
+2025-05-20 06:39:28.018 % sub testDockRunning
+2025-05-20 06:39:28.026 % sub checkLicenceState
+2025-05-20 06:39:28.109 % sub classicThemeCapable
+2025-05-20 06:39:28.109 % sub disableAdmin
+2025-05-20 06:39:28.120 % sub checkSteamyDockInstallation
+2025-05-20 06:39:28.134 % sub locateDockSettingsFile
+2025-05-20 06:39:28.146 % sub readDockConfiguration
+2025-05-20 06:39:28.149 % sub readDockSettingsFile
+2025-05-20 06:39:28.427 % sub setUserHotKey
+2025-05-20 06:39:28.427 % func monitorProperties
+2025-05-20 06:39:28.436 % sub resolveVB6SizeBug
+2025-05-20 06:39:28.450 % sub setLocalConfigurationVars
+2025-05-20 06:39:28.475 % sub initialiseGDIStartup
+2025-05-20 06:39:28.477 % sub createDictionaryObjects
+2025-05-20 06:39:28.491 % sub prepareArraysAndCollections
+2025-05-20 06:39:30.996 % sub createGDIPlusElements
+2025-05-20 06:39:30.997 % sub showSplashScreen
+2025-05-20 06:39:31.108 % sub createNewGDIPBitmap
+2025-05-20 06:39:31.109 % sub setAutoHide
+2025-05-20 06:39:31.119 % sub setWindowCharacteristics
+2025-05-20 06:39:31.162 % sub setUpProcessTimers
+2025-05-20 06:39:31.168 ******************************
+2025-05-20 06:39:31.172 % SteamyDock startup complete.
+2025-05-20 06:39:31.180 ******************************
+2025-05-20 07:56:39.997 % sub toggleDebugging
+2025-05-20 07:56:40.022 *****************************
+2025-05-20 07:56:40.022 % SteamyDock program started.
+2025-05-20 07:56:40.030 *****************************
+2025-05-20 07:56:40.040 % sub sDriveStrings
+2025-05-20 07:56:40.048 % sub testDockRunning
+2025-05-20 07:56:40.057 % sub checkLicenceState
+2025-05-20 07:56:40.102 % sub classicThemeCapable
+2025-05-20 07:56:40.110 % sub disableAdmin
+2025-05-20 07:56:40.119 % sub checkSteamyDockInstallation
+2025-05-20 07:56:40.132 % sub locateDockSettingsFile
+2025-05-20 07:56:40.139 % sub readDockConfiguration
+2025-05-20 07:56:40.147 % sub readDockSettingsFile
+2025-05-20 07:56:40.428 % sub setUserHotKey
+2025-05-20 07:56:40.429 % func monitorProperties
+2025-05-20 07:56:40.440 % sub resolveVB6SizeBug
+2025-05-20 07:56:40.453 % sub setLocalConfigurationVars
+2025-05-20 07:56:40.457 % sub initialiseGDIStartup
+2025-05-20 07:56:40.464 % sub createDictionaryObjects
+2025-05-20 07:56:40.475 % sub prepareArraysAndCollections
+2025-05-20 07:56:42.600 % sub createGDIPlusElements
+2025-05-20 07:56:42.601 % sub showSplashScreen
+2025-05-20 07:56:42.681 % sub createNewGDIPBitmap
+2025-05-20 07:56:42.681 % sub setAutoHide
+2025-05-20 07:56:42.689 % sub setWindowCharacteristics
+2025-05-20 07:56:42.730 % sub setUpProcessTimers
+2025-05-20 07:56:42.738 ******************************
+2025-05-20 07:56:42.742 % SteamyDock startup complete.
+2025-05-20 07:56:42.749 ******************************
+2025-05-20 09:08:04.732 % sub toggleDebugging
+2025-05-20 09:08:04.757 *****************************
+2025-05-20 09:08:04.757 % SteamyDock program started.
+2025-05-20 09:08:04.765 *****************************
+2025-05-20 09:08:04.773 % sub sDriveStrings
+2025-05-20 09:08:04.783 % sub testDockRunning
+2025-05-20 09:08:04.792 % sub checkLicenceState
+2025-05-20 09:08:04.826 % sub classicThemeCapable
+2025-05-20 09:08:04.827 % sub disableAdmin
+2025-05-20 09:08:04.834 % sub checkSteamyDockInstallation
+2025-05-20 09:08:04.847 % sub locateDockSettingsFile
+2025-05-20 09:08:04.854 % sub readDockConfiguration
+2025-05-20 09:08:04.859 % sub readDockSettingsFile
+2025-05-20 09:08:05.138 % sub setUserHotKey
+2025-05-20 09:08:05.139 % func monitorProperties
+2025-05-20 09:08:05.148 % sub resolveVB6SizeBug
+2025-05-20 09:08:05.163 % sub setLocalConfigurationVars
+2025-05-20 09:08:05.166 % sub initialiseGDIStartup
+2025-05-20 09:08:05.173 % sub createDictionaryObjects
+2025-05-20 09:08:05.183 % sub prepareArraysAndCollections
+2025-05-20 09:08:07.440 % sub createGDIPlusElements
+2025-05-20 09:08:07.441 % sub showSplashScreen
+2025-05-20 09:08:07.506 % sub createNewGDIPBitmap
+2025-05-20 09:08:07.507 % sub setAutoHide
+2025-05-20 09:08:07.515 % sub setWindowCharacteristics
+2025-05-20 09:08:07.579 % sub setUpProcessTimers
+2025-05-20 09:08:07.585 ******************************
+2025-05-20 09:08:07.593 % SteamyDock startup complete.
+2025-05-20 09:08:07.600 ******************************
+2025-05-20 09:24:09.870 % sub toggleDebugging
+2025-05-20 09:24:09.892 *****************************
+2025-05-20 09:24:09.892 % SteamyDock program started.
+2025-05-20 09:24:09.900 *****************************
+2025-05-20 09:24:09.909 % sub sDriveStrings
+2025-05-20 09:24:09.916 % sub testDockRunning
+2025-05-20 09:24:09.926 % sub checkLicenceState
+2025-05-20 09:24:09.964 % sub classicThemeCapable
+2025-05-20 09:24:09.964 % sub disableAdmin
+2025-05-20 09:24:09.972 % sub checkSteamyDockInstallation
+2025-05-20 09:24:09.987 % sub locateDockSettingsFile
+2025-05-20 09:24:09.992 % sub readDockConfiguration
+2025-05-20 09:24:09.997 % sub readDockSettingsFile
+2025-05-20 09:24:10.275 % sub setUserHotKey
+2025-05-20 09:24:10.275 % func monitorProperties
+2025-05-20 09:24:10.284 % sub resolveVB6SizeBug
+2025-05-20 09:24:10.299 % sub setLocalConfigurationVars
+2025-05-20 09:24:10.303 % sub initialiseGDIStartup
+2025-05-20 09:24:10.310 % sub createDictionaryObjects
+2025-05-20 09:24:10.321 % sub prepareArraysAndCollections
+2025-05-20 09:24:12.499 % sub createGDIPlusElements
+2025-05-20 09:24:12.500 % sub showSplashScreen
+2025-05-20 09:24:12.561 % sub createNewGDIPBitmap
+2025-05-20 09:24:12.561 % sub setAutoHide
+2025-05-20 09:24:12.570 % sub setWindowCharacteristics
+2025-05-20 09:24:12.610 % sub setUpProcessTimers
+2025-05-20 09:24:12.616 ******************************
+2025-05-20 09:24:12.619 % SteamyDock startup complete.
+2025-05-20 09:24:12.627 ******************************

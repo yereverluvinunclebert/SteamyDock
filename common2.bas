@@ -894,11 +894,16 @@ changeWallpaper_Error:
 End Sub
 
 
+
 '---------------------------------------------------------------------------------------
 ' Procedure : repositionWindowsTaskbar
 ' Author    : beededea
 ' Date      : 01/03/2020
 ' Purpose   : This routine will place taskbar where the dock isn't - to avoid overlap
+'
+' NOTE: In XP it was possible to move the taskbar programatically, using getting the handle using FindWindow() with Shell_TrayWnd as the class, and then using
+' MoveWindow, SetWindowPos &c. It is not possible since Vista due to increasingly 'shit' programming of explorer.exe by Microdolts... We now have to use a clumsy
+' method of setting a key in the registry and restarting explorer.exe.
 '---------------------------------------------------------------------------------------
 '
 Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal currentSide As Integer)
