@@ -2813,19 +2813,30 @@ End Sub
 Public Function checkWindowIconisationZorder(ByVal thisCommand As String, ByVal selectedIconIndex As Integer, ByVal commandOverride As String, ByVal runAction As String) As Boolean
     Dim processID As Long:  processID = 0
     Dim lngRetVal As Long: lngRetVal = 0
+    Dim lMyThread As Long: lMyThread = 0
 
-    If processCheckArray(selectedIconIndex) = True Or commandOverride <> vbNullString Then
-        'the array check above is the quick way to check process is already running
-        'but if it is running we need to run IsRunning again to get the process PID
-        If IsRunning(thisCommand, processID) Then  ' it checks again that the process is still running, returning the processID, as the check process timer that populates the processCheckArray is too infrequent to be relied upon
+    ' if the open application is an Explorer window then handle it this way
+    If explorerCheckArray(selectedIconIndex) = True Then
+        lMyThread = findExplorerHwndByPath(thisCommand)
+        lngRetVal = handleWindowConditionAndZorder(processID, runAction, lMyThread)
+        checkWindowIconisationZorder = True ' return
+    Else
             
-            lngRetVal = handleWindowConditionAndZorder(processID, runAction)
-            checkWindowIconisationZorder = True ' return
-            Exit Function
-            'If lngRetVal = 0 Then
-
-        End If ' IsRunning(thisCommand, processID)
-    End If ' processCheckArray(selectedIconIndex)
+        If processCheckArray(selectedIconIndex) = True Or commandOverride <> vbNullString Then
+            'the array check above is the quick way to check process is already running
+            'but if it is running we need to run IsRunning again to get the process PID
+            If IsRunning(thisCommand, processID) Then  ' it checks again that the process is still running, returning the processID, as the check process timer that populates the processCheckArray is too infrequent to be relied upon
+                
+                lngRetVal = handleWindowConditionAndZorder(processID, runAction)
+                checkWindowIconisationZorder = True ' return
+                Exit Function
+                'If lngRetVal = 0 Then
+    
+            End If ' IsRunning(thisCommand, processID)
+    
+        End If ' processCheckArray(selectedIconIndex)
+    End If
+    
 End Function
 
 
@@ -2837,7 +2848,7 @@ End Function
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Function handleWindowConditionAndZorder(ByVal processID As Long, ByVal runAction As String) As Long
+Public Function handleWindowConditionAndZorder(ByVal processID As Long, ByVal runAction As String, Optional ByVal thisHandle As Long) As Long
 
     Dim windowHwnd As Long:  windowHwnd = 0
     Dim CurrentForegroundThreadID As Long: CurrentForegroundThreadID = 0
@@ -2848,34 +2859,41 @@ Public Function handleWindowConditionAndZorder(ByVal processID As Long, ByVal ru
     ' .22 DAEB frmMain.frm 08/02/2021 changes to replace old method of enumerating all windows with enumerate improved Windows function STARTS
     
     On Error GoTo handleWindowConditionAndZorder_Error
+    
+    ' the processID and handle are passed to this routine, it there is an optional handle provided (from explorer) then we can bypass this bit
+    If processID <> 0 And thisHandle = 0 Then
 
-    hTray = FindWindow_NotifyTray() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
-    hOverflow = FindWindow_NotifyOverflow() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
-
+        hTray = FindWindow_NotifyTray() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
+        hOverflow = FindWindow_NotifyOverflow() ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
     
-    'windowHwnd = getWindowHWndForPid(processID) ' old method of enumerating all windows and find the associated pid of each, returning the hWnd of the window associated with the PID
-    
-    'The EnumWindows function is more reliable than calling the GetWindow function in a loop as we used to do.
-    'ie. An application that calls GetWindow to perform this task risks being caught in an infinite
-    'loop or referencing a handle to a window that has been destroyed.
-    
-    ' enumerate all windows and find the associated pid of each, returning the hWnd of the window associated with the given PID
-    Call fEnumWindows(processID)
-    windowHwnd = storeWindowHwnd
-    
-    ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas STARTS
-    ' if the hwnd is zero then a matching process has not been found, in this case search the systray
-    If windowHwnd = 0 Then
-    
-        'Me.Print "Tray Handle: 0x" & Hex(hTray)
-        isSysTray hTray, processID, windowHwnd
-    
-        'Me.Print "Overflow Handle: 0x" & Hex(hOverflow)
-        isSysTray hOverflow, processID, windowHwnd
+        
+        'windowHwnd = getWindowHWndForPid(processID) ' old method of enumerating all windows and find the associated pid of each, returning the hWnd of the window associated with the PID
+        
+        'The EnumWindows function is more reliable than calling the GetWindow function in a loop as we used to do.
+        'ie. An application that calls GetWindow to perform this task risks being caught in an infinite
+        'loop or referencing a handle to a window that has been destroyed.
+        
+        ' enumerate all windows and find the associated pid of each, returning the hWnd of the window associated with the given PID
+        Call fEnumWindows(processID)
+        windowHwnd = storeWindowHwnd
+        
+        ' .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas STARTS
+        ' if the hwnd is zero then a matching process has not been found, in this case search the systray
+        If windowHwnd = 0 Then
+        
+            'Me.Print "Tray Handle: 0x" & Hex(hTray)
+            isSysTray hTray, processID, windowHwnd
+        
+            'Me.Print "Overflow Handle: 0x" & Hex(hOverflow)
+            isSysTray hOverflow, processID, windowHwnd
+        End If
+        ' .33 DAEB 03/03/2021 frmMain.frm New systray code from DragokasENDS
+        
+    Else
+        windowHwnd = thisHandle
     End If
-    ' .33 DAEB 03/03/2021 frmMain.frm New systray code from DragokasENDS
     
-     'GetWindowRect windowHwnd, pRect unused
+    ' now we have a window handle we can obtain the thread ID
     
     ' Get the thread for the current window that is to fore now (the dock)
     CurrentForegroundThreadID = GetWindowThreadProcessId(GetForegroundWindow(), ByVal 0&)

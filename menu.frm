@@ -1168,6 +1168,7 @@ Private Sub mnuCloseApp_Click()
     
     Dim NameProcess As String: NameProcess = vbNullString
     
+    ' this returns the name of the process if it is a non-explorer window, if it is an explorer window it will contain the path
     NameProcess = sCommandArray(selectedIconIndex)
     
     ' if the open application is an Explorer window then kill it this way

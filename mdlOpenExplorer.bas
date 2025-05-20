@@ -198,13 +198,13 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : findExplorerWindowThreadByPath
+' Procedure : findExplorerHwndByPath
 ' Author    : fafalone
 ' Date      : 20/05/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Function findExplorerWindowThreadByPath(sPath As String) As Long
+Public Function findExplorerHwndByPath(sPath As String) As Long
 
     On Error GoTo e0
     
@@ -229,7 +229,7 @@ Public Function findExplorerWindowThreadByPath(sPath As String) As Long
     Dim lProcessID As Long: lProcessID = 0
     Dim lProcessThread As Long: lProcessThread = 0
     
-    findExplorerWindowThreadByPath = 0
+    findExplorerHwndByPath = 0
     
     nCount = pWindows.Count
     If nCount < 1 Then
@@ -257,10 +257,8 @@ Public Function findExplorerWindowThreadByPath(sPath As String) As Long
                                     ' pWB2.Quit
                                     
                                     lThisHwnd = pWB2.hWnd
-                                    ' Get the thread and process ID for this particular explorer process
-                                    lProcessThread = GetWindowThreadProcessId(lThisHwnd, lProcessID)
                                     
-                                    findExplorerWindowThreadByPath = lProcessThread ' return
+                                    findExplorerHwndByPath = lThisHwnd ' return
                                     Exit Function
                                 Else
                                     Debug.Print "Couldn't get IWebWebrowser2"
