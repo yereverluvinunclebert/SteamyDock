@@ -9,11 +9,6 @@ set a semaphore to indicate that the registry is already open when writing.
 
 add a timestamp to prevent registry changes during dock position change
 
--oOo-
-
-Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
-Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
-
 FindWindow("Shell_TrayWnd", vbNullString) & GetWindowThreadProcessId identify explorer main process
 add code to kill the main explorer.exe using the handle
 if explorer still not found after 1.5 seconds then restart explorer
@@ -25,17 +20,23 @@ separate code to restart main explorer window handle passed according to which f
 
 add a function to return an explorer threadID
 click on an explorer icon should both minimise and unminimise the associated explorer window
+clicking on an explorer window should immediately trigger an entry into the explorerProceses
+
+-oOo-
+
+Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
+Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
+
+
 
 ' Current Task:
 ' =============
 
-clicking on an explorer window should immediaetly trigger an entry into the explorerProceses
-
 msgbox when killing apps needs to be on top!
 
-try adding 1- 5 pixels to the icons to the right/left to see if it stops oscillation/instability
+try adding 1-5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
- when the dock is over a certain size the background does not appear
+when the dock is over a certain size the background does not appear
 
 ' Extracting embedded icons from DLLs and EXEs
 ' ==============================================

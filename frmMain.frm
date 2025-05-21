@@ -1511,11 +1511,11 @@ Public Sub fMouseUp(Button As Integer)
         End If
         
         ' if the command does not have a suffix (folder) then do not allow it to run elevated
-        suffix = LCase(ExtractSuffixWithDot(sCommand))
+        suffix = LCase(ExtractSuffixWithDot(scommand))
         If suffix = vbNullString Then ' NOTE: searching for a null string in any string returns a non-zero FOUND value! This handles it
             allowElevated = False
         Else
-            If InStr(".exe|.bat|.msc|.cpl|.lnk", suffix) <> 0 Or InStr(sCommand, "::{") > 0 Then
+            If InStr(".exe|.bat|.msc|.cpl|.lnk", suffix) <> 0 Or InStr(scommand, "::{") > 0 Then
                 allowElevated = True
             Else
                 allowElevated = False
@@ -1523,11 +1523,15 @@ Public Sub fMouseUp(Button As Integer)
         End If
               
         ' check the current process is running by looking into the array that contains a list of running processes using selectedIconIndex
+        
+        ' the item is NOT running
         If processCheckArray(selectedIconIndex) = False And explorerCheckArray(selectedIconIndex) = False Then
+            
             forceRunNewAppFlag = False
 
             menuForm.mnuCloseApp.Visible = False
             
+            'running elevated  so allow more menu options, note: explorer windows cannot run elevated
             If sRunElevated = "1" And allowElevated = True Then
                 menuForm.mnuRunApp.Visible = True
                 menuForm.mnuRunApp.Caption = "Run this App (elevated)"
@@ -1537,47 +1541,51 @@ Public Sub fMouseUp(Button As Integer)
             Else
                 menuForm.mnuRunApp.Visible = True
                 menuForm.mnuRunApp.Caption = "Run this App"
+
+                
+                menuForm.mnuRunNewApp.Visible = False
+                menuForm.mnuRunNewAppAsAdmin.Visible = False
+            End If
+            
+            If isExplorerItem(scommand) = True Then
+                menuForm.mnuRunApp.Caption = "Run this Explorer window"
+            Else
                 If allowElevated = True Then
                     menuForm.mnuAdmin.Visible = True
                 Else
                     menuForm.mnuAdmin.Visible = False
                 End If
-                menuForm.mnuRunNewApp.Visible = False
-                menuForm.mnuRunNewAppAsAdmin.Visible = False
             End If
-            
             menuForm.mnuBlank5.Visible = False
             menuForm.mnuFocusApp.Visible = False
             menuForm.mnuBackApp.Visible = False
             
-        Else
+        Else ' the item IS already running
             
             ' if the process is marked as running then enable the menu options
             menuForm.mnuCloseApp.Visible = True
-            If sRunElevated = "1" Then
-                menuForm.mnuRunApp.Visible = True
-                menuForm.mnuRunApp.Caption = "Run this App (elevated)"
-                menuForm.mnuAdmin.Visible = True
-'                menuForm.mnuRunNewApp.Visible = False
-'                menuForm.mnuRunNewAppAsAdmin.Visible = False
-                If explorerCheckArray(selectedIconIndex) = True Then
-                    menuForm.mnuRunApp.Visible = True
-                    menuForm.mnuRunApp.Caption = "Switch to this Explorer window"
-                    menuForm.mnuAdmin.Visible = False
-                    menuForm.mnuRunNewApp.Visible = False
-                    menuForm.mnuRunNewAppAsAdmin.Visible = False
-                Else
-                    menuForm.mnuRunApp.Visible = False
-                    menuForm.mnuRunApp.Caption = "Run this App"
-                    menuForm.mnuAdmin.Visible = False
-                    menuForm.mnuRunNewApp.Visible = True
-                    menuForm.mnuRunNewAppAsAdmin.Visible = True
-                End If
+            menuForm.mnuRunApp.Caption = "Switch to this App"
+            menuForm.mnuRunNewApp.Visible = True
+            
+            'running elevated so allow more menu options, note: explorer windows cannot run elevated
+            If sRunElevated = "1" And allowElevated = True And explorerCheckArray(selectedIconIndex) = False Then
+                menuForm.mnuAdmin.Visible = False
+                menuForm.mnuRunNewApp.Visible = True
+                menuForm.mnuRunNewAppAsAdmin.Visible = True
             End If
+            
+            ' if the item is an explorer window then remove the option to run another, windows always opens the existing explorer window
             If explorerCheckArray(selectedIconIndex) = True Then
                 menuForm.mnuBlank5.Visible = False
                 menuForm.mnuFocusApp.Visible = False
                 menuForm.mnuBackApp.Visible = False
+                
+                menuForm.mnuRunApp.Visible = True
+                menuForm.mnuRunApp.Caption = "Switch to this Explorer window"
+                menuForm.mnuAdmin.Visible = False
+                menuForm.mnuRunNewApp.Visible = False
+                menuForm.mnuRunNewAppAsAdmin.Visible = False
+
             Else
                 menuForm.mnuBlank5.Visible = True
                 menuForm.mnuFocusApp.Visible = True
@@ -1588,8 +1596,6 @@ Public Sub fMouseUp(Button As Integer)
         
         PopupMenu menuForm.mnuMainMenu, vbPopupMenuRightButton
         'the popupmenu event returns here and re-enables the mouse response and animation timers
-        
-        
         
         If hideDockForNMinutes = False Then ' re-enable timers only when the dock is operating normally and not when instructed to hide
             animateTimer.Enabled = True
@@ -1627,7 +1633,7 @@ Public Sub fMouseUp(Button As Integer)
                     selectedIconIndex = targetIconIndex ' reset the selectedIconIndex
                     thisFilename = sFilename
                     
-                    Call insertNewIconDataIntoCurrentPosition(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
+                    Call insertNewIconDataIntoCurrentPosition(thisFilename, sTitle, scommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
                                
                     Call menuForm.addImageToDictionaryAndCheckForRunningProcess(thisFilename, sTitle)
                     
@@ -1684,7 +1690,39 @@ fMouseUp_Error:
 
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : isExplorerItem
+' Author    : beededea
+' Date      : 21/05/2025
+' Purpose   : test for an explorer item in the dock, does not check whether running
+'---------------------------------------------------------------------------------------
+'
+Private Function isExplorerItem(ByVal scommand As String) As Boolean
 
+    ' take the target
+    ' test it is an existing file, if it is a file then it is not a folder
+    ' test it is a folder, if it is a folder tehn it is an explorer entry
+    
+    
+   On Error GoTo isExplorerItem_Error
+   
+    If fFExists(scommand) Then
+        isExplorerItem = False
+        Exit Function
+    End If
+   
+    If fDirExists(scommand) Then
+        isExplorerItem = True
+    End If
+    
+
+   On Error GoTo 0
+   Exit Function
+
+isExplorerItem_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure isExplorerItem of Form dock"
+End Function
 
 
 '---------------------------------------------------------------------------------------
@@ -3490,7 +3528,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     'by default read the selected icon's data and set the command to execute
     If commandOverride = vbNullString Then
         'Call readIconData(selectedIconIndex) '.nn DAEB 12/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
-        thisCommand = sCommand
+        thisCommand = scommand
     Else
         ' .68 DAEB 05/05/2021 frmMain.frm cause the docksettings utility to reopen if it has already been initiated
         
@@ -3669,9 +3707,9 @@ tryMSCFullPAth:
     ' bat files
     If ExtractSuffixWithDot(UCase$(thisCommand)) = ".BAT" Then
         'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
-        thisCommand = """" & sCommand & """" ' put the command in quotes so it handles spaces in the path
+        thisCommand = """" & scommand & """" ' put the command in quotes so it handles spaces in the path
         'folderPath = getFolderNameFromPath(thisCommand)  ' extract the default folder from the batch full path
-        If fFExists(sCommand) Then
+        If fFExists(scommand) Then
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
         Else
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
@@ -3735,7 +3773,7 @@ End Sub
 ' Purpose   : handler for shellexecute allowing a subsequent dialog to be inititated
 '---------------------------------------------------------------------------------------
 '
-Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As String, ByVal sArguments As String, ByVal sWorkingDirectory As String, ByVal windowState As Integer, Optional ByRef targetType As String = "none")
+Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal scommand As String, ByVal sArguments As String, ByVal sWorkingDirectory As String, ByVal windowState As Integer, Optional ByRef targetType As String = "none")
 
     Dim ans As VbMsgBoxResult: ans = vbNo
     
@@ -3748,7 +3786,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
     If sAutoHideDock = "1" Then
         'MessageBox Me.hwnd, sTitle & " Hiding the dock ", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         ' store the process name that caused the dock to auto hide
-        autoHideProcessName = sCommand ' .84 DAEB 20/07/2021 frmMain.frm Added prevention of the dock returning until the hiding application is no longer running.
+        autoHideProcessName = scommand ' .84 DAEB 20/07/2021 frmMain.frm Added prevention of the dock returning until the hiding application is no longer running.
         Call HideDockNow
         
         '.85 Added new timer to allow auto-reveal of the dock once the chosen app has closed within 1.5 secs
@@ -3759,7 +3797,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
     End If
    
     ' run the selected program
-    Call ShellExecute(hWnd, userLevel, sCommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
+    Call ShellExecute(hWnd, userLevel, scommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
             
     userLevel = "open" ' return to default
     
@@ -3780,7 +3818,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
         'MsgBox sTitle & " Command Issued - " & sCommand, vbSystemModal + vbExclamation, "SteamyDock Confirmation Message"
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
         'MessageBox Me.hwnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-        ans = msgBoxA(sTitle & " Command Issued - " & sCommand, vbOKOnly, "SteamyDock Confirmation Message", False)
+        ans = msgBoxA(sTitle & " Command Issued - " & scommand, vbOKOnly, "SteamyDock Confirmation Message", False)
     End If
     
     
@@ -3832,7 +3870,7 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
     ' call up a dialog box if required
     If sUseDialogAfter = "1" Then
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, sTitle & " Command Issued - " & scommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -4899,7 +4937,7 @@ Public Sub prepareArraysAndCollections()
         fileNameArray(useloop) = sFilename
         dictionaryLocationArray(useloop) = useloop
         namesListArray(useloop) = sTitle
-        sCommandArray(useloop) = sCommand
+        sCommandArray(useloop) = scommand
         
         overallIconOpacity = Val(rDIconOpacity) ' overall icon opacity of all icons
 
@@ -4955,8 +4993,8 @@ Public Sub prepareArraysAndCollections()
         End If
         
         ' check to see if each process is running and store the result away - this is also run on a 10s timer
-        explorerCheckArray(useloop) = isExplorerRunning(sCommand)
-        processCheckArray(useloop) = IsRunning(sCommand)
+        explorerCheckArray(useloop) = isExplorerRunning(scommand)
+        processCheckArray(useloop) = IsRunning(scommand)
 
     Next useloop
     
