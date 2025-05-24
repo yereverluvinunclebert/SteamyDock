@@ -63,7 +63,7 @@ Public rDFontShadowOpacity      As String
 Public rDIconActivationFX     As String
 Public rDSoundSelection As String
 Public rDAutoHide     As String
-Public rDAutoHideTicks     As String
+Public rDAutoHideDuration     As String
 Public rDAutoHideDelay     As String
 Public rDMouseActivate     As String
 Public rDPopupDelay     As String
@@ -245,7 +245,7 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDZoomWidth = GetINISetting(location, "ZoomWidth", settingsFile)
     rDZoomTicks = GetINISetting(location, "ZoomTicks", settingsFile)
     rDAutoHide = GetINISetting(location, "AutoHide", settingsFile) '  26/10/2020 docksettings .03 DAEB fixed a previous find/replace bug causing the autohide setting to fail to both save and read
-    rDAutoHideTicks = GetINISetting(location, "AutoHideTicks", settingsFile)
+    rDAutoHideDuration = GetINISetting(location, "AutoHideTicks", settingsFile)
     rDAutoHideDelay = GetINISetting(location, "AutoHideDelay", settingsFile)
     rDPopupDelay = GetINISetting(location, "PopupDelay", settingsFile)
     rDIconQuality = GetINISetting(location, "IconQuality", settingsFile)
@@ -303,16 +303,16 @@ Public Sub readRegistryBehaviour()
 '   PopupDelay       ' PopupDelay
 
 
-   On Error GoTo readRegistryBehaviour_Error
+    On Error GoTo readRegistryBehaviour_Error
 
     rDIconActivationFX = getstring(HKEY_CURRENT_USER, "Software\RocketDock", "IconActivationFX")
     rDAutoHide = getstring(HKEY_CURRENT_USER, "Software\RocketDock", "AutoHide")
-    rDAutoHideTicks = getstring(HKEY_CURRENT_USER, "Software\RocketDock", "AutoHideTicks")
+    rDAutoHideDuration = getstring(HKEY_CURRENT_USER, "Software\RocketDock", "AutoHideTicks")
     rDAutoHideDelay = getstring(HKEY_CURRENT_USER, "Software\RocketDock", "AutoHideDelay")
     rDMouseActivate = getstring(HKEY_CURRENT_USER, "Software\RocketDock", "MouseActivate")
     rDPopupDelay = getstring(HKEY_CURRENT_USER, "Software\RocketDock", "PopupDelay")
 
-    Call validateRegistryBehaviour
+    Call validateBehaviour
     
     'dock.autoHideChecker.Interval = Val(rDAutoHideDelay)
 
@@ -325,47 +325,7 @@ readRegistryBehaviour_Error:
     
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : validateRegistryBehaviour
-' Author    : beededea
-' Date      : 17/06/2020
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Sub validateRegistryBehaviour()
 
-    ' testing and adjusting the values to the ranges allowed, preventing corrupt values
-    ' this is required as running the program from within the IDE without admin rights results in corrupt data from the registry
-    ' when Rocketdock is restarted
-
-   On Error GoTo validateRegistryBehaviour_Error
-
-    If Val(rDIconActivationFX) <= 0 And Val(rDIconActivationFX) > 2 Then rDIconActivationFX = "2"
-    If Val(rDAutoHide) <= 0 And Val(rDAutoHide) > 1 Then rDAutoHide = "1"
-    If Val(rDAutoHideTicks) <= 0 And Val(rDAutoHideTicks) > 5000 Then rDAutoHideTicks = "200"
-    If Val(rDAutoHideDelay) <= 0 And Val(rDAutoHideDelay) > 5000 Then rDAutoHideDelay = "200"
-    If Val(rDMouseActivate) <= 0 And Val(rDMouseActivate) > 1 Then rDMouseActivate = "1"
-    If Val(rDPopupDelay) <= 0 And Val(rDPopupDelay) > 5000 Then rDPopupDelay = "1000" ' ' .01 STARTS DAEB 27/01/2021 Changed validation of the popup delay parameter used for fading the dock back in, now 1 second.
-    
-    If Val(rDAnimationInterval) <= 0 And Val(rDAnimationInterval) > 20 Then rDAnimationInterval = "1"
-    If Val(sDAutoHideType) <= 0 And Val(sDAutoHideType) > 2 Or sDAutoHideType = vbNullString Then sDAutoHideType = "0"
-    
-    If rDHotKeyToggle = vbNullString Then rDHotKeyToggle = "F11" ' .02 STARTS DAEB 27/01/2021 Added validation of the function key used for fading the dock back in.
-    
-    
-    If Val(sDContinuousHide) <= 1 And Val(sDContinuousHide) >= 120 Then sDContinuousHide = "10" '.04 DAEB 11/03/2021 common2 added validation for the continuous hide value
-    If Val(sDBounceZone) <= 1 And Val(sDBounceZone) >= 120 Then sDBounceZone = "75" ' .05 DAEB 12/07/2021 common2.bas Add the BounceZone as a configurable variable.
-
-    
-    
-   On Error GoTo 0
-   Exit Sub
-
-validateRegistryBehaviour_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateRegistryBehaviour of Module common2"
-    
-    End Sub
 
 
 '---------------------------------------------------------------------------------------
@@ -379,30 +339,15 @@ Public Sub validateInputs()
     
    On Error GoTo validateInputs_Error
 
-    If Val(rDRunAppInterval) * 1000 >= 65536 Then rDRunAppInterval = "65"
-        
-    If rDWallpaper = "" Then rDWallpaper = "none selected"
-    If rDWallpaperStyle = "" Then rDWallpaperStyle = "Centre"
-    If rDAutomaticWallpaperChange = "" Then rDAutomaticWallpaperChange = "0"
-    If rDWallpaperTimerIntervalIndex = "" Then rDWallpaperTimerIntervalIndex = "4" ' 1 hour
-    If rDWallpaperTimerInterval = "" Then rDWallpaperTimerIntervalIndex = "60" ' 1 hour
-    
-    If rDWallpaperLastTimeChanged = "" Then rDWallpaperLastTimeChanged = Now()
-    If rDTaskbarLastTimeChanged = "" Then rDTaskbarLastTimeChanged = CStr(#1/1/2000 12:00:00 PM#)
-    
-    If rDMoveWinTaskbar = "" Then rDMoveWinTaskbar = "1"
-        
     ' validate the relevant entries from whichever source
-    validateRegistryGeneral
-    validateRegistryIcons
-    validateRegistryBehaviour
-    validateRegistryStyle
-    validateRegistryPosition
-
-
+    validateGeneral
+    validateIcons
+    validateBehaviour
+    validateStyle
+    validatePosition
+    validateWallpaper
     
-'    sDSplashStatus = "1"
-'    chkSplashStatus.Value = Val(sDSplashStatus)
+    'If gblPrefsPrimaryHeightTwips = vbnullstring Then
 
    On Error GoTo 0
    Exit Sub
@@ -412,14 +357,160 @@ validateInputs_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateInputs of Module common2"
 End Sub
 
+
+
 '---------------------------------------------------------------------------------------
-' Procedure : validateRegistryStyle
+' Procedure : validateGeneral
+' Author    : beededea
+' Date      : 24/05/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub validateGeneral()
+    ' testing and adjusting the values to the ranges allowed, preventing corrupt values
+    ' this is required as running the program from within the IDE without admin rights results in corrupt data from the registry
+    ' when Rocketdock is restarted
+    
+   On Error GoTo validateGeneral_Error
+   
+    ' rDGeneralReadConfig - these are set according to program logic elsewhere
+    ' cmbDefaultDock
+    
+    If sdAppPath = vbNullString Then sdAppPath = App.Path
+    If sDShowIconSettings = vbNullString Then sDShowIconSettings = "1"
+    If sDSplashStatus = vbNullString Then sDSplashStatus = "1"
+    If rDRunAppInterval = vbNullString Then rDRunAppInterval = "8" '
+    If rDOpenRunning = vbNullString Then rDOpenRunning = "1" '
+    If rDShowRunning = vbNullString Then rDShowRunning = "1" '
+    If rDManageWindows = vbNullString Then rDManageWindows = "1" '
+    If rDDisableMinAnimation = vbNullString Then rDDisableMinAnimation = "1" '
+
+    If Val(rDRunAppInterval) * 1000 >= 65536 Then rDRunAppInterval = "65"
+    If Val(rDOpenRunning) <= 0 And Val(rDOpenRunning) > 1 Then rDOpenRunning = "1" '
+    If Val(rDShowRunning) <= 0 And Val(rDShowRunning) > 1 Then rDShowRunning = "1" '
+    If Val(rDManageWindows) <= 0 And Val(rDManageWindows) > 1 Then rDManageWindows = "1" '
+    If Val(rDDisableMinAnimation) <= 0 And Val(rDDisableMinAnimation) > 1 Then rDDisableMinAnimation = "1" '
+
+    ' development
+    If sDDebugFlg = vbNullString Then sDDebugFlg = "0"
+    If sDDefaultEditor = vbNullString Then sDDefaultEditor = vbNullString
+    ' txtDockDefaultEditor
+    ' txtDockSettingsDefaultEditor
+    ' txtIconSettingsDefaultEditor
+    
+   On Error GoTo 0
+   Exit Sub
+
+validateGeneral_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateGeneral of Module common2"
+
+
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : validateIcons
 ' Author    : beededea
 ' Date      : 17/06/2020
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub validateRegistryStyle()
+Public Sub validateIcons()
+    ' testing and adjusting the values to the ranges allowed, preventing corrupt values
+    ' this is required as running the program from within the IDE without admin rights results in corrupt data from the registry
+    ' when Rocketdock is restarted
+
+    On Error GoTo validateIcons_Error
+   
+    If rDIconOpacity = vbNullString Then rDIconOpacity = "100"
+    If rDZoomOpaque = vbNullString Then rDZoomOpaque = "1"
+    If rDIconMin = vbNullString Then rDIconMin = "16"
+    If rDHoverFX = vbNullString Then rDHoverFX = "1"
+    If rdIconMax = vbNullString Then rdIconMax = "256"
+    If rDZoomWidth = vbNullString Then rDZoomWidth = "4"
+    If rDZoomTicks = vbNullString Then rDZoomTicks = "100"
+    
+
+    'If Val(rDMonitor) < 0 Or Val(rDMonitor) > 10 Then rDMonitor = "0" 'monitor 1
+    If Val(rDIconOpacity) < 50 Or Val(rDIconOpacity) > 100 Then rDIconOpacity = "100" 'fully opaque
+    If Val(rDZoomOpaque) <= 0 Or Val(rDZoomOpaque) > 1 Then rDZoomOpaque = "1" 'zooms opaque
+    If Val(rDIconMin) < 16 Or Val(rDIconMin) > 128 Then rDIconMin = "16" 'small
+    If Val(rDHoverFX) <= 0 Or Val(rDHoverFX) > 4 Then rDHoverFX = "1" 'bounce ' .14 DAEB 29/04/2021 docksettings Set the default zoom types available to the type of dock selected
+
+    If Val(rdIconMax) < 1 Or Val(rdIconMax) > 256 Then rdIconMax = "256" 'largest size
+    'MsgBox "icnomax = " & rdIconMax
+    
+    If Val(rDZoomWidth) < 2 Or Val(rDZoomWidth) > 10 Then rDZoomWidth = "4" ' just a few expanded
+    If Val(rDZoomTicks) < 100 Or Val(rDZoomTicks) > 500 Then rDZoomTicks = "100" ' 100ms
+
+   On Error GoTo 0
+   Exit Sub
+
+validateIcons_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateIcons of Module common2"
+    
+End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : validateBehaviour
+' Author    : beededea
+' Date      : 17/06/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub validateBehaviour()
+
+    ' testing and adjusting the values to the ranges allowed, preventing corrupt values
+    ' this is required as running the program from within the IDE without admin rights results in corrupt data from the registry
+    ' when Rocketdock is restarted
+
+   On Error GoTo validateBehaviour_Error
+
+    If rDIconActivationFX = "" Then rDIconActivationFX = "2"
+    If rDAutoHide = "" Then rDAutoHide = "0"
+    If rDAutoHideDuration = "" Then rDAutoHideDuration = "200"
+    If rDAutoHideDelay = "" Then rDAutoHideDelay = "200"
+    If sDContinuousHide = "" Then sDContinuousHide = "10"
+    If rDMouseActivate = "" Then rDMouseActivate = "1"
+    If rDPopupDelay = "" Then rDPopupDelay = "1000"
+    If rDAnimationInterval = "" Then rDAnimationInterval = "1"
+    If sDAutoHideType = "" Then sDAutoHideType = "0"
+    If rDHotKeyToggle = "" Then rDHotKeyToggle = "F11"
+    If sDBounceZone = "" Then sDBounceZone = "75"
+    If rDLockIcons = vbNullString Then rDLockIcons = "1" '
+    If rDRetainIcons = vbNullString Then rDRetainIcons = "1" '
+    If rDSoundSelection = vbNullString Then rDSoundSelection = "2" '
+
+    If Val(rDLockIcons) <= 0 And Val(rDLockIcons) > 1 Then rDLockIcons = "1" '
+    If Val(rDRetainIcons) <= 0 And Val(rDRetainIcons) > 1 Then rDRetainIcons = "1" ' .18 DAEB 07/09/2022 docksettings save and restore the chkRetainIcons checkbox value
+    If Val(rDIconActivationFX) <= 0 And Val(rDIconActivationFX) > 2 Then rDIconActivationFX = "2"
+    If Val(rDAutoHideDuration) <= 0 And Val(rDAutoHideDuration) > 5000 Then rDAutoHideDuration = "200"
+    If Val(rDAutoHideDelay) <= 0 And Val(rDAutoHideDelay) > 5000 Then rDAutoHideDelay = "200"
+    If Val(rDMouseActivate) <= 0 And Val(rDMouseActivate) > 1 Then rDMouseActivate = "1"
+    If Val(rDPopupDelay) <= 0 And Val(rDPopupDelay) > 5000 Then rDPopupDelay = "1000" ' ' .01 STARTS DAEB 27/01/2021 Changed validation of the popup delay parameter used for fading the dock back in, now 1 second.
+    If Val(rDAnimationInterval) <= 0 And Val(rDAnimationInterval) > 20 Then rDAnimationInterval = "1"
+    If Val(sDAutoHideType) <= 0 And Val(sDAutoHideType) > 2 Or sDAutoHideType = vbNullString Then sDAutoHideType = "0"
+    If rDHotKeyToggle = vbNullString Then rDHotKeyToggle = "F11" ' .02 STARTS DAEB 27/01/2021 Added validation of the function key used for fading the dock back in.
+    If Val(sDContinuousHide) <= 1 And Val(sDContinuousHide) >= 120 Then sDContinuousHide = "10" '.04 DAEB 11/03/2021 common2 added validation for the continuous hide value
+    If Val(sDBounceZone) <= 1 And Val(sDBounceZone) >= 120 Then sDBounceZone = "75" ' .05 DAEB 12/07/2021 common2.bas Add the BounceZone as a configurable variable.
+    
+   On Error GoTo 0
+   Exit Sub
+
+validateBehaviour_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateBehaviour of Module common2"
+    
+    End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : validateStyle
+' Author    : beededea
+' Date      : 17/06/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub validateStyle()
     ' testing and adjusting the values to the ranges allowed, preventing corrupt values
     ' this is required as running the program from within the IDE without admin rights results in corrupt data from the registry
     ' when Rocketdock is restarted
@@ -430,11 +521,11 @@ Public Sub validateRegistryStyle()
     'Dim themePresent As Boolean
     'Dim myName As String
     
-    Dim MyPath As String: MyPath = ""
+    Dim MyPath As String: MyPath = vbNullString
     Dim I As Integer: I = 0
     Dim fontPresent As Boolean: fontPresent = False
 
-    On Error GoTo validateRegistryStyle_Error
+    On Error GoTo validateStyle_Error
     
     ' .02 DAEB 01/02/2021 common2.bas always use the dockAppPath so it works on both docks
     MyPath = dockAppPath & "\Skins\" '"E:\Program Files (x86)\RocketDock\Skins\"
@@ -445,11 +536,24 @@ Public Sub validateRegistryStyle()
     End If
 
 '    rDFontColor - difficult to check validity of a colour but some code is coming to ensure no corruption *1
+    If rDtheme = vbNullString Then rDtheme = "CrystalXP.net"
+    If rDSkinSize = vbNullString Then rDSkinSize = "118"
+
+    If rDFontColor = vbNullString Then rDFontColor = "65535"
+    If rDThemeOpacity = vbNullString Then rDThemeOpacity = "100"
+    If rDHideLabels = vbNullString Then rDHideLabels = "0"
+    If sDShowLblBacks = vbNullString Then sDShowLblBacks = "0"
+    If rDFontName = vbNullString Then rDFontName = "Times New Roman"
+    If rDFontSize = vbNullString Then rDFontSize = "-29"
+    If rDFontFlags = vbNullString Then rDFontFlags = "0"
+    If rDFontShadowColor = vbNullString Then rDFontShadowColor = "0"
+    If rDFontOutlineColor = vbNullString Then rDFontOutlineColor = "0"
+    If rDFontShadowOpacity = vbNullString Then rDFontShadowOpacity = "100"
+    If sDFontOpacity = vbNullString Then sDFontOpacity = "100"
 
     If Val(rDThemeOpacity) < 1 Or Val(rDThemeOpacity) > 100 Then rDThemeOpacity = "100" '
     If Val(rDHideLabels) < 0 Or Val(rDHideLabels) > 1 Then rDHideLabels = "0" '
     If Val(sDShowLblBacks) < 0 Or Val(sDShowLblBacks) > 1 Then sDShowLblBacks = "0" ' 25/10/2020 docksettings .02 DAEB add the logic for saving/reading icon label background string to configuration files
-
 
     fontPresent = False
     For I = 0 To Screen.FontCount - 1 ' Determine number of fonts.
@@ -457,7 +561,9 @@ Public Sub validateRegistryStyle()
     Next I
     If fontPresent = False Then rDFontName = "Times New Roman" '
 
-    If Abs(Val(rDFontSize)) < 2 Or Abs(Val(rDFontSize)) > 29 Then rDFontSize = "-29" '
+    If Abs(Val(rDFontSize)) < 2 Or Abs(Val(rDFontSize)) > 29 Then
+     rDFontSize = "-29" '
+    End If
 
     ' rDFontCharSet = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "FontCharSet")
     ' how to validate a character set? - not supported
@@ -476,14 +582,14 @@ Public Sub validateRegistryStyle()
     ' 14 - underline, strikeout and italics
     ' 15 - bold, underline, strikeout and italics
 
-    If rDFontFlags <= 0 Or rDFontFlags > 15 Then rDFontFlags = 0
+    If Val(rDFontFlags) <= 0 Or Val(rDFontFlags) > 15 Then rDFontFlags = "0"
 
     If Not IsNumeric(rDFontShadowColor) Then
-        rDFontShadowColor = 0
+        rDFontShadowColor = "0"
     End If
 
     If Not IsNumeric(rDFontOutlineColor) Then
-        rDFontOutlineColor = 0
+        rDFontOutlineColor = "0"
     End If
 
     ' how to validate colour?
@@ -499,12 +605,76 @@ Public Sub validateRegistryStyle()
    On Error GoTo 0
    Exit Sub
 
-validateRegistryStyle_Error:
+validateStyle_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateRegistryStyle of Module common2"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateStyle of Module common2"
 
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : validatePosition
+' Author    : beededea
+' Date      : 17/06/2020
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub validatePosition()
+
+    ' testing and adjusting the values to the ranges allowed, preventing corrupt values
+    ' this is required as running the program from within the IDE without admin rights results in corrupt data from the registry
+    ' when Rocketdock is restarted
+
+    On Error GoTo validatePosition_Error
+
+    If rDMonitor = vbNullString Then rDMonitor = "0"
+    If rDSide = vbNullString Then rDSide = "1"
+    If rDzOrderMode = vbNullString Then rDzOrderMode = "0"
+    If rDOffset = vbNullString Then rDOffset = "0"
+    If rDvOffset = vbNullString Then rDvOffset = "0"
+    If rDMoveWinTaskbar = vbNullString Then rDMoveWinTaskbar = "1"
+    
+    If Val(rDMonitor) < 0 Or Val(rDMonitor) > 10 Then rDMonitor = "0" 'monitor 0 is the default meaning the first monitor
+    If Val(rDSide) < 0 Or Val(rDSide) > 3 Then rDSide = "1" ' .03 DAEB 03/03/2021 common2.bas bugfix - bottom position 0 is top
+    If Val(rDzOrderMode) < 1 Or Val(rDzOrderMode) > 10 Then rDzOrderMode = "0" ' always on top
+    If Val(rDOffset) < -100 Or Val(rDOffset) > 100 Then rDOffset = "0" ' in the middle
+    If Val(rDvOffset) < -15 Or Val(rDvOffset) > 128 Then rDvOffset = "0" ' at the bottom edge
+
+   On Error GoTo 0
+   Exit Sub
+
+validatePosition_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validatePosition of Module common2"
+
+End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : validateWallpaper
+' Author    : beededea
+' Date      : 24/05/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub validateWallpaper()
+
+   On Error GoTo validateWallpaper_Error
+
+    If rDWallpaper = vbNullString Then rDWallpaper = "none selected"
+    If rDWallpaperStyle = vbNullString Then rDWallpaperStyle = "Centre"
+    If rDAutomaticWallpaperChange = vbNullString Then rDAutomaticWallpaperChange = "0"
+    If rDWallpaperTimerIntervalIndex = vbNullString Then rDWallpaperTimerIntervalIndex = "4" ' 1 hour
+    If rDWallpaperTimerInterval = vbNullString Then rDWallpaperTimerInterval = "60" ' 1 hour
+    If rDWallpaperLastTimeChanged = vbNullString Then rDWallpaperLastTimeChanged = Now()
+    If rDTaskbarLastTimeChanged = vbNullString Then rDTaskbarLastTimeChanged = CStr(#1/1/2000 12:00:00 PM#)
+    
+    If Val(rDWallpaperTimerIntervalIndex) > 13 Then rDWallpaperTimerIntervalIndex = "13"
+
+   On Error GoTo 0
+   Exit Sub
+
+validateWallpaper_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateWallpaper of Module common2"
+End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : readRegistryStyle
@@ -529,10 +699,6 @@ Public Sub readRegistryStyle()
    On Error GoTo readRegistryStyle_Error
 
     rDtheme = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Theme")
-'    rDWallpaper = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Wallpaper")
-'    rDWallpaperStyle = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperStyle")
-'    rDAutomaticWallpaperChange = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "AutomaticWallpaperChange")
-'    rdWallpaperTimerIntervalIndex = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "WallpaperTimerIntervalIndex")
 
     rDThemeOpacity = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ThemeOpacity")
     rDHideLabels = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "HideLabels")
@@ -548,7 +714,7 @@ Public Sub readRegistryStyle()
     rDFontOutlineOpacity = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "FontOutlineOpacity")
     rDFontShadowOpacity = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "FontShadowOpacity")
     
-    Call validateRegistryStyle
+    Call validateStyle
 
 
    On Error GoTo 0
@@ -560,37 +726,6 @@ readRegistryStyle_Error:
 
 End Sub
 
-
-'---------------------------------------------------------------------------------------
-' Procedure : validateRegistryPosition
-' Author    : beededea
-' Date      : 17/06/2020
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Sub validateRegistryPosition()
-
-
-    ' testing and adjusting the values to the ranges allowed, preventing corrupt values
-    ' this is required as running the program from within the IDE without admin rights results in corrupt data from the registry
-    ' when Rocketdock is restarted
-
-   On Error GoTo validateRegistryPosition_Error
-
-    If Val(rDMonitor) < 0 Or Val(rDMonitor) > 10 Then rDMonitor = "0" 'monitor 0 is the default meaning the first monitor
-    If Val(rDSide) < 0 Or Val(rDSide) > 3 Then rDSide = "1" ' .03 DAEB 03/03/2021 common2.bas bugfix - bottom position 0 is top
-    If Val(rDzOrderMode) < 1 Or Val(rDzOrderMode) > 10 Then rDzOrderMode = "0" ' always on top
-    If Val(rDOffset) < -100 Or Val(rDOffset) > 100 Then rDOffset = "0" ' in the middle
-    If Val(rDvOffset) < -15 Or Val(rDvOffset) > 128 Then rDvOffset = "0" ' at the bottom edge
-
-   On Error GoTo 0
-   Exit Sub
-
-validateRegistryPosition_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateRegistryPosition of Module common2"
-
-End Sub
 
 
 '
@@ -619,9 +754,7 @@ Public Sub readRegistryPosition()
     rDOffset = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "Offset")
     rDvOffset = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "vOffset")
 
-    Call validateRegistryPosition
-
-    
+    Call validatePosition
 
    On Error GoTo 0
    Exit Sub
@@ -633,40 +766,6 @@ readRegistryPosition_Error:
 End Sub
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : validateRegistryIcons
-' Author    : beededea
-' Date      : 17/06/2020
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Sub validateRegistryIcons()
-    ' testing and adjusting the values to the ranges allowed, preventing corrupt values
-    ' this is required as running the program from within the IDE without admin rights results in corrupt data from the registry
-    ' when Rocketdock is restarted
-
-   On Error GoTo validateRegistryIcons_Error
-
-    'If Val(rDMonitor) < 0 Or Val(rDMonitor) > 10 Then rDMonitor = "0" 'monitor 1
-    If Val(rDIconOpacity) < 50 Or Val(rDIconOpacity) > 100 Then rDIconOpacity = "100" 'fully opaque
-    If Val(rDZoomOpaque) <= 0 Or Val(rDZoomOpaque) > 1 Then rDZoomOpaque = "1" 'zooms opaque
-    If Val(rDIconMin) < 16 Or Val(rDIconMin) > 128 Then rDIconMin = "16" 'small
-    If Val(rDHoverFX) <= 0 Or Val(rDHoverFX) > 4 Then rDHoverFX = "1" 'bounce ' .14 DAEB 29/04/2021 docksettings Set the default zoom types available to the type of dock selected
-
-    If Val(rdIconMax) < 1 Or Val(rdIconMax) > 256 Then rdIconMax = "256" 'largest size
-    'MsgBox "icnomax = " & rdIconMax
-    
-    If Val(rDZoomWidth) < 2 Or Val(rDZoomWidth) > 10 Then rDZoomWidth = "4" ' just a few expanded
-    If Val(rDZoomTicks) < 100 Or Val(rDZoomTicks) > 500 Then rDZoomTicks = "100" ' 100ms
-
-   On Error GoTo 0
-   Exit Sub
-
-validateRegistryIcons_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateRegistryIcons of Module common2"
-    
-End Sub
 
 
 '---------------------------------------------------------------------------------------
@@ -703,7 +802,7 @@ Public Sub readRegistryIcons()
     rDZoomWidth = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ZoomWidth")
     rDZoomTicks = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ZoomTicks")
 
-    Call validateRegistryIcons
+    Call validateIcons
 
    On Error GoTo 0
    Exit Sub
@@ -715,39 +814,6 @@ readRegistryIcons_Error:
 End Sub
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : validateRegistryGeneral
-' Author    : beededea
-' Date      : 17/06/2020
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Sub validateRegistryGeneral()
-    ' testing and adjusting the values to the ranges allowed, preventing corrupt values
-    ' this is required as running the program from within the IDE without admin rights results in corrupt data from the registry
-    ' when Rocketdock is restarted
-    
-   On Error GoTo validateRegistryGeneral_Error
-
-    If Val(rDLockIcons) <= 0 And Val(rDLockIcons) > 1 Then rDLockIcons = "1" '
-    If Val(rDRetainIcons) <= 0 And Val(rDRetainIcons) > 1 Then rDRetainIcons = "1" ' .18 DAEB 07/09/2022 docksettings save and restore the chkRetainIcons checkbox value
-    If Val(rDOpenRunning) <= 0 And Val(rDOpenRunning) > 1 Then rDOpenRunning = "1" '
-    If Val(rDShowRunning) <= 0 And Val(rDShowRunning) > 1 Then rDShowRunning = "1" '
-    If Val(rDManageWindows) <= 0 And Val(rDManageWindows) > 1 Then rDManageWindows = "1" '
-    If Val(rDDisableMinAnimation) <= 0 And Val(rDDisableMinAnimation) > 1 Then rDDisableMinAnimation = "1" '
-
-    ' development
-    If sDDebugFlg = vbNullString Then sDDebugFlg = "0"
-    If sDDefaultEditor = vbNullString Then sDDefaultEditor = vbNullString
-        
-   On Error GoTo 0
-   Exit Sub
-
-validateRegistryGeneral_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateRegistryGeneral of Module common2"
-
-End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : readRegistryGeneral
 ' Author    : beededea
@@ -783,7 +849,7 @@ Public Sub readRegistryGeneral()
     rDManageWindows = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ManageWindows")
     rDDisableMinAnimation = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "DisableMinAnimation")
 
-    Call validateRegistryGeneral
+    Call validateGeneral
     
 
    On Error GoTo 0
@@ -911,7 +977,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
     Dim currentTaskbarPosition As Integer: currentTaskbarPosition = 0
     Dim newTaskbarPosition As Integer: newTaskbarPosition = 0
     Dim triggerTaskbarChange As Boolean: triggerTaskbarChange = False
-    Dim rmessage As String: rmessage = ""
+    Dim rmessage As String: rmessage = vbNullString
     Dim answer As VbMsgBoxResult: answer = vbNo
     Dim NameProcess As String: NameProcess = vbNullString
     Dim explorerProcessId As Long: explorerProcessId = 0

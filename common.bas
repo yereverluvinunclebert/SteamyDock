@@ -343,8 +343,8 @@ Public pvtBIsWin11OrGreater As Boolean
 'Public gblFormResizedInCode As Boolean
 Public gblDoNotResize As Boolean
 '
-'Public gblAdjustedFormHeight As Long
-'Public gblAdjustedFormWidth  As Long
+'Public gblCurrentFormHeight As Long
+'Public gblCurrentFormWidth  As Long
 '
 'Public gblDockSettingsFormOldHeight As Long
 'Public gblDockSettingsFormOldWidth As Long
@@ -2343,7 +2343,7 @@ Public Sub getFileNameAndTitle(ByRef retFileName As String, ByRef retfileTitle A
 
 getFileNameAndTitle_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFileNameAndTitle of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFileNameAndTitle of Form dockSettings"
 End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : addTargetProgram
@@ -2437,6 +2437,6 @@ Public Function addTargetProgram(ByVal targetText As String) As String
 
 addTargetProgram_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addTargetProgram of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addTargetProgram of Form dockSettings"
  
 End Function

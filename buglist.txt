@@ -20,23 +20,35 @@ separate code to restart main explorer window handle passed according to which f
 
 add a function to return an explorer threadID
 click on an explorer icon should both minimise and unminimise the associated explorer window
-clicking on an explorer window should immediately trigger an entry into the explorerProceses
+clicking on an explorer window should immediately trigger an entry into the explorerProceses array so cog appears
+fFExists now does second check whether file is also a folder, preventing ambiguous file existence bug
+
+Menus corrected to ensure only non admin menu items display on explorer-type dock entries
+New isExplorerItem function to determine if an item is to be opened with explorer
 
 -oOo-
 
 Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
 Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
 
-
-
 ' Current Task:
 ' =============
 
+explorer processes, cog not disappearing when explorer apps killed manually (not from the dock) - identify when this occurs
+
 msgbox when killing apps needs to be on top!
+
+when the dock is over a certain size the background does not appear
+
+when a dock is wider than 2000 pixels - stitch two docks together
+
+multi-monitor support
+
+add a precursor blank icon and a final icon
 
 try adding 1-5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
-when the dock is over a certain size the background does not appear
+
 
 ' Extracting embedded icons from DLLs and EXEs
 ' ==============================================
@@ -48,8 +60,6 @@ when the dock is over a certain size the background does not appear
 reading from an embedded icon within a DLL, extracting to a PNG fior GDI+ to pick up. Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser.
 
 Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity
- 
- when a dock is wider than 2000 pixels - stitch two docks together
  
 
 
@@ -80,8 +90,6 @@ Encapsulate the main few icons as an object using classes, create a class, for t
 '  http://www.vbaccelerator.com/home/VB/Tips/Setting_the_App_Icon_Correctly/article.asp
 '
 '  the docksettings tool should have some separate code that allows migration from RD to SD but the rest should use SdSettings
-'
-' reorganise windows menu option? send all windows to front/back
 '
 ' finish the icons
     ' droptypes to deal with by having an associated document
@@ -115,9 +123,6 @@ Encapsulate the main few icons as an object using classes, create a class, for t
 '
 ' look at the custom icon tool and see which you need to recreate WIP
 ' modify the zipfile icons to the correct type above
-
-
-
 
 ' Animating more than three icons
 ' ===========================

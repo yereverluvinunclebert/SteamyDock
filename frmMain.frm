@@ -1511,11 +1511,11 @@ Public Sub fMouseUp(Button As Integer)
         End If
         
         ' if the command does not have a suffix (folder) then do not allow it to run elevated
-        suffix = LCase(ExtractSuffixWithDot(scommand))
+        suffix = LCase(ExtractSuffixWithDot(sCommand))
         If suffix = vbNullString Then ' NOTE: searching for a null string in any string returns a non-zero FOUND value! This handles it
             allowElevated = False
         Else
-            If InStr(".exe|.bat|.msc|.cpl|.lnk", suffix) <> 0 Or InStr(scommand, "::{") > 0 Then
+            If InStr(".exe|.bat|.msc|.cpl|.lnk", suffix) <> 0 Or InStr(sCommand, "::{") > 0 Then
                 allowElevated = True
             Else
                 allowElevated = False
@@ -1547,7 +1547,7 @@ Public Sub fMouseUp(Button As Integer)
                 menuForm.mnuRunNewAppAsAdmin.Visible = False
             End If
             
-            If isExplorerItem(scommand) = True Then
+            If isExplorerItem(sCommand) = True Then
                 menuForm.mnuRunApp.Caption = "Run this Explorer window"
             Else
                 If allowElevated = True Then
@@ -1633,7 +1633,7 @@ Public Sub fMouseUp(Button As Integer)
                     selectedIconIndex = targetIconIndex ' reset the selectedIconIndex
                     thisFilename = sFilename
                     
-                    Call insertNewIconDataIntoCurrentPosition(thisFilename, sTitle, scommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
+                    Call insertNewIconDataIntoCurrentPosition(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
                                
                     Call menuForm.addImageToDictionaryAndCheckForRunningProcess(thisFilename, sTitle)
                     
@@ -1697,7 +1697,7 @@ End Sub
 ' Purpose   : test for an explorer item in the dock, does not check whether running
 '---------------------------------------------------------------------------------------
 '
-Private Function isExplorerItem(ByVal scommand As String) As Boolean
+Private Function isExplorerItem(ByVal sCommand As String) As Boolean
 
     ' take the target
     ' test it is an existing file, if it is a file then it is not a folder
@@ -1706,12 +1706,12 @@ Private Function isExplorerItem(ByVal scommand As String) As Boolean
     
    On Error GoTo isExplorerItem_Error
    
-    If fFExists(scommand) Then
+    If fFExists(sCommand) Then
         isExplorerItem = False
         Exit Function
     End If
    
-    If fDirExists(scommand) Then
+    If fDirExists(sCommand) Then
         isExplorerItem = True
     End If
     
@@ -2076,6 +2076,7 @@ End Sub
 ' Explorer windows have to be enumerated differently than just comparing current open folders to existing instances of explorer processes.
 ' each explorer window has to be enumerated and the associated folder extracted. This also handles folders referenced
 ' by CLSIDs.
+
 ' An array of the same size as the main icon arrays, each dock-initiated explorer item resides in its own numbered location.
 ' Checking for just a few elements in an array, the empty elements can be bypassed, instead probing just these few processes
 ' for existence, this can be carried out much more frequently than the main timer process that occurs only once every 10-65 seconds full process check.
@@ -3528,7 +3529,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     'by default read the selected icon's data and set the command to execute
     If commandOverride = vbNullString Then
         'Call readIconData(selectedIconIndex) '.nn DAEB 12/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
-        thisCommand = scommand
+        thisCommand = sCommand
     Else
         ' .68 DAEB 05/05/2021 frmMain.frm cause the docksettings utility to reopen if it has already been initiated
         
@@ -3707,9 +3708,9 @@ tryMSCFullPAth:
     ' bat files
     If ExtractSuffixWithDot(UCase$(thisCommand)) = ".BAT" Then
         'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
-        thisCommand = """" & scommand & """" ' put the command in quotes so it handles spaces in the path
+        thisCommand = """" & sCommand & """" ' put the command in quotes so it handles spaces in the path
         'folderPath = getFolderNameFromPath(thisCommand)  ' extract the default folder from the batch full path
-        If fFExists(scommand) Then
+        If fFExists(sCommand) Then
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
         Else
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
@@ -3773,7 +3774,7 @@ End Sub
 ' Purpose   : handler for shellexecute allowing a subsequent dialog to be inititated
 '---------------------------------------------------------------------------------------
 '
-Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal scommand As String, ByVal sArguments As String, ByVal sWorkingDirectory As String, ByVal windowState As Integer, Optional ByRef targetType As String = "none")
+Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As String, ByVal sArguments As String, ByVal sWorkingDirectory As String, ByVal windowState As Integer, Optional ByRef targetType As String = "none")
 
     Dim ans As VbMsgBoxResult: ans = vbNo
     
@@ -3786,7 +3787,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal scommand As 
     If sAutoHideDock = "1" Then
         'MessageBox Me.hwnd, sTitle & " Hiding the dock ", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         ' store the process name that caused the dock to auto hide
-        autoHideProcessName = scommand ' .84 DAEB 20/07/2021 frmMain.frm Added prevention of the dock returning until the hiding application is no longer running.
+        autoHideProcessName = sCommand ' .84 DAEB 20/07/2021 frmMain.frm Added prevention of the dock returning until the hiding application is no longer running.
         Call HideDockNow
         
         '.85 Added new timer to allow auto-reveal of the dock once the chosen app has closed within 1.5 secs
@@ -3797,7 +3798,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal scommand As 
     End If
    
     ' run the selected program
-    Call ShellExecute(hWnd, userLevel, scommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
+    Call ShellExecute(hWnd, userLevel, sCommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
             
     userLevel = "open" ' return to default
     
@@ -3818,7 +3819,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal scommand As 
         'MsgBox sTitle & " Command Issued - " & sCommand, vbSystemModal + vbExclamation, "SteamyDock Confirmation Message"
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
         'MessageBox Me.hwnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-        ans = msgBoxA(sTitle & " Command Issued - " & scommand, vbOKOnly, "SteamyDock Confirmation Message", False)
+        ans = msgBoxA(sTitle & " Command Issued - " & sCommand, vbOKOnly, "SteamyDock Confirmation Message", False)
     End If
     
     
@@ -3870,7 +3871,7 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
     ' call up a dialog box if required
     If sUseDialogAfter = "1" Then
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, sTitle & " Command Issued - " & scommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -4937,7 +4938,7 @@ Public Sub prepareArraysAndCollections()
         fileNameArray(useloop) = sFilename
         dictionaryLocationArray(useloop) = useloop
         namesListArray(useloop) = sTitle
-        sCommandArray(useloop) = scommand
+        sCommandArray(useloop) = sCommand
         
         overallIconOpacity = Val(rDIconOpacity) ' overall icon opacity of all icons
 
@@ -4993,8 +4994,8 @@ Public Sub prepareArraysAndCollections()
         End If
         
         ' check to see if each process is running and store the result away - this is also run on a 10s timer
-        explorerCheckArray(useloop) = isExplorerRunning(scommand)
-        processCheckArray(useloop) = IsRunning(scommand)
+        explorerCheckArray(useloop) = isExplorerRunning(sCommand)
+        processCheckArray(useloop) = IsRunning(sCommand)
 
     Next useloop
     
@@ -5869,8 +5870,8 @@ Private Sub autoFadeOutTimer_Timer()
                                 ' it stays at this frequency until the fadeTimer is done when it reverts to 200
                                 ' it is important as this maintains the smoothness of the fadeout.
     autoFadeOutTimerCount = autoFadeOutTimerCount + 10
-    If rDAutoHideTicks = 0 Then rDAutoHideTicks = 1 ' .24 DAEB frmMain.frm 09/02/2021 handling any potential divide by zero
-    autoHideGranularity = dockOpacity / rDAutoHideTicks ' set the factor by which the timer should decrease the opacity
+    If rDAutoHideDuration = 0 Then rDAutoHideDuration = 1 ' .24 DAEB frmMain.frm 09/02/2021 handling any potential divide by zero
+    autoHideGranularity = dockOpacity / rDAutoHideDuration ' set the factor by which the timer should decrease the opacity
     
     ' 24/01/2021 .08 DAEB removed the fade in functions from the fade out subroutine
 
@@ -5880,7 +5881,7 @@ Private Sub autoFadeOutTimer_Timer()
     ' set the increasingly reduced/increased opacity of the whole dock
     funcBlend32bpp.SourceConstantAlpha = 255 * newDockOpacity / 100
     
-    If autoFadeOutTimerCount >= Val(rDAutoHideTicks) Then
+    If autoFadeOutTimerCount >= Val(rDAutoHideDuration) Then
         ' ensure the opacity of the whole dock is zero
         funcBlend32bpp.SourceConstantAlpha = 0
         dockHidden = True
@@ -5932,7 +5933,7 @@ End Sub
 '                                ' it stays at this frequency until the fadeTimer is done when it reverts to 200
 '                                ' it is important as this maintains the smoothness of the fadeout.
 '    autoFadeOutTimerCount = autoFadeOutTimerCount + 10
-'    autoHideGranularity = dockOpacity / rDAutoHideTicks ' set the factor by which the timer should decrease the opacity
+'    autoHideGranularity = dockOpacity / rDAutoHideDuration ' set the factor by which the timer should decrease the opacity
 '
 '    If autoHideMode = "fadeout" Then
 '        newDockOpacity = 100 - (autoFadeOutTimerCount * autoHideGranularity)
@@ -5946,7 +5947,7 @@ End Sub
 '    ' set the increasingly reduced/increased opacity of the whole dock
 '    funcBlend32bpp.SourceConstantAlpha = 255 * newDockOpacity / 100
 '
-'    If autoFadeOutTimerCount >= Val(rDAutoHideTicks) Then
+'    If autoFadeOutTimerCount >= Val(rDAutoHideDuration) Then
 '        If autoHideMode = "fadeout" Then
 '            ' ensure the opacity of the whole dock is zero
 '            funcBlend32bpp.SourceConstantAlpha = 0
@@ -6011,8 +6012,8 @@ Private Sub autoSlideOutTimer_Timer()
                                 ' it stays at this frequency until the fadeTimer is done when it reverts to 200
                                 ' it is important as this maintains the smoothness of the slideout.
     autoSlideOutTimerCount = autoSlideOutTimerCount + 5  '10ms
-    If rDAutoHideTicks = 0 Then rDAutoHideTicks = 1 ' .24 DAEB frmMain.frm 09/02/2021 handling any potential divide by zero
-    autoSlideGranularity = amountToSlidePxls / rDAutoHideTicks ' set the factor by which the timer should slide out the dock
+    If rDAutoHideDuration = 0 Then rDAutoHideDuration = 1 ' .24 DAEB frmMain.frm 09/02/2021 handling any potential divide by zero
+    autoSlideGranularity = amountToSlidePxls / rDAutoHideDuration ' set the factor by which the timer should slide out the dock
     
     ' modify the whole dock in the Y axis here using
     xAxisModifier = xAxisModifier + (autoSlideOutTimerCount * autoSlideGranularity)
@@ -6026,7 +6027,7 @@ Private Sub autoSlideOutTimer_Timer()
         dockHidden = True
     End If
     
-    If autoSlideOutTimerCount >= Val(rDAutoHideTicks) Then
+    If autoSlideOutTimerCount >= Val(rDAutoHideDuration) Then
         ' ensure the opacity of the whole dock is zero
         'funcBlend32bpp.SourceConstantAlpha = 0
         responseTimer.Interval = 200 ' return the responseTimer interval to normal, may not be necessary here
@@ -6077,9 +6078,9 @@ Private Sub autoSlideInTimer_Timer()
                                 ' it stays at this frequency until the fadeTimer is done when it reverts to 200
                                 ' it is important as this maintains the smoothness of the slideout.
     autoSlideInTimerCount = autoSlideInTimerCount + 5  '10ms
-    If rDAutoHideTicks = 0 Then rDAutoHideTicks = 1 ' .24 DAEB frmMain.frm 09/02/2021 handling any potential divide by zero
+    If rDAutoHideDuration = 0 Then rDAutoHideDuration = 1 ' .24 DAEB frmMain.frm 09/02/2021 handling any potential divide by zero
 
-    autoSlideGranularity = amountToSlidePxls / rDAutoHideTicks ' set the factor by which the timer should slide out the dock
+    autoSlideGranularity = amountToSlidePxls / rDAutoHideDuration ' set the factor by which the timer should slide out the dock
     
     If iconCurrentTopPxls < 860 Then ' .nn this is the bug just here
         iconCurrentTopPxls = 860 '.nn
@@ -6093,7 +6094,7 @@ Private Sub autoSlideInTimer_Timer()
         xAxisModifier = xAxisModifier + (autoSlideInTimerCount * autoSlideGranularity)
     End If
     
-    If autoSlideInTimerCount >= Val(rDAutoHideTicks) Then
+    If autoSlideInTimerCount >= Val(rDAutoHideDuration) Then
         ' ensure the opacity of the whole dock is zero
         'funcBlend32bpp.SourceConstantAlpha = 0
         responseTimer.Interval = 200 ' return the responseTimer interval to normal, may not be necessary here
