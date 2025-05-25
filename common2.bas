@@ -270,7 +270,7 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDOffset = GetINISetting(location, "Offset", settingsFile)
     rDvOffset = GetINISetting(location, "vOffset", settingsFile)
     rDOptionsTabIndex = GetINISetting("Software\DockSettings", "OptionsTabIndex", toolSettingsFile)
-    '= GetINISetting("Software\SteamyDock\DockSettings\WindowFilters", "Count", 0, settingsFile)
+    
     
    On Error GoTo 0
    Exit Sub
@@ -347,8 +347,6 @@ Public Sub validateInputs()
     validatePosition
     validateWallpaper
     
-    'If gblPrefsPrimaryHeightTwips = vbnullstring Then
-
    On Error GoTo 0
    Exit Sub
 
@@ -522,7 +520,7 @@ Public Sub validateStyle()
     'Dim myName As String
     
     Dim MyPath As String: MyPath = vbNullString
-    Dim I As Integer: I = 0
+    Dim i As Integer: i = 0
     Dim fontPresent As Boolean: fontPresent = False
 
     On Error GoTo validateStyle_Error
@@ -556,9 +554,9 @@ Public Sub validateStyle()
     If Val(sDShowLblBacks) < 0 Or Val(sDShowLblBacks) > 1 Then sDShowLblBacks = "0" ' 25/10/2020 docksettings .02 DAEB add the logic for saving/reading icon label background string to configuration files
 
     fontPresent = False
-    For I = 0 To Screen.FontCount - 1 ' Determine number of fonts.
-        If rDFontName = Screen.Fonts(I) Then fontPresent = True
-    Next I
+    For i = 0 To Screen.FontCount - 1 ' Determine number of fonts.
+        If rDFontName = Screen.Fonts(i) Then fontPresent = True
+    Next i
     If fontPresent = False Then rDFontName = "Times New Roman" '
 
     If Abs(Val(rDFontSize)) < 2 Or Abs(Val(rDFontSize)) > 29 Then
@@ -1101,7 +1099,7 @@ Private Function readWindowsTaskbarPosition() As Integer
 
     Dim binaryValue As Variant
     Dim Value As Variant
-    Dim I As Long: I = 0
+    Dim i As Long: i = 0
 
     On Error GoTo readWindowsTaskbarPosition_Error
     
@@ -1112,8 +1110,8 @@ Private Function readWindowsTaskbarPosition() As Integer
     lDataSize = UBound(Value)
     ReDim ByteasByte(0 To lDataSize - 1) As Byte
     
-    For I = 0 To lDataSize - 1
-        ByteasByte(I) = Value(I)
+    For i = 0 To lDataSize - 1
+        ByteasByte(i) = Value(i)
     Next
 
 '    03 for bottom (default).

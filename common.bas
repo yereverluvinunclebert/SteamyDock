@@ -343,8 +343,8 @@ Public pvtBIsWin11OrGreater As Boolean
 'Public gblFormResizedInCode As Boolean
 Public gblDoNotResize As Boolean
 '
-'Public gblCurrentFormHeight As Long
-'Public gblCurrentFormWidth  As Long
+'Public gblStartFormHeight As Long
+'Public gblStartFormWidth  As Long
 '
 'Public gblDockSettingsFormOldHeight As Long
 'Public gblDockSettingsFormOldWidth As Long
@@ -361,7 +361,7 @@ Public Sub checkLicenceState()
     Dim slicence As String: slicence = "0"
 
     On Error GoTo checkLicenceState_Error
-    If debugflg = 1 Then debugLog "%" & " sub checkLicenceState"
+    If debugFlg = 1 Then debugLog "%" & " sub checkLicenceState"
 
     'toolSettingsFile = App.Path & "\settings.ini"
     ' read the tool's own settings file (
@@ -546,7 +546,7 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
     
     ' ******  The IDE runs in compatibility mode so it will report the wrong version and thence the incorrect working folder
     
-    If debugflg = 1 Then debugLog "%" & " sub classicThemeCapable"
+    If debugFlg = 1 Then debugLog "%" & " sub classicThemeCapable"
 
     'Get the value of "ProgramFiles", or "ProgramFilesDir"
     
@@ -795,7 +795,7 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformChe
     Dim RProcessFound As Long: RProcessFound = 0
     Dim SzExename As String: SzExename = vbNullString
     Dim MyProcess As Long: MyProcess = 0
-    Dim I As Integer: I = 0
+    Dim i As Integer: i = 0
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim procId As Long: procId = 0
@@ -833,8 +833,8 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformChe
           'hSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
           RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
           Do
-            I = InStr(1, thisUProcess.szexeFile, Chr(0))
-            SzExename = LCase$(Left$(thisUProcess.szexeFile, I - 1))
+            i = InStr(1, thisUProcess.szexeFile, Chr(0))
+            SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
             'WinDirEnv = Environ("Windir") + "\"
             'WinDirEnv = LCase$(WinDirEnv)
 
@@ -926,18 +926,18 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Function NoNulls(ByVal Strng As String) As String
-    Dim I As Integer: I = 0
+    Dim i As Integer: i = 0
     On Error GoTo NoNulls_Error
 
     If Len(Strng) > 0 Then
-        I = InStr(Strng, vbNullChar)
-        Select Case I
+        i = InStr(Strng, vbNullChar)
+        Select Case i
             Case 0
                 NoNulls = Strng
             Case 1
                 NoNulls = vbNullString
             Case Else
-                NoNulls = Left$(Strng, I - 1)
+                NoNulls = Left$(Strng, i - 1)
         End Select
     End If
 
@@ -1133,7 +1133,7 @@ End Function
 ' Purpose   : check for the existence of the dock binary
 '---------------------------------------------------------------------------------------
 '
-Public Function driveCheck(ByRef folder As String, Filename As String) As String
+Public Function driveCheck(ByRef folder As String, FileName As String) As String
    
    ' variables declared
    Dim sDrv As String: sDrv = vbNullString
@@ -1163,7 +1163,7 @@ Public Function driveCheck(ByRef folder As String, Filename As String) As String
         If fDirExists(folderString) = True Then
            'test for the steamydock binary
             testAppPath = folderString
-            If fFExists(testAppPath & "\" & Filename) Then
+            If fFExists(testAppPath & "\" & FileName) Then
                 'MsgBox "steamydock binary exists"
                 driveCheck = testAppPath
                 Exit Function
@@ -1373,15 +1373,17 @@ Public Sub checkRocketdockInstallation()
     RD86installed = vbNullString
     RDinstalled = vbNullString
     
+    
     ' check where rocketdock is installed
     On Error GoTo checkRocketdockInstallation_Error
-    If debugflg = 1 Then debugLog "% sub checkRocketdockInstallation"
+    If debugFlg = 1 Then debugLog "% sub checkRocketdockInstallation"
 
     RD86installed = driveCheck("Program Files (x86)\Rocketdock", "RocketDock.exe")
     RDinstalled = driveCheck("Program Files\Rocketdock", "RocketDock.exe")
 
     If RDinstalled = vbNullString And RD86installed = vbNullString Then
         rocketDockInstalled = False
+        Exit Sub
     Else
         rocketDockInstalled = True
         If RDinstalled <> vbNullString Then
@@ -1393,6 +1395,12 @@ Public Sub checkRocketdockInstallation()
         End If
     End If
     
+        
+    ' admin is required to read the registry and access the settings.ini in RD's program folder
+'    If IsUserAnAdmin() = 0 Then
+'        MsgBox "This tool requires to be run as administrator on Windows 7 and above in order to function. Admin access is NOT required on Win7 and below. If you aren't entirely happy with that then you'll need to remove the software now. This is a limitation imposed by Windows itself. To enable administrator access find this tool's exe and right-click properties, compatibility - run as administrator. YOU have to do this manually, I can't do it for you."
+'    End If
+
     ' If rocketdock Is Not installed Then test the registry
     ' if the registry settings are not located then remove them as a source.
     
@@ -1402,20 +1410,26 @@ Public Sub checkRocketdockInstallation()
     ' rocketDockInstalled = False ' debug
     
     ' read selected random entries from the registry, if each are false then the RD registry entries do not exist.
-    If rocketDockInstalled = False Then
-        rDLockIcons = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "LockIcons")
-        'rDRetainIcons unused by Rocketdock
-        rDOpenRunning = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "OpenRunning")
-        rDShowRunning = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ShowRunning")
-        rDManageWindows = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ManageWindows")
-        rDDisableMinAnimation = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "DisableMinAnimation")
-        If rDLockIcons = vbNullString And rDOpenRunning = vbNullString And rDShowRunning = vbNullString And rDManageWindows = vbNullString And rDDisableMinAnimation = vbNullString Then
-            ' rocketdock registry entries do not exist so RD has never been installed or it has been wiped entirely.
-            RDregistryPresent = False
-        Else
-            RDregistryPresent = True 'rocketdock HAS been installed in the past as the registry entries are still present
-        End If
-    End If
+'    If rocketDockInstalled = False Then
+'        rDLockIcons = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "LockIcons")
+'        'rDRetainIcons unused by Rocketdock
+'        rDOpenRunning = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "OpenRunning")
+'        rDShowRunning = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ShowRunning")
+'        rDManageWindows = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ManageWindows")
+'        rDDisableMinAnimation = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "DisableMinAnimation")
+'        If rDLockIcons = vbNullString And rDOpenRunning = vbNullString And rDShowRunning = vbNullString And rDManageWindows = vbNullString And rDDisableMinAnimation = vbNullString Then
+'            ' rocketdock registry entries do not exist so RD has never been installed or it has been wiped entirely.
+'            RDregistryPresent = False
+'        Else
+'            RDregistryPresent = True 'rocketdock HAS been installed in the past as the registry entries are still present
+'        End If
+'    End If
+    
+    'If rocketDockInstalled = True Then
+        'dockAppPath = rdAppPath
+        'txtAppPath.Text = rdAppPath
+        'defaultDock = 0
+    'End If
     
    On Error GoTo 0
    Exit Sub
@@ -1494,7 +1508,7 @@ Public Sub getAllDriveNames(sDriveStrings As String)
     
     On Error GoTo getAllDriveNames_Error
     
-    If debugflg = 1 Then debugLog "% sub sDriveStrings"
+    If debugFlg = 1 Then debugLog "% sub sDriveStrings"
 
     For Each vDrive In GetDrives(sDriveStrings) ' getdrives is a collection of drive name strings C:\, D:\ &c
         sDeviceName = GetNtDeviceNameForDrive(vDrive) ' \Device\HarddiskVolume1 are the default naming conventions for Windows drives
@@ -1622,7 +1636,7 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
     Dim ExitCode As Long: ExitCode = 0
     Dim procId As Long: procId = 0
     Dim a As Integer: a = 0
-    Dim I As Integer: I = 0
+    Dim i As Integer: i = 0
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
@@ -1661,8 +1675,8 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
             thisHSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
             RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
             Do
-                I = InStr(1, thisUProcess.szexeFile, Chr$(0))
-                SzExename = LCase$(Left$(thisUProcess.szexeFile, I - 1))
+                i = InStr(1, thisUProcess.szexeFile, Chr$(0))
+                SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
     
                 If Right$(SzExename, Len(binaryName)) = LCase$(binaryName) Then
 
@@ -1738,7 +1752,7 @@ Public Sub checkSteamyDockInstallation()
     ' check where SteamyDock is installed
     On Error GoTo checkSteamyDockInstallation_Error
     
-    If debugflg = 1 Then debugLog "% sub checkSteamyDockInstallation"
+    If debugFlg = 1 Then debugLog "% sub checkSteamyDockInstallation"
 
     SD86installed = driveCheck("Program Files (x86)\SteamyDock", "steamyDock.exe")
     SDinstalled = driveCheck("Program Files\SteamyDock", "steamyDock.exe")
@@ -1794,7 +1808,7 @@ Public Sub locateDockSettingsFile()
     Dim s As String: s = 0
         
     On Error GoTo locateDockSettingsFile_Error
-    If debugflg = 1 Then debugLog "% sub locateDockSettingsFile"
+    If debugFlg = 1 Then debugLog "% sub locateDockSettingsFile"
     
     ' dock Settings main docksettings.ini
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
@@ -2324,7 +2338,7 @@ End Function
 '
 Public Sub getFileNameAndTitle(ByRef retFileName As String, ByRef retfileTitle As String)
    On Error GoTo getFileNameAndTitle_Error
-   If debugflg = 1 Then debugLog "%getFileNameAndTitle"
+   If debugFlg = 1 Then debugLog "%getFileNameAndTitle"
 
   If GetOpenFileName(x_OpenFilename) <> 0 Then
     If x_OpenFilename.lpstrFile = "*.*" Then
@@ -2362,7 +2376,7 @@ Public Function addTargetProgram(ByVal targetText As String) As String
     Const x_MaxBuffer = 256
     
     'On Error GoTo addTargetProgram_Error
-    If debugflg = 1 Then debugLog "%" & "addTargetProgram"
+    If debugFlg = 1 Then debugLog "%" & "addTargetProgram"
     
     'On Error GoTo l_err1
     'savLblTarget = txtTarget.Text

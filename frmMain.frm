@@ -1004,6 +1004,9 @@ Private Sub Form_Load()
     ' read the dock settings from INI or from registry
     Call readDockConfiguration
     
+    'validate the relevant entries from the settings.ini file in user appdata
+    Call validateInputs
+    
     ' set the hotkey toggle to the user's chosen function key
     Call setUserHotKey ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
     
@@ -1343,6 +1346,8 @@ Public Sub initialiseGlobalVars()
     
     gblRegistrySempahoreRaised = False
     rDTaskbarLastTimeChanged = vbNullString
+    
+    'gblFormPrimaryHeightTwips = vbNullString
     
     On Error GoTo 0
     
@@ -1753,7 +1758,7 @@ End Function
 Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
    
     Dim suffix As String: suffix = vbNullString
-    Dim Filename As String: Filename = vbNullString
+    Dim FileName As String: FileName = vbNullString
     Dim iconImage As String: iconImage = vbNullString
     Dim iconTitle As String: iconTitle = vbNullString
     Dim iconFileName As String: iconFileName = vbNullString
@@ -1889,17 +1894,17 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 
                         Call GetShortcutInfo(iconCommand, thisShortcut) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                                        
-                        iconTitle = getFileNameFromPath(thisShortcut.Filename)
+                        iconTitle = getFileNameFromPath(thisShortcut.FileName)
                         
-                        If Not thisShortcut.Filename = vbNullString Then
-                            iconCommand = LCase(thisShortcut.Filename)
+                        If Not thisShortcut.FileName = vbNullString Then
+                            iconCommand = LCase(thisShortcut.FileName)
                         End If
                         iconArguments = thisShortcut.Arguments
                         iconWorkingDirectory = thisShortcut.RelPath
                         
                         ' .55 DAEB 19/04/2021 frmMain.frm Added call to the older function to identify an icon using the shell object
                         'if the icontitle and command are blank then this is user-created link that only provides the relative path
-                        If iconTitle = vbNullString And thisShortcut.Filename = vbNullString And Not iconWorkingDirectory = vbNullString Then
+                        If iconTitle = vbNullString And thisShortcut.FileName = vbNullString And Not iconWorkingDirectory = vbNullString Then
                             Call GetShellShortcutInfo(iconCommand, nname, npath, ndesc, nwork, nargs)
                     
                             iconTitle = nname
@@ -4457,7 +4462,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub checkQuestionMark(ByVal key As String, ByRef Filename As String, ByVal Size As Byte)
+Public Sub checkQuestionMark(ByVal key As String, ByRef FileName As String, ByVal Size As Byte)
     Dim filestring As String: filestring = vbNullString
     Dim suffix As String: suffix = vbNullString
     Dim qPos As Integer: qPos = 0
@@ -4465,10 +4470,10 @@ Public Sub checkQuestionMark(ByVal key As String, ByRef Filename As String, ByVa
     ' does the string contain a ? if so it probably has an embedded .ICO
    On Error GoTo checkQuestionMark_Error
 
-    qPos = InStr(1, Filename, "?")
+    qPos = InStr(1, FileName, "?")
     If qPos <> 0 Then
         ' extract the string before the ? (qPos)
-        filestring = Mid$(Filename, 1, qPos - 1)
+        filestring = Mid$(FileName, 1, qPos - 1)
     End If
     
     ' test the resulting filestring exists
@@ -4480,7 +4485,7 @@ Public Sub checkQuestionMark(ByVal key As String, ByRef Filename As String, ByVa
             Call displayEmbeddedIcons(key, filestring, hiddenForm.hiddenPicbox, Size)
         Else
             ' the file may have a ? in the string but does not match otherwise in any useful way
-            Filename = sdAppPath & "\icons\" & "help.png" ' .12 25/01/2021 DAEB Change to sdAppPath
+            FileName = sdAppPath & "\icons\" & "help.png" ' .12 25/01/2021 DAEB Change to sdAppPath
         End If
     Else
         Exit Sub
@@ -4582,7 +4587,7 @@ End Function
 '
 '---------------------------------------------------------------------------------------
 '
-Public Sub displayEmbeddedIcons(ByVal key As String, ByVal Filename As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
+Public Sub displayEmbeddedIcons(ByVal key As String, ByVal FileName As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
     
 '    Dim sExeName As String: sExeName = vbNullString
 '    Dim lIconIndex As Long: lIconIndex = 0
@@ -7203,3 +7208,26 @@ fSecondsFromDateString_Error:
           End If
     End With
 End Function
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : validateInputs
+' Author    : beededea
+' Date      : 17/06/2020
+' Purpose   : validate the relevant entries from the settings.ini file in user appdata
+'---------------------------------------------------------------------------------------
+'
+Private Sub validateInputs()
+    
+   On Error GoTo validateInputs_Error
+                    
+    'If gblFormPrimaryHeightTwips = vbNullString Then gblFormPrimaryHeightTwips = CStr(gblStartFormHeight)
+        
+   On Error GoTo 0
+   Exit Sub
+
+validateInputs_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateInputs of form modMain"
+End Sub

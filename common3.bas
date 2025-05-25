@@ -108,6 +108,7 @@ Public Sub readIconRegistryWriteSettings(settingsFile As String)
     
     On Error GoTo readIconRegistryWriteSettings_Error
     
+    ' write to the dockSettingsFile letting the dock know who wrote the last update to the settings
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", dockSettingsFile
     
     'If debugFlg = 1 Then debugLog "%" & "readIconRegistryWriteSettings"
@@ -347,7 +348,7 @@ Public Function GetShortcutInfo(Path As String, Shortcut As Link) As Boolean
     On Error GoTo GetShortcutInfo_Error
 
     With Shortcut
-        .Filename = vbNullString
+        .FileName = vbNullString
         .Description = vbNullString
         .RelPath = vbNullString
         .WorkingDir = vbNullString
@@ -389,20 +390,20 @@ Public Function GetShortcutInfo(Path As String, Shortcut As Link) As Boolean
             
             ' Read base path
             If PtrBasePath Then
-                Shortcut.Filename = ReadSingleString(FileNo, NextPtr + PtrBasePath)
+                Shortcut.FileName = ReadSingleString(FileNo, NextPtr + PtrBasePath)
             ' Or network path
             ElseIf PtrNetworkVolumeInfo Then
-                Shortcut.Filename = ReadSingleString(FileNo, NextPtr + PtrNetworkVolumeInfo + &H14)
+                Shortcut.FileName = ReadSingleString(FileNo, NextPtr + PtrNetworkVolumeInfo + &H14)
             End If
             
             ' Read remaining filename
             If PtrFilename Then
                 Str = ReadSingleString(FileNo, NextPtr + PtrFilename)
                 If Str <> vbNullString Then
-                    If Right$(Shortcut.Filename, 1) <> "\" Then
-                        Shortcut.Filename = Shortcut.Filename & "\"
+                    If Right$(Shortcut.FileName, 1) <> "\" Then
+                        Shortcut.FileName = Shortcut.FileName & "\"
                     End If
-                    Shortcut.Filename = Shortcut.Filename & Str
+                    Shortcut.FileName = Shortcut.FileName & Str
                 End If
             End If
             
