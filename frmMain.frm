@@ -2,16 +2,26 @@ VERSION 5.00
 Begin VB.Form dock 
    BorderStyle     =   0  'None
    Caption         =   " "
-   ClientHeight    =   9675
+   ClientHeight    =   10170
    ClientLeft      =   45
    ClientTop       =   570
-   ClientWidth     =   5520
+   ClientWidth     =   8190
    Icon            =   "frmMain.frx":0000
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   645
+   ScaleHeight     =   678
    ScaleMode       =   3  'Pixel
-   ScaleWidth      =   368
+   ScaleWidth      =   546
    ShowInTaskbar   =   0   'False
+   Begin VB.PictureBox picture1 
+      AutoSize        =   -1  'True
+      Height          =   2250
+      Left            =   5625
+      ScaleHeight     =   2190
+      ScaleWidth      =   2040
+      TabIndex        =   27
+      Top             =   4485
+      Width           =   2100
+   End
    Begin VB.Timer wallpaperTimer 
       Enabled         =   0   'False
       Interval        =   60000
@@ -181,6 +191,42 @@ Begin VB.Form dock
       Left            =   270
       Tag             =   "this is the X millisecond timer that does the animation for the dock icons"
       Top             =   105
+   End
+   Begin VB.Label Label23 
+      Caption         =   "This form is invisible at runtime and none of the components here are visible at that point."
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   525
+      Left            =   315
+      TabIndex        =   30
+      ToolTipText     =   "slides the dock in the Y axis"
+      Top             =   9435
+      Width           =   7695
+   End
+   Begin VB.Label Label22 
+      Caption         =   "hiddenThumbnailPicbox"
+      Height          =   255
+      Left            =   5820
+      TabIndex        =   29
+      ToolTipText     =   "slides the dock in the Y axis"
+      Top             =   6915
+      Width           =   1950
+   End
+   Begin VB.Label Label21 
+      Caption         =   "wallpaperTimer"
+      Height          =   255
+      Left            =   3390
+      TabIndex        =   28
+      ToolTipText     =   "slides the dock in the Y axis"
+      Top             =   6765
+      Width           =   1410
    End
    Begin VB.Label Label20 
       Caption         =   "explorerTimer"
@@ -867,6 +913,45 @@ Private Declare Function SetProcessDpiAwareness Lib "shcore.dll" (ByVal Value As
 
 '------------------------------------------------------ ENDS
 
+Private Declare Function BitBlt Lib "gdi32" ( _
+    ByVal hDestDC As Long, _
+    ByVal x As Long, _
+    ByVal y As Long, _
+    ByVal nWidth As Long, _
+    ByVal nHeight As Long, _
+    ByVal hSrcDC As Long, _
+    ByVal xSrc As Long, _
+    ByVal ySrc As Long, _
+    ByVal dwRop As Long _
+) As Long
+ 
+Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" ( _
+    ByVal lpClassName As String, _
+    ByVal lpWindowName As String _
+) As Long
+ 
+Private Declare Function GetWindowDC Lib "user32" ( _
+    ByVal hWnd As Long _
+) As Long
+ 
+Private Declare Function GetWindowRect Lib "user32" ( _
+    ByVal hWnd As Long, _
+    ByRef lpRect As RECT _
+) As Long
+ 
+Private Declare Function ReleaseDC Lib "user32" ( _
+    ByVal hWnd As Long, _
+    ByVal hdc As Long _
+) As Long
+ 
+Private Type RECT
+    Left    As Long
+    Top     As Long
+    Right   As Long
+    Bottom  As Long
+End Type
+
+
 
 Private Sub clickBlankTimer_Timer()
 ' In VB6 you cannot obtain a 1 millisecond timer. The clock resolution on Windows is not high enough.
@@ -1024,7 +1109,7 @@ Private Sub Form_Load()
 '
 '        ' set the device (screen) context default to primary monitor
 '        If hdcScreen = 0 Then
-            hdcScreen = Me.hDC
+            hdcScreen = Me.hdc
 '        End If
 '
 '        'CenterFormOnMonitorTwo dock
@@ -1115,7 +1200,7 @@ End Sub
 ' Purpose   : We handle the mouse events during mouseUp, we only set some states here
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     On Error GoTo Form_MouseDown_Error
     
@@ -1151,7 +1236,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim timeDiff As Long: timeDiff = 0
     Dim tickCount As Long: tickCount = 0
     
@@ -1441,7 +1526,7 @@ End Sub
 ' Purpose   : this is the equivalent of an icon MouseUp event, a click anywhere on the form
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 
    On Error GoTo Form_MouseUp_Error
 
@@ -1755,7 +1840,7 @@ End Function
     'Files = 15 (vbCFFiles)
     'RTF = -16639
     '
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
    
     Dim suffix As String: suffix = vbNullString
     Dim FileName As String: FileName = vbNullString
@@ -2040,7 +2125,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
    On Error GoTo Form_OLEDragOver_Error
 
     If rDLockIcons = 0 Then
@@ -2381,7 +2466,7 @@ Private Function fTestCursorWithinDockYPosition() As Boolean
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
     If dockPosition = vbBottom Then
-        outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.y < dockYEntrancePoint Or apiMouse.x < iconLeftmostPointPxls Or apiMouse.x > iconRightmostPointPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '            outsideDock = True
 '        Else
@@ -2389,7 +2474,7 @@ Private Function fTestCursorWithinDockYPosition() As Boolean
 '        End If
     End If
     If dockPosition = vbtop Then
-        outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.y > dockYEntrancePoint Or apiMouse.x < iconLeftmostPointPxls Or apiMouse.x > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     End If
     
     fTestCursorWithinDockYPosition = outsideDock ' return
@@ -2559,11 +2644,11 @@ Private Sub animateTimer_Timer()
             responseTimer.Enabled = True
 '            Exit Sub             ' if the timer that does the bouncing is running then we need to animate even if the mouse is stationary...
         'End If
-        If savApIMouseX = apiMouse.X And savApIMouseY <> apiMouse.Y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
+        If savApIMouseX = apiMouse.x And savApIMouseY <> apiMouse.y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
     End If
 
-    savApIMouseY = apiMouse.Y
-    savApIMouseX = apiMouse.X
+    savApIMouseY = apiMouse.y
+    savApIMouseX = apiMouse.x
     
     showsmall = True
     bDrawn = False
@@ -2572,7 +2657,7 @@ Private Sub animateTimer_Timer()
     ' determines if and where exactly the mouse is in the < horizontal > icon hover area and if so, determine the icon index
     For useloop = 0 To iconArrayUpperBound
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-        insideDock = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
+        insideDock = apiMouse.x >= iconStoreLeftPixels(useloop) And apiMouse.x <= iconStoreRightPixels(useloop)
         
         If insideDock Then
             iconIndex = useloop ' this is the current icon number being hovered over
@@ -2582,7 +2667,7 @@ Private Sub animateTimer_Timer()
             'iWidth = iconWidthPxls
             'iAmount = apiMouse.X - iconStoreLeftPixels(useloop)
             'iconProportion = (apiMouse.X - iconStoreLeftPixels(useloop)) / iconWidthPxls
-            iconXOffset = apiMouse.X - iconStoreLeftPixels(useloop)
+            iconXOffset = apiMouse.x - iconStoreLeftPixels(useloop)
             Exit For ' as soon as we have the index we no longer have to stay in the loop
         End If
     Next useloop
@@ -2728,7 +2813,7 @@ Private Sub sequentialBubbleAnimation()
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
         
         ' this is the actual line that does the main animation
-        dynamicSizeModifierPxls = ((apiMouse.X) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
+        dynamicSizeModifierPxls = ((apiMouse.x) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
     
     Else
         usedMenuFlag = False ' the menu causes the mouse to move far away from the icon centre and so icon sizing was massive
@@ -2775,7 +2860,7 @@ Private Sub sequentialBubbleAnimation()
     ' .nn Changed or added as part of the drag and drop functionality
     ' 12/05/2021 .nn DAEB Displays a smaller size icon at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
-        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplay, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
+        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplay, (apiMouse.x - iconSizeLargePxls / 2), (apiMouse.y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
     End If
     
     Call updateScreenUsingGDIBitmap
@@ -5467,11 +5552,11 @@ Private Sub resolveVB6SizeBug()
 '    Me.Height = Screen.Height '16200 correct
 '    Me.Width = Screen.Width ' 16200 < VB6 bug here
 
-    screenHeightTwips = GetDeviceCaps(dock.hDC, VERTRES) * screenTwipsPerPixelY
-    screenWidthTwips = GetDeviceCaps(dock.hDC, HORZRES) * screenTwipsPerPixelX
+    screenHeightTwips = GetDeviceCaps(dock.hdc, VERTRES) * screenTwipsPerPixelY
+    screenWidthTwips = GetDeviceCaps(dock.hdc, HORZRES) * screenTwipsPerPixelX
     
-    screenHeightPixels = GetDeviceCaps(dock.hDC, VERTRES)
-    screenWidthPixels = GetDeviceCaps(dock.hDC, HORZRES)
+    screenHeightPixels = GetDeviceCaps(dock.hdc, VERTRES)
+    screenWidthPixels = GetDeviceCaps(dock.hdc, HORZRES)
     
     oldScreenHeightPixels = screenHeightPixels
     oldScreenWidthPixels = screenWidthPixels
@@ -6717,8 +6802,8 @@ Private Sub ScreenResolutionTimer_Timer()
 
     On Error GoTo ScreenResolutionTimer_Timer_Error
     
-    screenHeightPixels = GetDeviceCaps(dock.hDC, VERTRES)
-    screenWidthPixels = GetDeviceCaps(dock.hDC, HORZRES)
+    screenHeightPixels = GetDeviceCaps(dock.hdc, VERTRES)
+    screenWidthPixels = GetDeviceCaps(dock.hdc, HORZRES)
     
     If Not (screenHeightPixels = oldScreenHeightPixels) Or Not (screenWidthPixels = oldScreenWidthPixels) Then
         ' only restart the dock if the resolution has changed and the dock has not been deliberately hidden
@@ -7231,3 +7316,83 @@ validateInputs_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure validateInputs of form modMain"
 End Sub
+
+' on the process timer that tests for running proceses and if it makes a match , placing a cog above the  icon
+
+' isRunning can return an optional processID
+' store the process id in an array
+
+' 'store the hwnd of the process
+
+
+Private Sub mySub()
+    Dim windowHwnd As Long
+    Dim processID As Long
+    
+    ' see if the thumbnail image is already in the collection, if so, extract that and display it
+    ' if cThumbnail(location) = true then
+        'look in the processID array for this icon to see if there is a processID, if there is, then use it
+        'if icoProcessIDArray(selectediconindex) <> 0 then
+            'look in the hwnd array for this icon to see if there is a hwnd, if there is, then use it
+            'if icoHWNDArray(selectediconindex) <> 0 then
+            
+                ' obtain the handle from the processID, bypass if windowHWND is already in the array
+                windowHwnd = getProcessWindowHandle(processID)
+                
+                ' drop the windowHWND in the hwnd array (cache)
+                '  icoHWNDArray(selectediconindex)=windowHwnd
+                
+                ' capture the current window image into a hidden picturebox
+                Call captureWindow(windowHwnd)
+                
+                'use GDI+ to resize
+                ' resizeAndLoadImgToDict
+                
+                ' drop the image in a collection
+                'cThumbnail(location) =
+            'endif
+        ' endif
+    ' endif
+    
+End Sub
+
+Private Function getProcessWindowHandle(ByVal processID As Long) As Long
+    Dim windowHwnd As Long
+    ' enumerate all windows and find the associated pid of each, returning the hWnd of the window associated with the given PID
+    Call fEnumWindows(processID)
+    windowHwnd = storeWindowHwnd
+
+End Function
+
+Private Sub captureWindow(ByVal thisWindowHWND As Long)
+    Dim lhDC            As Long
+    Dim lhWnd As Long
+    Dim udtWndRect      As RECT
+    Dim lWidth          As Long
+    Dim lHeight         As Long
+ 
+    'lhWnd = FindWindow("Notepad", vbNullString)
+    lhWnd = thisWindowHWND
+    lhDC = GetWindowDC(lhWnd)
+ 
+    GetWindowRect lhWnd, udtWndRect
+ 
+    lWidth = udtWndRect.Right - udtWndRect.Left
+    lHeight = udtWndRect.Bottom - udtWndRect.Top
+ 
+    picture1.Cls
+ 
+    BitBlt picture1.hdc, _
+             0, 0, _
+             lWidth, _
+             lHeight, _
+           lhDC, _
+             0, _
+             0, _
+             vbSrcCopy
+ 
+    ReleaseDC Me.hWnd, lhDC
+    picture1.Refresh
+End Sub
+
+

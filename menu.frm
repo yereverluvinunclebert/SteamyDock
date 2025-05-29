@@ -280,6 +280,13 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
+'---------------------------------------------------------------------------------------
+' Module    : menuForm
+' Author    : beededea
+' Date      : 28/05/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+
 ' .01 DAEB 24/01/2021 menu.frm modified to handle the new timer name
 ' .02 DAEB 24/01/2021 menu.frm added disable of the autoFadeInTimer during menu operation
 ' .03 DAEB 02/02/2021 menu.frm Added menu option to clear the cache - mnuAddCache_Click
@@ -302,6 +309,7 @@ Option Explicit
 
 'Private Declare Function SHParseDisplayName Lib "shell32.dll" (ByVal pszName As Long, ByVal pbc As Long, ByRef ppidl As Long, ByVal sfgaoIn As Long, ByRef psfgaoOut As Long) As Long
 'Private Declare Function SHGetPathFromIDList Lib "shell32.dll" Alias "SHGetPathFromIDListA" (ByVal pidl As Long, ByVal pszPath As String) As Long
+
 
 
 '---------------------------------------------------------------------------------------
@@ -3418,3 +3426,4 @@ addTargetProgram_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addTargetProgram of Form rDIconConfigForm"
  
 End Function
+
