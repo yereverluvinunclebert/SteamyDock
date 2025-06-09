@@ -325,7 +325,7 @@ End Type
 ' .07 DAEB 19/04/2021 mdlMain.bas  added a new type link for determining shortcuts
 Public Type Link
     Attributes As Long
-    Filename As String
+    FileName As String
     Description As String
     RelPath As String
     WorkingDir As String
@@ -648,7 +648,7 @@ Public lHotKey As Long
 Public Function GetEncoderClsid(strMimeType As String, ClassID As CLSID) As Long
    Dim num As Long
    Dim Size As Long
-   Dim I As Long
+   Dim i As Long
 
    Dim ICI() As ImageCodecInfo
    Dim Buffer() As Byte
@@ -671,11 +671,11 @@ Public Function GetEncoderClsid(strMimeType As String, ClassID As CLSID) As Long
    Call CopyMemory(ICI(1), Buffer(1), (Len(ICI(1)) * num))
 
    ' Loop through all the codecs
-   For I = 1 To num
+   For i = 1 To num
       ' Must convert the pointer into a usable string
-      If StrComp(PtrToStrW(ICI(I).MimeType), strMimeType, vbTextCompare) = 0 Then
-         ClassID = ICI(I).ClassID   ' Save the class id
-         GetEncoderClsid = I        ' return the index number for success
+      If StrComp(PtrToStrW(ICI(i).MimeType), strMimeType, vbTextCompare) = 0 Then
+         ClassID = ICI(i).ClassID   ' Save the class id
+         GetEncoderClsid = i        ' return the index number for success
          Exit For
       End If
    Next
@@ -2429,7 +2429,7 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
     
     ' Creates a GDI+ Image object based on the stream, loads it into img - Olaf Schmidt
     Call GdipLoadImageFromStream(ObjPtr(Strm), img)        ' <consumes memory 300k approx.
-    If img = 0 Then Err.Raise vbObjectError, , "Could not load image with GDIPlus"
+    If img = 0 Then Err.Raise vbObjectError, , "Could not load image " & strFilename & " with GDIPlus"
 
     'GDI+ API to determine image dimensions, Olaf Schmidt
     Call GdipGetImageWidth(img, dx)
@@ -2486,7 +2486,7 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
 
 resizeAndLoadImgToDict_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure resizeAndLoadImgToDict of module mdlMain.bas"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure resizeAndLoadImgToDict with this file - " & strFilename & " of module mdlMain.bas"
         
 End Function
 
@@ -2500,7 +2500,7 @@ End Function
 ' Purpose   : Credit to Olaf Schmidt
 '---------------------------------------------------------------------------------------
 '
-Public Function ReadBytesFromFile(ByVal Filename As String) As Byte()
+Public Function ReadBytesFromFile(ByVal FileName As String) As Byte()
    On Error GoTo ReadBytesFromFile_Error
 
     Dim ab As Object
@@ -2518,7 +2518,7 @@ Public Function ReadBytesFromFile(ByVal Filename As String) As Byte()
   With ab
     .Open
       .Type = 1 'adTypeBinary
-      .LoadFromFile Filename
+      .LoadFromFile FileName
       ReadBytesFromFile = .Read
     .Close
   End With
@@ -3030,7 +3030,7 @@ Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As 
 
     Dim Count As Long: Count = 0
     Dim hIcon() As Long: 'hIcon() = 0
-    Dim I As Long: I = 0
+    Dim i As Long: i = 0
     Dim pid As Long: pid = 0
 
     On Error GoTo isSysTray_Error
@@ -3041,11 +3041,11 @@ Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As 
         Call GetIconHandles(hTray, Count, hIcon)
     End If
 
-    For I = 0 To Count - 1
-        pid = GetPidByWindow(hIcon(I))
+    For i = 0 To Count - 1
+        pid = GetPidByWindow(hIcon(i))
         'if the extracted pid matches the supplied processID then we have the window handle
         If pid = processID Then
-            hWnd = hIcon(I)
+            hWnd = hIcon(i)
             Exit Function
         End If
     Next
@@ -3130,7 +3130,7 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
     Dim RProcessFound As Long: RProcessFound = 0
     Dim SzExename As String: SzExename = vbNullString
     Dim MyProcess As Long: MyProcess = 0
-    Dim I As Integer: I = 0
+    Dim i As Integer: i = 0
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim procId As Long: procId = 0
@@ -3163,8 +3163,8 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
           'thisHSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
           RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
           Do
-            I = InStr(1, thisUProcess.szexeFile, Chr(0))
-            SzExename = LCase$(Left$(thisUProcess.szexeFile, I - 1))
+            i = InStr(1, thisUProcess.szexeFile, Chr(0))
+            SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
             'WinDirEnv = Environ("Windir") + "\"
             'WinDirEnv = LCase$(WinDirEnv)
 
