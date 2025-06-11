@@ -1545,7 +1545,7 @@ End Sub
 ' Procedure : fMouseUp
 ' Author    : beededea
 ' Date      : 11/04/2020
-' Purpose   : you cannot directly call a form mouseUp event from anywhere else so this is the equivalent that is called by the
+' Purpose   : you cannot directly call a VB6 form mouseUp event from anywhere else so this is the equivalent that is called by the
 '             Form_MouseUp event and we can also call fMouseUp as and when we require.
 '---------------------------------------------------------------------------------------
 ' the mouse up event handles the left button click event and the right click menu activation. It also identifies a drag to or
@@ -1555,11 +1555,9 @@ End Sub
 
 
 Public Sub fMouseUp(Button As Integer)
-   On Error GoTo fMouseUp_Error
    
-    'Dim timeDiff As Integer:  timeDiff = 0
-    'Dim tickCount As Long: tickCount = 0
-    'Dim answer As VbMsgBoxResult: answer = vbNo
+    On Error GoTo fMouseUp_Error
+
     Dim thisFilename As String: thisFilename = vbNullString
     Dim sourceIconIndex As Integer: sourceIconIndex = 0
     Dim targetIconIndex As Integer: targetIconIndex = 0
@@ -1567,12 +1565,7 @@ Public Sub fMouseUp(Button As Integer)
     Dim suffix As String: suffix = vbNullString
             
     mouseDownTime = 0
-    
-    ' cause the clicked icon to disappear for 20ms or less
-    ' start a timer that runs and puts the current icon back to the correct filename when the timer ends, using an indicator flag
-'    blankClickEvent = True
-'    clickBlankTimer.Enabled = True
-    
+      
     '.76 DAEB 12/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
     Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile)
     
@@ -1591,6 +1584,8 @@ Public Sub fMouseUp(Button As Integer)
             animateTimer.Enabled = False ' stops the animation
             responseTimer.Enabled = False ' stops the assessment of the mouse position
         End If
+            
+        ' now alter the menu options to suit the icon type/status that we are encountering
             
         If sDisabled <> "1" Then
             menuForm.mnuDisableIcon.Caption = "Disable This Icon"
@@ -2164,44 +2159,55 @@ End Sub
 ' Author    : beededea
 ' Date      : 10/07/2020
 ' Purpose   :
-' Provides regular checking of only EXPLORER processes initiated by the dock, removes the running indicator cog.
+'
+' Provides regular checking of only EXPLORER processes initiated by the dock itself, keeping a track of locally initiated explorer windows, finally
+' removing the running indicator cog when the explorer window is killed by the user (using the X on the application window or other method).
+'
 ' Explorer windows have to be enumerated differently than just comparing current open folders to existing instances of explorer processes.
 ' each explorer window has to be enumerated and the associated folder extracted. This also handles folders referenced
 ' by CLSIDs.
 
 ' An array of the same size as the main icon arrays, each dock-initiated explorer item resides in its own numbered location.
-' Checking for just a few elements in an array, the empty elements can be bypassed, instead probing just these few processes
-' for existence, this can be carried out much more frequently than the main timer process that occurs only once every 10-65 seconds full process check.
+' Checking for just a few elements in an array, the empty elements can be bypassed, instead we probe just these few processes for existence.
+' This can be carried out much more frequently than the main explorer check timer that occurs only once every 5-65 seconds (user defined)
+' when a full explorer check occurs.
+'
 ' If the result of the search is false then the program has completed and the cog can be removed.
-' processCheckArray(useloop) - is the array that determines whether a cog is placed on an icon.
+' explorerCheckArray(useloop) - is the array that determines whether a cog is placed on an explorer icon.
 '---------------------------------------------------------------------------------------
 
 Private Sub initiatedExplorerTimer_Timer()
 
     Dim useloop As Long: useloop = 0
-    Dim itIs As Boolean: itIs = False
+    Dim itIsRunning As Boolean: itIsRunning = False
      
     On Error GoTo initiatedExplorerTimer_Error
+    
+    ' stop both this timer and the less frequent explorerTimer that might be doing the same thing at the same time
+    initiatedExplorerTimer.Enabled = False
+    explorerTimer.Enabled = False
 
-        For useloop = 0 To rdIconMaximum
-            ' instead of looping through all elements in the docksettings.ini file, we now store all the current commands in an array
-            ' we loop through the array much quicker than looping through the temporary settings file.
-            ' all we have to do is to remember to populate the array whenever an icon is added or deleted
-            If Not initiatedExplorerArray(useloop) = vbNullString Then
-                itIs = isExplorerRunning(initiatedExplorerArray(useloop))
-                If itIs = False Then
-                    explorerCheckArray(useloop) = False ' the cog array for explorer processes
-                    initiatedExplorerArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
-                Else
-                    explorerCheckArray(useloop) = True ' the cog array for explorer processes
-                End If
-                ' .81 DAEB 28/05/2021 frmMain.frm Refresh the running process with a cog when the process is running, this had been removed earlier
-                bDrawn = False
-                If smallDockBeenDrawn = True Then
-                    If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
-                End If
+    For useloop = 0 To rdIconMaximum
+        If Not initiatedExplorerArray(useloop) = vbNullString Then
+            itIsRunning = isExplorerRunning(initiatedExplorerArray(useloop))
+            If itIsRunning = False Then
+                explorerCheckArray(useloop) = False ' the cog array for explorer processes
+                initiatedExplorerArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
+            Else
+                itIsRunning = itIsRunning ' it just is, so do nothing
+'                    explorerCheckArray(useloop) = True ' the cog array for explorer processes
             End If
-        Next useloop
+            ' .81 DAEB 28/05/2021 frmMain.frm Refresh the running process with a cog when the process is running, this had been removed earlier
+            bDrawn = False
+            If smallDockBeenDrawn = True Then
+                If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
+            End If
+        End If
+    Next useloop
+    
+    ' restart the timers
+    initiatedExplorerTimer.Enabled = True
+    explorerTimer.Enabled = True
 
    On Error GoTo 0
    Exit Sub
@@ -2219,46 +2225,54 @@ End Sub
 ' Author    : beededea
 ' Date      : 10/07/2020
 ' Purpose   :
-' Provides regular checking of ONLY processes initiated by the dock, removes the running indicator cog
-' an array of the same size as the main icon arrays, each dock-initiated item resides in its own numbered location.
-' Checking for just a few elements in an array, the empty elements can be bypassed, instead probing just these few processes
-' for existence, this can be carried out much more frequently than the current once every 10-65 seconds full process check.
+' Provides regular checking of only processes initiated by the dock itself, keeping a track of locally initiated application windows, finally
+' removing the running indicator cog when the process/application is killed by the user (using the X on the application window or other method).
+'
+' An array of the same size as the main icon arrays, each dock-initiated process item resides in its own numbered location.
+' Checking for just a few elements in an array, the empty elements can be bypassed, instead we probe just these few processes for existence.
+' This can be carried out much more frequently than the main process check timer that occurs only once every 5-65 seconds (user defined)
+' when a full process check occurs.
+'
 ' If the result of the search is false then the program has completed and the cog can be removed.
-' processCheckArray(useloop) - is the array that determines whether a cog is placed on an icon.
+' processCheckArray(useloop) - is the array that determines whether a cog is placed on an application icon.
+'
 '---------------------------------------------------------------------------------------
 
 Private Sub initiatedProcessTimer_Timer()
 
     Dim useloop As Long: useloop = 0
-    Dim itIs As Boolean: itIs = False
+    Dim itIsRunning As Boolean: itIsRunning = False
      
     On Error GoTo initiatedProcessTimer_Error
 
-        For useloop = 0 To rdIconMaximum
-            ' instead of looping through all elements in the docksettings.ini file, we now store all the current commands in an array
-            ' we loop through the array much quicker than looping through the temporary settings file.
-            ' all we have to do is to remember to populate the array whenever an icon is added or deleted
-            If Not initiatedProcessArray(useloop) = vbNullString Then
-                itIs = IsRunning(initiatedProcessArray(useloop))
-                If itIs = False Then
-                    processCheckArray(useloop) = False ' the cog array
+    ' stop both this timer and the less frequent processTimer that might be doing the same thing at the same time
+    initiatedProcessTimer.Enabled = False
+    processTimer.Enabled = False
 
-                    initiatedProcessArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
-
-                Else
+    For useloop = 0 To rdIconMaximum
+        If Not initiatedProcessArray(useloop) = vbNullString Then
+            itIsRunning = IsRunning(initiatedProcessArray(useloop))
+            If itIsRunning = False Then
+                processCheckArray(useloop) = False ' remove it from the cog array
+                initiatedProcessArray(useloop) = vbNullString ' removes the entry from the quick test array so it isn't caught again on the next run
+            Else
 '                    processCheckArray(useloop) = True ' the cog array
-                    itIs = itIs
-                    'MsgBox ""
-                    'If initiatedProcessArray(useloop) = "C:\Program Files\CPUID\CPU-Z\cpuz.exe" Then MsgBox "poo"
-                    
-                End If
-                ' .81 DAEB 28/05/2021 frmMain.frm Refresh the running process with a cog when the process is running, this had been removed earlier
-                bDrawn = False
-                If smallDockBeenDrawn = True Then
-                    If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
-                End If
+                itIsRunning = itIsRunning ' it just is, so do nothing
+                'MsgBox ""
+                'If initiatedProcessArray(useloop) = "C:\Program Files\CPUID\CPU-Z\cpuz.exe" Then MsgBox "poo"
+                
             End If
-        Next useloop
+            ' .81 DAEB 28/05/2021 frmMain.frm Refresh the running process with a cog when the process is running, this had been removed earlier
+            bDrawn = False
+            If smallDockBeenDrawn = True Then
+                If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
+            End If
+        End If
+    Next useloop
+    
+    ' restart both timers
+    initiatedProcessTimer.Enabled = True
+    processTimer.Enabled = True
 
    On Error GoTo 0
    Exit Sub

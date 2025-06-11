@@ -832,10 +832,14 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Sub checkDockProcessesRunning()
+        
+    Dim useloop As Integer: useloop = 0
     
     On Error GoTo checkDockProcessesRunning_Error
-    
-    Dim useloop As Integer: useloop = 0
+
+    ' stop both this timer and the more frequent initiatedProcessTimer that might be doing the same thing at the same time
+    dock.initiatedProcessTimer.Enabled = False
+    dock.processTimer.Enabled = False
         
     For useloop = 0 To rdIconMaximum
         ' instead of looping through all elements in the docksettings.ini file, we now store all the current commands in an sCommandArray
@@ -844,8 +848,12 @@ Public Sub checkDockProcessesRunning()
         If sCommandArray(useloop) <> "" Then
             processCheckArray(useloop) = IsRunning(sCommandArray(useloop))
         End If
-
     Next useloop
+    
+    ' restart both timers
+    dock.initiatedProcessTimer.Enabled = True
+    dock.processTimer.Enabled = True
+            
    On Error GoTo 0
    Exit Sub
 
@@ -866,6 +874,8 @@ End Sub
 '
 '             This routine is used to identify an Explorer Window in the dock as currently
 '             being open even if not triggered by the dock.
+'             puts all the currently open explorer windows into an array so that they can be quickly referenced
+'             does not directly put a cog by the icon, that is done during theicon drawing process which references the array populated here
 '---------------------------------------------------------------------------------------
 '
 Public Sub checkExplorerRunning()
@@ -878,6 +888,11 @@ Public Sub checkExplorerRunning()
     Dim sCommandLoop As Integer: sCommandLoop = 0
     Dim NameProcess As String: NameProcess = vbNullString
     
+    ' stop both this timer and the more frequent initiatedExplorerTimer
+    dock.initiatedExplorerTimer.Enabled = False
+    dock.explorerTimer.Enabled = False
+    
+    ' put all the currently open explorer windows into an array so that they can be quickly referenced
     Call enumerateExplorerWindows(openExplorerPathArray(), windowCount)
     
     If windowCount = 0 Then Call enumerateExplorerWindows(openExplorerPathArray(), windowCount)
@@ -894,6 +909,10 @@ Public Sub checkExplorerRunning()
             End If
         Next sCommandLoop
     Next windowLoop
+    
+    ' restart the two timers when complete
+    dock.initiatedExplorerTimer.Enabled = True
+    dock.explorerTimer.Enabled = True
         
    On Error GoTo 0
    Exit Sub
