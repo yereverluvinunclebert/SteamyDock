@@ -842,6 +842,9 @@ Public Sub checkDockProcessesRunning()
     For useloop = 0 To rdIconMaximum
         If sCommandArray(useloop) <> "" Then
             processCheckArray(useloop) = IsRunning(sCommandArray(useloop))
+            If processCheckArray(useloop) <> vbNullString Then
+                initiatedProcessArray(useloop) = processCheckArray(useloop)
+            End If
         End If
     Next useloop
     
