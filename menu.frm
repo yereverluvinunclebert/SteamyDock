@@ -1306,8 +1306,8 @@ Private Sub mnuDisableIcon_Click()
     ' load and cache transparent versions of the current images to the associated collections
     ' at small and large sizes.
     If fFExists(sFilename) Then
-        resizeAndLoadImgToDict collLargeIcons, partialStringKey, fileNameArray(selectedIconIndex), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity
-        resizeAndLoadImgToDict collSmallIcons, partialStringKey, fileNameArray(selectedIconIndex), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(selectedIconIndex), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity
+        resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(selectedIconIndex), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity
     End If
 
    On Error GoTo 0

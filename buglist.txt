@@ -48,7 +48,9 @@ add a precursor blank icon and a final icon
 
 try adding 1-5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
+convert old settings.ini to JSON format using https://www.ediy.co.nz/vbjson-json-parser-library-in-vb6-xidc55680.html
 
+separate the task to kill a process to an external process so that the current process, ie. the dock is not held up 
 
 ' Extracting embedded icons from DLLs and EXEs
 ' ==============================================

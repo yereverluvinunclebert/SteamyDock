@@ -351,6 +351,32 @@ Public gblDoNotResize As Boolean
 'Public gblDockSettingsFormOldHeight As Long
 'Public gblDockSettingsFormOldWidth As Long
 '------------------------------------------------------ ENDS
+
+Private Declare Function QueryDosDevice Lib "kernel32" Alias "QueryDosDeviceA" (ByVal lpDeviceName As String, ByVal lpTargetPath As String, ByVal ucchMax As Long) As Long
+
+
+' an array assigned to each icon, used for quick access
+
+Public sFileNameArray() As String
+Public sFileName2Array() As String
+Public sTitleArray() As String
+Public sCommandArray() As String
+Public sArgumentsArray() As String
+Public sWorkingDirectoryArray() As String
+Public sShowCmdArray() As String
+Public sOpenRunningArray() As String
+Public sIsSeparatorArray() As String
+Public sUseContextArray() As String
+Public sDockletFileArray() As String
+Public sUseDialogArray() As String
+Public sUseDialogAfterArray() As String
+Public sQuickLaunchArray() As String
+Public sAutoHideDockArray() As String
+Public sSecondAppArray() As String
+Public sRunElevatedArray() As String
+Public sRunSecondAppBeforehandArray() As String
+Public sAppToTerminateArray() As String
+Public sDisabledArray() As String
 '
 '---------------------------------------------------------------------------------------
 ' Procedure : checkLicenceState
@@ -1043,8 +1069,14 @@ End Function
 Public Function getFolderNameFromPath(ByRef Path As String) As String
 
    On Error GoTo getFolderNameFromPath_Error
-   'If debugFlg = 1 Then debugLog "%" & "getFolderNameFromPath"
+   'If debugflg = 1 Then debugLog "%" & "getFolderNameFromPath"
+   
+    ' test the process folder is being presented as a device string of the type \Device\HarddiskVolume7\
+    If InStr(Path, "\Device\HarddiskVolume") > 0 Then
+        Path = pvReplaceDevice(Path)
+    End If
 
+    ' extract the string prior to the final backslash
     If InStrRev(Path, "\") = 0 Then
         getFolderNameFromPath = vbNullString
         Exit Function
@@ -1057,6 +1089,42 @@ Public Function getFolderNameFromPath(ByRef Path As String) As String
 getFolderNameFromPath_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFolderNameFromPath of Module Common"
+End Function
+
+'---------------------------------------------------------------------------------------
+' Procedure : pvReplaceDevice
+' Author    : wqweto  - https://stackoverflow.com/questions/11795347/convert-from-device-harddiskvolume1-to-c-in-vb6
+' Date      : 11/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Function pvReplaceDevice(sPath As String) As String
+    Dim sDrive          As String
+    Dim sDevice         As String
+    Dim lIdx            As Long
+
+   On Error GoTo pvReplaceDevice_Error
+
+    For lIdx = 0 To 25
+        sDrive = Chr$(65 + lIdx) & ":"
+        sDevice = Space(1000)
+        If QueryDosDevice(sDrive, sDevice, Len(sDevice)) <> 0 Then
+            sDevice = Left$(sDevice, InStr(sDevice, Chr$(0)) - 1)
+'            Debug.Print sDrive; "="; sDevice
+            If LCase$(Left$(sPath, Len(sDevice))) = LCase$(sDevice) Then
+                pvReplaceDevice = sDrive & Mid$(sPath, Len(sDevice) + 1)
+                Exit Function
+            End If
+        End If
+    Next
+    pvReplaceDevice = sPath
+
+   On Error GoTo 0
+   Exit Function
+
+pvReplaceDevice_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure pvReplaceDevice of Module Module1"
 End Function
 
 
@@ -1276,14 +1344,14 @@ End Function
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub writeIconSettingsIni(ByVal location As String, ByVal iconNumberToWrite As Integer, settingsFile As String)
+Public Sub writeIconSettingsIni(ByVal location As String, ByVal iconNumberToWrite As Integer, ByVal settingsFile As String, Optional ByVal writeArray As Boolean)
 '                                                   ^^^^^ not byval on the programs - so possible DEBUG
     'Writes an .INI File (SETTINGS.INI)
     
    On Error GoTo writeIconSettingsIni_Error
    'If debugFlg = 1 Then debugLog "%writeIconSettingsIni"
 
-
+   If writeArray = False Then
         PutINISetting location, iconNumberToWrite & "-FileName", sFilename, settingsFile
         PutINISetting location, iconNumberToWrite & "-FileName2", sFileName2, settingsFile
         PutINISetting location, iconNumberToWrite & "-Title", sTitle, settingsFile
@@ -1309,7 +1377,28 @@ Public Sub writeIconSettingsIni(ByVal location As String, ByVal iconNumberToWrit
         PutINISetting location, iconNumberToWrite & "-AppToTerminate", sAppToTerminate, settingsFile
         PutINISetting location, iconNumberToWrite & "-Disabled", sDisabled, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
         
-        
+    Else
+        sFileNameArray(iconNumberToWrite) = sFilename
+        sFileName2Array(iconNumberToWrite) = sFileName2
+        sTitleArray(iconNumberToWrite) = sTitle
+        sCommandArray(iconNumberToWrite) = sCommand
+        sArgumentsArray(iconNumberToWrite) = sArguments
+        sWorkingDirectoryArray(iconNumberToWrite) = sWorkingDirectory
+        sShowCmdArray(iconNumberToWrite) = sShowCmd
+        sOpenRunningArray(iconNumberToWrite) = sOpenRunning
+        sIsSeparatorArray(iconNumberToWrite) = sIsSeparator
+        sUseContextArray(iconNumberToWrite) = sUseContext
+        sDockletFileArray(iconNumberToWrite) = sDockletFile
+        sUseDialogArray(iconNumberToWrite) = sUseDialog
+        sUseDialogAfterArray(iconNumberToWrite) = sUseDialogAfter
+        sQuickLaunchArray(iconNumberToWrite) = sQuickLaunch
+        sAutoHideDockArray(iconNumberToWrite) = sAutoHideDock
+        sSecondAppArray(iconNumberToWrite) = sSecondApp
+        sRunElevatedArray(iconNumberToWrite) = sRunElevated
+        sRunSecondAppBeforehandArray(iconNumberToWrite) = sRunSecondAppBeforehand
+        sAppToTerminateArray(iconNumberToWrite) = sAppToTerminate
+        sDisabledArray(iconNumberToWrite) = sDisabled
+    End If
         
        On Error GoTo 0
    Exit Sub
@@ -1667,7 +1756,8 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
             binaryName = getFileNameFromPath(NameProcess)
             'If binaryName = vbNullString Then Exit Function
             
-            folderName = getFolderNameFromPath(NameProcess) ' folder name of the binary in the stored process array
+            ' extract just folder name of the binary in the stored process array
+            folderName = getFolderNameFromPath(NameProcess)
             If binaryName = "" Then
                 IsRunning = False
                 Exit Function  ' the target is a folder so also invalid
@@ -1685,6 +1775,7 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
                         AppCount = AppCount + 1
                         procId = thisUProcess.th32ProcessID
 
+                        ' extract the folder name of the running binary that appears to be a match, we do this for confirmation purposes
                         runningProcessFolder = getFolderNameFromPath(getExePathFromPID(procId))
                         
                         ' some processes can only be interrogated when running with admin
@@ -1692,6 +1783,7 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
                                 IsRunning = True
                                 processID = procId
                         Else
+                            ' if we have an extracted path then we need to compare it with our stored folder path name
                             If LCase$(runningProcessFolder) = LCase$(folderName) Then
                                 IsRunning = True
                                 processID = procId

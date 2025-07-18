@@ -39,8 +39,8 @@ Attribute VB_Name = "mdlUnusedCode"
 ''    If debugflg = 1 Then debugLog "%" & "removeImageFromDictionary"
 '
 '    'resize all arrays used for storing icon information
-'    ReDim fileNameArray(rdIconMaximum) As String ' the file location of the original icons
-'    ReDim namesListArray(rdIconMaximum) As String ' the name assigned to each icon
+'    ReDim sFileNameArray(rdIconMaximum) As String ' the file location of the original icons
+'    ReDim sTitleArray(rdIconMaximum) As String ' the name assigned to each icon
 '    ReDim sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
 '    ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
 '    ReDim processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
@@ -54,8 +54,8 @@ Attribute VB_Name = "mdlUnusedCode"
 '        'readIconData (useloop)
 '        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
 '        ' read the two main icon variables into arrays, one for each
-'        fileNameArray(useloop) = sFilename
-'        namesListArray(useloop) = sTitle
+'        sFileNameArray(useloop) = sFilename
+'        sTitleArray(useloop) = sTitle
 '        sCommandArray(useloop) = sCommand
 '        targetExistsArray(useloop) = 0
 '

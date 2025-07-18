@@ -171,6 +171,8 @@ Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Lo
 Private Const PROCESS_ALL_ACCESS = &H1F0FFF
 
 
+
+
 ' Rocketdock global configuration variables END
 
 
@@ -258,7 +260,7 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDManageWindows = GetINISetting(location, "ManageWindows", settingsFile)
     rDDisableMinAnimation = GetINISetting(location, "DisableMinAnimation", settingsFile)
     rDShowRunning = GetINISetting(location, "ShowRunning", settingsFile)
-    rdShowApplicationThumbnails = GetINISetting(location, "ShowApplicationThumbnails", settingsFile)
+    rDShowApplicationThumbnails = GetINISetting(location, "ShowApplicationThumbnails", settingsFile)
     
     rDOpenRunning = GetINISetting(location, "OpenRunning", settingsFile)
     rDHoverFX = GetINISetting(location, "HoverFX", settingsFile)
@@ -382,7 +384,7 @@ Public Sub validateGeneral()
     If rDRunAppInterval = vbNullString Then rDRunAppInterval = "8" '
     If rDOpenRunning = vbNullString Then rDOpenRunning = "1" '
     If rDShowRunning = vbNullString Then rDShowRunning = "1" '
-    If rdShowApplicationThumbnails = vbNullString Then rdShowApplicationThumbnails = "1" '
+    If rDShowApplicationThumbnails = vbNullString Then rDShowApplicationThumbnails = "1" '
     
     If rDManageWindows = vbNullString Then rDManageWindows = "1" '
     If rDDisableMinAnimation = vbNullString Then rDDisableMinAnimation = "1" '
@@ -390,7 +392,7 @@ Public Sub validateGeneral()
     If Val(rDRunAppInterval) * 1000 >= 65536 Then rDRunAppInterval = "65"
     If Val(rDOpenRunning) <= 0 And Val(rDOpenRunning) > 1 Then rDOpenRunning = "1" '
     If Val(rDShowRunning) <= 0 And Val(rDShowRunning) > 1 Then rDShowRunning = "1" '
-    If Val(rdShowApplicationThumbnails) <= 0 And Val(rdShowApplicationThumbnails) > 1 Then rdShowApplicationThumbnails = "1" '
+    If Val(rDShowApplicationThumbnails) <= 0 And Val(rDShowApplicationThumbnails) > 1 Then rDShowApplicationThumbnails = "1" '
     
     If Val(rDManageWindows) <= 0 And Val(rDManageWindows) > 1 Then rDManageWindows = "1" '
     If Val(rDDisableMinAnimation) <= 0 And Val(rDDisableMinAnimation) > 1 Then rDDisableMinAnimation = "1" '
@@ -850,7 +852,7 @@ Public Sub readRegistryGeneral()
     'rDRetainIcons unused by Rocketdock
     rDOpenRunning = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "OpenRunning")
     rDShowRunning = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ShowRunning")
-    rdShowApplicationThumbnails = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ShowApplicationThumbnails")
+    rDShowApplicationThumbnails = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ShowApplicationThumbnails")
     
     rDManageWindows = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "ManageWindows")
     rDDisableMinAnimation = getstring(HKEY_CURRENT_USER, "Software\RocketDock\", "DisableMinAnimation")

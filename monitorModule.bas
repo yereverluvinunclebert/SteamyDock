@@ -97,6 +97,8 @@ Public screenHeightTwips As Long
 '    Next
 'End Function
 
+Public gblRequiresCommitToDisc As Boolean
+
 
 Public Function fVirtualScreenWidth() As Long
     ' This works even on Tablet PC.  The problem is: when the tablet screen is rotated, the "Screen" object of VB doesn't pick it up.

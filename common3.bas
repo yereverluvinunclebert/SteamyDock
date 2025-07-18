@@ -60,13 +60,18 @@ Option Explicit
 ' Procedure : readIconSettingsIni
 ' Author    : beededea
 ' Date      : 21/09/2019
-' Purpose   :
+' Purpose   : Reads an .INI File (SETTINGS.INI) using the icon number as a reference.
+'             Then it assigns the value to a variable and an array cache
+'             Or, alternatively read it directly from an array cache.
 '---------------------------------------------------------------------------------------
 '
-Public Sub readIconSettingsIni(location As String, ByVal iconNumberToRead As Integer, settingsFile As String)
-    'Reads an .INI File (SETTINGS.INI)
+Public Sub readIconSettingsIni(ByVal location As String, ByVal iconNumberToRead As Integer, ByVal settingsFile As String, Optional ByVal readArray As Boolean)
         
    On Error GoTo readIconSettingsIni_Error
+   
+    ' read the data directly from the settings file
+    
+    If readArray = False Then
         sFilename = GetINISetting(location, iconNumberToRead & "-FileName", settingsFile)
         sFileName2 = GetINISetting(location, iconNumberToRead & "-FileName2", settingsFile)
         sTitle = GetINISetting(location, iconNumberToRead & "-Title", settingsFile)
@@ -79,14 +84,61 @@ Public Sub readIconSettingsIni(location As String, ByVal iconNumberToRead As Int
         sUseContext = GetINISetting(location, iconNumberToRead & "-UseContext", settingsFile)
         sDockletFile = GetINISetting(location, iconNumberToRead & "-DockletFile", settingsFile)
         sUseDialog = GetINISetting(location, iconNumberToRead & "-UseDialog", settingsFile)
-        sUseDialogAfter = GetINISetting(location, iconNumberToRead & "-UseDialogAfter", settingsFile)  ' .01 DAEB 31/01/2021 rdIconConfig.frm Added new checkbox to determine if a post initiation dialog should appear
-        sQuickLaunch = GetINISetting(location, iconNumberToRead & "-QuickLaunch", settingsFile) ' .02 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
-        sAutoHideDock = GetINISetting(location, iconNumberToRead & "-AutoHideDock", settingsFile)       ' .12 DAEB 20/05/2021 common3.bas Added new check box to allow autohide of the dock after launch of the chosen app
-        sSecondApp = GetINISetting(location, iconNumberToRead & "-SecondApp", settingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+        sUseDialogAfter = GetINISetting(location, iconNumberToRead & "-UseDialogAfter", settingsFile)
+        sQuickLaunch = GetINISetting(location, iconNumberToRead & "-QuickLaunch", settingsFile)
+        sAutoHideDock = GetINISetting(location, iconNumberToRead & "-AutoHideDock", settingsFile)
+        sSecondApp = GetINISetting(location, iconNumberToRead & "-SecondApp", settingsFile)
         sRunElevated = GetINISetting(location, iconNumberToRead & "-RunElevated", settingsFile)
-        sRunSecondAppBeforehand = GetINISetting(location, iconNumberToRead & "-RunSecondAppBeforehand", settingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-        sAppToTerminate = GetINISetting(location, iconNumberToRead & "-AppToTerminate", settingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-        sDisabled = GetINISetting(location, iconNumberToRead & "-Disabled", settingsFile)      ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+        sRunSecondAppBeforehand = GetINISetting(location, iconNumberToRead & "-RunSecondAppBeforehand", settingsFile)
+        sAppToTerminate = GetINISetting(location, iconNumberToRead & "-AppToTerminate", settingsFile)
+        sDisabled = GetINISetting(location, iconNumberToRead & "-Disabled", settingsFile)
+    
+        ' now write it to the array cache
+        
+        sFileNameArray(iconNumberToRead) = sFilename
+        sFileName2Array(iconNumberToRead) = sFileName2
+        sTitleArray(iconNumberToRead) = sTitle
+        sCommandArray(iconNumberToRead) = sCommand
+        sArgumentsArray(iconNumberToRead) = sArguments
+        sWorkingDirectoryArray(iconNumberToRead) = sWorkingDirectory
+        sShowCmdArray(iconNumberToRead) = sShowCmd
+        sOpenRunningArray(iconNumberToRead) = sOpenRunning
+        sIsSeparatorArray(iconNumberToRead) = sIsSeparator
+        sUseContextArray(iconNumberToRead) = sUseContext
+        sDockletFileArray(iconNumberToRead) = sDockletFile
+        sUseDialogArray(iconNumberToRead) = sUseDialog
+        sUseDialogAfterArray(iconNumberToRead) = sUseDialogAfter
+        sQuickLaunchArray(iconNumberToRead) = sQuickLaunch
+        sAutoHideDockArray(iconNumberToRead) = sAutoHideDock
+        sSecondAppArray(iconNumberToRead) = sSecondApp
+        sRunElevatedArray(iconNumberToRead) = sRunElevated
+        sRunSecondAppBeforehandArray(iconNumberToRead) = sRunSecondAppBeforehand
+        sAppToTerminateArray(iconNumberToRead) = sAppToTerminate
+        sDisabledArray(iconNumberToRead) = sDisabled
+    
+    Else ' alternatively read it from the array cache
+    
+        sFilename = sFileNameArray(iconNumberToRead)
+        sFileName2 = sFileName2Array(iconNumberToRead)
+        sTitle = sTitleArray(iconNumberToRead)
+        sCommand = sCommandArray(iconNumberToRead)
+        sArguments = sArgumentsArray(iconNumberToRead)
+        sWorkingDirectory = sWorkingDirectoryArray(iconNumberToRead)
+        sShowCmd = sShowCmdArray(iconNumberToRead)
+        sOpenRunning = sOpenRunningArray(iconNumberToRead)
+        sIsSeparator = sIsSeparatorArray(iconNumberToRead)
+        sUseContext = sUseContextArray(iconNumberToRead)
+        sDockletFile = sDockletFileArray(iconNumberToRead)
+        sUseDialog = sUseDialogArray(iconNumberToRead)
+        sUseDialogAfter = sUseDialogAfterArray(iconNumberToRead)
+        sQuickLaunch = sQuickLaunchArray(iconNumberToRead)
+        sAutoHideDock = sAutoHideDockArray(iconNumberToRead)
+        sSecondApp = sSecondAppArray(iconNumberToRead)
+        sRunElevated = sRunElevatedArray(iconNumberToRead)
+        sRunSecondAppBeforehand = sRunSecondAppBeforehandArray(iconNumberToRead)
+        sAppToTerminate = sAppToTerminateArray(iconNumberToRead)
+        sDisabled = sDisabledArray(iconNumberToRead)
+    End If
         
    On Error GoTo 0
    Exit Sub

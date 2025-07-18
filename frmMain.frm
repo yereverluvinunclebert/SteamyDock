@@ -12,6 +12,12 @@ Begin VB.Form dock
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   546
    ShowInTaskbar   =   0   'False
+   Begin VB.Timer tmrWriteCache 
+      Enabled         =   0   'False
+      Interval        =   1500
+      Left            =   2835
+      Top             =   7200
+   End
    Begin VB.PictureBox picture1 
       AutoSize        =   -1  'True
       Height          =   2250
@@ -951,7 +957,17 @@ Private Type RECT
     Bottom  As Long
 End Type
 
+'------------------------------------------------------ STARTS
+' Type defined for testing a time difference used to initiate one of the hand-coded timers
+Private Type LASTINPUTINFO
+    cbSize As Long
+    dwTime As Long
+End Type
 
+' APIs defined for testing a time difference used to initiate one of the hand-coded timers
+'Private Declare Function GetTickCount Lib "kernel32" () As Long
+Private Declare Function GetLastInputInfo Lib "user32" (plii As Any) As Long
+'------------------------------------------------------ ENDS
 
 Private Sub clickBlankTimer_Timer()
 ' In VB6 you cannot obtain a 1 millisecond timer. The clock resolution on Windows is not high enough.
@@ -2185,7 +2201,7 @@ Private Sub initiatedExplorerTimer_Timer()
     
     ' stop both this timer and the less frequent explorerTimer that might be doing the same thing at the same time
     initiatedExplorerTimer.Enabled = False
-    explorerTimer.Enabled = False
+    'explorerTimer.Enabled = False
 
     For useloop = 0 To rdIconMaximum
         If Not initiatedExplorerArray(useloop) = vbNullString Then
@@ -2207,7 +2223,7 @@ Private Sub initiatedExplorerTimer_Timer()
     
     ' restart the timers
     initiatedExplorerTimer.Enabled = True
-    explorerTimer.Enabled = True
+    'explorerTimer.Enabled = True
 
    On Error GoTo 0
    Exit Sub
@@ -2245,9 +2261,8 @@ Private Sub initiatedProcessTimer_Timer()
      
     On Error GoTo initiatedProcessTimer_Error
 
-    ' stop both this timer and the less frequent processTimer that might be doing the same thing at the same time
+    ' stop this timer
     initiatedProcessTimer.Enabled = False
-    processTimer.Enabled = False
 
     For useloop = 0 To rdIconMaximum
         If Not initiatedProcessArray(useloop) = vbNullString Then
@@ -2270,9 +2285,9 @@ Private Sub initiatedProcessTimer_Timer()
         End If
     Next useloop
     
-    ' restart both timers
+    ' restart the timers
     initiatedProcessTimer.Enabled = True
-    processTimer.Enabled = True
+
 
    On Error GoTo 0
    Exit Sub
@@ -3280,13 +3295,13 @@ Private Sub drawTextAboveIcon(ByVal useloop As Integer, ByVal textWidth As Integ
             'now draw the icon text above the selected icon
             If rDHideLabels = "0" Then
                 
-                If Not namesListArray(iconIndex) = "Separator" Then
+                If Not sTitleArray(iconIndex) = "Separator" Then
                     textWidth = iconSizeLargePxls
                     If dockPosition = vbtop Then
-                        DrawTheText namesListArray(iconIndex), iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                        DrawTheText sTitleArray(iconIndex), iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                     ElseIf dockPosition = vbBottom Then
                         ' puts the text 10% +10 px above the icon
-                        DrawTheText namesListArray(iconIndex), (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                        DrawTheText sTitleArray(iconIndex), (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                         'DrawTheText textToDisplay, (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                     End If
                 End If
@@ -3572,15 +3587,15 @@ Private Sub drawTheLabel(ByVal iconIndexToShow As Single)
     If rDHideLabels = "0" Then
         Dim textToDisplay As String
         textToDisplay = iconCurrentTopPxls
-        If Not namesListArray(iconIndexToShow) = "Separator" Then
+        If Not sTitleArray(iconIndexToShow) = "Separator" Then
             textWidth = iconSizeLargePxls
             If dockPosition = vbtop Then
                 'DrawTheText textToDisplay, iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
-                DrawTheText namesListArray(iconIndexToShow), iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                DrawTheText sTitleArray(iconIndexToShow), iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
             ElseIf dockPosition = vbBottom Then
                 ' puts the text 10% +10 px above the icon
                 ' .73 DAEB 11/05/2021 frmMain.frm  sngBottom renamed to screenHorizontalEdge
-                DrawTheText namesListArray(iconIndexToShow), (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                DrawTheText sTitleArray(iconIndexToShow), (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
             End If
         End If
     End If
@@ -4036,7 +4051,7 @@ Private Sub DrawTheText(ByVal strText As String, ByVal yTop As Single, ByVal xLe
     rctText.Top = yTop + 3
     rctText.Right = textWidth ' Me.ScaleWidth
     rctText.Bottom = rctTextBottom
-    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush)
+    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
 
 
     ' Draw the border around the text
@@ -4054,28 +4069,28 @@ Private Sub DrawTheText(ByVal strText As String, ByVal yTop As Single, ByVal xLe
     rctText.Top = yTop
     rctText.Right = textWidth
     rctText.Bottom = rctTextBottom
-    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush)
+    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
 
     ' border to the right
     rctText.Left = xLeft + bytBorderSize
     rctText.Top = yTop
     rctText.Right = textWidth
     rctText.Bottom = rctTextBottom
-    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush)
+    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
 
     ' border to the top
     rctText.Left = xLeft
     rctText.Top = yTop - bytBorderSize
     rctText.Right = textWidth
     rctText.Bottom = rctTextBottom
-    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush)
+    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
 
     ' border to the bottom
     rctText.Left = xLeft
     rctText.Top = yTop + bytBorderSize
     rctText.Right = textWidth
     rctText.Bottom = rctTextBottom
-    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush)
+    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
     
 
 
@@ -4097,7 +4112,7 @@ Private Sub DrawTheText(ByVal strText As String, ByVal yTop As Single, ByVal xLe
     rctText.Bottom = rctTextBottom
     
     'legend =      graphic bitmap, StringToDraw, lengthOfTheStringToDraw, chosenFont, layoutRectangle, StringFormat As Long, brush As Long
-    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush)
+    Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
     
     Call GdipDeleteStringFormat(lngFormat)
     Call GdipDeleteFont(lngCurrentFont)
@@ -4569,7 +4584,7 @@ Public Sub checkQuestionMark(ByVal key As String, ByRef FileName As String, ByVa
     Dim qPos As Integer: qPos = 0
 
     ' does the string contain a ? if so it probably has an embedded .ICO
-   On Error GoTo checkQuestionMark_Error
+    On Error GoTo checkQuestionMark_Error
 
     qPos = InStr(1, FileName, "?")
     If qPos <> 0 Then
@@ -5019,10 +5034,29 @@ Public Sub prepareArraysAndCollections()
     On Error GoTo prepareArraysAndCollections_Error
     If debugflg = 1 Then debugLog "% sub prepareArraysAndCollections"
 
-    ReDim fileNameArray(rdIconMaximum) As String ' the file location of the original icons
     ReDim dictionaryLocationArray(rdIconMaximum) As String ' the file location of the original icons
-    ReDim namesListArray(rdIconMaximum) As String ' the name assigned to each icon
+    
+    ReDim sFileNameArray(rdIconMaximum) As String ' the file location of the original icons
+    ReDim sFileName2Array(rdIconMaximum) As String ' sFileName2
+    ReDim sTitleArray(rdIconMaximum) As String ' the name assigned to each icon
     ReDim sCommandArray(rdIconMaximum) As String ' the Windows command or exe assigned to each icon
+    ReDim sArgumentsArray(rdIconMaximum) As String ' sArguments
+    ReDim sWorkingDirectoryArray(rdIconMaximum) As String ' sWorkingDirectory
+    ReDim sShowCmdArray(rdIconMaximum) As String ' sShowCmd
+    ReDim sOpenRunningArray(rdIconMaximum) As String ' sOpenRunning
+    ReDim sIsSeparatorArray(rdIconMaximum) As String ' sIsSeparator
+    ReDim sUseContextArray(rdIconMaximum) As String ' sUseContext
+    ReDim sDockletFileArray(rdIconMaximum) As String ' sDockletFile
+    ReDim sUseDialogArray(rdIconMaximum) As String ' sUseDialog
+    ReDim sUseDialogAfterArray(rdIconMaximum) As String ' sUseDialogAfter
+    ReDim sQuickLaunchArray(rdIconMaximum) As String ' sQuickLaunch
+    ReDim sAutoHideDockArray(rdIconMaximum) As String ' sAutoHideDock
+    ReDim sSecondAppArray(rdIconMaximum) As String ' sSecondApp
+    ReDim sRunElevatedArray(rdIconMaximum) As String ' sRunElevated
+    ReDim sRunSecondAppBeforehandArray(rdIconMaximum) As String ' sRunSecondAppBeforehand
+    ReDim sAppToTerminateArray(rdIconMaximum) As String ' sAppToTerminate
+    ReDim sDisabledArray(rdIconMaximum) As String ' sDisabled
+    
     ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
     ReDim processCheckArray(rdIconMaximum) As Boolean ' the array that contains true/false according to the running state of the associated process
     ReDim explorerCheckArray(rdIconMaximum) As Boolean ' the array that contains true/false according to the running state of the associated process
@@ -5041,9 +5075,9 @@ Public Sub prepareArraysAndCollections()
         partialStringKey = LTrim$(Str$(useloop))
         
         ' read the two main icon variables into arrays, one for each
-        fileNameArray(useloop) = sFilename
+        sFileNameArray(useloop) = sFilename
         dictionaryLocationArray(useloop) = useloop
-        namesListArray(useloop) = sTitle
+        sTitleArray(useloop) = sTitle
         sCommandArray(useloop) = sCommand
         
         overallIconOpacity = Val(rDIconOpacity) ' overall icon opacity of all icons
@@ -5063,18 +5097,18 @@ Public Sub prepareArraysAndCollections()
             
             ' here is the code to cache the images to the collection transparently at a small size
             If fFExists(sFilename) Then
-                resizeAndLoadImgToDict collSmallIcons, partialStringKey, fileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity
+                resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity
             ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
-                checkQuestionMark partialStringKey, fileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+                checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
             Else ' if the image is not found display an 'x'
                 resizeAndLoadImgToDict collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity
             End If
                         
             ' now cache all the images to the collection transparently at the larger size
             If fFExists(sFilename) Then
-                resizeAndLoadImgToDict collLargeIcons, partialStringKey, fileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity
+                resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity
             ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then  ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
-                checkQuestionMark partialStringKey, fileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+                checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
             Else
                 resizeAndLoadImgToDict collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity
             End If
@@ -5083,18 +5117,18 @@ Public Sub prepareArraysAndCollections()
     
         ' cache the images to the collection at a small size at full opacity
         If fFExists(sFilename) Then
-            resizeAndLoadImgToDict collSmallIcons, partialStringKey, fileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
+            resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
         ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
-            checkQuestionMark partialStringKey, fileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+            checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
         Else ' if the image is not found display an 'x'
             resizeAndLoadImgToDict collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
         End If
         
         ' now cache all the images to the collection at the larger size
         If fFExists(sFilename) Then
-            resizeAndLoadImgToDict collLargeIcons, partialStringKey, fileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
+            resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
         ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then  ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
-            checkQuestionMark partialStringKey, fileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+            checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
         Else
             resizeAndLoadImgToDict collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
         End If
@@ -5771,13 +5805,14 @@ End Sub
 '
 Private Sub setUpProcessTimers()
     
-    ' start the 10s timer that checks to see if each process is running
-   On Error GoTo setUpProcessTimers_Error
+    On Error GoTo setUpProcessTimers_Error
    
     If debugflg = 1 Then debugLog "% sub setUpProcessTimers"
 
+    ' start the 10s timer that checks to see if each process is running
     processTimer.Interval = Val(rDRunAppInterval) * 1000
     explorerTimer.Interval = Val(rDRunAppInterval) * 1000
+    
     If rDShowRunning = "1" Then
         processTimer.Enabled = True
         explorerTimer.Enabled = True
@@ -5786,10 +5821,8 @@ Private Sub setUpProcessTimers()
         explorerTimer.Enabled = False
     End If
     
-    initiatedProcessTimer.Enabled = True ' this was enabled by default on a 5 second timer but is now here with a reduced interval, this manual start giving time to the whole
-                                         ' tool to get its stuff done before it runs.
+    initiatedProcessTimer.Enabled = True ' this was enabled by default on a 5 second timer but is now here with a reduced interval, this manual start giving time to the whole tool to get its stuff done before it runs.
     initiatedExplorerTimer.Enabled = True
-                                         
     targetExistsTimer.Enabled = True
     
    On Error GoTo 0
@@ -7142,6 +7175,54 @@ End Sub
 
     
 '---------------------------------------------------------------------------------------
+' Procedure : tmrWriteCache_Timer
+' Author    : beededea
+' Date      : 02/07/2025
+' Purpose   : writing the in-memory cache to disc
+'---------------------------------------------------------------------------------------
+'
+Private Sub tmrWriteCache_Timer()
+
+    On Error GoTo tmrWriteCache_Timer_Error
+    
+    Dim useloop As Integer: useloop = 0
+    Dim lastInputVar As LASTINPUTINFO
+    Static currentIdleTime As Long ' 2 billion seconds max
+
+    If gblRequiresCommitToDisc = False Then Exit Sub
+    
+    tmrWriteCache.Enabled = False
+    
+    ' check to see if the app has not been used for a while, ie it has been idle for more than 3 seconds it will do its stuff.
+
+    lastInputVar.cbSize = Len(lastInputVar)
+    Call GetLastInputInfo(lastInputVar)
+    currentIdleTime = GetTickCount - lastInputVar.dwTime
+    
+    ' only allows the function to continue only if the dock has been idle for more than 3 secs
+    If currentIdleTime < 3000 Then
+        tmrWriteCache.Enabled = True ' still needs to be written to disc
+        Exit Sub
+    End If
+    
+    For useloop = 0 To rdIconMaximum
+       Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, True)
+       Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, False)
+    Next useloop
+    
+    gblRequiresCommitToDisc = False
+    'tmrWriteCache.Enabled = false
+
+   On Error GoTo 0
+   Exit Sub
+
+tmrWriteCache_Timer_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure tmrWriteCache_Timer of Form dock"
+    
+End Sub
+
+'---------------------------------------------------------------------------------------
 ' Procedure : wallpaperTimer_Timer
 ' Author    : beededea
 ' Date      : 06/05/2025
@@ -7412,3 +7493,36 @@ Private Sub captureWindow(ByVal thisWindowHWND As Long)
 End Sub
 
 
+
+
+''---------------------------------------------------------------------------------------
+'' Procedure : idleTimer_Timer
+'' Author    : beededea
+'' Date      : 28/03/2025
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Private Sub idleTimer_Timer()
+'
+'    On Error GoTo idleTimer_Timer_Error
+'
+'    Dim lastInputVar As LASTINPUTINFO
+'    Dim currentIdleTime As Long: currentIdleTime = 0
+'
+'    ' check to see if the app has not been used for a while, ie it has been idle
+'
+'    lastInputVar.cbSize = Len(lastInputVar)
+'    Call GetLastInputInfo(lastInputVar)
+'    currentIdleTime = GetTickCount - lastInputVar.dwTime
+'
+'    ' only allows the function to continue only if the dock has been idle for more than 3 secs
+'    If currentIdleTime < 3000 Then Exit Sub
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'idleTimer_Timer_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure idleTimer_Timer of Form rDIconConfigForm"
+'
+'End Sub
