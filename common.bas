@@ -190,7 +190,9 @@ Public sDisabled  As String
 
 Public usedMenuFlag As Boolean
 
+
 Public dockSettingsFile As String
+Public newDockSettingsFile As String
 Public toolSettingsFile  As String
 
 'Public origSettingsFile As String
@@ -357,26 +359,26 @@ Private Declare Function QueryDosDevice Lib "kernel32" Alias "QueryDosDeviceA" (
 
 ' an array assigned to each icon, used for quick access
 
-Public sFileNameArray() As String
-Public sFileName2Array() As String
-Public sTitleArray() As String
-Public sCommandArray() As String
-Public sArgumentsArray() As String
-Public sWorkingDirectoryArray() As String
-Public sShowCmdArray() As String
-Public sOpenRunningArray() As String
-Public sIsSeparatorArray() As String
-Public sUseContextArray() As String
-Public sDockletFileArray() As String
-Public sUseDialogArray() As String
-Public sUseDialogAfterArray() As String
-Public sQuickLaunchArray() As String
-Public sAutoHideDockArray() As String
-Public sSecondAppArray() As String
-Public sRunElevatedArray() As String
-Public sRunSecondAppBeforehandArray() As String
-Public sAppToTerminateArray() As String
-Public sDisabledArray() As String
+'Public sFileNameArray() As String
+''Public sFileName2Array() As String
+'Public sTitleArray() As String
+'Public sCommandArray() As String
+'Public sArgumentsArray() As String
+'Public sWorkingDirectoryArray() As String
+'Public sShowCmdArray() As String
+'Public sOpenRunningArray() As String
+'Public sIsSeparatorArray() As String
+'Public sUseContextArray() As String
+'Public sDockletFileArray() As String
+'Public sUseDialogArray() As String
+'Public sUseDialogAfterArray() As String
+'Public sQuickLaunchArray() As String
+'Public sAutoHideDockArray() As String
+'Public sSecondAppArray() As String
+'Public sRunElevatedArray() As String
+'Public sRunSecondAppBeforehandArray() As String
+'Public sAppToTerminateArray() As String
+'Public sDisabledArray() As String
 '
 '---------------------------------------------------------------------------------------
 ' Procedure : checkLicenceState
@@ -708,7 +710,7 @@ Public Sub PutINISetting(ByVal sHeading As String, ByVal sKey As String, ByVal s
     
     aLength = WritePrivateProfileString(sHeading, sKey _
             , sSetting, sINIFileName)
-
+                        
    On Error GoTo 0
    Exit Sub
 
@@ -716,6 +718,8 @@ PutINISetting_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure PutINISetting of Module Common"
 End Sub
+
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : fFExists
@@ -746,6 +750,8 @@ fFExists_Error:
 End Function
 
 
+
+
 '---------------------------------------------------------------------------------------
 ' Procedure : fDirExists
 ' Author    : beededea
@@ -770,6 +776,10 @@ fDirExists_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fDirExists of Module Common"
 End Function
+
+
+
+
 '---------------------------------------------------------------------------------------
 ' Procedure : SpecialFolder
 ' Author    :  si_the_geek vbforums
@@ -1351,56 +1361,61 @@ Public Sub writeIconSettingsIni(ByVal location As String, ByVal iconNumberToWrit
    On Error GoTo writeIconSettingsIni_Error
    'If debugFlg = 1 Then debugLog "%writeIconSettingsIni"
 
-   If writeArray = False Then
-        PutINISetting location, iconNumberToWrite & "-FileName", sFilename, settingsFile
-        PutINISetting location, iconNumberToWrite & "-FileName2", sFileName2, settingsFile
-        PutINISetting location, iconNumberToWrite & "-Title", sTitle, settingsFile
-        PutINISetting location, iconNumberToWrite & "-Command", sCommand, settingsFile
-        PutINISetting location, iconNumberToWrite & "-Arguments", sArguments, settingsFile
-        PutINISetting location, iconNumberToWrite & "-WorkingDirectory", sWorkingDirectory, settingsFile
-        PutINISetting location, iconNumberToWrite & "-ShowCmd", sShowCmd, settingsFile
-        PutINISetting location, iconNumberToWrite & "-OpenRunning", sOpenRunning, settingsFile
-        PutINISetting location, iconNumberToWrite & "-RunElevated", sRunElevated, settingsFile
+'   If writeArray = False Then
+   
+        Call putIconSettings(iconNumberToWrite)
         
-        PutINISetting location, iconNumberToWrite & "-IsSeparator", sIsSeparator, settingsFile
-        PutINISetting location, iconNumberToWrite & "-UseContext", sUseContext, settingsFile
-        PutINISetting location, iconNumberToWrite & "-DockletFile", sDockletFile, settingsFile
-       
-        'If defaultDock = 1 Then
-        PutINISetting location, iconNumberToWrite & "-UseDialog", sUseDialog, settingsFile
-        PutINISetting location, iconNumberToWrite & "-UseDialogAfter", sUseDialogAfter, settingsFile ' .03 DAEB 31/01/2021 common.bas Added new checkbox to determine if a post initiation dialog should appear
-        PutINISetting location, iconNumberToWrite & "-QuickLaunch", sQuickLaunch, settingsFile ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
-        PutINISetting location, iconNumberToWrite & "-AutoHideDock", sAutoHideDock, settingsFile  ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
-        PutINISetting location, iconNumberToWrite & "-SecondApp", sSecondApp, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
- 
-        PutINISetting location, iconNumberToWrite & "-RunSecondAppBeforehand", sRunSecondAppBeforehand, settingsFile
-        PutINISetting location, iconNumberToWrite & "-AppToTerminate", sAppToTerminate, settingsFile
-        PutINISetting location, iconNumberToWrite & "-Disabled", sDisabled, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+'        PutINISetting location, iconNumberToWrite & "-FileName", sFilename, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-FileName2", sFileName2, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-Title", sTitle, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-Command", sCommand, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-Arguments", sArguments, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-WorkingDirectory", sWorkingDirectory, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-ShowCmd", sShowCmd, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-OpenRunning", sOpenRunning, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-RunElevated", sRunElevated, settingsFile
+'
+'        PutINISetting location, iconNumberToWrite & "-IsSeparator", sIsSeparator, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-UseContext", sUseContext, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-DockletFile", sDockletFile, settingsFile
+'
+'        'If defaultDock = 1 Then
+'        PutINISetting location, iconNumberToWrite & "-UseDialog", sUseDialog, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-UseDialogAfter", sUseDialogAfter, settingsFile ' .03 DAEB 31/01/2021 common.bas Added new checkbox to determine if a post initiation dialog should appear
+'        PutINISetting location, iconNumberToWrite & "-QuickLaunch", sQuickLaunch, settingsFile ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
+'        PutINISetting location, iconNumberToWrite & "-AutoHideDock", sAutoHideDock, settingsFile  ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
+'        PutINISetting location, iconNumberToWrite & "-SecondApp", sSecondApp, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+'
+'        PutINISetting location, iconNumberToWrite & "-RunSecondAppBeforehand", sRunSecondAppBeforehand, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-AppToTerminate", sAppToTerminate, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-Disabled", sDisabled, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
         
-    Else
-        sFileNameArray(iconNumberToWrite) = sFilename
-        sFileName2Array(iconNumberToWrite) = sFileName2
-        sTitleArray(iconNumberToWrite) = sTitle
-        sCommandArray(iconNumberToWrite) = sCommand
-        sArgumentsArray(iconNumberToWrite) = sArguments
-        sWorkingDirectoryArray(iconNumberToWrite) = sWorkingDirectory
-        sShowCmdArray(iconNumberToWrite) = sShowCmd
-        sOpenRunningArray(iconNumberToWrite) = sOpenRunning
-        sIsSeparatorArray(iconNumberToWrite) = sIsSeparator
-        sUseContextArray(iconNumberToWrite) = sUseContext
-        sDockletFileArray(iconNumberToWrite) = sDockletFile
-        sUseDialogArray(iconNumberToWrite) = sUseDialog
-        sUseDialogAfterArray(iconNumberToWrite) = sUseDialogAfter
-        sQuickLaunchArray(iconNumberToWrite) = sQuickLaunch
-        sAutoHideDockArray(iconNumberToWrite) = sAutoHideDock
-        sSecondAppArray(iconNumberToWrite) = sSecondApp
-        sRunElevatedArray(iconNumberToWrite) = sRunElevated
-        sRunSecondAppBeforehandArray(iconNumberToWrite) = sRunSecondAppBeforehand
-        sAppToTerminateArray(iconNumberToWrite) = sAppToTerminate
-        sDisabledArray(iconNumberToWrite) = sDisabled
-    End If
+'    Else
+'        sFileNameArray(iconNumberToWrite) = sFilename
+'        sFileName2Array(iconNumberToWrite) = sFileName2
+'        sTitleArray(iconNumberToWrite) = sTitle
+'        sCommandArray(iconNumberToWrite) = sCommand
+'        sArgumentsArray(iconNumberToWrite) = sArguments
+'        sWorkingDirectoryArray(iconNumberToWrite) = sWorkingDirectory
+'        sShowCmdArray(iconNumberToWrite) = sShowCmd
+'        sOpenRunningArray(iconNumberToWrite) = sOpenRunning
+'        sIsSeparatorArray(iconNumberToWrite) = sIsSeparator
+'        sUseContextArray(iconNumberToWrite) = sUseContext
+'        sDockletFileArray(iconNumberToWrite) = sDockletFile
+'        sUseDialogArray(iconNumberToWrite) = sUseDialog
+'        sUseDialogAfterArray(iconNumberToWrite) = sUseDialogAfter
+'        sQuickLaunchArray(iconNumberToWrite) = sQuickLaunch
+'        sAutoHideDockArray(iconNumberToWrite) = sAutoHideDock
+'        sSecondAppArray(iconNumberToWrite) = sSecondApp
+'        sRunElevatedArray(iconNumberToWrite) = sRunElevated
+'        sRunSecondAppBeforehandArray(iconNumberToWrite) = sRunSecondAppBeforehand
+'        sAppToTerminateArray(iconNumberToWrite) = sAppToTerminate
+'        sDisabledArray(iconNumberToWrite) = sDisabled
+'    End If
+    
+
         
-       On Error GoTo 0
+    On Error GoTo 0
    Exit Sub
 
 writeIconSettingsIni_Error:
@@ -1908,6 +1923,7 @@ Public Sub locateDockSettingsFile()
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
     dockSettingsBackupDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\backup" ' just for this user alone
     dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
+    newDockSettingsFile = dockSettingsDir & "\docksettings.dat" '
 
     'if the folder does not exist then create the folder
     If Not fDirExists(dockSettingsDir) Then

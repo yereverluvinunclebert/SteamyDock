@@ -15,45 +15,172 @@ Option Explicit
 
 
 
- Private Type STARTUPINFO
-      cb As Long
-      lpReserved As String
-      lpDesktop As String
-      lpTitle As String
-      dwX As Long
-      dwY As Long
-      dwXSize As Long
-      dwYSize As Long
-      dwXCountChars As Long
-      dwYCountChars As Long
-      dwFillAttribute As Long
-      dwFlags As Long
-      wShowWindow As Integer
-      cbReserved2 As Integer
-      lpReserved2 As Long
-      hStdInput As Long
-      hStdOutput As Long
-      hStdError As Long
-   End Type
+' Private Type STARTUPINFO
+'      cb As Long
+'      lpReserved As String
+'      lpDesktop As String
+'      lpTitle As String
+'      dwX As Long
+'      dwY As Long
+'      dwXSize As Long
+'      dwYSize As Long
+'      dwXCountChars As Long
+'      dwYCountChars As Long
+'      dwFillAttribute As Long
+'      dwFlags As Long
+'      wShowWindow As Integer
+'      cbReserved2 As Integer
+'      lpReserved2 As Long
+'      hStdInput As Long
+'      hStdOutput As Long
+'      hStdError As Long
+'   End Type
 
-   Private Type PROCESS_INFORMATION
-      hProcess As Long
-      hThread As Long
-      dwProcessId As Long
-      dwThreadId As Long
-   End Type
+'Private Type PROCESS_INFORMATION
+'   hProcess As Long
+'   hThread As Long
+'   dwProcessId As Long
+'   dwThreadId As Long
+'End Type
+'
+'Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
+'Private Declare Function CreateProcessA Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As String, ByVal lpProcessAttributes As Long, ByVal lpThreadAttributes As Long, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByVal lpEnvironment As Long, ByVal lpCurrentDirectory As Long, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Long
+'Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
+'Private Declare Function GetExitCodeProcess Lib "kernel32" (ByVal hProcess As Long, lpExitCode As Long) As Long
+'
+'Private Const NORMAL_PRIORITY_CLASS = &H20&
+'Private Const INFINITE = -1&
+'Private Const SW_HIDE = 0
+'Private Const SW_SHOWMINNOACTIVE = 7
+Public gblOutsideDock As Boolean
+Public iconLeftmostPointPxls As Single
+Public iconRightmostPointPxls As Single
+Public dockYEntrancePoint As Integer
+'Public glbStartRecord As Integer
+'Public gblRecordsToCommit As Integer
 
-   Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
-   Private Declare Function CreateProcessA Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As String, ByVal lpProcessAttributes As Long, ByVal lpThreadAttributes As Long, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByVal lpEnvironment As Long, ByVal lpCurrentDirectory As Long, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Long
-   Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
-   Private Declare Function GetExitCodeProcess Lib "kernel32" (ByVal hProcess As Long, lpExitCode As Long) As Long
+Public Type iconRecordTYPE
+       iconRecordNumber As Integer
+       iconFilename As String * 255
+       iconFileName2 As String * 255
+       iconTitle As String * 255
+       iconCommand As String * 255
+       iconArguments As String * 40
+       iconWorkingDirectory As String * 255
+       iconShowCmd As String * 1
+       iconOpenRunning As String * 1
+       iconIsSeparator As String * 1
+       iconUseContext As String * 1
+       iconDockletFile As String * 255
+       iconUseDialog As String * 1
+       iconUseDialogAfter As String * 1
+       iconQuickLaunch As String * 1
+       iconAutoHideDock As String * 1
+       iconSecondApp As String * 255
+       iconRunElevated As String * 1
+       iconRunSecondAppBeforehand As String * 1
+       iconAppToTerminate As String * 255
+       iconDisabled As String * 1
+End Type
+ 
+Public iconVar As iconRecordTYPE
+Public iconData As String
 
-   Private Const NORMAL_PRIORITY_CLASS = &H20&
-   Private Const INFINITE = -1&
-   Private Const SW_HIDE = 0
-   Private Const SW_SHOWMINNOACTIVE = 7
+'
+'---------------------------------------------------------------------------------------
+' Procedure : putIconSettings
+' Author    : beededea
+' Date      : 05/07/2019
+' Purpose   : Save INI Setting in the File
+'---------------------------------------------------------------------------------------
+'
+Public Sub putIconSettings(ByVal thisRecordNumber As Integer)
 
+   On Error GoTo putIconSettings_Error
+   
+    Dim recordNumberToWrite As Integer: recordNumberToWrite = 0
+   
+    recordNumberToWrite = thisRecordNumber + 1
+    
+    iconVar.iconRecordNumber = thisRecordNumber
+    iconVar.iconFilename = sFilename
+    iconVar.iconFileName2 = sFileName2
+    iconVar.iconTitle = sTitle
+    iconVar.iconCommand = sCommand
+    iconVar.iconArguments = sArguments
+    iconVar.iconWorkingDirectory = sWorkingDirectory
+    iconVar.iconShowCmd = Val(sShowCmd)
+    iconVar.iconOpenRunning = Val(sOpenRunning)
+    iconVar.iconIsSeparator = Val(sIsSeparator)
+    iconVar.iconUseContext = Val(sUseContext)
+    iconVar.iconDockletFile = sDockletFile
+    iconVar.iconUseDialog = Val(sUseDialog)
+    iconVar.iconUseDialogAfter = Val(sUseDialogAfter)
+    iconVar.iconQuickLaunch = Val(sQuickLaunch)
+    iconVar.iconAutoHideDock = Val(sAutoHideDock)
+    iconVar.iconSecondApp = sSecondApp
+    iconVar.iconRunElevated = Val(sRunElevated)
+    iconVar.iconRunSecondAppBeforehand = Val(sRunSecondAppBeforehand)
+    iconVar.iconAppToTerminate = sAppToTerminate
+    iconVar.iconDisabled = Val(sDisabled)
 
+    Put #3, recordNumberToWrite, iconVar
+                
+   On Error GoTo 0
+   Exit Sub
+
+putIconSettings_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure putIconSettings of Module Common"
+End Sub
+
+'
+'---------------------------------------------------------------------------------------
+' Procedure : getIconSettings
+' Author    : beededea
+' Date      : 05/07/2019
+' Purpose   : Save INI Setting in the File
+'---------------------------------------------------------------------------------------
+'
+Public Sub getIconSettings(ByVal thisRecordNumber As Integer)
+
+   On Error GoTo getIconSettings_Error
+   
+    Dim recordNumberToRead As Integer: recordNumberToRead = 0
+    
+    recordNumberToRead = thisRecordNumber + 1
+    
+    Get #3, recordNumberToRead, iconVar
+
+    thisRecordNumber = iconVar.iconRecordNumber
+    sFilename = RTrim$(iconVar.iconFilename)
+    sFileName2 = RTrim$(iconVar.iconFileName2)
+    sTitle = RTrim$(iconVar.iconTitle)
+    sCommand = RTrim$(iconVar.iconCommand)
+    sArguments = RTrim$(iconVar.iconArguments)
+    sWorkingDirectory = RTrim$(iconVar.iconWorkingDirectory)
+    sShowCmd = CStr(iconVar.iconShowCmd)
+    sOpenRunning = CStr(iconVar.iconOpenRunning)
+    sIsSeparator = CStr(iconVar.iconIsSeparator)
+    sUseContext = CStr(iconVar.iconUseContext)
+    sDockletFile = RTrim$(iconVar.iconDockletFile)
+    sUseDialog = CStr(iconVar.iconUseDialog)
+    sUseDialogAfter = CStr(iconVar.iconUseDialogAfter)
+    sQuickLaunch = CStr(iconVar.iconQuickLaunch)
+    sAutoHideDock = CStr(iconVar.iconAutoHideDock)
+    sSecondApp = RTrim$(iconVar.iconSecondApp)
+    sRunElevated = CStr(iconVar.iconRunElevated)
+    sRunSecondAppBeforehand = CStr(iconVar.iconRunSecondAppBeforehand)
+    sAppToTerminate = RTrim$(iconVar.iconAppToTerminate)
+    sDisabled = CStr(iconVar.iconDisabled)
+                
+   On Error GoTo 0
+   Exit Sub
+
+getIconSettings_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getIconSettings of Module Common"
+End Sub
 
 
 '---------------------------------------------------------------------------------------
@@ -71,74 +198,77 @@ Public Sub readIconSettingsIni(ByVal location As String, ByVal iconNumberToRead 
    
     ' read the data directly from the settings file
     
-    If readArray = False Then
-        sFilename = GetINISetting(location, iconNumberToRead & "-FileName", settingsFile)
-        sFileName2 = GetINISetting(location, iconNumberToRead & "-FileName2", settingsFile)
-        sTitle = GetINISetting(location, iconNumberToRead & "-Title", settingsFile)
-        sCommand = GetINISetting(location, iconNumberToRead & "-Command", settingsFile)
-        sArguments = GetINISetting(location, iconNumberToRead & "-Arguments", settingsFile)
-        sWorkingDirectory = GetINISetting(location, iconNumberToRead & "-WorkingDirectory", settingsFile)
-        sShowCmd = GetINISetting(location, iconNumberToRead & "-ShowCmd", settingsFile)
-        sOpenRunning = GetINISetting(location, iconNumberToRead & "-OpenRunning", settingsFile)
-        sIsSeparator = GetINISetting(location, iconNumberToRead & "-IsSeparator", settingsFile)
-        sUseContext = GetINISetting(location, iconNumberToRead & "-UseContext", settingsFile)
-        sDockletFile = GetINISetting(location, iconNumberToRead & "-DockletFile", settingsFile)
-        sUseDialog = GetINISetting(location, iconNumberToRead & "-UseDialog", settingsFile)
-        sUseDialogAfter = GetINISetting(location, iconNumberToRead & "-UseDialogAfter", settingsFile)
-        sQuickLaunch = GetINISetting(location, iconNumberToRead & "-QuickLaunch", settingsFile)
-        sAutoHideDock = GetINISetting(location, iconNumberToRead & "-AutoHideDock", settingsFile)
-        sSecondApp = GetINISetting(location, iconNumberToRead & "-SecondApp", settingsFile)
-        sRunElevated = GetINISetting(location, iconNumberToRead & "-RunElevated", settingsFile)
-        sRunSecondAppBeforehand = GetINISetting(location, iconNumberToRead & "-RunSecondAppBeforehand", settingsFile)
-        sAppToTerminate = GetINISetting(location, iconNumberToRead & "-AppToTerminate", settingsFile)
-        sDisabled = GetINISetting(location, iconNumberToRead & "-Disabled", settingsFile)
+   ' If readArray = False Then
     
-        ' now write it to the array cache
+        Call getIconSettings(iconNumberToRead)
         
-        sFileNameArray(iconNumberToRead) = sFilename
-        sFileName2Array(iconNumberToRead) = sFileName2
-        sTitleArray(iconNumberToRead) = sTitle
-        sCommandArray(iconNumberToRead) = sCommand
-        sArgumentsArray(iconNumberToRead) = sArguments
-        sWorkingDirectoryArray(iconNumberToRead) = sWorkingDirectory
-        sShowCmdArray(iconNumberToRead) = sShowCmd
-        sOpenRunningArray(iconNumberToRead) = sOpenRunning
-        sIsSeparatorArray(iconNumberToRead) = sIsSeparator
-        sUseContextArray(iconNumberToRead) = sUseContext
-        sDockletFileArray(iconNumberToRead) = sDockletFile
-        sUseDialogArray(iconNumberToRead) = sUseDialog
-        sUseDialogAfterArray(iconNumberToRead) = sUseDialogAfter
-        sQuickLaunchArray(iconNumberToRead) = sQuickLaunch
-        sAutoHideDockArray(iconNumberToRead) = sAutoHideDock
-        sSecondAppArray(iconNumberToRead) = sSecondApp
-        sRunElevatedArray(iconNumberToRead) = sRunElevated
-        sRunSecondAppBeforehandArray(iconNumberToRead) = sRunSecondAppBeforehand
-        sAppToTerminateArray(iconNumberToRead) = sAppToTerminate
-        sDisabledArray(iconNumberToRead) = sDisabled
+'        sFilename = GetINISetting(location, iconNumberToRead & "-FileName", settingsFile)
+'        sFileName2 = GetINISetting(location, iconNumberToRead & "-FileName2", settingsFile)
+'        sTitle = GetINISetting(location, iconNumberToRead & "-Title", settingsFile)
+'        sCommand = GetINISetting(location, iconNumberToRead & "-Command", settingsFile)
+'        sArguments = GetINISetting(location, iconNumberToRead & "-Arguments", settingsFile)
+'        sWorkingDirectory = GetINISetting(location, iconNumberToRead & "-WorkingDirectory", settingsFile)
+'        sShowCmd = GetINISetting(location, iconNumberToRead & "-ShowCmd", settingsFile)
+'        sOpenRunning = GetINISetting(location, iconNumberToRead & "-OpenRunning", settingsFile)
+'        sIsSeparator = GetINISetting(location, iconNumberToRead & "-IsSeparator", settingsFile)
+'        sUseContext = GetINISetting(location, iconNumberToRead & "-UseContext", settingsFile)
+'        sDockletFile = GetINISetting(location, iconNumberToRead & "-DockletFile", settingsFile)
+'        sUseDialog = GetINISetting(location, iconNumberToRead & "-UseDialog", settingsFile)
+'        sUseDialogAfter = GetINISetting(location, iconNumberToRead & "-UseDialogAfter", settingsFile)
+'        sQuickLaunch = GetINISetting(location, iconNumberToRead & "-QuickLaunch", settingsFile)
+'        sAutoHideDock = GetINISetting(location, iconNumberToRead & "-AutoHideDock", settingsFile)
+'        sSecondApp = GetINISetting(location, iconNumberToRead & "-SecondApp", settingsFile)
+'        sRunElevated = GetINISetting(location, iconNumberToRead & "-RunElevated", settingsFile)
+'        sRunSecondAppBeforehand = GetINISetting(location, iconNumberToRead & "-RunSecondAppBeforehand", settingsFile)
+'        sAppToTerminate = GetINISetting(location, iconNumberToRead & "-AppToTerminate", settingsFile)
+'        sDisabled = GetINISetting(location, iconNumberToRead & "-Disabled", settingsFile)
     
-    Else ' alternatively read it from the array cache
-    
-        sFilename = sFileNameArray(iconNumberToRead)
-        sFileName2 = sFileName2Array(iconNumberToRead)
-        sTitle = sTitleArray(iconNumberToRead)
-        sCommand = sCommandArray(iconNumberToRead)
-        sArguments = sArgumentsArray(iconNumberToRead)
-        sWorkingDirectory = sWorkingDirectoryArray(iconNumberToRead)
-        sShowCmd = sShowCmdArray(iconNumberToRead)
-        sOpenRunning = sOpenRunningArray(iconNumberToRead)
-        sIsSeparator = sIsSeparatorArray(iconNumberToRead)
-        sUseContext = sUseContextArray(iconNumberToRead)
-        sDockletFile = sDockletFileArray(iconNumberToRead)
-        sUseDialog = sUseDialogArray(iconNumberToRead)
-        sUseDialogAfter = sUseDialogAfterArray(iconNumberToRead)
-        sQuickLaunch = sQuickLaunchArray(iconNumberToRead)
-        sAutoHideDock = sAutoHideDockArray(iconNumberToRead)
-        sSecondApp = sSecondAppArray(iconNumberToRead)
-        sRunElevated = sRunElevatedArray(iconNumberToRead)
-        sRunSecondAppBeforehand = sRunSecondAppBeforehandArray(iconNumberToRead)
-        sAppToTerminate = sAppToTerminateArray(iconNumberToRead)
-        sDisabled = sDisabledArray(iconNumberToRead)
-    End If
+        ' now write it straight away into the array cache
+        
+'        sFileNameArray(iconNumberToRead) = sFilename
+'        sFileName2Array(iconNumberToRead) = sFileName2
+'        sTitleArray(iconNumberToRead) = sTitle
+'        sCommandArray(iconNumberToRead) = sCommand
+'        sArgumentsArray(iconNumberToRead) = sArguments
+'        sWorkingDirectoryArray(iconNumberToRead) = sWorkingDirectory
+'        sShowCmdArray(iconNumberToRead) = sShowCmd
+'        sOpenRunningArray(iconNumberToRead) = sOpenRunning
+'        sIsSeparatorArray(iconNumberToRead) = sIsSeparator
+'        sUseContextArray(iconNumberToRead) = sUseContext
+'        sDockletFileArray(iconNumberToRead) = sDockletFile
+'        sUseDialogArray(iconNumberToRead) = sUseDialog
+'        sUseDialogAfterArray(iconNumberToRead) = sUseDialogAfter
+'        sQuickLaunchArray(iconNumberToRead) = sQuickLaunch
+'        sAutoHideDockArray(iconNumberToRead) = sAutoHideDock
+'        sSecondAppArray(iconNumberToRead) = sSecondApp
+'        sRunElevatedArray(iconNumberToRead) = sRunElevated
+'        sRunSecondAppBeforehandArray(iconNumberToRead) = sRunSecondAppBeforehand
+'        sAppToTerminateArray(iconNumberToRead) = sAppToTerminate
+'        sDisabledArray(iconNumberToRead) = sDisabled
+'
+'    Else ' alternatively read data from the array cache as it is much faster to read
+'
+'        sFilename = sFileNameArray(iconNumberToRead)
+'        sFileName2 = sFileName2Array(iconNumberToRead)
+'        sTitle = sTitleArray(iconNumberToRead)
+'        sCommand = sCommandArray(iconNumberToRead)
+'        sArguments = sArgumentsArray(iconNumberToRead)
+'        sWorkingDirectory = sWorkingDirectoryArray(iconNumberToRead)
+'        sShowCmd = sShowCmdArray(iconNumberToRead)
+'        sOpenRunning = sOpenRunningArray(iconNumberToRead)
+'        sIsSeparator = sIsSeparatorArray(iconNumberToRead)
+'        sUseContext = sUseContextArray(iconNumberToRead)
+'        sDockletFile = sDockletFileArray(iconNumberToRead)
+'        sUseDialog = sUseDialogArray(iconNumberToRead)
+'        sUseDialogAfter = sUseDialogAfterArray(iconNumberToRead)
+'        sQuickLaunch = sQuickLaunchArray(iconNumberToRead)
+'        sAutoHideDock = sAutoHideDockArray(iconNumberToRead)
+'        sSecondApp = sSecondAppArray(iconNumberToRead)
+'        sRunElevated = sRunElevatedArray(iconNumberToRead)
+'        sRunSecondAppBeforehand = sRunSecondAppBeforehandArray(iconNumberToRead)
+'        sAppToTerminate = sAppToTerminateArray(iconNumberToRead)
+'        sDisabled = sDisabledArray(iconNumberToRead)
+'    End If
         
    On Error GoTo 0
    Exit Sub
@@ -300,11 +430,11 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Function identifyAppIcons(iconCommand As String) As String
-    Dim iconFileName As String: iconFileName = ""
+    Dim iconFilename As String: iconFilename = ""
     Dim identFileName As String: identFileName = ""
     Dim sDataLine As String: sDataLine = ""
     Dim strDelimiter As String: strDelimiter = ""
-    Dim appName As String: appName = ""
+    Dim AppName As String: AppName = ""
     Dim appIdent1 As String: appIdent1 = ""
     Dim appIdent2  As String: appIdent2 = ""
     Dim appIcon  As String: appIcon = ""
@@ -329,7 +459,7 @@ Public Function identifyAppIcons(iconCommand As String) As String
           appIdent2Bool = False
          
           ' extract the line from the appIdent file
-          Input #fileH, appName, appIdent1, appIdent2, appIcon ' read the four values
+          Input #fileH, AppName, appIdent1, appIdent2, appIcon ' read the four values
           ' set the first two factors to a unlikely value to avoid matching on a ""
           If appIdent1 = vbNullString Then appIdent1 = "XXXXXXXXXXXXXXXXXXXXXX"
           If appIdent2 = vbNullString Then appIdent2 = "XXXXXXXXXXXXXXXXXXXXXX"
@@ -346,7 +476,7 @@ Public Function identifyAppIcons(iconCommand As String) As String
               ' set that icon as the iconFileName to use
               
               
-                  iconFileName = sdAppPath & "\" & appIcon
+                  iconFilename = sdAppPath & "\" & appIcon
  
               
                 'iconFileName = App.Path & appIcon
@@ -356,12 +486,12 @@ Public Function identifyAppIcons(iconCommand As String) As String
       Close #fileH
     End If
     
-    If Not iconFileName = vbNullString Then
+    If Not iconFilename = vbNullString Then
        ' check the icon exists
 
 
-        If fFExists(iconFileName) Then
-            identifyAppIcons = iconFileName
+        If fFExists(iconFilename) Then
+            identifyAppIcons = iconFilename
         End If
     End If
 
@@ -400,7 +530,7 @@ Public Function GetShortcutInfo(Path As String, Shortcut As Link) As Boolean
     On Error GoTo GetShortcutInfo_Error
 
     With Shortcut
-        .FileName = vbNullString
+        .Filename = vbNullString
         .Description = vbNullString
         .RelPath = vbNullString
         .WorkingDir = vbNullString
@@ -442,20 +572,20 @@ Public Function GetShortcutInfo(Path As String, Shortcut As Link) As Boolean
             
             ' Read base path
             If PtrBasePath Then
-                Shortcut.FileName = ReadSingleString(FileNo, NextPtr + PtrBasePath)
+                Shortcut.Filename = ReadSingleString(FileNo, NextPtr + PtrBasePath)
             ' Or network path
             ElseIf PtrNetworkVolumeInfo Then
-                Shortcut.FileName = ReadSingleString(FileNo, NextPtr + PtrNetworkVolumeInfo + &H14)
+                Shortcut.Filename = ReadSingleString(FileNo, NextPtr + PtrNetworkVolumeInfo + &H14)
             End If
             
             ' Read remaining filename
             If PtrFilename Then
                 Str = ReadSingleString(FileNo, NextPtr + PtrFilename)
                 If Str <> vbNullString Then
-                    If Right$(Shortcut.FileName, 1) <> "\" Then
-                        Shortcut.FileName = Shortcut.FileName & "\"
+                    If Right$(Shortcut.Filename, 1) <> "\" Then
+                        Shortcut.Filename = Shortcut.Filename & "\"
                     End If
-                    Shortcut.FileName = Shortcut.FileName & Str
+                    Shortcut.Filename = Shortcut.Filename & Str
                 End If
             End If
             

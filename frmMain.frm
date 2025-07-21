@@ -198,6 +198,15 @@ Begin VB.Form dock
       Tag             =   "this is the X millisecond timer that does the animation for the dock icons"
       Top             =   105
    End
+   Begin VB.Label Label24 
+      Caption         =   "tmrWriteCache"
+      Height          =   255
+      Left            =   3390
+      TabIndex        =   31
+      ToolTipText     =   "slides the dock in the Y axis"
+      Top             =   7290
+      Width           =   1410
+   End
    Begin VB.Label Label23 
       Caption         =   "This form is invisible at runtime and none of the components here are visible at that point."
       BeginProperty Font 
@@ -387,6 +396,7 @@ Begin VB.Form dock
       Width           =   1425
    End
    Begin VB.Label lblDockInfo2 
+      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BorderStyle     =   1  'Fixed Single
       Caption         =   $"frmMain.frx":058A
@@ -398,6 +408,7 @@ Begin VB.Form dock
       Width           =   4380
    End
    Begin VB.Label lblDockInfo 
+      Alignment       =   2  'Center
       Appearance      =   0  'Flat
       BackColor       =   &H80000000&
       BorderStyle     =   1  'Fixed Single
@@ -800,8 +811,7 @@ Private differenceFromLeftMostResizedIconPxls As Double
 Private animateStep As Single
 Private dockDrawingPositionPxls As Single
 'Private dockTopPxls As Single '.nn
-Private iconLeftmostPointPxls As Single
-Private iconRightmostPointPxls As Single
+
 Private lngFont As Long
 Private lngBrush As Long
 Private lngFontFamily As Long
@@ -866,7 +876,6 @@ Private yAxisModifier As Integer '.nn added for future Y axis animation
 Private autoHideMode As String
 Private autoSlideMode As String
 Private dockSlidOut As Boolean
-Private dockYEntrancePoint As Integer
 Private nMinuteExposeTimerCount As Integer
 
 ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
@@ -1856,10 +1865,10 @@ End Function
 Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
    
     Dim suffix As String: suffix = vbNullString
-    Dim FileName As String: FileName = vbNullString
+    Dim Filename As String: Filename = vbNullString
     Dim iconImage As String: iconImage = vbNullString
     Dim iconTitle As String: iconTitle = vbNullString
-    Dim iconFileName As String: iconFileName = vbNullString
+    Dim iconFilename As String: iconFilename = vbNullString
     Dim iconCommand As String: iconCommand = vbNullString
     Dim iconArguments As String: iconArguments = vbNullString
     Dim iconWorkingDirectory As String: iconWorkingDirectory = vbNullString
@@ -1911,9 +1920,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         
         ' is it a folder, does the folder exist
         If fDirExists(iconTitle) Then
-            iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-dir.png"
-            If fFExists(iconFileName) Then
-                iconImage = iconFileName
+            iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-dir.png"
+            If fFExists(iconFilename) Then
+                iconImage = iconFilename
             End If
         Else ' otherwise it is a file
     
@@ -1942,10 +1951,10 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                     ' delimited file. The list has two identification factors that are used to find a match and then we find an
                     ' associated icon to use with a relative path.
                        
-                    iconFileName = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
+                    iconFilename = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                        
-                    If fFExists(iconFileName) Then
-                      iconImage = iconFileName
+                    If fFExists(iconFilename) Then
+                      iconImage = iconFilename
                     Else
                       iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
                     End If
@@ -1957,9 +1966,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
-                      iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-msc.png"
-                      If fFExists(iconFileName) Then
-                          iconImage = iconFileName
+                      iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-msc.png"
+                      If fFExists(iconFilename) Then
+                          iconImage = iconFilename
                       End If
                   End If
                   
@@ -1968,9 +1977,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
-                      iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-bat.png"
-                      If fFExists(iconFileName) Then
-                          iconImage = iconFileName
+                      iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-bat.png"
+                      If fFExists(iconFilename) Then
+                          iconImage = iconFilename
                       End If
                   End If
                   
@@ -1979,9 +1988,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
-                      iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-cpl.png"
-                      If fFExists(iconFileName) Then
-                          iconImage = iconFileName
+                      iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-cpl.png"
+                      If fFExists(iconFilename) Then
+                          iconImage = iconFilename
                       End If
                   End If
                   
@@ -1992,17 +2001,17 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 
                         Call GetShortcutInfo(iconCommand, thisShortcut) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                                        
-                        iconTitle = getFileNameFromPath(thisShortcut.FileName)
+                        iconTitle = getFileNameFromPath(thisShortcut.Filename)
                         
-                        If Not thisShortcut.FileName = vbNullString Then
-                            iconCommand = LCase(thisShortcut.FileName)
+                        If Not thisShortcut.Filename = vbNullString Then
+                            iconCommand = LCase(thisShortcut.Filename)
                         End If
                         iconArguments = thisShortcut.Arguments
                         iconWorkingDirectory = thisShortcut.RelPath
                         
                         ' .55 DAEB 19/04/2021 frmMain.frm Added call to the older function to identify an icon using the shell object
                         'if the icontitle and command are blank then this is user-created link that only provides the relative path
-                        If iconTitle = vbNullString And thisShortcut.FileName = vbNullString And Not iconWorkingDirectory = vbNullString Then
+                        If iconTitle = vbNullString And thisShortcut.Filename = vbNullString And Not iconWorkingDirectory = vbNullString Then
                             Call GetShellShortcutInfo(iconCommand, nname, npath, ndesc, nwork, nargs)
                     
                             iconTitle = nname
@@ -2024,10 +2033,10 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       ' delimited file. The list has two identification factors that are used to find a match and then we find an
                       ' associated icon to use with a relative path.
                       
-                      iconFileName = identifyAppIcons(iconCommand)
+                      iconFilename = identifyAppIcons(iconCommand)
                        
-                      If fFExists(iconFileName) Then
-                        iconImage = iconFileName
+                      If fFExists(iconFilename) Then
+                        iconImage = iconFilename
                       Else
                         iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-lnk.png"
                       End If
@@ -2347,7 +2356,7 @@ End Sub
 Private Sub responseTimer_Timer()
 
     Dim lngReturn As Long: lngReturn = 0
-    Dim outsideDock As Boolean: outsideDock = False
+'    Dim gblOutsideDock As Boolean: gblOutsideDock = False
     
     On Error GoTo responseTimer_Error
     
@@ -2357,19 +2366,19 @@ Private Sub responseTimer_Timer()
     Call tuneResponseTimerInterval
     dockYEntrancePoint = fDefineDockYEntrancePoint()
     
-    lastPositionRelativeToDock = outsideDock
-    outsideDock = fTestCursorWithinDockYPosition()
+    lastPositionRelativeToDock = gblOutsideDock
+    gblOutsideDock = fTestCursorWithinDockYPosition()
     
-    insideDockFlg = Not outsideDock '.nn Added as part of the drag and drop functionality
+    insideDockFlg = Not gblOutsideDock '.nn Added as part of the drag and drop functionality
     
     ' the mouse has left the Max icon area
-    If outsideDock = True And dragFromDockOperating = False Then
+    If gblOutsideDock = True And dragFromDockOperating = False Then
         Call stopAnimating
         Exit Sub ' leave the timer loop and do nothing else
     End If
     
      ' dragging from the dock for deletion
-    If (outsideDock = True And dragFromDockOperating = True) Then
+    If (gblOutsideDock = True And dragFromDockOperating = True) Then
         If animateTimer = False Then Call startAnimating
         hourGlassTimer.Enabled = False
         dragToDockOperating = False
@@ -2483,34 +2492,7 @@ Private Function fDefineDockYEntrancePoint() As Long
     fDefineDockYEntrancePoint = calcEntrance
 End Function
 
-'---------------------------------------------------------------------------------------
-' Procedure : fTestCursorWithinDockYPosition
-' Author    : beededea
-' Date      : 19/12/2022
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Function fTestCursorWithinDockYPosition() As Boolean
-    Dim outsideDock  As Boolean: outsideDock = False
-    
-    iconRightmostPointPxls = iconStoreRightPixels(UBound(iconStoreLeftPixels))
-    
-    ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
-    If dockPosition = vbBottom Then
-        outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'            outsideDock = True
-'        Else
-'            outsideDock = False
-'        End If
-    End If
-    If dockPosition = vbtop Then
-        outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    End If
-    
-    fTestCursorWithinDockYPosition = outsideDock ' return
 
-End Function
 
 '---------------------------------------------------------------------------------------
 ' Procedure : startHidingDockTimers
@@ -2894,10 +2876,13 @@ Private Sub sequentialBubbleAnimation()
         updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplay, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
     End If
     
+    
     Call updateScreenUsingGDIBitmap
     
 '    If debugflg = 1 Then
 
+
+'    If tmrWriteCache.Enabled = True Then DrawTheText "tmrWriteCache " & gblRecordsToCommit
 '       DrawTheText "animateTimer.Enabled " & animateTimer.Enabled, 200, 50, 300, rDFontName, Val(Abs(rDFontSize))
 '        DrawTheText "bounceHeight " & bounceHeight, 580, 50, 300, rDFontName, Val(Abs(rDFontSize))
 '    End If
@@ -2911,8 +2896,17 @@ sequentialBubbleAnimation_Error:
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : determineDynamicIconRangeToAnimate
+' Author    : beededea
+' Date      : 19/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub determineDynamicIconRangeToAnimate(ByRef leftmostResizedIcon As Integer, ByRef rightmostResizedIcon As Integer)
     
+   On Error GoTo determineDynamicIconRangeToAnimate_Error
+
     rDZoomWidth = 2 'override until the animation takes this into account
     If CBool(rDZoomWidth And 1) = False Then
         rDZoomWidth = rDZoomWidth + 1  ' must be 3,5,7,9 so convert to an odd number
@@ -2921,17 +2915,49 @@ Private Sub determineDynamicIconRangeToAnimate(ByRef leftmostResizedIcon As Inte
     ' what is the group size? extract the index of the group and calculate the leftmost member
     leftmostResizedIcon = iconIndex - (rDZoomWidth - 1) / 2 '
     rightmostResizedIcon = iconIndex + (rDZoomWidth - 1) / 2
+
+   On Error GoTo 0
+   Exit Sub
+
+determineDynamicIconRangeToAnimate_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure determineDynamicIconRangeToAnimate of Form dock"
 End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : storeCurrentIconPositions
+' Author    : beededea
+' Date      : 19/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub storeCurrentIconPositions(useloop)
         
+   On Error GoTo storeCurrentIconPositions_Error
+
         iconStoreLeftPixels(useloop) = Int(iconPosLeftPxls)
         iconStoreRightPixels(useloop) = Int(iconStoreLeftPixels(useloop) + iconWidthPxls) ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
         'iconStoreTopPixels(useloop) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
         'iconStoreBottomPixels(useloop) =' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+
+   On Error GoTo 0
+   Exit Sub
+
+storeCurrentIconPositions_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure storeCurrentIconPositions of Form dock"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : sizeDockPositionZero
+' Author    : beededea
+' Date      : 19/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeDockPositionZero(ByVal useloop As Integer, ByRef showsmall As Boolean)
                 
+   On Error GoTo sizeDockPositionZero_Error
+
         If useloop = 0 Then 'small icons to the left shown in small mode
             iconHeightPxls = iconSizeSmallPxls
             iconWidthPxls = iconSizeSmallPxls
@@ -2970,10 +2996,26 @@ Private Sub sizeDockPositionZero(ByVal useloop As Integer, ByRef showsmall As Bo
             showsmall = True
             expandedDockWidth = expandedDockWidth + iconWidthPxls
         End If
+
+   On Error GoTo 0
+   Exit Sub
+
+sizeDockPositionZero_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeDockPositionZero of Form dock"
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : sizeEachSmallIconToLeft
+' Author    : beededea
+' Date      : 19/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeEachSmallIconToLeft(ByVal useloop As Integer, ByVal leftmostResizedIcon As Integer, ByRef showsmall As Boolean)
+   On Error GoTo sizeEachSmallIconToLeft_Error
+
         If useloop < leftmostResizedIcon Then  'small icons to the left shown in small mode
             iconHeightPxls = iconSizeSmallPxls
             iconWidthPxls = iconSizeSmallPxls
@@ -3012,6 +3054,13 @@ Private Sub sizeEachSmallIconToLeft(ByVal useloop As Integer, ByVal leftmostResi
             showsmall = True
             expandedDockWidth = expandedDockWidth + iconWidthPxls
         End If
+
+   On Error GoTo 0
+   Exit Sub
+
+sizeEachSmallIconToLeft_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeEachSmallIconToLeft of Form dock"
 End Sub
 
 Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostResizedIcon As Integer, ByRef showsmall As Boolean)
@@ -3051,9 +3100,7 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
                 End If
             End If
             
-            ' debug
-            ' iconCurrentTopPxls =
-            ' DrawTheText " " & iconCurrentTopPxls, 100, 100, 100, rDFontName, Val(Abs(rDFontSize))
+            'DrawTheText "tmrWriteCache " & gblRecordsToCommit, dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
         
             If iconHeightPxls < iconSizeSmallPxls Then
                 iconHeightPxls = iconSizeSmallPxls
@@ -3071,9 +3118,18 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : sizeFullSizeIcon
+' Author    : beededea
+' Date      : 19/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolean)
          ' the main fullsize icon
                      
+   On Error GoTo sizeFullSizeIcon_Error
+
         If useloop = iconIndex Then
 
 '            If useloop = 0 Then
@@ -3130,8 +3186,24 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
 '            End If
             expandedDockWidth = expandedDockWidth + (iconWidthPxls)
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+sizeFullSizeIcon_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeFullSizeIcon of Form dock"
 End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : sizeEachResizedIconToRight
+' Author    : beededea
+' Date      : 19/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeEachResizedIconToRight(ByVal useloop As Integer, ByVal rightmostResizedIcon As Integer, ByRef showsmall As Boolean)
+   On Error GoTo sizeEachResizedIconToRight_Error
+
     If useloop > iconIndex And useloop <= rightmostResizedIcon Then
 
     
@@ -3168,10 +3240,26 @@ Private Sub sizeEachResizedIconToRight(ByVal useloop As Integer, ByVal rightmost
         expandedDockWidth = expandedDockWidth + iconWidthPxls
         showsmall = False
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+sizeEachResizedIconToRight_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeEachResizedIconToRight of Form dock"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : sizeEachSmallIconToRight
+' Author    : beededea
+' Date      : 19/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeEachSmallIconToRight(ByVal useloop As Integer, ByVal rightmostResizedIcon As Integer, ByRef showsmall As Boolean)
             
+   On Error GoTo sizeEachSmallIconToRight_Error
+
         If useloop > rightmostResizedIcon Then 'small icons to the right
 
             iconHeightPxls = iconSizeSmallPxls
@@ -3205,6 +3293,13 @@ Private Sub sizeEachSmallIconToRight(ByVal useloop As Integer, ByVal rightmostRe
             expandedDockWidth = expandedDockWidth + iconWidthPxls
             showsmall = True
         End If
+
+   On Error GoTo 0
+   Exit Sub
+
+sizeEachSmallIconToRight_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeEachSmallIconToRight of Form dock"
 End Sub
 
 
@@ -3241,9 +3336,18 @@ Private Sub showSmallIcon(ByVal useloop As Integer)
     End If
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : showLargeIconTypes
+' Author    : beededea
+' Date      : 19/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIconXOffset As Integer)
     Dim thiskey As String: thiskey = ""
     
+   On Error GoTo showLargeIconTypes_Error
+
     If thisIconXOffset <> 0 Then iconPosLeftPxls = iconPosLeftPxls - (thisIconXOffset / 5)
     
     '   check the recently disabled flag and display the transparent version instead
@@ -3287,10 +3391,26 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
             If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
             If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2)
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+showLargeIconTypes_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure showLargeIconTypes of Form dock"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : drawTextAboveIcon
+' Author    : beededea
+' Date      : 19/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub drawTextAboveIcon(ByVal useloop As Integer, ByVal textWidth As Integer)
         
+   On Error GoTo drawTextAboveIcon_Error
+
         If useloop = iconIndex Then ' this section is located here to ensure the text is above the icon image
             'now draw the icon text above the selected icon
             If rDHideLabels = "0" Then
@@ -3307,6 +3427,13 @@ Private Sub drawTextAboveIcon(ByVal useloop As Integer, ByVal textWidth As Integ
                 End If
             End If
         End If
+
+   On Error GoTo 0
+   Exit Sub
+
+drawTextAboveIcon_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure drawTextAboveIcon of Form dock"
 
 End Sub
 
@@ -4578,7 +4705,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub checkQuestionMark(ByVal key As String, ByRef FileName As String, ByVal Size As Byte)
+Public Sub checkQuestionMark(ByVal key As String, ByRef Filename As String, ByVal Size As Byte)
     Dim filestring As String: filestring = vbNullString
     Dim suffix As String: suffix = vbNullString
     Dim qPos As Integer: qPos = 0
@@ -4586,10 +4713,10 @@ Public Sub checkQuestionMark(ByVal key As String, ByRef FileName As String, ByVa
     ' does the string contain a ? if so it probably has an embedded .ICO
     On Error GoTo checkQuestionMark_Error
 
-    qPos = InStr(1, FileName, "?")
+    qPos = InStr(1, Filename, "?")
     If qPos <> 0 Then
         ' extract the string before the ? (qPos)
-        filestring = Mid$(FileName, 1, qPos - 1)
+        filestring = Mid$(Filename, 1, qPos - 1)
     End If
     
     ' test the resulting filestring exists
@@ -4601,7 +4728,7 @@ Public Sub checkQuestionMark(ByVal key As String, ByRef FileName As String, ByVa
             Call displayEmbeddedIcons(key, filestring, hiddenForm.hiddenPicbox, Size)
         Else
             ' the file may have a ? in the string but does not match otherwise in any useful way
-            FileName = sdAppPath & "\icons\" & "help.png" ' .12 25/01/2021 DAEB Change to sdAppPath
+            Filename = sdAppPath & "\icons\" & "help.png" ' .12 25/01/2021 DAEB Change to sdAppPath
         End If
     Else
         Exit Sub
@@ -4703,7 +4830,7 @@ End Function
 '
 '---------------------------------------------------------------------------------------
 '
-Public Sub displayEmbeddedIcons(ByVal key As String, ByVal FileName As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
+Public Sub displayEmbeddedIcons(ByVal key As String, ByVal Filename As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
     
 '    Dim sExeName As String: sExeName = vbNullString
 '    Dim lIconIndex As Long: lIconIndex = 0
@@ -5035,36 +5162,38 @@ Public Sub prepareArraysAndCollections()
     If debugflg = 1 Then debugLog "% sub prepareArraysAndCollections"
 
     ReDim dictionaryLocationArray(rdIconMaximum) As String ' the file location of the original icons
-    
     ReDim sFileNameArray(rdIconMaximum) As String ' the file location of the original icons
-    ReDim sFileName2Array(rdIconMaximum) As String ' sFileName2
     ReDim sTitleArray(rdIconMaximum) As String ' the name assigned to each icon
     ReDim sCommandArray(rdIconMaximum) As String ' the Windows command or exe assigned to each icon
-    ReDim sArgumentsArray(rdIconMaximum) As String ' sArguments
-    ReDim sWorkingDirectoryArray(rdIconMaximum) As String ' sWorkingDirectory
-    ReDim sShowCmdArray(rdIconMaximum) As String ' sShowCmd
-    ReDim sOpenRunningArray(rdIconMaximum) As String ' sOpenRunning
-    ReDim sIsSeparatorArray(rdIconMaximum) As String ' sIsSeparator
-    ReDim sUseContextArray(rdIconMaximum) As String ' sUseContext
-    ReDim sDockletFileArray(rdIconMaximum) As String ' sDockletFile
-    ReDim sUseDialogArray(rdIconMaximum) As String ' sUseDialog
-    ReDim sUseDialogAfterArray(rdIconMaximum) As String ' sUseDialogAfter
-    ReDim sQuickLaunchArray(rdIconMaximum) As String ' sQuickLaunch
-    ReDim sAutoHideDockArray(rdIconMaximum) As String ' sAutoHideDock
-    ReDim sSecondAppArray(rdIconMaximum) As String ' sSecondApp
-    ReDim sRunElevatedArray(rdIconMaximum) As String ' sRunElevated
-    ReDim sRunSecondAppBeforehandArray(rdIconMaximum) As String ' sRunSecondAppBeforehand
-    ReDim sAppToTerminateArray(rdIconMaximum) As String ' sAppToTerminate
-    ReDim sDisabledArray(rdIconMaximum) As String ' sDisabled
-    
+
     ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
     ReDim processCheckArray(rdIconMaximum) As Boolean ' the array that contains true/false according to the running state of the associated process
     ReDim explorerCheckArray(rdIconMaximum) As Boolean ' the array that contains true/false according to the running state of the associated process
     ReDim initiatedProcessArray(rdIconMaximum) As String ' the array containing the binary name of any process initiated by the dock
     ReDim initiatedExplorerArray(rdIconMaximum) As String ' the array containing the binary name of any process initiated by the dock
-    
     ReDim disabledArray(rdIconMaximum) As Integer ' the array
+    ReDim targetExistsArray(rdIconMaximum) As Integer
 
+'    ReDim sFileName2Array(rdIconMaximum) As String ' sFileName2
+'    ReDim sArgumentsArray(rdIconMaximum) As String ' sArguments
+'    ReDim sWorkingDirectoryArray(rdIconMaximum) As String ' sWorkingDirectory
+'    ReDim sShowCmdArray(rdIconMaximum) As String ' sShowCmd
+'    ReDim sOpenRunningArray(rdIconMaximum) As String ' sOpenRunning
+'    ReDim sIsSeparatorArray(rdIconMaximum) As String ' sIsSeparator
+'    ReDim sUseContextArray(rdIconMaximum) As String ' sUseContext
+'    ReDim sDockletFileArray(rdIconMaximum) As String ' sDockletFile
+'    ReDim sUseDialogArray(rdIconMaximum) As String ' sUseDialog
+'    ReDim sUseDialogAfterArray(rdIconMaximum) As String ' sUseDialogAfter
+'    ReDim sQuickLaunchArray(rdIconMaximum) As String ' sQuickLaunch
+'    ReDim sAutoHideDockArray(rdIconMaximum) As String ' sAutoHideDock
+'    ReDim sSecondAppArray(rdIconMaximum) As String ' sSecondApp
+'    ReDim sRunElevatedArray(rdIconMaximum) As String ' sRunElevated
+'    ReDim sRunSecondAppBeforehandArray(rdIconMaximum) As String ' sRunSecondAppBeforehand
+'    ReDim sAppToTerminateArray(rdIconMaximum) As String ' sAppToTerminate
+'    ReDim sDisabledArray(rdIconMaximum) As String ' sDisabled
+'
+    
+    
     Call loadAdditionalImagestoDictionary ' the additional images need to be added to the dictionary
     
     ' extract filenames from Rocketdock registry or settings.ini
@@ -7178,49 +7307,94 @@ End Sub
 ' Procedure : tmrWriteCache_Timer
 ' Author    : beededea
 ' Date      : 02/07/2025
-' Purpose   : writing the in-memory cache to disc
+' Purpose   : writing the in-memory cache to disc. The data relating to the icons is written to an array to avoid any user delay,
+'             the writing to disc is VERY slow resulting in 15 seconds pause. However, we still need to write the data to disc.
 '---------------------------------------------------------------------------------------
 '
-Private Sub tmrWriteCache_Timer()
-
-    On Error GoTo tmrWriteCache_Timer_Error
-    
-    Dim useloop As Integer: useloop = 0
-    Dim lastInputVar As LASTINPUTINFO
-    Static currentIdleTime As Long ' 2 billion seconds max
-
-    If gblRequiresCommitToDisc = False Then Exit Sub
-    
-    tmrWriteCache.Enabled = False
-    
-    ' check to see if the app has not been used for a while, ie it has been idle for more than 3 seconds it will do its stuff.
-
-    lastInputVar.cbSize = Len(lastInputVar)
-    Call GetLastInputInfo(lastInputVar)
-    currentIdleTime = GetTickCount - lastInputVar.dwTime
-    
-    ' only allows the function to continue only if the dock has been idle for more than 3 secs
-    If currentIdleTime < 3000 Then
-        tmrWriteCache.Enabled = True ' still needs to be written to disc
-        Exit Sub
-    End If
-    
-    For useloop = 0 To rdIconMaximum
-       Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, True)
-       Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, False)
-    Next useloop
-    
-    gblRequiresCommitToDisc = False
-    'tmrWriteCache.Enabled = false
-
-   On Error GoTo 0
-   Exit Sub
-
-tmrWriteCache_Timer_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure tmrWriteCache_Timer of Form dock"
-    
-End Sub
+'Private Sub tmrWriteCache_Timer()
+'
+'    On Error GoTo tmrWriteCache_Timer_Error
+'
+'    Dim useloop As Integer: useloop = 0
+'    Dim startRecord As Integer: startRecord = 0
+'    Dim fromArray As Boolean: fromArray = False
+'    Dim toArray As Boolean: toArray = False
+'    Dim lngReturn As Long: lngReturn = 0
+'    Static startTime As Date
+'    Dim EndTime As Date: EndTime = 0
+'    Dim duration As Long: duration = 0
+'    Static interruptions As Integer
+'    Static lastRecordCommitted As Integer
+'
+'    If gblRequiresCommitToDisc = False Then Exit Sub
+'    If gblOutsideDock = False Then Exit Sub ' if we are inside the dock then exit immediately
+'
+'    If startTime = "00:00:00" Then startTime = time()
+'
+'    ' just for safety's sake we stop this timer, so VB6 does not even attempt to initiate a send run whilst it is doing its thing
+'    tmrWriteCache.Enabled = False
+'
+'    ' here we determine the start record where the write to disc should start, this is the point at which the add or delete operation has occurred
+'    startRecord = 0
+'    If lastRecordCommitted = 0 Then
+'        lastRecordCommitted = glbStartRecord
+'    Else
+'        startRecord = lastRecordCommitted + 1
+'    End If
+'
+'    ' we set the boolean values for writing from the array and out to the disc
+'    fromArray = True
+'    toArray = False
+'
+'    'loop from the start operation value to the end
+'    For useloop = startRecord To rdIconMaximum
+'        If (useloop) Mod 2 = 0 Then
+'
+'            'check idle state every 2 writes - as the dock is a full screen app this test only worked when the cursor was active within another application
+''            lastInputVar.cbSize = Len(lastInputVar)
+''            Call GetLastInputInfo(lastInputVar)
+''            currentIdleTime = GetTickCount - lastInputVar.dwTime
+''            If currentIdleTime < 500 Then
+'
+'            ' during the slow writing of the details we regulalry test the position of the cursor, if it is within the dock boundaries then we leave the routine straight away
+'            lngReturn = GetCursorPos(apiMouse) ' return the mouse position every 4 - 200ms - sufficient
+'            gblOutsideDock = fTestCursorWithinDockYPosition()
+'
+'            If gblOutsideDock = False Then
+'                tmrWriteCache.Enabled = True ' we exit early but the data still needs to be written to disc
+'                interruptions = interruptions + 1
+'                Exit Sub
+'            End If
+'        End If
+'        ' read from the arrays
+'        Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, fromArray)
+'
+'        ' very slow using writeinifile APIs, needs improvement.
+'        Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, toArray)
+'
+'        lastRecordCommitted = useloop
+'        gblRecordsToCommit = rdIconMaximum - lastRecordCommitted
+'    Next useloop
+'
+'    ' calculate the write timing variables and report
+'    EndTime = time()
+'    duration = DateDiff("s", startTime, EndTime)
+'    MsgBox "Written settings to file - Done. " & lastRecordCommitted - glbStartRecord & " records, last run taking " & duration & " seconds with " & interruptions & " interruptions"
+'    startTime = #1/1/2000 12:00:00 PM#
+'
+'    'set the final cache variables back to default
+'    gblRequiresCommitToDisc = False
+'    glbStartRecord = 0
+'    lastRecordCommitted = 0
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'tmrWriteCache_Timer_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure tmrWriteCache_Timer of Form dock"
+'
+'End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : wallpaperTimer_Timer

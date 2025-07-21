@@ -325,7 +325,7 @@ End Type
 ' .07 DAEB 19/04/2021 mdlMain.bas  added a new type link for determining shortcuts
 Public Type Link
     Attributes As Long
-    FileName As String
+    Filename As String
     Description As String
     RelPath As String
     WorkingDir As String
@@ -493,7 +493,7 @@ Public iconBitmap As Long
 Public gdipFullScreenBitmap As Long
 Public lngGDI As Long
 Public windowLngReturn As Long
-Public dockPosition As TASKBAR_POSITION
+
 ' GDI+ globals variables END
 
 
@@ -533,16 +533,17 @@ Public inc As Boolean
 Public bounceTimerRun As Integer
 Public fcount As Integer
 
+Public sFileNameArray() As String
+Public sTitleArray() As String
+Public sCommandArray() As String
 Public processCheckArray() As Boolean
 Public explorerCheckArray() As Boolean
-
 Public initiatedProcessArray() As String
 Public initiatedExplorerArray() As String
-
 Public dictionaryLocationArray() As String ' array to store the location (index) for the images in the dictionary collection
-
-Public targetExistsArray() As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
 Public disabledArray() As Integer
+Public targetExistsArray() As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+
 
 Public WindowsVer As String
 Public rdIconMaximum As Integer
@@ -579,11 +580,11 @@ Public oldScreenHeightPixels As Long
 
 ' vars to store the position of each icon
 
+
 Public iconStoreLeftPixels() As Double ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
 Public iconStoreRightPixels() As Double ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'Public iconStoreTopPixels() As Double ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
 Public iconStoreBottomPixels() As Double ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+Public dockPosition As TASKBAR_POSITION
 
 ' Left  Right
 ' +-----+ Top
@@ -612,6 +613,37 @@ Public hdcScreen As Long
 Public lHotKey As Long
 
 
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : fTestCursorWithinDockYPosition
+' Author    : beededea
+' Date      : 19/12/2022
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function fTestCursorWithinDockYPosition() As Boolean
+    Dim outsideDock  As Boolean: outsideDock = False
+    
+    iconRightmostPointPxls = iconStoreRightPixels(UBound(iconStoreLeftPixels))
+    
+    ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
+    If dockPosition = vbBottom Then
+        outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'            outsideDock = True
+'        Else
+'            outsideDock = False
+'        End If
+    End If
+    If dockPosition = vbtop Then
+        outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    End If
+    
+    fTestCursorWithinDockYPosition = outsideDock ' return
+
+End Function
 '---------------------------------------------------------------------------------------
 ' Steamydock global configuration variables END
 '---------------------------------------------------------------------------------------
@@ -842,8 +874,10 @@ Public Sub checkDockProcessesRunning()
     For useloop = 0 To rdIconMaximum
         If sCommandArray(useloop) <> "" Then
             processCheckArray(useloop) = IsRunning(sCommandArray(useloop))
-            If processCheckArray(useloop) <> vbNullString Then
-                initiatedProcessArray(useloop) = processCheckArray(useloop)
+            ' if the matching process has been found it is then dropped into the initiatedProcessArray, as this array is checked more frequently.
+            ' and cogs are added or taken away during the loop that  analyses this array.
+            If processCheckArray(useloop) = True Then
+                initiatedProcessArray(useloop) = sCommandArray(useloop)
             End If
         End If
     Next useloop
@@ -1162,9 +1196,11 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Sub readDockConfiguration()
-    Dim useloop As Integer
+    Dim useloop As Integer: useloop = 0
+    Dim fromArray As Boolean: fromArray = False
     
     On Error GoTo readDockConfiguration_Error
+    
     If debugflg = 1 Then debugLog "%" & " sub readDockConfiguration"
             
     'the RD settings.ini configuration option
@@ -1187,33 +1223,47 @@ Public Sub readDockConfiguration()
         'theCount = 72 ' debug
         rdIconMaximum = theCount - 1
         
-        ReDim Preserve sFileNameArray(rdIconMaximum) As String  ' the file location of the original icons
-        ReDim Preserve sFileName2Array(rdIconMaximum) As String  ' sFileName2
-        ReDim Preserve sTitleArray(rdIconMaximum) As String  ' the name assigned to each icon
-        ReDim Preserve sCommandArray(rdIconMaximum) As String  ' the Windows command or exe assigned to each icon
-        ReDim Preserve sArgumentsArray(rdIconMaximum) As String  ' sArguments
-        ReDim Preserve sWorkingDirectoryArray(rdIconMaximum) As String  ' sWorkingDirectory
-        ReDim Preserve sShowCmdArray(rdIconMaximum) As String  ' sShowCmd
-        ReDim Preserve sOpenRunningArray(rdIconMaximum) As String  ' sOpenRunning
-        ReDim Preserve sIsSeparatorArray(rdIconMaximum) As String  ' sIsSeparator
-        ReDim Preserve sUseContextArray(rdIconMaximum) As String  ' sUseContext
-        ReDim Preserve sDockletFileArray(rdIconMaximum) As String  ' sDockletFile
-        ReDim Preserve sUseDialogArray(rdIconMaximum) As String  ' sUseDialog
-        ReDim Preserve sUseDialogAfterArray(rdIconMaximum) As String  ' sUseDialogAfter
-        ReDim Preserve sQuickLaunchArray(rdIconMaximum) As String  ' sQuickLaunch
-        ReDim Preserve sAutoHideDockArray(rdIconMaximum) As String  ' sAutoHideDock
-        ReDim Preserve sSecondAppArray(rdIconMaximum) As String  ' sSecondApp
-        ReDim Preserve sRunElevatedArray(rdIconMaximum) As String  ' sRunElevated
-        ReDim Preserve sRunSecondAppBeforehandArray(rdIconMaximum) As String  ' sRunSecondAppBeforehand
-        ReDim Preserve sAppToTerminateArray(rdIconMaximum) As String  ' sAppToTerminate
-        ReDim Preserve sDisabledArray(rdIconMaximum) As String  ' sDisabled
+        
+        'ReDim Preserve sFileNameArray(rdIconMaximum) As String  ' the file location of the original icons
+'        ReDim Preserve sFileName2Array(rdIconMaximum) As String  ' sFileName2
+'        ReDim Preserve sTitleArray(rdIconMaximum) As String  ' the name assigned to each icon
+'        ReDim Preserve sCommandArray(rdIconMaximum) As String  ' the Windows command or exe assigned to each icon
+'        ReDim Preserve sArgumentsArray(rdIconMaximum) As String  ' sArguments
+'        ReDim Preserve sWorkingDirectoryArray(rdIconMaximum) As String  ' sWorkingDirectory
+'        ReDim Preserve sShowCmdArray(rdIconMaximum) As String  ' sShowCmd
+'        ReDim Preserve sOpenRunningArray(rdIconMaximum) As String  ' sOpenRunning
+'        ReDim Preserve sIsSeparatorArray(rdIconMaximum) As String  ' sIsSeparator
+'        ReDim Preserve sUseContextArray(rdIconMaximum) As String  ' sUseContext
+'        ReDim Preserve sDockletFileArray(rdIconMaximum) As String  ' sDockletFile
+'        ReDim Preserve sUseDialogArray(rdIconMaximum) As String  ' sUseDialog
+'        ReDim Preserve sUseDialogAfterArray(rdIconMaximum) As String  ' sUseDialogAfter
+'        ReDim Preserve sQuickLaunchArray(rdIconMaximum) As String  ' sQuickLaunch
+'        ReDim Preserve sAutoHideDockArray(rdIconMaximum) As String  ' sAutoHideDock
+'        ReDim Preserve sSecondAppArray(rdIconMaximum) As String  ' sSecondApp
+'        ReDim Preserve sRunElevatedArray(rdIconMaximum) As String  ' sRunElevated
+'        ReDim Preserve sRunSecondAppBeforehandArray(rdIconMaximum) As String  ' sRunSecondAppBeforehand
+'        ReDim Preserve sAppToTerminateArray(rdIconMaximum) As String  ' sAppToTerminate
+'        ReDim Preserve sDisabledArray(rdIconMaximum) As String  ' sDisabled
+        
+        ReDim Preserve dictionaryLocationArray(rdIconMaximum) As String ' the file location of the original icons
+        ReDim Preserve sFileNameArray(rdIconMaximum) As String ' the file location of the original icons
+        ReDim Preserve sTitleArray(rdIconMaximum) As String ' the name assigned to each icon
+        ReDim Preserve sCommandArray(rdIconMaximum) As String ' the Windows command or exe assigned to each icon
+        
         ReDim Preserve targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-        ReDim Preserve processCheckArray(rdIconMaximum) As Boolean ' the process name assigned to each icon
-        ReDim Preserve explorerCheckArray(rdIconMaximum) As Boolean ' the process name assigned to each icon
-
+        ReDim Preserve processCheckArray(rdIconMaximum) As Boolean ' the array that contains true/false according to the running state of the associated process
+        ReDim Preserve explorerCheckArray(rdIconMaximum) As Boolean ' the array that contains true/false according to the running state of the associated process
+        ReDim Preserve initiatedProcessArray(rdIconMaximum) As String ' the array containing the binary name of any process initiated by the dock
+        ReDim Preserve initiatedExplorerArray(rdIconMaximum) As String ' the array containing the binary name of any process initiated by the dock
+        ReDim Preserve disabledArray(rdIconMaximum) As Integer ' the array
+        ReDim Preserve targetExistsArray(rdIconMaximum) As Integer
 
         ' read the Rocketdock dock settings from the new configuration file
         Call readDockSettingsFile("Software\SteamyDock\DockSettings", dockSettingsFile)
+        
+        Close #3
+        Open newDockSettingsFile For Random Shared As #3 Len = Len(iconVar)
+    
         Call validateInputs
         Call adjustControls
         
@@ -1221,9 +1271,11 @@ Public Sub readDockConfiguration()
         dock.animateTimer.Interval = Val(rDAnimationInterval)
         
         ' copy the original ICON configs out of the dockSettingsFile and into the temporary settings file that we will operate upon
+        fromArray = False
         For useloop = 0 To rdIconMaximum
              ' get the relevant icon entries from the 3rd config
-             readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
+
+             readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, fromArray
              ' note we are copying from the dock settings as "Software\SteamyDock\DockSettings" and into the temporary settings file as "software\rocketdock"
              'Call writeIconSettingsIni("Software\RocketDock\Icons", useloop, rdSettingsFile) ' the alternative settings.ini exists
         Next useloop
@@ -1438,28 +1490,36 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     ByVal thisSeparator As String, ByVal thisDockletFile As String, _
     ByVal thisUseContext As String, ByVal thisUseDialog As String, _
     ByVal thisUseDialogAfter As String, ByVal thisQuickLaunch As String, ByVal thisDisabled As String)
-    
-    Dim useloop As Integer
-    Dim thisIcon As Integer
+    Dim fromArray As Boolean: fromArray = False
+    Dim toArray As Boolean: toArray = False
+    'Dim oldRdIconMaximum As Integer: oldRdIconMaximum = 0
+    Dim useloop As Integer: useloop = 0
+    Dim thisIcon As Integer: thisIcon = 0
 
     On Error GoTo insertNewIconDataIntoCurrentPosition_Error
     'If debugflg = 1 Then debugLog "%" & "insertNewIconDataIntoCurrentPosition"
 
+    ' set up the array conditions
+    fromArray = False
+    toArray = False
+    
+    'oldRdIconMaximum = rdIconMaximum
+
+    'resize all arrays used for storing icon information
+    Call redimCacheArrays
+    
     ' starting at the end of the steamydock map, scroll backward and increment the number
     ' until we reach the current position.
-    
     For useloop = rdIconMaximum To selectedIconIndex Step -1
          Call zeroAllIconCharacteristics
          
-         readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
-        
-         Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop + 1, dockSettingsFile)
-    
+         Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, fromArray)
+         Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop + 1, dockSettingsFile, toArray)
     Next useloop
     
     'increment the new icon count
     theCount = theCount + 1
-    rdIconMaximum = rdIconMaximum + 1 '
+    rdIconMaximum = rdIconMaximum + 1
     iconArrayUpperBound = rdIconMaximum
     
     'amend the count in the alternative rdSettings.ini
@@ -1495,17 +1555,17 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     
     sDisabled = thisDisabled
             
-    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", thisIcon, dockSettingsFile)
+    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", thisIcon, dockSettingsFile, toArray)
 
     ' then re-read the config for every icon
     For useloop = rdIconMaximum To selectedIconIndex Step -1
-        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
+        Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, fromArray)
         ' read the two main icon variables into arrays, one for each
         sFileNameArray(useloop) = sFilename
         sTitleArray(useloop) = sTitle
         sCommandArray(useloop) = sCommand
         targetExistsArray(useloop) = 0
-        
+
         ' check to see if each process is running and store the result away
         explorerCheckArray(useloop) = isExplorerRunning(sCommand)
         processCheckArray(useloop) = IsRunning(sCommand)
@@ -1515,7 +1575,7 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
         Else
             disabledArray(useloop) = 0
         End If
-    
+
     Next useloop
 
     'amend the count in both the alternative rdSettings.ini
@@ -1524,6 +1584,8 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
     
+    gblRequiresCommitToDisc = False
+    dock.tmrWriteCache.Enabled = False
     
     '.nn new check for dragInsideDockOperating
     If dragInsideDockOperating = False Then '.nn for performance reason, disabled when dragging and dropping as it is carried out during the delete operation as well
@@ -1550,34 +1612,40 @@ Private Sub redimCacheArrays()
     
    On Error GoTo redimCacheArrays_Error
     
-    ReDim Preserve sFileNameArray(rdIconMaximum) As String  ' the file location of the original icons
-    ReDim Preserve sFileName2Array(rdIconMaximum) As String  ' sFileName2
-    ReDim Preserve sTitleArray(rdIconMaximum) As String  ' the name assigned to each icon
-    ReDim Preserve sCommandArray(rdIconMaximum) As String  ' the Windows command or exe assigned to each icon
-    ReDim Preserve sArgumentsArray(rdIconMaximum) As String  ' sArguments
-    ReDim Preserve sWorkingDirectoryArray(rdIconMaximum) As String  ' sWorkingDirectory
-    ReDim Preserve sShowCmdArray(rdIconMaximum) As String  ' sShowCmd
-    ReDim Preserve sOpenRunningArray(rdIconMaximum) As String  ' sOpenRunning
-    ReDim Preserve sIsSeparatorArray(rdIconMaximum) As String  ' sIsSeparator
-    ReDim Preserve sUseContextArray(rdIconMaximum) As String  ' sUseContext
-    ReDim Preserve sDockletFileArray(rdIconMaximum) As String  ' sDockletFile
-    ReDim Preserve sUseDialogArray(rdIconMaximum) As String  ' sUseDialog
-    ReDim Preserve sUseDialogAfterArray(rdIconMaximum) As String  ' sUseDialogAfter
-    ReDim Preserve sQuickLaunchArray(rdIconMaximum) As String  ' sQuickLaunch
-    ReDim Preserve sAutoHideDockArray(rdIconMaximum) As String  ' sAutoHideDock
-    ReDim Preserve sSecondAppArray(rdIconMaximum) As String  ' sSecondApp
-    ReDim Preserve sRunElevatedArray(rdIconMaximum) As String  ' sRunElevated
-    ReDim Preserve sRunSecondAppBeforehandArray(rdIconMaximum) As String  ' sRunSecondAppBeforehand
-    ReDim Preserve sAppToTerminateArray(rdIconMaximum) As String  ' sAppToTerminate
-    ReDim Preserve sDisabledArray(rdIconMaximum) As String  ' sDisabled
+'    ReDim Preserve sFileNameArray(rdIconMaximum) As String  ' the file location of the original icons
+'    ReDim Preserve sFileName2Array(rdIconMaximum) As String  ' sFileName2
+'    ReDim Preserve sTitleArray(rdIconMaximum) As String  ' the name assigned to each icon
+'    ReDim Preserve sCommandArray(rdIconMaximum) As String  ' the Windows command or exe assigned to each icon
+'    ReDim Preserve sArgumentsArray(rdIconMaximum) As String  ' sArguments
+'    ReDim Preserve sWorkingDirectoryArray(rdIconMaximum) As String  ' sWorkingDirectory
+'    ReDim Preserve sShowCmdArray(rdIconMaximum) As String  ' sShowCmd
+'    ReDim Preserve sOpenRunningArray(rdIconMaximum) As String  ' sOpenRunning
+'    ReDim Preserve sIsSeparatorArray(rdIconMaximum) As String  ' sIsSeparator
+'    ReDim Preserve sUseContextArray(rdIconMaximum) As String  ' sUseContext
+'    ReDim Preserve sDockletFileArray(rdIconMaximum) As String  ' sDockletFile
+'    ReDim Preserve sUseDialogArray(rdIconMaximum) As String  ' sUseDialog
+'    ReDim Preserve sUseDialogAfterArray(rdIconMaximum) As String  ' sUseDialogAfter
+'    ReDim Preserve sQuickLaunchArray(rdIconMaximum) As String  ' sQuickLaunch
+'    ReDim Preserve sAutoHideDockArray(rdIconMaximum) As String  ' sAutoHideDock
+'    ReDim Preserve sSecondAppArray(rdIconMaximum) As String  ' sSecondApp
+'    ReDim Preserve sRunElevatedArray(rdIconMaximum) As String  ' sRunElevated
+'    ReDim Preserve sRunSecondAppBeforehandArray(rdIconMaximum) As String  ' sRunSecondAppBeforehand
+'    ReDim Preserve sAppToTerminateArray(rdIconMaximum) As String  ' sAppToTerminate
+'    ReDim Preserve sDisabledArray(rdIconMaximum) As String  ' sDisabled
     
-    ReDim Preserve dictionaryLocationArray(rdIconMaximum) As String ' the dictionary location of the original icons
-    ReDim Preserve targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-    ReDim Preserve processCheckArray(rdIconMaximum) As Boolean ' the process name assigned to each icon
-    ReDim Preserve explorerCheckArray(rdIconMaximum) As Boolean ' the process name assigned to each icon
-    ReDim Preserve initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
-    ReDim Preserve initiatedExplorerArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track explorer processes initiated from the dock
-    ReDim Preserve disabledArray(rdIconMaximum) As Integer '
+
+        ReDim Preserve dictionaryLocationArray(rdIconMaximum) As String ' the file location of the original icons
+        ReDim Preserve sFileNameArray(rdIconMaximum) As String ' the file location of the original icons
+        ReDim Preserve sTitleArray(rdIconMaximum) As String ' the name assigned to each icon
+        ReDim Preserve sCommandArray(rdIconMaximum) As String ' the Windows command or exe assigned to each icon
+        
+        ReDim Preserve targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+        ReDim Preserve processCheckArray(rdIconMaximum) As Boolean ' the array that contains true/false according to the running state of the associated process
+        ReDim Preserve explorerCheckArray(rdIconMaximum) As Boolean ' the array that contains true/false according to the running state of the associated process
+        ReDim Preserve initiatedProcessArray(rdIconMaximum) As String ' the array containing the binary name of any process initiated by the dock
+        ReDim Preserve initiatedExplorerArray(rdIconMaximum) As String ' the array containing the binary name of any process initiated by the dock
+        ReDim Preserve disabledArray(rdIconMaximum) As Integer ' the array
+        ReDim Preserve targetExistsArray(rdIconMaximum) As Integer
 
    On Error GoTo 0
    Exit Sub
@@ -1588,105 +1656,101 @@ redimCacheArrays_Error:
 
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : saveIconConfigurationToSource
-' Author    : beededea
-' Date      : 20/06/2019
-' Purpose   : writes to the registry, SETTINGS.INI or the 3rd config.
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : saveIconConfigurationToSource
+'' Author    : beededea
+'' Date      : 20/06/2019
+'' Purpose   : writes to the registry, SETTINGS.INI or the 3rd config.
+''---------------------------------------------------------------------------------------
+''
+'Public Sub saveIconConfigurationToSource()
 '
-Public Sub saveIconConfigurationToSource()
-
-    Dim useloop As Integer
-    Dim location As String
-    Dim dockSettingsCount As Integer
-    
-    useloop = 0
-    dockSettingsCount = 0
-    location = vbNullString
-     
-    ' save the current fields to the settings file or registry
-    On Error GoTo btnSaveRestart_Click_Error
-    
-'    If debugflg = 1 Then debugLog "%" & "saveIconConfigurationToSource"
-    
-'    If rDGeneralWriteConfig = "True" Then ' the 3rd option, steamydock compatibility, writes to the new config file
-         
-        'first step is to cleardown the third settings file icon data
-        location = "Software\SteamyDock\IconSettings\Icons"
-         
-        'read the old count from the dockSettingsFile
-        dockSettingsCount = Val(GetINISetting(location, "count", dockSettingsFile))
-         
-        'Delete all icon keys - Note that when you write a null string to a record in an ini file it removes the key, deleting it.
-        For useloop = 0 To dockSettingsCount
-            ' write the steamydock dockSsettings.ini
-            PutINISetting location, useloop & "-FileName", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-FileName2", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-Title", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-Command", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-Arguments", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-WorkingDirectory", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-ShowCmd", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-OpenRunning", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-IsSeparator", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-UseContext", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-DockletFile", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-UseDialog", vbNullString, dockSettingsFile
-            PutINISetting location, useloop & "-UseDialogAfter", vbNullString, dockSettingsFile '.nn Add the two missing icon characteristics
-        Next useloop
-        
-        ' write the 3rd settings file with real data
-            For useloop = 0 To rdIconMaximum
-                ' get the relevant entries from the intermediate settings file
-                readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
-                'readIconSettingsIni "Software\RocketDock\Icons", useloop, rdSettingsFile
-                
-                
-                ' write the steamydock dockSsettings.ini
-                Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile) ' the settings.ini only exists when RD is set to use it
-             Next useloop
-         ' when RD compatibility is finally removed we could do without the intermediate file and just work from the dockSettings.ini
-         ' but not yet...
-         
-         'now write the count to the settings file
-         PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, dockSettingsFile
-         
-'    Else ' rocketdock compatibility
-'        origSettingsFile = rdAppPath & "\settings.ini"
-'        If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
+'    Dim useloop As Integer
+'    Dim location As String
+'    Dim dockSettingsCount As Integer
 '
-'            ' we don't need to write anything else to the intermediate rdsettings file as it has already been done in insertNewIconDataIntoCurrentPosition
+'    useloop = 0
+'    dockSettingsCount = 0
+'    location = vbNullString
 '
-'            'using the intermediate option is much faster just requiring a file copy
-'            ' all we need to do is copy the duplicate settings file to the original
-'            FileCopy rdSettingsFile, origSettingsFile
-'        Else
-'            ' just as for the new 3rd option, we have to transpose data from the temporary settings file to the registry, so we have to do them all in one go.
-'            For useloop = 0 To rdIconMaximum
-'                 ' read the rocketdock alternative settings.ini
-'                 'readIconSettingsIni (useloop) ' the alternative settings.ini exists when RD is set to use it
-'                 'readIconSettingsIni "Software\RocketDock\Icons", useloop, rdSettingsFile
-'                 readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
+'    ' save the current fields to the settings file or registry
+'    On Error GoTo saveIconConfigurationToSource_Error
 '
-'                 ' write the rocketdock registry
-'                 writeRegistryOnce (useloop)
-'             Next useloop
-'             '0-IsSeparator
-'             'now write the count to the registry
-'             'Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", "count", Str$(theCount))
+''    If debugflg = 1 Then debugLog "%" & "saveIconConfigurationToSource"
 '
-'        End If
-'    End If
-
-   On Error GoTo 0
-   Exit Sub
-
-btnSaveRestart_Click_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnSaveRestart_Click of module mdlMain.bas"
-            
-End Sub
+''    If rDGeneralWriteConfig = "True" Then ' the 3rd option, steamydock compatibility, writes to the new config file
+'
+'        'first step is to cleardown the third settings file icon data
+'        location = "Software\SteamyDock\IconSettings\Icons"
+'
+'        'read the old count from the dockSettingsFile
+'        dockSettingsCount = Val(GetINISetting(location, "count", dockSettingsFile))
+'
+'        'Delete all icon keys - Note that when you write a null string to a record in an ini file it removes the key, deleting it.
+'        For useloop = 0 To dockSettingsCount
+'            ' write the steamydock dockSsettings.ini
+'            PutINISetting location, useloop & "-FileName", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-FileName2", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-Title", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-Command", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-Arguments", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-WorkingDirectory", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-ShowCmd", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-OpenRunning", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-IsSeparator", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-UseContext", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-DockletFile", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-UseDialog", vbNullString, dockSettingsFile
+'            PutINISetting location, useloop & "-UseDialogAfter", vbNullString, dockSettingsFile '.nn Add the two missing icon characteristics
+'        Next useloop
+'
+'        ' write the 3rd settings file with real data
+'        For useloop = 0 To rdIconMaximum
+'            ' get the relevant entries from the intermediate settings file
+'            Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile)
+'
+'            ' write the steamydock dockSsettings.ini
+'            Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile) ' the settings.ini only exists when RD is set to use it
+'         Next useloop
+'
+'         'now write the count to the settings file
+'         PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, dockSettingsFile
+'
+''    Else ' rocketdock compatibility
+''        origSettingsFile = rdAppPath & "\settings.ini"
+''        If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
+''
+''            ' we don't need to write anything else to the intermediate rdsettings file as it has already been done in insertNewIconDataIntoCurrentPosition
+''
+''            'using the intermediate option is much faster just requiring a file copy
+''            ' all we need to do is copy the duplicate settings file to the original
+''            FileCopy rdSettingsFile, origSettingsFile
+''        Else
+''            ' just as for the new 3rd option, we have to transpose data from the temporary settings file to the registry, so we have to do them all in one go.
+''            For useloop = 0 To rdIconMaximum
+''                 ' read the rocketdock alternative settings.ini
+''                 'readIconSettingsIni (useloop) ' the alternative settings.ini exists when RD is set to use it
+''                 'readIconSettingsIni "Software\RocketDock\Icons", useloop, rdSettingsFile
+''                 readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
+''
+''                 ' write the rocketdock registry
+''                 writeRegistryOnce (useloop)
+''             Next useloop
+''             '0-IsSeparator
+''             'now write the count to the registry
+''             'Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", "count", Str$(theCount))
+''
+''        End If
+''    End If
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'saveIconConfigurationToSource_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure saveIconConfigurationToSource of module mdlMain.bas"
+'
+'End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : readIconData
@@ -1733,7 +1797,7 @@ End Sub
 Public Sub addProgramDLLorEXE()
 
      Dim iconImage As String
-     Dim iconFileName As String
+     Dim iconFilename As String
      Dim retFileName As String
      Dim retfileTitle As String
      Dim dialogInitDir As String
@@ -1809,9 +1873,9 @@ Public Sub addProgramDLLorEXE()
                 'FileName = rdAppPath & "\icons\" & "help.png"
             End If
         Else ' the file doesn't exist in any form with ? or otherwise as a valid path
-            iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
-            If fFExists(iconFileName) Then
-                iconImage = iconFileName
+            iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+            If fFExists(iconFilename) Then
+                iconImage = iconFilename
             Else
                 iconImage = App.Path & "\iconSettings\Icons\help.png"
             End If
@@ -1833,14 +1897,14 @@ Public Sub addProgramDLLorEXE()
         ' delimited file. The list has two identification factors that are used to find a match and then we find an
         ' associated icon to use with a relative path.
            
-        iconFileName = identifyAppIcons(retFileName) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
+        iconFilename = identifyAppIcons(retFileName) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                     
-        If fFExists(iconFileName) Then
-          iconImage = iconFileName
+        If fFExists(iconFilename) Then
+          iconImage = iconFilename
         Else
-            iconFileName = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
-            If fFExists(iconFileName) Then
-                iconImage = iconFileName
+            iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+            If fFExists(iconFilename) Then
+                iconImage = iconFilename
             Else
                 iconImage = App.Path & "\iconSettings\Icons\help.png"
             End If
@@ -1960,6 +2024,8 @@ Public Sub deleteThisIcon()
     Dim itemName As String: itemName = vbNullString
     Dim dMessage As String: dMessage = vbNullString
     Dim useCacheMemory As Boolean: useCacheMemory = False
+    Dim fromArray As Boolean: fromArray = False
+    Dim toArray As Boolean: toArray = False
     
     On Error GoTo deleteThisIcon_Error
     
@@ -2004,22 +2070,22 @@ Public Sub deleteThisIcon()
         ' in order to delete we need to take the next icon characteristics and overwrite the current icon,
         ' then we need to do the same all the way up to the top
         
-        useCacheMemory = True
-        ' as we are writing to the in-memory cache at some point later we need to write to disc
-        'set a flag stating the settings file changes needs to be committed to disc as they are just in memory at the moment
-        gblRequiresCommitToDisc = True
-        dock.tmrWriteCache.Enabled = True
+        'useCacheMemory = True
         
         ' read the steamyDock settings one item up in the list
         ' then write the new item at the current location effectively overwriting it
+        fromArray = False
+        toArray = False
+        'glbStartRecord = selectedIconIndex
+        
         For useloop = selectedIconIndex + 1 To rdIconMaximum
-            Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, False) ' , useCacheMemory = false
-            Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop - 1, dockSettingsFile, useCacheMemory) ' , useCacheMemory
+            Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, fromArray)  ' read from file but write to interim array cache
+            Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop - 1, dockSettingsFile, toArray) ' write changes to array for later commit
         Next useloop
                     
         ' then re-read the config for every icon
         For useloop = selectedIconIndex To rdIconMaximum
-            Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, useCacheMemory) ' , useCacheMemory
+            Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, toArray) ' , read from array from the beginning
             
            'if useCacheMemory = True then
                 ' read the two main icon variables into arrays, one for each
@@ -2050,6 +2116,11 @@ Public Sub deleteThisIcon()
         Next useloop
     End If
     
+    ' as we are writing to the in-memory cache at some point later we need to write to disc
+    'set a flag stating the settings file changes needs to be committed to disc as they are just in memory at the moment
+'    gblRequiresCommitToDisc = False
+'    dock.tmrWriteCache.Enabled = False
+        
         
     ' to tidy up we need to overwrite the final data from the rdsettings.ini, we will write sweet nothings to it
     removeSettingsIni (rdIconMaximum)
@@ -2554,7 +2625,7 @@ End Function
 ' Purpose   : Credit to Olaf Schmidt
 '---------------------------------------------------------------------------------------
 '
-Public Function ReadBytesFromFile(ByVal FileName As String) As Byte()
+Public Function ReadBytesFromFile(ByVal Filename As String) As Byte()
    On Error GoTo ReadBytesFromFile_Error
 
     Dim ab As Object
@@ -2572,7 +2643,7 @@ Public Function ReadBytesFromFile(ByVal FileName As String) As Byte()
   With ab
     .Open
       .Type = 1 'adTypeBinary
-      .LoadFromFile FileName
+      .LoadFromFile Filename
       ReadBytesFromFile = .Read
     .Close
   End With
@@ -3351,6 +3422,10 @@ End Sub
 '
 Public Sub thisFormUnload()
    On Error GoTo thisFormUnload_Error
+   
+    Close #1
+    Close #2
+    Close #3
 
     Call dock.shutdwnGDI
 
