@@ -2147,7 +2147,7 @@ Private Sub mnuAddShutdown_click()
     Dim iconImage As String
     Dim iconFilename As String
     
-   On Error GoTo mnuAddShutdown_click_Error
+    On Error GoTo mnuAddShutdown_click_Error
       'If debugflg = 1 Then debugLog "%" & "mnuAddShutdown_click"
    
    
@@ -3293,6 +3293,10 @@ Public Sub addImageToDictionaryAndCheckForRunningProcess(newFileName As String, 
     'add to the initiated ProcessArray
     Call checkDockProcessesRunning ' trigger a test of running processes in half a second
     Call checkExplorerRunning
+    
+    'trigger a refresh
+    
+    dock.Refresh
 
    On Error GoTo 0
    Exit Sub

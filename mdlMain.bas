@@ -1589,8 +1589,8 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
     
-    gblRequiresCommitToDisc = False
-    dock.tmrWriteCache.Enabled = False
+'    gblRequiresCommitToDisc = False
+'    dock.tmrWriteCache.Enabled = False
     
     '.nn new check for dragInsideDockOperating
     If dragInsideDockOperating = False Then '.nn for performance reason, disabled when dragging and dropping as it is carried out during the delete operation as well
@@ -2038,8 +2038,6 @@ Public Sub deleteThisIcon()
 
     itemName = sTitleArray(selectedIconIndex)
     
-    disabledArray(selectedIconIndex) = 0
-    
     'If chkConfirmSaves.Value = 1 Then
     
     '.nn Added a check to see if the operation is happening during a drag and drop inside the dock
@@ -2110,6 +2108,11 @@ Public Sub deleteThisIcon()
                 
                 dictionaryLocationArray(useloop) = dictionaryLocationArray(useloop + 1)
                 disabledArray(useloop) = disabledArray(useloop + 1)
+
+                processCheckArray(useloop) = processCheckArray(useloop + 1)
+                explorerCheckArray(useloop) = explorerCheckArray(useloop + 1)
+                initiatedProcessArray(useloop) = initiatedProcessArray(useloop + 1)
+                initiatedExplorerArray(useloop) = initiatedExplorerArray(useloop + 1)
                 
                 ' unused vars now
                 iconStoreLeftPixels(useloop) = iconStoreLeftPixels(useloop + 1)
@@ -2157,6 +2160,12 @@ Public Sub deleteThisIcon()
     iconArrayUpperBound = rdIconMaximum
     
     Call checkDockProcessesRunning ' trigger a test of running processes in half a second
+    
+    disabledArray(selectedIconIndex) = 0
+    processCheckArray(selectedIconIndex) = False
+    explorerCheckArray(selectedIconIndex) = False
+    initiatedProcessArray(selectedIconIndex) = vbNullString
+    initiatedExplorerArray(selectedIconIndex) = vbNullString
     
     ' if that fails, spit out an error.
     ' no point in changing this to a non-modal message box as the dock will not restart until the modal menu has completed its work.
@@ -2419,11 +2428,10 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
 
     On Error GoTo addNewImageToDictionary_Error
     
-    dictionaryLocationArrayUpperBound = rdIconMaximum
+    dictionaryLocationArrayUpperBound = rdIconMaximum + 1
 
     'resize all arrays used for storing icon information
     Call redimCacheArrays
-    
     
     ReDim Preserve iconStoreLeftPixels(rdIconMaximum) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
@@ -2448,7 +2456,7 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
         ' then write the the new item at the current location effectively overwriting it
         For useloop = rdIconMaximum To (selectedIconIndex + 1) Step -1
             ' copy the array contents one location down
-            If useloop < rdIconMaximum Then
+            If useloop <= rdIconMaximum Then
                 dictionaryLocationArray(useloop) = dictionaryLocationArray(useloop - 1)
             End If
         Next useloop
@@ -2469,6 +2477,7 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
         Next useloop
         
         dictionaryLocationArray(selectedIconIndex) = dictionaryLocationArrayUpperBound
+
 
     'End If
     

@@ -32,6 +32,8 @@ cacheing of icon data within arrays and create timer process to save the data be
 getFolderNameFromPath uses convert-from-device-harddiskvolume1
 checkRunningProcesses added a found process to the initiatedProcessArray for more regular checking
 
+checkExplorerProcessesRunning - if matching explorer process has been found it is then dropped into the initiatedExplorerArray
+tests for new gbl vars that indicate whether the main process/explorer timers are running
 
 -oOo-
 
@@ -41,7 +43,12 @@ Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop c
 ' Current Task:
 ' =============
 
-' 255 chars in path
+' 255 chars in path - modify the help
+
+fix end rdIconMAximum when adding/deleting
+
+add a precursor blank icon and a final icon
+
 
 Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity - wip
 
@@ -53,7 +60,24 @@ when a dock is wider than 2000 pixels - stitch two docks together
 
 multi-monitor support
 
-add a precursor blank icon and a final icon
+Private Declare Function IsHungAppWindow Lib "user32" (ByVal hWnd As Long) As Long
+
+Public Function IsWindowHung(hWndOfInterest As Long) As Boolean
+    ' From Microsoft MSDN:
+    '   The IsHungAppWindow function is not intended for general use.
+    '   It may be altered or unavailable in subsequent versions of Windows.
+    '   Determines whether the system considers that a specified application is not responding.
+    '   An application is considered to be not responding if it is not waiting for input,
+    '   is not in startup processing, and has not called PeekMessage within the internal
+    '   timeout period of 5 seconds.  Ghost windows always return TRUE.
+    '   The Windows timeout criteria of 5 seconds is subject to change.
+    '
+    ' If hWndOfInterest is NOT a window, False (not hung) is returned.
+    '
+    IsWindowHung = IsHungAppWindow(hWndOfInterest) <> 0&
+End Function
+
+
 
 try adding 1-5 pixels to the icons to the right/left to see if it stops oscillation/instability
 

@@ -2216,16 +2216,15 @@ Private Sub initiatedExplorerTimer_Timer()
     initiatedExplorerTimer.Enabled = False
 
     For useloop = 0 To rdIconMaximum
-        If Not initiatedExplorerArray(useloop) = vbNullString Then
+        If Not initiatedExplorerArray(useloop) = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
             itIsRunning = isExplorerRunning(initiatedExplorerArray(useloop))
             If itIsRunning = False Then
                 explorerCheckArray(useloop) = False ' the cog array for explorer processes
                 initiatedExplorerArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
             Else
-                itIsRunning = itIsRunning ' it just is, so do nothing
-'                    explorerCheckArray(useloop) = True ' the cog array for explorer processes
+                itIsRunning = itIsRunning ' it just is
+                explorerCheckArray(useloop) = True
             End If
-            ' .81 DAEB 28/05/2021 frmMain.frm Refresh the running process with a cog when the process is running, this had been removed earlier
             bDrawn = False
             If smallDockBeenDrawn = True Then
                 If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
@@ -2286,13 +2285,9 @@ Private Sub initiatedProcessTimer_Timer()
                 processCheckArray(useloop) = False ' remove it from the cog array
                 initiatedProcessArray(useloop) = vbNullString ' removes the entry from the quick test array so it isn't caught again on the next run
             Else
-'                    processCheckArray(useloop) = True ' the cog array
+                processCheckArray(useloop) = True
                 itIsRunning = itIsRunning ' it just is, so do nothing
-                'MsgBox ""
-                'If initiatedProcessArray(useloop) = "C:\Program Files\CPUID\CPU-Z\cpuz.exe" Then MsgBox "poo"
-                
             End If
-            ' .81 DAEB 28/05/2021 frmMain.frm Refresh the running process with a cog when the process is running, this had been removed earlier
             bDrawn = False
             If smallDockBeenDrawn = True Then
                 If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
@@ -2300,7 +2295,7 @@ Private Sub initiatedProcessTimer_Timer()
         End If
     Next useloop
     
-    ' restart the timers
+    ' restart the timer
     initiatedProcessTimer.Enabled = True
 
    On Error GoTo 0
@@ -4057,6 +4052,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
     
     If selectedIconIndex <> 999 Then
         If targetType = "none" Then
+            processCheckArray(selectedIconIndex) = True
             initiatedProcessArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
             Call checkDockProcessesRunning ' trigger a test of all running processes
         Else
@@ -4995,7 +4991,6 @@ Public Sub drawSmallStaticIcons()
         ' this loop redraws all the icons at the same small size after the mouse has left the icon area
         For useloop = 0 To rdIconMaximum  'File1.ListCount - 1
             
-            
             'Call sizeDockPositionZero(useloop, showsmall)
             
             ' call this to set the size of all icons in small mode, do it just once, all the subsequent icons will take that same size without recalculating
@@ -5008,6 +5003,11 @@ Public Sub drawSmallStaticIcons()
             Call storeCurrentIconPositions(useloop)
                     
             iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
+            
+            If useloop = 81 Then
+                useloop = 81
+            
+            End If
             
         Next useloop
                                             
