@@ -26,6 +26,13 @@ fFExists now does second check whether file is also a folder, preventing ambiguo
 Menus corrected to ensure only non admin menu items display on explorer-type dock entries
 New isExplorerItem function to determine if an item is to be opened with explorer
 
+explorer processes, cog not disappearing when explorer apps killed manually (not from the dock) - identify when this occurs
+convert use of settings.ini for the ison data to a random access data file
+cacheing of icon data within arrays and create timer process to save the data behind the scenes
+getFolderNameFromPath uses convert-from-device-harddiskvolume1
+checkRunningProcesses added a found process to the initiatedProcessArray for more regular checking
+
+
 -oOo-
 
 Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
@@ -34,7 +41,9 @@ Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop c
 ' Current Task:
 ' =============
 
-explorer processes, cog not disappearing when explorer apps killed manually (not from the dock) - identify when this occurs
+' 255 chars in path
+
+Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity - wip
 
 msgbox when killing apps needs to be on top!
 
@@ -50,7 +59,7 @@ try adding 1-5 pixels to the icons to the right/left to see if it stops oscillat
 
 convert old settings.ini to JSON format using https://www.ediy.co.nz/vbjson-json-parser-library-in-vb6-xidc55680.html
 
-separate the task to kill a process to an external process so that the current process, ie. the dock is not held up 
+separate the task to kill a process to an external process so that the current process, ie. the dock is not held up
 
 ' Extracting embedded icons from DLLs and EXEs
 ' ==============================================
@@ -60,9 +69,6 @@ separate the task to kill a process to an external process so that the current p
 ' See the GDI+Icons note in Cintanotes
 
 reading from an embedded icon within a DLL, extracting to a PNG fior GDI+ to pick up. Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser.
-
-Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity
- 
 
 
 ' Main Tasks:  
@@ -76,11 +82,7 @@ Encapsulate the main few icons as an object using classes, create a class, for t
 '     6. creating new icons WIP
 '     8. Animating more than just the three icons - WIP
 '     9.
-'    10. 
-'    11. 
-'    12. 
-'    13.
-'    14.
+
 
 ' Detail of General Status
 ' ========================

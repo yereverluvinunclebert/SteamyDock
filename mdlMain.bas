@@ -325,7 +325,7 @@ End Type
 ' .07 DAEB 19/04/2021 mdlMain.bas  added a new type link for determining shortcuts
 Public Type Link
     Attributes As Long
-    Filename As String
+    FileName As String
     Description As String
     RelPath As String
     WorkingDir As String
@@ -612,8 +612,8 @@ Public hdcScreen As Long
 
 Public lHotKey As Long
 
-
-
+Public gblExplorerTimerRunning As Boolean
+Public gblProcessTimerRunning As Boolean
 
 
 '---------------------------------------------------------------------------------------
@@ -869,13 +869,14 @@ Public Sub checkDockProcessesRunning()
     
     On Error GoTo checkDockProcessesRunning_Error
 
+    gblProcessTimerRunning = True
     dock.processTimer.Enabled = False
         
     For useloop = 0 To rdIconMaximum
         If sCommandArray(useloop) <> "" Then
             processCheckArray(useloop) = IsRunning(sCommandArray(useloop))
-            ' if the matching process has been found it is then dropped into the initiatedProcessArray, as this array is checked more frequently.
-            ' and cogs are added or taken away during the loop that  analyses this array.
+            ' if the matching process has been found it is then dropped into the initiatedProcessArray, as this array is checked more frequently
+            ' and cogs are added or taken away during the loop that analyses this array.
             If processCheckArray(useloop) = True Then
                 initiatedProcessArray(useloop) = sCommandArray(useloop)
             End If
@@ -883,6 +884,7 @@ Public Sub checkDockProcessesRunning()
     Next useloop
     
     dock.processTimer.Enabled = True
+    gblProcessTimerRunning = False
             
    On Error GoTo 0
    Exit Sub
@@ -918,9 +920,9 @@ Public Sub checkExplorerRunning()
     Dim sCommandLoop As Integer: sCommandLoop = 0
     Dim NameProcess As String: NameProcess = vbNullString
     
-    ' stop both this timer and the more frequent initiatedExplorerTimer
-    'dock.initiatedExplorerTimer.Enabled = False
+    ' stop this timer during the run
     dock.explorerTimer.Enabled = False
+    gblExplorerTimerRunning = True
     
     ' put all the currently open explorer windows into an array so that they can be quickly referenced
     Call enumerateExplorerWindows(openExplorerPathArray(), windowCount)
@@ -935,14 +937,17 @@ Public Sub checkExplorerRunning()
             If sCommandArray(sCommandLoop) <> vbNullString Then
                 If LCase$(sCommandArray(sCommandLoop)) = LCase$(openExplorerPathArray(windowLoop)) Then
                     explorerCheckArray(sCommandLoop) = True
+                    ' if the matching explorer process has been found it is then dropped into the initiatedExplorerArray, as this array is checked more frequently
+                    ' and cogs are added or taken away during the loop that analyses this array.
+                    initiatedExplorerArray(sCommandLoop) = sCommandArray(sCommandLoop)
                 End If
             End If
         Next sCommandLoop
     Next windowLoop
     
-    ' restart the two timers when complete
-    'dock.initiatedExplorerTimer.Enabled = True
+    ' restart this timer when complete
     dock.explorerTimer.Enabled = True
+    gblExplorerTimerRunning = False
         
    On Error GoTo 0
    Exit Sub
@@ -2625,7 +2630,7 @@ End Function
 ' Purpose   : Credit to Olaf Schmidt
 '---------------------------------------------------------------------------------------
 '
-Public Function ReadBytesFromFile(ByVal Filename As String) As Byte()
+Public Function ReadBytesFromFile(ByVal FileName As String) As Byte()
    On Error GoTo ReadBytesFromFile_Error
 
     Dim ab As Object
@@ -2643,7 +2648,7 @@ Public Function ReadBytesFromFile(ByVal Filename As String) As Byte()
   With ab
     .Open
       .Type = 1 'adTypeBinary
-      .LoadFromFile Filename
+      .LoadFromFile FileName
       ReadBytesFromFile = .Read
     .Close
   End With

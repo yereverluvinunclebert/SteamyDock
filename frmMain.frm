@@ -1865,7 +1865,7 @@ End Function
 Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
    
     Dim suffix As String: suffix = vbNullString
-    Dim Filename As String: Filename = vbNullString
+    Dim FileName As String: FileName = vbNullString
     Dim iconImage As String: iconImage = vbNullString
     Dim iconTitle As String: iconTitle = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
@@ -2001,17 +2001,17 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
 
                         Call GetShortcutInfo(iconCommand, thisShortcut) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                                        
-                        iconTitle = getFileNameFromPath(thisShortcut.Filename)
+                        iconTitle = getFileNameFromPath(thisShortcut.FileName)
                         
-                        If Not thisShortcut.Filename = vbNullString Then
-                            iconCommand = LCase(thisShortcut.Filename)
+                        If Not thisShortcut.FileName = vbNullString Then
+                            iconCommand = LCase(thisShortcut.FileName)
                         End If
                         iconArguments = thisShortcut.Arguments
                         iconWorkingDirectory = thisShortcut.RelPath
                         
                         ' .55 DAEB 19/04/2021 frmMain.frm Added call to the older function to identify an icon using the shell object
                         'if the icontitle and command are blank then this is user-created link that only provides the relative path
-                        If iconTitle = vbNullString And thisShortcut.Filename = vbNullString And Not iconWorkingDirectory = vbNullString Then
+                        If iconTitle = vbNullString And thisShortcut.FileName = vbNullString And Not iconWorkingDirectory = vbNullString Then
                             Call GetShellShortcutInfo(iconCommand, nname, npath, ndesc, nwork, nargs)
                     
                             iconTitle = nname
@@ -2207,10 +2207,13 @@ Private Sub initiatedExplorerTimer_Timer()
     Dim itIsRunning As Boolean: itIsRunning = False
      
     On Error GoTo initiatedExplorerTimer_Error
+        
+    ' if the higher priority ExplorerTimer is running then exit now, the other explorerTimer should run at a less frequent interval but its job is more important as it is
+    ' reviewing ALL explorer process to see if they are running or not, this one just looks at a subset and it runs more frequently, it will re-run in a few seconds.
+    If gblExplorerTimerRunning = True Then Exit Sub
     
-    ' stop both this timer and the less frequent explorerTimer that might be doing the same thing at the same time
+    ' stop this timer for the duration of the run
     initiatedExplorerTimer.Enabled = False
-    'explorerTimer.Enabled = False
 
     For useloop = 0 To rdIconMaximum
         If Not initiatedExplorerArray(useloop) = vbNullString Then
@@ -2230,9 +2233,8 @@ Private Sub initiatedExplorerTimer_Timer()
         End If
     Next useloop
     
-    ' restart the timers
+    ' restart this timer now work is done
     initiatedExplorerTimer.Enabled = True
-    'explorerTimer.Enabled = True
 
    On Error GoTo 0
    Exit Sub
@@ -2270,7 +2272,11 @@ Private Sub initiatedProcessTimer_Timer()
      
     On Error GoTo initiatedProcessTimer_Error
 
-    ' stop this timer
+    ' if the higher priority processTimer is running then exit now, the other processTimer should run at a less frequent interval (5-60secs) but its job is more important as it is
+    ' reviewing ALL process to see if they are running or not, this one just looks at a subset and it runs more frequently - and it will re-run in a few seconds.
+    If gblProcessTimerRunning = True Then Exit Sub
+    
+    ' stop this timer for the duration of the run
     initiatedProcessTimer.Enabled = False
 
     For useloop = 0 To rdIconMaximum
@@ -2296,7 +2302,6 @@ Private Sub initiatedProcessTimer_Timer()
     
     ' restart the timers
     initiatedProcessTimer.Enabled = True
-
 
    On Error GoTo 0
    Exit Sub
@@ -4705,7 +4710,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub checkQuestionMark(ByVal key As String, ByRef Filename As String, ByVal Size As Byte)
+Public Sub checkQuestionMark(ByVal key As String, ByRef FileName As String, ByVal Size As Byte)
     Dim filestring As String: filestring = vbNullString
     Dim suffix As String: suffix = vbNullString
     Dim qPos As Integer: qPos = 0
@@ -4713,10 +4718,10 @@ Public Sub checkQuestionMark(ByVal key As String, ByRef Filename As String, ByVa
     ' does the string contain a ? if so it probably has an embedded .ICO
     On Error GoTo checkQuestionMark_Error
 
-    qPos = InStr(1, Filename, "?")
+    qPos = InStr(1, FileName, "?")
     If qPos <> 0 Then
         ' extract the string before the ? (qPos)
-        filestring = Mid$(Filename, 1, qPos - 1)
+        filestring = Mid$(FileName, 1, qPos - 1)
     End If
     
     ' test the resulting filestring exists
@@ -4728,7 +4733,7 @@ Public Sub checkQuestionMark(ByVal key As String, ByRef Filename As String, ByVa
             Call displayEmbeddedIcons(key, filestring, hiddenForm.hiddenPicbox, Size)
         Else
             ' the file may have a ? in the string but does not match otherwise in any useful way
-            Filename = sdAppPath & "\icons\" & "help.png" ' .12 25/01/2021 DAEB Change to sdAppPath
+            FileName = sdAppPath & "\icons\" & "help.png" ' .12 25/01/2021 DAEB Change to sdAppPath
         End If
     Else
         Exit Sub
@@ -4830,7 +4835,7 @@ End Function
 '
 '---------------------------------------------------------------------------------------
 '
-Public Sub displayEmbeddedIcons(ByVal key As String, ByVal Filename As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
+Public Sub displayEmbeddedIcons(ByVal key As String, ByVal FileName As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
     
 '    Dim sExeName As String: sExeName = vbNullString
 '    Dim lIconIndex As Long: lIconIndex = 0
