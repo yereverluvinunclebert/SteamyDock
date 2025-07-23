@@ -1495,34 +1495,26 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     ByVal thisSeparator As String, ByVal thisDockletFile As String, _
     ByVal thisUseContext As String, ByVal thisUseDialog As String, _
     ByVal thisUseDialogAfter As String, ByVal thisQuickLaunch As String, ByVal thisDisabled As String)
-    Dim fromArray As Boolean: fromArray = False
-    Dim toArray As Boolean: toArray = False
-    'Dim oldRdIconMaximum As Integer: oldRdIconMaximum = 0
     Dim useloop As Integer: useloop = 0
     Dim thisIcon As Integer: thisIcon = 0
 
     On Error GoTo insertNewIconDataIntoCurrentPosition_Error
     'If debugflg = 1 Then debugLog "%" & "insertNewIconDataIntoCurrentPosition"
 
-    ' set up the array conditions
-    fromArray = False
-    toArray = False
-    
-    'oldRdIconMaximum = rdIconMaximum
-
     'resize all arrays used for storing icon information
-    Call redimCacheArrays
+    'Call redimPreserveCacheArrays
     
-    ' starting at the end of the steamydock map, scroll backward and increment the number
+    ' starting at the END of the steamydock map, scroll backward and increment the number
     ' until we reach the current position.
     For useloop = rdIconMaximum To selectedIconIndex Step -1
          Call zeroAllIconCharacteristics
          
-         Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, fromArray)
-         Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop + 1, dockSettingsFile, toArray)
+         Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, False)
+         Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop + 1, dockSettingsFile, False)
     Next useloop
     
-    'increment the new icon count
+   ' dynamically extend the number of picture boxes by one
+    thisIcon = useloop + 1
     theCount = theCount + 1
     rdIconMaximum = rdIconMaximum + 1
     iconArrayUpperBound = rdIconMaximum
@@ -1531,72 +1523,41 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, dockSettingsFile
     
     'resize all arrays used for storing icon information
-    Call redimCacheArrays
-   
-   ' dynamically extend the number of picture boxes by one
+    Call redimPreserveCacheArrays
+    'Call zeroAllIconCharacteristics
     
-    thisIcon = useloop + 1
-    
-    Call zeroAllIconCharacteristics
-    
-    'when we arrive at the original position then add a blank item
-    ' with the following blank characteristics
-    sFilename = thisFilename ' the default Rocketdock filename for a blank item
-    
+    'when we arrive at the original position then set the current valid icon characteristics passed as params into this routine
+    sFilename = thisFilename
     sTitle = thisTitle
     sCommand = thisCommand
     sArguments = thisArguments
     sWorkingDirectory = thisWorkingDirectory
     sDockletFile = thisDockletFile
     sIsSeparator = thisSeparator
-    
     sShowCmd = thisShowCmd
     sOpenRunning = thisOpenRunning
     sUseContext = thisUseContext
-    
     sUseDialog = thisUseDialog
     sUseDialogAfter = thisUseDialogAfter
-    sQuickLaunch = thisQuickLaunch ' .15 DAEB 20/05/2021 mdlMain.bas Added new check box to allow a quick launch of the chosen app
-    
+    sQuickLaunch = thisQuickLaunch
     sDisabled = thisDisabled
-            
-    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", thisIcon, dockSettingsFile, toArray)
 
-    ' then re-read the config for every icon
+    Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", thisIcon, dockSettingsFile, False)
+
+    ' then re-read the config for every icon from the top down to the selected item
     For useloop = rdIconMaximum To selectedIconIndex Step -1
-        Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, fromArray)
-        ' read the two main icon variables into arrays, one for each
-        sFileNameArray(useloop) = sFilename
-        sTitleArray(useloop) = sTitle
-        sCommandArray(useloop) = sCommand
-        targetExistsArray(useloop) = 0
-
-        ' check to see if each process is running and store the result away
-        explorerCheckArray(useloop) = isExplorerRunning(sCommand)
-        processCheckArray(useloop) = IsRunning(sCommand)
-
-        If sDisabled = "1" Then
-            disabledArray(useloop) = 1
-        Else
-            disabledArray(useloop) = 0
-        End If
-
+        Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, False)
+        Call reassignArrayElements(useloop)
     Next useloop
+    
+'    Call clearInitiatedExplorerArray
+'    Call clearInitiatedProcessArray
 
     'amend the count in both the alternative rdSettings.ini
     PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, dockSettingsFile
-    
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
-    
-'    gblRequiresCommitToDisc = False
-'    dock.tmrWriteCache.Enabled = False
-    
-    '.nn new check for dragInsideDockOperating
-    If dragInsideDockOperating = False Then '.nn for performance reason, disabled when dragging and dropping as it is carried out during the delete operation as well
-        'Call saveIconConfigurationToSource ' final write to the docksettings file
-    End If
-    
+
    On Error GoTo 0
    Exit Sub
 
@@ -1606,16 +1567,84 @@ insertNewIconDataIntoCurrentPosition_Error:
     
 End Sub
 
+
 '---------------------------------------------------------------------------------------
-' Procedure : redimCacheArrays
+' Procedure : reassignArrayElements
+' Author    : beededea
+' Date      : 23/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub reassignArrayElements(ByVal thisArrayElement As Integer)
+
+   On Error GoTo reassignArrayElements_Error
+
+    ' re-assign the array elements for each icon
+    sFileNameArray(thisArrayElement) = sFilename
+    sTitleArray(thisArrayElement) = sTitle
+    sCommandArray(thisArrayElement) = sCommand
+    targetExistsArray(thisArrayElement) = 0
+
+    ' check to see if each process is running and store the result away
+    If isExplorerRunning(sCommand) = True Then
+        explorerCheckArray(thisArrayElement) = True
+        initiatedExplorerArray(thisArrayElement) = sCommand
+    End If
+    
+    If IsRunning(sCommand) = True Then
+        processCheckArray(thisArrayElement) = True
+        initiatedProcessArray(thisArrayElement) = sCommand
+    End If
+    
+    If sDisabled = "1" Then
+        disabledArray(thisArrayElement) = 1
+    Else
+        disabledArray(thisArrayElement) = 0
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+reassignArrayElements_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure reassignArrayElements of Module mdlSdMain"
+End Sub
+
+Public Sub clearInitiatedExplorerArray()
+    Dim useloop As Long: useloop = 0
+
+    For useloop = 0 To rdIconMaximum
+        If Not initiatedExplorerArray(useloop) = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
+                explorerCheckArray(useloop) = False ' the cog array for explorer processes
+                initiatedExplorerArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
+        End If
+    Next useloop
+
+End Sub
+
+
+Public Sub clearInitiatedProcessArray()
+    Dim useloop As Long: useloop = 0
+
+    For useloop = 0 To rdIconMaximum
+        If Not initiatedProcessArray(useloop) = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
+                processCheckArray(useloop) = False ' the cog array for explorer processes
+                initiatedProcessArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
+        End If
+    Next useloop
+
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : redimPreserveCacheArrays
 ' Author    : beededea
 ' Date      : 03/07/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub redimCacheArrays()
+Private Sub redimPreserveCacheArrays()
     
-   On Error GoTo redimCacheArrays_Error
+   On Error GoTo redimPreserveCacheArrays_Error
     
 '    ReDim Preserve sFileNameArray(rdIconMaximum) As String  ' the file location of the original icons
 '    ReDim Preserve sFileName2Array(rdIconMaximum) As String  ' sFileName2
@@ -1655,9 +1684,9 @@ Private Sub redimCacheArrays()
    On Error GoTo 0
    Exit Sub
 
-redimCacheArrays_Error:
+redimPreserveCacheArrays_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure redimCacheArrays of Module mdlSdMain"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure redimPreserveCacheArrays of Module mdlSdMain"
 
 End Sub
 
@@ -2070,108 +2099,56 @@ Public Sub deleteThisIcon()
     
     'if not the top icon loop through them all from this location upward and reassign the values
     If selectedIconIndex < rdIconMaximum Then
-        ' in order to delete we need to take the next icon characteristics and overwrite the current icon,
-        ' then we need to do the same all the way up to the top
         
+        ' cache vars retained for possible future use
         'useCacheMemory = True
-        
-        ' read the steamyDock settings one item up in the list
-        ' then write the new item at the current location effectively overwriting it
         fromArray = False
         toArray = False
         'glbStartRecord = selectedIconIndex
         
+        ' read the steamyDock settings one item up in the list then write the new item at the current location effectively overwriting it
         For useloop = selectedIconIndex + 1 To rdIconMaximum
             Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, fromArray)  ' read from file but write to interim array cache
             Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop - 1, dockSettingsFile, toArray) ' write changes to array for later commit
         Next useloop
                     
-        ' then re-read the config for every icon
+        ' then re-read the config for every icon - moving the image and arrays
         For useloop = selectedIconIndex To rdIconMaximum
             Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, toArray) ' , read from array from the beginning
-            
-           'if useCacheMemory = True then
-                ' read the two main icon variables into arrays, one for each
-                sFileNameArray(useloop) = sFilename ' we won't need to do this as it will be done in readIconSettingsIni with the optional var set to write the array
-                sTitleArray(useloop) = sTitle
-                sCommandArray(useloop) = sCommand
-            'endif
-            
-            targetExistsArray(useloop) = 0
-            
-            ' check to see if each process is running and store the result away
-'            explorerCheckArray(useloop) = isExplorerRunning(sCommand)
-'            processCheckArray(useloop) = IsRunning(sCommand)
-            
-            ' then copy the image array contents one location down
-            If useloop + 1 <= rdIconMaximum Then
-                
-                dictionaryLocationArray(useloop) = dictionaryLocationArray(useloop + 1)
-                disabledArray(useloop) = disabledArray(useloop + 1)
-
-                processCheckArray(useloop) = processCheckArray(useloop + 1)
-                explorerCheckArray(useloop) = explorerCheckArray(useloop + 1)
-                initiatedProcessArray(useloop) = initiatedProcessArray(useloop + 1)
-                initiatedExplorerArray(useloop) = initiatedExplorerArray(useloop + 1)
-                
-                ' unused vars now
-                iconStoreLeftPixels(useloop) = iconStoreLeftPixels(useloop + 1)
-                iconStoreRightPixels(useloop) = iconStoreRightPixels(useloop + 1)
-                'iconStoreTopPixels(useloop) = iconStoreTopPixels(useloop + 1)
-                iconStoreBottomPixels(useloop) = iconStoreBottomPixels(useloop + 1)
-            End If
-                      
-        Next useloop
+            reassignArrayElements (useloop)
+    
+            ' instead of reordering the images within the dictionary, which is difficult as you can't just add and
+            ' replace objects into an existing collection, also it does not release memory. So, instead we simply
+            ' remove the icon reference from the settings file, leave the collection alone and manipulate the index number
+            ' indicating which image in the collection to use.
+            If useloop + 1 <= rdIconMaximum Then dictionaryLocationArray(useloop) = dictionaryLocationArray(useloop + 1)
+       Next useloop
     End If
     
-    ' as we are writing to the in-memory cache at some point later we need to write to disc
-    'set a flag stating the settings file changes needs to be committed to disc as they are just in memory at the moment
+    ' as we are writing to the in-memory cache at some point later we need to write to disc set a flag stating the settings file changes needs to be committed
+    ' to disc as they are just in memory at the moment, retained for possible future use.
 '    gblRequiresCommitToDisc = False
 '    dock.tmrWriteCache.Enabled = False
-        
-        
-    ' to tidy up we need to overwrite the final data from the rdsettings.ini, we will write sweet nothings to it
-    removeSettingsIni (rdIconMaximum)
+    
+    ' here we would normally delete the final unwanted record at rdIconMaximum but it is not possible to delete a VB6 random access record, instead we do not care and leave it to be!
         
     'decrement the icon count and the maximum icon
     theCount = theCount - 1
+    rdIconMaximum = rdIconMaximum - 1
+    iconArrayUpperBound = rdIconMaximum
 
     'amend the count in both the alternative rdSettings.ini
     PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", theCount, dockSettingsFile
-    
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
-    
-    'must go here
-    rdIconMaximum = rdIconMaximum - 1
 
     If selectedIconIndex > rdIconMaximum Then selectedIconIndex = rdIconMaximum
 
-    ' Call removeImageFromDictionary(selectedIconIndex) ' no longer needed
-    
-    ' instead of reordering the images within the dictionary, which is difficult as you can't just add and
-    ' replace objects into an existing collection, also it does not release memory. So, instead we simply
-    ' remove the icon reference from the settings file, leave the collection alone and manipulate the index number
-    ' indicating which image in the collection to use.
-    
     'reduce by one, all arrays used for storing icon information
-    Call redimCacheArrays
-    
-    iconArrayUpperBound = rdIconMaximum
+    Call redimPreserveCacheArrays
     
     Call checkDockProcessesRunning ' trigger a test of running processes in half a second
-    
-    disabledArray(selectedIconIndex) = 0
-    processCheckArray(selectedIconIndex) = False
-    explorerCheckArray(selectedIconIndex) = False
-    initiatedProcessArray(selectedIconIndex) = vbNullString
-    initiatedExplorerArray(selectedIconIndex) = vbNullString
-    
-    ' if that fails, spit out an error.
-    ' no point in changing this to a non-modal message box as the dock will not restart until the modal menu has completed its work.
-    'MsgBox (itemName & " Dock item deleted at position " & selectedIconIndex)
-    'If insideDockFlg = False Then MessageBox dock.hwnd, itemName & " Dock item deleted at position " & selectedIconIndex, "SteamyDock Confirmation Message", vbOKOnly
-
+       
     On Error GoTo 0
     Exit Sub
 
@@ -2431,7 +2408,7 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
     dictionaryLocationArrayUpperBound = rdIconMaximum + 1
 
     'resize all arrays used for storing icon information
-    Call redimCacheArrays
+    Call redimPreserveCacheArrays
     
     ReDim Preserve iconStoreLeftPixels(rdIconMaximum) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon

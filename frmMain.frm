@@ -148,7 +148,7 @@ Begin VB.Form dock
       Interval        =   3000
       Left            =   2895
       Tag             =   "Provides regular checking of only processes initiated by the dock itself"
-      Top             =   660
+      Top             =   645
    End
    Begin VB.Timer autoHideChecker 
       Enabled         =   0   'False
@@ -1382,7 +1382,6 @@ Public Sub initialiseGlobalVars()
     
     'animation and positioning vars
     animationFlg = False
-    animationFlg = False
     dragToDockOperating = False
     bDrawn = False
     savApIMouseX = 0
@@ -1651,8 +1650,6 @@ Public Sub fMouseUp(Button As Integer)
             Else
                 menuForm.mnuRunApp.Visible = True
                 menuForm.mnuRunApp.Caption = "Run this App"
-
-                
                 menuForm.mnuRunNewApp.Visible = False
                 menuForm.mnuRunNewAppAsAdmin.Visible = False
             End If
@@ -1690,20 +1687,17 @@ Public Sub fMouseUp(Button As Integer)
                 menuForm.mnuBlank5.Visible = False
                 menuForm.mnuFocusApp.Visible = False
                 menuForm.mnuBackApp.Visible = False
-                
                 menuForm.mnuRunApp.Visible = True
                 menuForm.mnuRunApp.Caption = "Switch to this Explorer window"
                 menuForm.mnuCloseApp.Caption = "Close this Explorer Window"
                 menuForm.mnuAdmin.Visible = False
                 menuForm.mnuRunNewApp.Visible = False
                 menuForm.mnuRunNewAppAsAdmin.Visible = False
-
             Else
                 menuForm.mnuBlank5.Visible = True
                 menuForm.mnuFocusApp.Visible = True
                 menuForm.mnuBackApp.Visible = True
             End If
-            
         End If
         
         PopupMenu menuForm.mnuMainMenu, vbPopupMenuRightButton
@@ -1746,21 +1740,17 @@ Public Sub fMouseUp(Button As Integer)
                     thisFilename = sFilename
                     
                     Call insertNewIconDataIntoCurrentPosition(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
-                               
                     Call menuForm.addImageToDictionaryAndCheckForRunningProcess(thisFilename, sTitle)
                     
-                    'delete the old icon at its new location
+                    'delete the selected icon at its old location
                     If sourceIconIndex < targetIconIndex Then
                         selectedIconIndex = sourceIconIndex
                     Else
                         selectedIconIndex = sourceIconIndex + 1
                     End If
                     Call deleteThisIcon
-                    
-                    'MsgBox "Dragged icon " & dragImageToDisplay & " " & selectedIconIndex & " " & sCommand & " to position " & iconIndex
-                
+                                    
                 Else
-                    
                     If Val(rDHoverFX) = 1 Then Call selectBubbleType(3) ' select drawSmallStaticIcons redraw the icons if dragged to the same position
                 End If
 
@@ -1777,10 +1767,7 @@ Public Sub fMouseUp(Button As Integer)
             If userLevel <> "runas" Then userLevel = "open"
                         
             ' the runCommand is called from within the bounceDownTimer, itself called by the bounceUpTimer
-            
             bounceUpTimer.Enabled = True
-            'animateTimer.Enabled = True
-            
         Else
             ' the runCommand is called directly when the app is already running to avoid delay, no bounce
             If userLevel <> "runas" Then userLevel = "open"
@@ -2223,7 +2210,7 @@ Private Sub initiatedExplorerTimer_Timer()
                 initiatedExplorerArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
             Else
                 itIsRunning = itIsRunning ' it just is
-                explorerCheckArray(useloop) = True
+                'explorerCheckArray(useloop) = True
             End If
             bDrawn = False
             If smallDockBeenDrawn = True Then
@@ -2285,7 +2272,7 @@ Private Sub initiatedProcessTimer_Timer()
                 processCheckArray(useloop) = False ' remove it from the cog array
                 initiatedProcessArray(useloop) = vbNullString ' removes the entry from the quick test array so it isn't caught again on the next run
             Else
-                processCheckArray(useloop) = True
+                'processCheckArray(useloop) = True
                 itIsRunning = itIsRunning ' it just is, so do nothing
             End If
             bDrawn = False
@@ -3063,12 +3050,21 @@ sizeEachSmallIconToLeft_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeEachSmallIconToLeft of Form dock"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : sizeEachResizedIconToLeft
+' Author    : beededea
+' Date      : 23/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostResizedIcon As Integer, ByRef showsmall As Boolean)
 
     Dim useloop2 As Integer: useloop2 = 0
 '    Dim resizeProportion As Double: resizeProportion = 0
 
             Dim a As Long
+   On Error GoTo sizeEachResizedIconToLeft_Error
+
             If iconHeightPxls > 18 Then
                 a = iconHeightPxls
             End If
@@ -3115,6 +3111,13 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
 
         Next useloop2
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+sizeEachResizedIconToLeft_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeEachResizedIconToLeft of Form dock"
 End Sub
 
 
@@ -3506,6 +3509,13 @@ drawDockByCursorEntryPosition_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure drawDockByCursorEntryPosition of Form dock"
 End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : sizeAndShowFullSizeIconByCEP
+' Author    : beededea
+' Date      : 23/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeAndShowFullSizeIconByCEP(ByVal thisIconIndex As Integer, ByRef showsmall As Boolean)
 
     Dim mainIconWidthPxls  As Integer: mainIconWidthPxls = 0
@@ -3514,6 +3524,8 @@ Private Sub sizeAndShowFullSizeIconByCEP(ByVal thisIconIndex As Integer, ByRef s
     '===================
     ' the main fullsize icon
     '===================
+   On Error GoTo sizeAndShowFullSizeIconByCEP_Error
+
     iconHeightPxls = iconSizeLargePxls
     iconWidthPxls = iconSizeLargePxls
     mainIconWidthPxls = iconWidthPxls
@@ -3532,13 +3544,29 @@ Private Sub sizeAndShowFullSizeIconByCEP(ByVal thisIconIndex As Integer, ByRef s
 
     'now draw the icon text above the selected icon
     Call drawTextAboveIcon(thisIconIndex, textWidth)
+
+   On Error GoTo 0
+   Exit Sub
+
+sizeAndShowFullSizeIconByCEP_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeAndShowFullSizeIconByCEP of Form dock"
     
 End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : sizeAndShowSingleMainIconToLeftByCEP
+' Author    : beededea
+' Date      : 23/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer, ByVal leftmostResizedIcon As Integer, ByRef showsmall As Boolean)
 
     '===================
     ' one icon to the left, resized dynamically
     '==================
+   On Error GoTo sizeAndShowSingleMainIconToLeftByCEP_Error
+
     If thisIconIndex > 0 Then 'check it isn't trying to animate a non-existent icon before the first icon
         
         ' the icon to the left is currently sized full as the other on the right hand side is sized small.
@@ -3562,14 +3590,30 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
     End If
 
      ' iconLeftmostPointPxls = iconPosLeftPxls
+
+   On Error GoTo 0
+   Exit Sub
+
+sizeAndShowSingleMainIconToLeftByCEP_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeAndShowSingleMainIconToLeftByCEP of Form dock"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : sizeAndShowSingleMainIconToRightByCEP
+' Author    : beededea
+' Date      : 23/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeAndShowSingleMainIconToRightByCEP(ByVal thisIconIndex As Integer, ByVal rightmostResizedIcon As Integer, ByVal mainIconWidthPxls As Integer, ByRef showsmall As Boolean)
     Dim rightIconWidthPxls As Integer: rightIconWidthPxls = 0
 
     '===================
     ' one icon to the right, resized dynamically
     '==================
+   On Error GoTo sizeAndShowSingleMainIconToRightByCEP_Error
+
    If thisIconIndex <= rightmostResizedIcon And thisIconIndex < rdIconMaximum Then  '    If iconIndex > 0 Then 'check it isn't trying to animate a non-existent icon before the first icon
         
         ' the icon to the left is currently sized in small mode as the other on the left hand side is sized in full.
@@ -3593,6 +3637,13 @@ Private Sub sizeAndShowSingleMainIconToRightByCEP(ByVal thisIconIndex As Integer
         Call showLargeIconTypes(thisIconIndex + 1)
 
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+sizeAndShowSingleMainIconToRightByCEP_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeAndShowSingleMainIconToRightByCEP of Form dock"
 End Sub
 
 Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByRef leftmostResizedIcon As Integer, ByRef showsmall As Boolean)
@@ -3625,12 +3676,21 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
         Next leftLoop
     End If
 End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : sizeAndShowSmallIconsToRightByCEP
+' Author    : beededea
+' Date      : 23/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeAndShowSmallIconsToRightByCEP(ByVal thisIconIndex As Integer, ByRef rightmostResizedIcon As Integer, ByRef rightIconWidthPxls As Integer, ByRef showsmall As Boolean)
     Dim rightLoop As Integer: rightLoop = 0
     Dim thiskey As String: thiskey = vbNullString
     '====================
     ' icons to the right
     '====================
+   On Error GoTo sizeAndShowSmallIconsToRightByCEP_Error
+
     If thisIconIndex < rdIconMaximum Then   'check it isn't trying to animate a non-existent icon after the last icon
 
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
@@ -3662,6 +3722,13 @@ Private Sub sizeAndShowSmallIconsToRightByCEP(ByVal thisIconIndex As Integer, By
             
         Next rightLoop
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+sizeAndShowSmallIconsToRightByCEP_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeAndShowSmallIconsToRightByCEP of Form dock"
 
 End Sub
 

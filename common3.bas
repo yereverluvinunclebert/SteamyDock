@@ -371,23 +371,23 @@ Public Sub removeSettingsIni(ByVal iconNumberToWrite As Integer)
    On Error GoTo removeSettingsIni_Error
    'If debugFlg = 1 Then debugLog "%removeSettingsIni"
 
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-FileName", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-FileName2", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-Title", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-Command", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-Arguments", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-WorkingDirectory", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-ShowCmd", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-OpenRunning", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-IsSeparator", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-UseContext", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-DockletFile", vbNullString, dockSettingsFile
-
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-UseDialog", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-UseDialogAfter", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-QuickLaunch", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-AutoHideDock", vbNullString, dockSettingsFile
-        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-SecondApp", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-FileName", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-FileName2", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-Title", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-Command", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-Arguments", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-WorkingDirectory", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-ShowCmd", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-OpenRunning", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-IsSeparator", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-UseContext", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-DockletFile", vbNullString, dockSettingsFile
+'
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-UseDialog", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-UseDialogAfter", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-QuickLaunch", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-AutoHideDock", vbNullString, dockSettingsFile
+'        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-SecondApp", vbNullString, dockSettingsFile
                 
    On Error GoTo 0
    Exit Sub
@@ -530,7 +530,7 @@ Public Function GetShortcutInfo(Path As String, Shortcut As Link) As Boolean
     On Error GoTo GetShortcutInfo_Error
 
     With Shortcut
-        .Filename = vbNullString
+        .FileName = vbNullString
         .Description = vbNullString
         .RelPath = vbNullString
         .WorkingDir = vbNullString
@@ -572,20 +572,20 @@ Public Function GetShortcutInfo(Path As String, Shortcut As Link) As Boolean
             
             ' Read base path
             If PtrBasePath Then
-                Shortcut.Filename = ReadSingleString(FileNo, NextPtr + PtrBasePath)
+                Shortcut.FileName = ReadSingleString(FileNo, NextPtr + PtrBasePath)
             ' Or network path
             ElseIf PtrNetworkVolumeInfo Then
-                Shortcut.Filename = ReadSingleString(FileNo, NextPtr + PtrNetworkVolumeInfo + &H14)
+                Shortcut.FileName = ReadSingleString(FileNo, NextPtr + PtrNetworkVolumeInfo + &H14)
             End If
             
             ' Read remaining filename
             If PtrFilename Then
                 Str = ReadSingleString(FileNo, NextPtr + PtrFilename)
                 If Str <> vbNullString Then
-                    If Right$(Shortcut.Filename, 1) <> "\" Then
-                        Shortcut.Filename = Shortcut.Filename & "\"
+                    If Right$(Shortcut.FileName, 1) <> "\" Then
+                        Shortcut.FileName = Shortcut.FileName & "\"
                     End If
-                    Shortcut.Filename = Shortcut.Filename & Str
+                    Shortcut.FileName = Shortcut.FileName & Str
                 End If
             End If
             
