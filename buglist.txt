@@ -45,7 +45,7 @@ Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop c
 
 ' 255 chars in path - modify the help
 
-fix end rdIconMAximum when adding/deleting
+fix end rdIconMAximum when adding/deleting WIP
 
 add a precursor blank icon and a final icon
 

@@ -618,9 +618,79 @@ Attribute VB_Exposed = False
 '
 '========================================================================================================
 '
+
+' Program Operation:
+
+' The background form is transparent. No VB6 controls are used except timers. The X,Y position of the mouse event, on a non-transparent part of the form (the icons),
+' is captured using an API and compared to stored icon X locations to determine which icon is selected. Click-through on
+' transparent parts of the icons are captured by drawing a 1% opacity background of a white square that is in itself 50% transparent.
+
 ' The core of this program are the routines from Olaf Schmidt that open the image files as an ADO stream of bytes and feed
 ' those into GDI+. These images are then converted to bitmaps and fed into dictionary objects for storage.
 '
+' The icon images are read using GDI+ and loaded into a collection. They are resized to two sizes, the small size for an idle dock and the
+' large maximum size to which they will animate. Each icon image is loaded at startup, and the icon position is determined in the array,
+' dictionaryLocationArray. When adding or deleting images, instead of reordering the images within the dictionary, which is difficult as you can't just add and
+' replace objects into an existing collection (also it does not release memory), so, instead we simply
+' remove the icon reference from the settings data file, leave the collection alone and manipulate the index number
+' indicating which image in the collection to use. The icon image new information is stored in the dictionaryLocationArray until the next restart of the program.
+'
+' Animation
+'
+' There is a response timer and an animate timer.
+' The responseTimer draws the small icons once and monitors the mouse position, the animateTimer runs at a high frequency and draws
+' the whole dock multiple times per second providing the animation effect. The relationship of the timers is found in an Impress or Powerpoint type
+' document in the documentation folder. There are several timers and they really control the operation of everything.
+'
+' Before those timers start, the program reads all the icon locations from the settings file and loads the icons into memory using a dictionary
+' object to hold the data. The location of the objects is keyed. This occurs on startup. During runtime, the various images are
+' recalled from memory and drawn to the screen using a for...loop. The icons are positioned side by side, the rightmost position incremented to position
+' the subsequent icon, basically sequential positioning.
+'
+' Only the central (n) icons are resized, currently three, according to cursor position, They are extracted from the 'large' collection. The other tiny icons
+' are all extracted from the 'small' collection. This way CPU usage is minimised. Memory usage is also minimal but
+' all the icons must be stored in memory so there is a natural overhead.
+
+' Menu
+'
+' The right-click menu sits upon an invisible form as GDI+ does not seem to like a menu on the same form as the GDI+ graphic form.
+'
+' Settings
+'
+' The setttings data for the whole dock are stored in a settings.ini file in the user temporary file area. These are accessed using the writefile API
+' The data related to the icons themseleves are stored in a random access data file for much faster access.
+' To speed this up further, all associated icon data is stored in cached arrays so that the data can be processed quickly. The program keeps track of all icon data
+' using these arrays.
+'
+' Skins
+'
+' For the background image, we do NOT retain skin compatibility with Rocketdock. This is due to Punklabs overly-complex use of GDI+ in
+' RD to stretch and manipulate the single small theme image into something wider that fits the whole dock.
+' Instead, we have two small right/left image and one centre image that is sized in Photoshop -
+' to 2000px, then we crop the image to size as required using GDI+. This cropping occurs when the image is loaded into the dictionary
+' rather than when it is displayed. As SD is FOSS, a future developer can implement Rocketdock's themeing if it is really required.
+'
+' Running Processes
+'
+' NOTE: Running processes have 'cogs'. A cog is placed above the icon triggered at process initiation.
+' The continued presence of these cogs are determined using two timers, the first only analyses processes
+' that have been initiated by the dock so that the running 'cog' can be quickly removed when the process ends
+' (initiatedProcessTimer). The iniated process timer runs on a short timer. The second timer loops through ALL processes to see which
+' are active at any time and runs on a longer interval defined by the user, adding a cog above any icon that has a matching process name
+' (processTimer). The isRunning function is used
+' to achieve a match. There is a very similar procedure for determining running explorer windows, described next.
+'
+' Explorer Windows
+'
+' With Explorer windows, we identify which of the icon entries is a folder, but only at runtime within runCommand.
+' At that point we add the specific folder to an initiatedFolderArray and then immediately add a cog to the icon.
+' A timer runs frequently and just loops through this array to monitor the state of recently initiated explorer
+' instances so that the running 'cog' can be quickly removed when the Explorer window is closed, a separate timer
+' loops less frequently through all open explorer windows and checks to see if any matching icon deserves a 'cog'.
+' It will match CLSID entries too. It uses the enumerateExplorerWindows function to achieve a match.
+'
+' BUILD
+
 ' NOTE - I do not suggest developing VB6 programs using Windows 11, it can be a painful experience. A modern Windows 7 system
 ' with an SSD and 16gb RAM is the perfect platform. Windows 10 can be made into a decent development platform but Win 11 is a pain.
 ' You may have to run VB6 elevated to avoid the annoying registry errors on startup. Disabling UAC allows you to compile directly to
@@ -642,52 +712,8 @@ Attribute VB_Exposed = False
 ' Exception - Even though the GDI+ APIs are "Functions" they are run using the CALL statement. GDIP functions only return a zero or an error
 ' code whilst any returned pointers &c are provided as passed arguments and not as the function's return value. Having the call statement in
 ' place merely allows easy substitution for some error handling during debugging.
-
-' Program Structure:
 '
-' There is a response timer and an animate timer.
-' The responseTimer draws the small icons once and monitors the mouse position, the animateTimer runs at a high frequency and draws
-' the whole dock multiple times per second providing the animation effect. The relationship of the timers is found in an Impress or Powerpoint type
-' document in the documentation folder. There are several timers and they really control the operation of everything.
-'
-' Before those timers start, the program reads all the icon locations from the settings file and loads the icons into memory using a dictionary
-' object to hold the data. The location of the objects is keyed. This occurs on startup. During runtime, the various images are
-' recalled from memory and drawn to the screen using a for...loop.
-'
-' Only the central (n) icons are resized. This way CPU usage is minimised. Memory usage is also minimal but
-' all the icons must be stored in memory so there is a natural overhead. The right-click menu sits upon an invisible form
-' as GDI+ does not like a menu on the same form as the GDI+ graphics.
-
-' All associated icon data is stored in temporary arrays so that it can be processed quickly. The program keeps track of dock-initiated processes using these arrays.
-
-' For the background image, we do NOT retain skin compatibility with Rocketdock. This is due to Punklabs overly-complex use of GDI+ in
-' RD to stretch and manipulate the single small theme image into something wider that fits the whole dock.
-' Instead, we have two small right/left image and one centre image that is sized in Photoshop -
-' to 2000px, then we crop the image to size as required using GDI+. This cropping occurs when the image is loaded into the dictionary
-' rather than when it is displayed. As SD is FOSS, a future developer can implement Rocketdock's themeing if it is really required.
-'
-' The background form is transparent, the X,Y position of the mouse event, on a non-transparent part of the form (the icons),
-' is captured using an API and compared to stored icon X locations to determine which icon is selected. Click-through on
-' transparent parts of the icons are captured by drawing a 1% opacity background of a white square that is in itself 50% transparent.
-'
-'
-' Running Processes:
-'
-' NOTE: Running processes have 'cogs'. A cog is placed above the icon triggered at process initiation.
-' The continued presence of these cogs are determined using two timers, the first only analyses processes
-' that have been initiated by the dock so that the running 'cog' can be quickly removed when the process ends
-' (initiatedProcessTimer). The second timer loops through all processes to see which are active at any time,
-' adding a cog above any icon that has a matching process name (processTimer). The isRunning function is used
-' to achieve a match. There is a very similar procedure for determining running explorer windows, described next.
-'
-' With Explorer windows, we identify which of the icon entries is a folder, but only at runtime within runCommand.
-' At that point we add the specific folder to an initiatedFolderArray and then immediately add a cog to the icon.
-' A timer runs frequently and just loops through this array to monitor the state of recently initiated explorer
-' instances so that the running 'cog' can be quickly removed when the Explorer window is closed, a separate timer
-' loops less frequently through all open explorer windows and checks to see if any matching icon deserves a 'cog'.
-' It will match CLSID entries too. It uses the enumerateExplorerWindows function to achieve a match.
-
-' BUILD: The program runs without any Microsoft plugins.
+' The program runs without any Microsoft plugins.
 ' It requires a single typelib to be present. OLEEXP.TLB placed in sysWoW64 - required to obtain the explorer
 ' paths.
 
