@@ -943,7 +943,7 @@ Private Sub mnuAdmin_Click()
     On Error GoTo mnuAdmin_Click_Error
     
     'Call readIconData(selectedIconIndex)
-    readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile
+    readIconSettingsIni selectedIconIndex, False
         
     Call dock.fMouseUp(1) ' performs the equivalent of a 'left' click on the dock
 
@@ -993,7 +993,7 @@ Private Sub mnuApplicationFolder_Click()
     Dim execStatus As Long: execStatus = 0
     
     'Call readIconData(selectedIconIndex)
-    readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile
+    readIconSettingsIni selectedIconIndex
     
     If fDirExists(sCommand) Then ' if it is a folder already
         'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
@@ -1243,7 +1243,7 @@ End Sub
 Private Sub mnuCloneIcon_Click()
     dock.Refresh
     
-    readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile
+    readIconSettingsIni selectedIconIndex
 
     Call insertNewIconDataIntoCurrentPosition(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
     Call menuForm.addImageToDictionaryAndCheckForRunningProcess(sFilename, sTitle)
@@ -1272,7 +1272,7 @@ Private Sub mnuDisableIcon_Click()
     
     dock.Refresh
         
-    Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile)
+    Call readIconSettingsIni(selectedIconIndex)
     
     If sDisabled = "1" Then
         sDisabled = "0"

@@ -13,45 +13,6 @@ Option Explicit
 ' Note: If you make a change here it affects the two programs dynamically
 '------------------------------------------------------------
 
-
-
-' Private Type STARTUPINFO
-'      cb As Long
-'      lpReserved As String
-'      lpDesktop As String
-'      lpTitle As String
-'      dwX As Long
-'      dwY As Long
-'      dwXSize As Long
-'      dwYSize As Long
-'      dwXCountChars As Long
-'      dwYCountChars As Long
-'      dwFillAttribute As Long
-'      dwFlags As Long
-'      wShowWindow As Integer
-'      cbReserved2 As Integer
-'      lpReserved2 As Long
-'      hStdInput As Long
-'      hStdOutput As Long
-'      hStdError As Long
-'   End Type
-
-'Private Type PROCESS_INFORMATION
-'   hProcess As Long
-'   hThread As Long
-'   dwProcessId As Long
-'   dwThreadId As Long
-'End Type
-'
-'Private Declare Function WaitForSingleObject Lib "kernel32" (ByVal hHandle As Long, ByVal dwMilliseconds As Long) As Long
-'Private Declare Function CreateProcessA Lib "kernel32" (ByVal lpApplicationName As Long, ByVal lpCommandLine As String, ByVal lpProcessAttributes As Long, ByVal lpThreadAttributes As Long, ByVal bInheritHandles As Long, ByVal dwCreationFlags As Long, ByVal lpEnvironment As Long, ByVal lpCurrentDirectory As Long, lpStartupInfo As STARTUPINFO, lpProcessInformation As PROCESS_INFORMATION) As Long
-'Private Declare Function CloseHandle Lib "kernel32" (ByVal hObject As Long) As Long
-'Private Declare Function GetExitCodeProcess Lib "kernel32" (ByVal hProcess As Long, lpExitCode As Long) As Long
-'
-'Private Const NORMAL_PRIORITY_CLASS = &H20&
-'Private Const INFINITE = -1&
-'Private Const SW_HIDE = 0
-'Private Const SW_SHOWMINNOACTIVE = 7
 Public gblOutsideDock As Boolean
 Public iconLeftmostPointPxls As Single
 Public iconRightmostPointPxls As Single
@@ -86,22 +47,34 @@ End Type
 Public iconVar As iconRecordTYPE
 Public iconData As String
 
+Public rdIconUpperBound As Integer
+Public rdIconLowerBound As Integer
+Public iconArrayUpperBound As Integer
+Public iconArrayLowerBound As Integer
+
 '
 '---------------------------------------------------------------------------------------
 ' Procedure : putIconSettings
 ' Author    : beededea
 ' Date      : 05/07/2019
-' Purpose   : Save INI Setting in the File
+' Purpose   : Save icon values to random access data file
 '---------------------------------------------------------------------------------------
 '
 Public Sub putIconSettings(ByVal thisRecordNumber As Integer)
 
-   On Error GoTo putIconSettings_Error
+    On Error GoTo putIconSettings_Error
    
     Dim recordNumberToWrite As Integer: recordNumberToWrite = 0
    
-    recordNumberToWrite = thisRecordNumber + 1
+    ' previously, records were written to a INI file starting at record number 0
+    ' in a random access data file, record number 0 would generate an error
+    ' to prevent a record number 0 bad record we increment the supplied record number
+    recordNumberToWrite = thisRecordNumber
     
+    ' always set the characteristsics of the first and last uneditable blank icons
+    Call setFirstLastIcons(recordNumberToWrite)
+    
+    ' set the icon values into the binary data
     iconVar.iconRecordNumber = thisRecordNumber
     iconVar.iconFilename = sFilename
     iconVar.iconFileName2 = sFileName2
@@ -139,20 +112,26 @@ End Sub
 ' Procedure : getIconSettings
 ' Author    : beededea
 ' Date      : 05/07/2019
-' Purpose   : Save INI Setting in the File
+' Purpose   : Read icon values from random access data file
 '---------------------------------------------------------------------------------------
 '
 Public Sub getIconSettings(ByVal thisRecordNumber As Integer)
 
-   On Error GoTo getIconSettings_Error
+    On Error GoTo getIconSettings_Error
    
     Dim recordNumberToRead As Integer: recordNumberToRead = 0
     
-    recordNumberToRead = thisRecordNumber + 1
+    ' previously, records were written to a INI file starting at record number 0
+    ' in a random access data file, record number 0 would generate an error
+    ' to prevent a record number 0 bad record we increment the supplied record number
     
+    recordNumberToRead = thisRecordNumber
+    '
     Get #3, recordNumberToRead, iconVar
 
+    ' read the icon values from the binary data into the icon variables
     thisRecordNumber = iconVar.iconRecordNumber
+    If thisRecordNumber = 0 Then thisRecordNumber = recordNumberToRead
     sFilename = RTrim$(iconVar.iconFilename)
     sFileName2 = RTrim$(iconVar.iconFileName2)
     sTitle = RTrim$(iconVar.iconTitle)
@@ -173,8 +152,11 @@ Public Sub getIconSettings(ByVal thisRecordNumber As Integer)
     sRunSecondAppBeforehand = CStr(iconVar.iconRunSecondAppBeforehand)
     sAppToTerminate = RTrim$(iconVar.iconAppToTerminate)
     sDisabled = CStr(iconVar.iconDisabled)
-                
-   On Error GoTo 0
+    
+    ' always set the characteristsics of the first and last uneditable blank icons
+    Call setFirstLastIcons(recordNumberToRead)
+    
+    On Error GoTo 0
    Exit Sub
 
 getIconSettings_Error:
@@ -184,6 +166,43 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
+' Procedure : setFirstLastIcons
+' Author    : beededea
+' Date      : 24/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub setFirstLastIcons(ByVal thisRecordNumber As Integer)
+    
+    On Error GoTo setFirstLastIcons_Error
+
+    ' first icon is always blank and non-editable
+    If thisRecordNumber = 1 Then
+        Call zeroAllIconCharacteristics
+        If fFExists(App.Path & "\gog.png") Then
+            sFilename = App.Path & "\gog.png"
+        End If
+        
+        sTitle = "dockMinimum"
+    End If
+    
+    ' the very last icon is always blank and non-editable
+    ' we add 2 to the recordNumberToWrite, 1 for the conversion from settings.ini to a random access data and then another position above the maximum for a blank icon
+    If thisRecordNumber = iconArrayUpperBound Then
+        Call zeroAllIconCharacteristics
+        sFilename = App.Path & "\blank.png"
+        sTitle = "dockMaximum"
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+setFirstLastIcons_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setFirstLastIcons of Module common3"
+
+End Sub
+'---------------------------------------------------------------------------------------
 ' Procedure : readIconSettingsIni
 ' Author    : beededea
 ' Date      : 21/09/2019
@@ -192,36 +211,13 @@ End Sub
 '             Or, alternatively read it directly from an array cache.
 '---------------------------------------------------------------------------------------
 '
-Public Sub readIconSettingsIni(ByVal location As String, ByVal iconNumberToRead As Integer, ByVal settingsFile As String, Optional ByVal readArray As Boolean)
+Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer, Optional ByVal readArray As Boolean)
         
    On Error GoTo readIconSettingsIni_Error
-   
-    ' read the data directly from the settings file
     
    ' If readArray = False Then
     
         Call getIconSettings(iconNumberToRead)
-        
-'        sFilename = GetINISetting(location, iconNumberToRead & "-FileName", settingsFile)
-'        sFileName2 = GetINISetting(location, iconNumberToRead & "-FileName2", settingsFile)
-'        sTitle = GetINISetting(location, iconNumberToRead & "-Title", settingsFile)
-'        sCommand = GetINISetting(location, iconNumberToRead & "-Command", settingsFile)
-'        sArguments = GetINISetting(location, iconNumberToRead & "-Arguments", settingsFile)
-'        sWorkingDirectory = GetINISetting(location, iconNumberToRead & "-WorkingDirectory", settingsFile)
-'        sShowCmd = GetINISetting(location, iconNumberToRead & "-ShowCmd", settingsFile)
-'        sOpenRunning = GetINISetting(location, iconNumberToRead & "-OpenRunning", settingsFile)
-'        sIsSeparator = GetINISetting(location, iconNumberToRead & "-IsSeparator", settingsFile)
-'        sUseContext = GetINISetting(location, iconNumberToRead & "-UseContext", settingsFile)
-'        sDockletFile = GetINISetting(location, iconNumberToRead & "-DockletFile", settingsFile)
-'        sUseDialog = GetINISetting(location, iconNumberToRead & "-UseDialog", settingsFile)
-'        sUseDialogAfter = GetINISetting(location, iconNumberToRead & "-UseDialogAfter", settingsFile)
-'        sQuickLaunch = GetINISetting(location, iconNumberToRead & "-QuickLaunch", settingsFile)
-'        sAutoHideDock = GetINISetting(location, iconNumberToRead & "-AutoHideDock", settingsFile)
-'        sSecondApp = GetINISetting(location, iconNumberToRead & "-SecondApp", settingsFile)
-'        sRunElevated = GetINISetting(location, iconNumberToRead & "-RunElevated", settingsFile)
-'        sRunSecondAppBeforehand = GetINISetting(location, iconNumberToRead & "-RunSecondAppBeforehand", settingsFile)
-'        sAppToTerminate = GetINISetting(location, iconNumberToRead & "-AppToTerminate", settingsFile)
-'        sDisabled = GetINISetting(location, iconNumberToRead & "-Disabled", settingsFile)
     
         ' now write it straight away into the array cache
         
@@ -278,99 +274,99 @@ readIconSettingsIni_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconSettingsIni of Module Module2"
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : readIconRegistryWriteSettings
-' Author    : beededea
-' Date      : 20/06/2019
-' Purpose   : Read the registry one line at a time and create a temporary settings file
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : readIconRegistryWriteSettings
+'' Author    : beededea
+'' Date      : 20/06/2019
+'' Purpose   : Read the registry one line at a time and create a temporary settings file
+''---------------------------------------------------------------------------------------
+''
+'Public Sub readIconRegistryWriteSettings(settingsFile As String)
+'    Dim useloop As Integer: useloop = 0
 '
-Public Sub readIconRegistryWriteSettings(settingsFile As String)
-    Dim useloop As Integer: useloop = 0
-    
-    On Error GoTo readIconRegistryWriteSettings_Error
-    
-    ' write to the dockSettingsFile letting the dock know who wrote the last update to the settings
-    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", dockSettingsFile
-    
-    'If debugFlg = 1 Then debugLog "%" & "readIconRegistryWriteSettings"
- 
-    For useloop = 0 To rdIconMaximum
-         ' get the relevant entries from the registry
-         readRegistryIconValues (useloop)
-         ' write the rocketdock alternative settings.ini
-         Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, settingsFile)
-     Next useloop
-
-
-   On Error GoTo 0
-   Exit Sub
-
-readIconRegistryWriteSettings_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconRegistryWriteSettings of Module common3"
-End Sub
-
-
-
-'---------------------------------------------------------------------------------------
-' Procedure : writeRegistryOnce
-' Author    : beededea
-' Date      : 20/06/2019
-' Purpose   :
-'---------------------------------------------------------------------------------------
+'    On Error GoTo readIconRegistryWriteSettings_Error
 '
-Public Sub writeRegistryOnce(ByVal iconNumberToWrite As Integer)
-        
-   On Error GoTo writeRegistryOnce_Error
-    'If debugFlg = 1 Then debugLog "%" & "writeRegistryOnce"
-    
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-FileName", sFilename)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-FileName2", sFileName2)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Title", sTitle)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Command", sCommand)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Arguments", sArguments)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-WorkingDirectory", sWorkingDirectory)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-ShowCmd", sShowCmd)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-OpenRunning", sOpenRunning)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-IsSeparator", sIsSeparator)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-UseContext", sUseContext)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-DockletFile", sDockletFile)
-
-
-    'If defaultDock = 1 Then
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-UseDialog", sUseDialog)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-UseDialog", sUseDialogAfter) ' .01 DAEB 31/01/2021 common3.bas Added new checkbox to determine if a post initiation dialog should appear
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-QuickLaunch", sQuickLaunch) ' .02 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-AutoHideDock", sAutoHideDock) ' .12 DAEB 20/05/2021 common3.bas Added new check box to allow autohide of the dock after launch of the chosen app
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-SecondApp", sSecondApp)  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-    
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-RunSecondAppBeforehand", sRunSecondAppBeforehand)
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-AppToTerminate", sAppToTerminate)
-    
-    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Disabled", sDisabled)  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-    
-   On Error GoTo 0
-   Exit Sub
-
-writeRegistryOnce_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeRegistryOnce of Module common3"
-End Sub
-
-
-'---------------------------------------------------------------------------------------
-' Procedure : removeSettingsIni
-' Author    : beededea
-' Date      : 21/09/2019
-' Purpose   : 'effectively removes data from the ini file at the given location by writing nulls to each value
-'---------------------------------------------------------------------------------------
+'    ' write to the dockSettingsFile letting the dock know who wrote the last update to the settings
+'    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "icoSettings", dockSettingsFile
 '
-Public Sub removeSettingsIni(ByVal iconNumberToWrite As Integer)
-       
-   On Error GoTo removeSettingsIni_Error
-   'If debugFlg = 1 Then debugLog "%removeSettingsIni"
+'    'If debugFlg = 1 Then debugLog "%" & "readIconRegistryWriteSettings"
+'
+'    For useloop = 0 To rdIconUpperBound
+'         ' get the relevant entries from the registry
+'         readRegistryIconValues (useloop)
+'         ' write the rocketdock alternative settings.ini
+'         Call writeIconSettingsIni(useloop, settingsFile)
+'     Next useloop
+'
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'readIconRegistryWriteSettings_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconRegistryWriteSettings of Module common3"
+'End Sub
 
+
+
+''---------------------------------------------------------------------------------------
+'' Procedure : writeRegistryOnce
+'' Author    : beededea
+'' Date      : 20/06/2019
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Public Sub writeRegistryOnce(ByVal iconNumberToWrite As Integer)
+'
+'   On Error GoTo writeRegistryOnce_Error
+'    'If debugFlg = 1 Then debugLog "%" & "writeRegistryOnce"
+'
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-FileName", sFilename)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-FileName2", sFileName2)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Title", sTitle)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Command", sCommand)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Arguments", sArguments)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-WorkingDirectory", sWorkingDirectory)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-ShowCmd", sShowCmd)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-OpenRunning", sOpenRunning)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-IsSeparator", sIsSeparator)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-UseContext", sUseContext)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-DockletFile", sDockletFile)
+'
+'
+'    'If defaultDock = 1 Then
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-UseDialog", sUseDialog)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-UseDialog", sUseDialogAfter) ' .01 DAEB 31/01/2021 common3.bas Added new checkbox to determine if a post initiation dialog should appear
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-QuickLaunch", sQuickLaunch) ' .02 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-AutoHideDock", sAutoHideDock) ' .12 DAEB 20/05/2021 common3.bas Added new check box to allow autohide of the dock after launch of the chosen app
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-SecondApp", sSecondApp)  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+'
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-RunSecondAppBeforehand", sRunSecondAppBeforehand)
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-AppToTerminate", sAppToTerminate)
+'
+'    Call savestring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToWrite & "-Disabled", sDisabled)  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'writeRegistryOnce_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeRegistryOnce of Module common3"
+'End Sub
+
+
+''---------------------------------------------------------------------------------------
+'' Procedure : removeSettingsIni
+'' Author    : beededea
+'' Date      : 21/09/2019
+'' Purpose   : 'effectively removes data from the ini file at the given location by writing nulls to each value
+''---------------------------------------------------------------------------------------
+''
+'Public Sub removeSettingsIni(ByVal iconNumberToWrite As Integer)
+'
+'   On Error GoTo removeSettingsIni_Error
+'   'If debugFlg = 1 Then debugLog "%removeSettingsIni"
+'
 '        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-FileName", vbNullString, dockSettingsFile
 '        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-FileName2", vbNullString, dockSettingsFile
 '        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-Title", vbNullString, dockSettingsFile
@@ -388,36 +384,16 @@ Public Sub removeSettingsIni(ByVal iconNumberToWrite As Integer)
 '        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-QuickLaunch", vbNullString, dockSettingsFile
 '        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-AutoHideDock", vbNullString, dockSettingsFile
 '        PutINISetting "Software\SteamyDock\IconSettings\", iconNumberToWrite & "-SecondApp", vbNullString, dockSettingsFile
-                
-   On Error GoTo 0
-   Exit Sub
-
-removeSettingsIni_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure removeSettingsIni of Module common3"
-    
-End Sub
-
-
-
-'   Public Function ExecCmd(cmdline As String, workdir As String) As Integer
-'      Dim proc As PROCESS_INFORMATION
-'      Dim start As STARTUPINFO
-'      Dim ret As Long
 '
-'        ChDrive Left(workdir, 1) & ":"
-'        ChDir workdir
+'   On Error GoTo 0
+'   Exit Sub
 '
-'        start.cb = Len(start)
-'        start.wShowWindow = SW_SHOWMINNOACTIVE
+'removeSettingsIni_Error:
 '
-'        Call CreateProcessA(0&, cmdline, 0&, 0&, 1&, NORMAL_PRIORITY_CLASS, 0&, 0&, start, proc)
-'        Call WaitForSingleObject(proc.hProcess, INFINITE)
-'        Call GetExitCodeProcess(proc.hProcess, ret)
-'        Call CloseHandle(proc.hThread)
-'        Call CloseHandle(proc.hProcess)
-'        ExecCmd = ret
-'   End Function
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure removeSettingsIni of Module common3"
+'
+'End Sub
+
 
 
 

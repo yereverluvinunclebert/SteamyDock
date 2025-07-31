@@ -192,7 +192,9 @@ Public usedMenuFlag As Boolean
 
 
 Public dockSettingsFile As String
-Public newDockSettingsFile As String
+Public iconDataFile As String
+Public iconTempDataFile As String
+
 Public toolSettingsFile  As String
 
 'Public origSettingsFile As String
@@ -1354,10 +1356,8 @@ End Function
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub writeIconSettingsIni(ByVal location As String, ByVal iconNumberToWrite As Integer, ByVal settingsFile As String, Optional ByVal writeArray As Boolean)
-'                                                   ^^^^^ not byval on the programs - so possible DEBUG
-    'Writes an .INI File (SETTINGS.INI)
-    
+Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByVal writeArray As Boolean)
+'
    On Error GoTo writeIconSettingsIni_Error
    'If debugFlg = 1 Then debugLog "%writeIconSettingsIni"
 
@@ -1923,7 +1923,8 @@ Public Sub locateDockSettingsFile()
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
     dockSettingsBackupDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\backup" ' just for this user alone
     dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
-    newDockSettingsFile = dockSettingsDir & "\docksettings.dat" '
+    iconDataFile = dockSettingsDir & "\iconsettings.dat" ' the random access dat file for the icon data alone
+    'iconTempDataFile = dockSettingsDir & "\icontempsettings.dat" ' the random access dat file for the icon data alone
 
     'if the folder does not exist then create the folder
     If Not fDirExists(dockSettingsDir) Then

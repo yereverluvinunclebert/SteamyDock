@@ -39,20 +39,20 @@ Attribute VB_Name = "mdlUnusedCode"
 ''    If debugflg = 1 Then debugLog "%" & "removeImageFromDictionary"
 '
 '    'resize all arrays used for storing icon information
-'    ReDim sFileNameArray(rdIconMaximum) As String ' the file location of the original icons
-'    ReDim sTitleArray(rdIconMaximum) As String ' the name assigned to each icon
-'    ReDim sCommandArray(rdIconMaximum) As String ' the command assigned to each icon
-'    ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-'    ReDim processCheckArray(rdIconMaximum) As String ' the process name assigned to each icon
-'    ReDim initiatedProcessArray(rdIconMaximum) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
+'    ReDim sFileNamearray(iconArrayUpperBound) As String ' the file location of the original icons
+'    ReDim sTitlearray(iconArrayUpperBound) As String ' the name assigned to each icon
+'    ReDim sCommandarray(iconArrayUpperBound) As String ' the command assigned to each icon
+'    ReDim targetExistsarray(iconArrayUpperBound) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+'    ReDim processCheckarray(iconArrayUpperBound) As String ' the process name assigned to each icon
+'    ReDim initiatedProcessarray(iconArrayUpperBound) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
 '                                                         ' but I feel that it does not really matter so I am going to not bother at the moment, this is something that could be done later!
 '
 '    ' assuming that the details have already been written to the configuration file
 '    ' extract filenames from Rocketdock registry, settings.ini or user data area
 '    ' we reload the arrays that store pertinent icon information
-'    For useloop = 0 To rdIconMaximum
+'    For useloop = 0 To rdIconUpperBound
 '        'readIconData (useloop)
-'        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
+'        readIconSettingsIni  useloop, dockSettingsFile
 '        ' read the two main icon variables into arrays, one for each
 '        sFileNameArray(useloop) = sFilename
 '        sTitleArray(useloop) = sTitle
@@ -67,17 +67,17 @@ Attribute VB_Name = "mdlUnusedCode"
 '
 '    'redimension the array that is used to store all of the icon current positions in pixels
 '    ' preserves the data in the existing array when changing the size of only the last dimension.
-'    ReDim Preserve iconStoreLeftPixels(rdIconMaximum + 1) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'    ReDim Preserve iconStoreLeftPixels(iconArrayUpperBound) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '    ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-'    ReDim Preserve iconStoreRightPixels(rdIconMaximum + 1) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'    ReDim Preserve iconStoreTopPixels(rdIconMaximum + 1) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-'    ReDim Preserve iconStoreBottomPixels(rdIconMaximum + 1) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'    ReDim Preserve iconStoreRightPixels(iconArrayUpperBound) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'    ReDim Preserve iconStoreTopPixels(iconArrayUpperBound) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
+'    ReDim Preserve iconStoreBottomPixels(iconArrayUpperBound) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 '
 '
-'    iconArrayUpperBound = rdIconMaximum '<*
+'    iconArrayUpperBound = rdIconUpperBound '<*
 '
 '    ' populate the array element containing the final icon position
-'    'iconPosLeftTwips(rdIconMaximum) = iconPosLeftTwips(rdIconMaximum - 1) + (iconWidthPxls * screenTwipsPerPixelX) '< this may need revisiting if you add left and right positions
+'    'iconPosLeftTwips(rdIconUpperBound) = iconPosLeftTwips(rdIconUpperBound - 1) + (iconWidthPxls * screenTwipsPerPixelX) '< this may need revisiting if you add left and right positions
 '
 '    ' re-order the large icons in the collLargeIcons dictionary collection
 '    Call decrementCollection(collLargeIcons, iconSizeLargePxls)
@@ -121,7 +121,7 @@ Private Sub decrementCollection(ByRef thisCollection As Object, ByVal thisByteSi
     thisCollection.Remove thiskey
         
     ' the icons to the right are then read from the old dictionary and then written one key down
-    For useloop = selectedIconIndex + 1 To rdIconMaximum + 1 ' change this at your peril
+    For useloop = selectedIconIndex + 1 To iconArrayUpperBound ' change this at your peril
         newKey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
         thiskey = useloop - 1 & "ResizedImg" & LTrim$(Str$(thisByteSize))
         thisCollection(thiskey) = thisCollection(newKey)
@@ -139,7 +139,7 @@ Private Sub decrementCollection(ByRef thisCollection As Object, ByVal thisByteSi
  
     ' B.
     ' the icons to the right including the current are then read from the old dictionary and then written to the new temporary dictionary with updated incremented keys
-'    For useloop = selectedIconIndex + 1 To rdIconMaximum + 1 ' change this at your peril
+'    For useloop = selectedIconIndex + 1 To iconArrayUpperBound ' change this at your peril
 '        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
 '        newKey = useloop - 1 & "ResizedImg" & LTrim$(Str$(thisByteSize))
 '        collTemporaryIcons(newKey) = thisCollection(thiskey)
@@ -150,7 +150,7 @@ Private Sub decrementCollection(ByRef thisCollection As Object, ByVal thisByteSi
     'thisCollection.RemoveAll
 
     ' the temporary dictionary is used to repopulate the larger image dictionary, a clone of all elements
-'    For useloop = 0 To rdIconMaximum
+'    For useloop = 0 To rdIconUpperBound
 '        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
 '        thisCollection(thiskey) = collTemporaryIcons(thiskey)
 '    Next useloop
@@ -191,7 +191,7 @@ End Sub
 '    ' .62 DAEB 29/04/2021 frmMain.frm Improved the speed of the addition of icons to the dictionary collections
 '    ' the icons to the left of the current icon are not read nor touched
 '    ' reads from the last icon to the current one and for each it writes it one step up
-'    For useloop = rdIconMaximum To selectedIconIndex Step -1
+'    For useloop = rdIconUpperBound To selectedIconIndex Step -1
 '        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
 '        newKey = useloop + 1 & "ResizedImg" & LTrim$(Str$(thisByteSize))
 '        If thisCollection.Exists(thiskey) Then

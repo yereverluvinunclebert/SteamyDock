@@ -658,9 +658,16 @@ Attribute VB_Exposed = False
 ' Settings
 '
 ' The setttings data for the whole dock are stored in a settings.ini file in the user temporary file area. These are accessed using the writefile API
-' The data related to the icons themseleves are stored in a random access data file for much faster access.
+' The data related to the icons themselves are stored in a random access data file for much faster access.
 ' To speed this up further, all associated icon data is stored in cached arrays so that the data can be processed quickly. The program keeps track of all icon data
 ' using these arrays.
+'
+' Arrays
+'
+' All important arrays are handled as if they are Option Base 1 even though that is not explicitly stated anywhere. As the icon data is loaded from a random access data file
+' where 0 is not an allowable position, record 1 is the default start position. To avoid confusion when reading from the data file and into associated arrays, all arrays that
+' contain cached data from the icon data file are used as if they were option base 1 starting at element 1. Note that the first record/array element is a blank icon that is only shown
+' in the dock as a spacer to allow smoother entry into the dock. It cannot be edited or deleted. Same with the final icon beyond the last user icon.
 '
 ' Skins
 '
@@ -689,7 +696,12 @@ Attribute VB_Exposed = False
 ' loops less frequently through all open explorer windows and checks to see if any matching icon deserves a 'cog'.
 ' It will match CLSID entries too. It uses the enumerateExplorerWindows function to achieve a match.
 '
-' BUILD
+' History
+'
+' This program was a learning task. At the point I started I knew nothing about GDI+, collections nor classes - nor really how to code, the program reflects this. The program is still
+' being hacked into shape as I increase my knowledge and find time to back-fill that knowledge into my code.
+'
+' BUILD - VB6
 
 ' NOTE - I do not suggest developing VB6 programs using Windows 11, it can be a painful experience. A modern Windows 7 system
 ' with an SSD and 16gb RAM is the perfect platform. Windows 10 can be made into a decent development platform but Win 11 is a pain.
@@ -728,14 +740,13 @@ Attribute VB_Exposed = False
 ' Detail regarding data sources:
 ' C:\Users\<username>\AppData\Roaming\steamyDock\
 '
-' dockSettingsFile = sdAppPath & "\settings.ini" ' The dock 's settings file in user appdata
-' toolSettingsFile = SpecialFolder_AppData & <utilityName> "\settings.ini" the tool's own settings file.
+'    dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
+'    dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
 '
 ' docksettings.ini is partitioned as follows:
 '
 ' [Software\SteamyDock\DockSettings] - the dockSettings tool writes here
-' [Software\SteamyDock\IconSettings\Icons] - the iconSettings tool writes here
-'
+
 ' re: toolSettingsFile - The utilities read their own config files for their own personal set up in their own folders in appdata
 ' Settings.ini, this is just for local settings that concern only the utility, look and feel, fonts &c
 '
@@ -760,7 +771,19 @@ Attribute VB_Exposed = False
 ' Quality = 1
 ' defaultFont=Centurion Light SF
 
-
+' The icon data is stored in the iconsettings.dat`within the user special folder.
+'
+' C:\Users\<username>\AppData\Roaming\steamyDock\
+'
+'    dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
+'    iconDataFile = dockSettingsDir & "\iconsettings.dat" ' the random access dat file for the icon data alone
+'
+'
+' BUILD - TWINBASIC
+'
+' The code seamlessly compiles using TwinBasic producing 32bit code. I have not yet converted it to 64bit operation.
+' The VB6 build information applies.
+'
 '========================================================================================================
 '
 '    LICENCE AGREEMENTS:
@@ -1137,11 +1160,14 @@ Private Sub Form_Load()
     ' get the location of the dock's new settings file
     Call locateDockSettingsFile
 
-    ' read the dock settings from INI or from registry
+    ' read the dock settings from INI
     Call readDockConfiguration
     
     'validate the relevant entries from the settings.ini file in user appdata
     Call validateInputs
+    
+    ' read the icon properties from random access file
+    Call readIconConfiguration
     
     ' set the hotkey toggle to the user's chosen function key
     Call setUserHotKey ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
@@ -1266,7 +1292,12 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
     
     ' .75 DAEB 12/05/2021 frmMain.frm Changed Form_MouseMove to act as the correct event to a drag and drop operating from the dock
     selectedIconIndex = iconIndex ' this is the icon we will be bouncing
-    dragImageToDisplay = dictionaryLocationArray(selectedIconIndex) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
+        
+    'clicking on the 'blank' icons at the beginning and the end
+    If selectedIconIndex = 0 Then Exit Sub
+    If selectedIconIndex = iconArrayUpperBound Then Exit Sub
+    
+    dragImageToDisplayKey = dictionaryLocationArray(selectedIconIndex) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
     
 '    dock.animateTimer.Enabled = False
 '    dock.responseTimer.Enabled = False
@@ -1294,6 +1325,10 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
     On Error GoTo Form_MouseMove_Error
 
     If mouseDownTime = 0 Then Exit Sub
+        
+    'clicking on the 'blank' icons at the beginning and the end
+    If selectedIconIndex = 0 Then Exit Sub
+    If selectedIconIndex = iconArrayUpperBound Then Exit Sub
 
     ' calculates the time since the mouseDown and if no mouseup within 1/4 of a second assume it is a drag from the dock
     If mouseDownTime <> 0 Then ' time since the mouseDown event occurred
@@ -1370,8 +1405,10 @@ Public Sub initialiseGlobalVars()
     screenHeightPixels = 0
     inc = False
     fcount = 0
-    rdIconMaximum = 0
-    theCount = 0
+    rdIconUpperBound = 0
+    rdIconLowerBound = 0
+    iconArrayUpperBound = 0
+    iconArrayLowerBound = 0
     debugflg = 0
     readEmbeddedIcons = False
     hideDockForNMinutes = False
@@ -1613,11 +1650,15 @@ Public Sub fMouseUp(Button As Integer)
     Dim targetIconIndex As Integer: targetIconIndex = 0
     Dim allowElevated As Boolean: allowElevated = False
     Dim suffix As String: suffix = vbNullString
+    
+    'clicking on the 'blank' icons at the beginning and the end
+    If selectedIconIndex = 0 Then Exit Sub
+    If selectedIconIndex = iconArrayUpperBound Then Exit Sub
             
     mouseDownTime = 0
       
     '.76 DAEB 12/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
-    Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", selectedIconIndex, dockSettingsFile)
+    Call readIconSettingsIni(selectedIconIndex)
     
     If dragToDockOperating = True Then
         hourGlassTimer.Enabled = False
@@ -2228,7 +2269,7 @@ Private Sub initiatedExplorerTimer_Timer()
     ' stop this timer for the duration of the run
     initiatedExplorerTimer.Enabled = False
 
-    For useloop = 0 To rdIconMaximum
+    For useloop = 1 To rdIconUpperBound
         If Not initiatedExplorerArray(useloop) = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
             itIsRunning = isExplorerRunning(initiatedExplorerArray(useloop))
             If itIsRunning = False Then
@@ -2291,7 +2332,7 @@ Private Sub initiatedProcessTimer_Timer()
     ' stop this timer for the duration of the run
     initiatedProcessTimer.Enabled = False
 
-    For useloop = 0 To rdIconMaximum
+    For useloop = 1 To rdIconUpperBound
         If Not initiatedProcessArray(useloop) = vbNullString Then
             itIsRunning = IsRunning(initiatedProcessArray(useloop))
             If itIsRunning = False Then
@@ -2681,18 +2722,11 @@ Private Sub animateTimer_Timer()
     expandedDockWidth = 0
     
     ' determines if and where exactly the mouse is in the < horizontal > icon hover area and if so, determine the icon index
-    For useloop = 0 To iconArrayUpperBound
-        ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    For useloop = iconArrayLowerBound To iconArrayUpperBound
         insideDock = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
         
         If insideDock Then
             iconIndex = useloop ' this is the current icon number being hovered over
-            
-            'Dim iAmount As Long
-            'iWidth = iconStoreRightPixels(useloop) - iconStoreLeftPixels(useloop)
-            'iWidth = iconWidthPxls
-            'iAmount = apiMouse.X - iconStoreLeftPixels(useloop)
-            'iconProportion = (apiMouse.X - iconStoreLeftPixels(useloop)) / iconWidthPxls
             iconXOffset = apiMouse.X - iconStoreLeftPixels(useloop)
             Exit For ' as soon as we have the index we no longer have to stay in the loop
         End If
@@ -2846,12 +2880,12 @@ Private Sub sequentialBubbleAnimation()
     End If
             
     ' resize all the icons as we run through each in the loop, display them just before the end of the loop
-    For useloop = 0 To iconArrayUpperBound ' loop through all the icons one by one
+    For useloop = iconArrayLowerBound To iconArrayUpperBound ' loop through all the icons one by one
         
         'Call sizeDockPositionZero(useloop, showsmall) ' no need to run this so commented out
             
         ' size all small icons to the left of the main icons, each sized as per small mode, do it just ONCE, all the other icons will take that same size without recalculating
-        If useloop = 0 Then Call sizeEachSmallIconToLeft(useloop, leftmostResizedIcon, showsmall)
+        If useloop = iconArrayLowerBound Then Call sizeEachSmallIconToLeft(useloop, leftmostResizedIcon, showsmall)
 
         ' if the the main icon is icon zero
         ' the main fullsize icon
@@ -2886,9 +2920,8 @@ Private Sub sequentialBubbleAnimation()
     ' .nn Changed or added as part of the drag and drop functionality
     ' 12/05/2021 .nn DAEB Displays a smaller size icon at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
-        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplay, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
+        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
     End If
-    
     
     Call updateScreenUsingGDIBitmap
     
@@ -3339,11 +3372,20 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
+'---------------------------------------------------------------------------------------
+' Procedure : showSmallIcon
+' Author    : beededea
+' Date      : 27/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub showSmallIcon(ByVal useloop As Integer)
     Dim thiskey As String: thiskey = ""
     Dim thisDisabled As String: thisDisabled = ""
     
-    '   check the recently disabled flag and display the transparent version instead
+    On Error GoTo showSmallIcon_Error
+
+    ' check the recently disabled flag and display the transparent version instead
     If disabledArray(useloop) = 1 Then
         thiskey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
     Else
@@ -3351,18 +3393,28 @@ Private Sub showSmallIcon(ByVal useloop As Integer)
     End If
     
     updateDisplayFromDictionary collSmallIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
+    
+    'show cogs above running processes
     If rDShowRunning = "1" Then
         If (processCheckArray(useloop) = True Or explorerCheckArray(useloop) = True) Then
-            'updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)
-            If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-            If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)
+            thiskey = "tinycircleResizedImg128"
+            If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+            If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)
          End If
     End If
-    ' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
-    If targetExistsArray(useloop) = 1 Then ' redxResizedImg64
-        If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-        If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2)
+    ' target command validity test flag places a red X on the icon
+    If targetExistsArray(useloop) = 1 Then
+        thiskey = "redxResizedImg64"
+        If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+        If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2)
     End If
+
+   On Error GoTo 0
+   Exit Sub
+
+showSmallIcon_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure showSmallIcon of Form dock"
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -3640,7 +3692,7 @@ Private Sub sizeAndShowSingleMainIconToRightByCEP(ByVal thisIconIndex As Integer
     '==================
    On Error GoTo sizeAndShowSingleMainIconToRightByCEP_Error
 
-   If thisIconIndex <= rightmostResizedIcon And thisIconIndex < rdIconMaximum Then  '    If iconIndex > 0 Then 'check it isn't trying to animate a non-existent icon before the first icon
+   If thisIconIndex <= rightmostResizedIcon And thisIconIndex < rdIconUpperBound Then  '    If iconIndex > 0 Then 'check it isn't trying to animate a non-existent icon before the first icon
         
         ' the icon to the left is currently sized in small mode as the other on the left hand side is sized in full.
         iconHeightPxls = iconSizeSmallPxls
@@ -3717,7 +3769,7 @@ Private Sub sizeAndShowSmallIconsToRightByCEP(ByVal thisIconIndex As Integer, By
     '====================
    On Error GoTo sizeAndShowSmallIconsToRightByCEP_Error
 
-    If thisIconIndex < rdIconMaximum Then   'check it isn't trying to animate a non-existent icon after the last icon
+    If thisIconIndex < rdIconUpperBound Then   'check it isn't trying to animate a non-existent icon after the last icon
 
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
        iconPosLeftPxls = (iconStoreLeftPixels(iconIndex + 1)) + rightIconWidthPxls
@@ -3729,21 +3781,6 @@ Private Sub sizeAndShowSmallIconsToRightByCEP(ByVal thisIconIndex As Integer, By
             iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
         
             Call storeCurrentIconPositions(rightLoop)
-
-'            thiskey = rightLoop & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
-'            updateDisplayFromDictionary collSmallIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
-'            If rDShowRunning = "1" Then
-'                If processCheckArray(rightLoop) = True Then
-'                    If dockPosition = vbbottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-'                    If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconSizeSmallPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)
-'                End If
-'            End If
-'            ' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
-'            If targetExistsArray(rightLoop) = 1 Then  ' redxResizedImg64
-'                    If dockPosition = vbbottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-'                    If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconSizeSmallPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2)
-'            End If
-
             Call showSmallIcon(rightLoop)
             
         Next rightLoop
@@ -3758,40 +3795,7 @@ sizeAndShowSmallIconsToRightByCEP_Error:
 
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : loadTheImageIntoGDIPlus
-' Author    : beededea
-' Date      : 18/06/2020
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-'Private Sub loadTheImageIntoGDIPlus(ByVal iconIndexToShow As Single)
-'    Dim thiskey As String: thiskey = vbNullString
-'
-'    On Error GoTo loadTheImageIntoGDIPlus_Error
-'
-'    thiskey = iconIndexToShow & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
-'    ' add a 1% opaque background to the expanded image to catch click-throughs
-'    updateDisplayFromDictionary collLargeIcons, vbNullString, "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (128), (128)
-'    ' the current image itself
-'    updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
-'    If rDShowRunning = "1" Then
-'        If processCheckArray(iconIndexToShow) = True Then
-'            'updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconSizeLargePxls), (iconSizeLargePxls)
-'            If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)  '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-'            If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconSizeSmallPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)
-'        End If
-'
-'    End If
-'
-'   On Error GoTo 0
-'   Exit Sub
-'
-'loadTheImageIntoGDIPlus_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure loadTheImageIntoGDIPlus of Form dock"
-'
-'End Sub
+
 '---------------------------------------------------------------------------------------
 ' Procedure : drawTheLabel
 ' Author    : beededea
@@ -4719,7 +4723,7 @@ Private Sub setInitialStartPoint()
     End If
     
 
-    normalDockWidthPxls = (rdIconMaximum * iconSizeSmallPxls)
+    normalDockWidthPxls = (rdIconUpperBound * iconSizeSmallPxls)
     hOffsetPxls = ((screenWidthPixels - normalDockWidthPxls) / 2)
     proportionalOffset = hOffsetPxls + (hOffsetPxls * (Val(rDOffset) / 100))
     iconLeftmostPointPxls = proportionalOffset
@@ -5082,12 +5086,10 @@ Public Sub drawSmallStaticIcons()
         If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth, True)
                 
         ' this loop redraws all the icons at the same small size after the mouse has left the icon area
-        For useloop = 0 To rdIconMaximum  'File1.ListCount - 1
-            
-            'Call sizeDockPositionZero(useloop, showsmall)
-            
-            ' call this to set the size of all icons in small mode, do it just once, all the subsequent icons will take that same size without recalculating
-            If useloop = 0 Then Call sizeEachSmallIconToLeft(useloop, rdIconMaximum, True)
+        For useloop = 0 To iconArrayUpperBound
+                      
+            ' call this to set the size of all icons in small mode, do it just once, all the subsequent icons will take that same size without recalculation.
+            If useloop = iconArrayLowerBound Then Call sizeEachSmallIconToLeft(useloop, rdIconUpperBound, True)
             
             ' display the small size icons
             Call showSmallIcon(useloop)
@@ -5155,7 +5157,7 @@ End Sub
 '            If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth)
 '
 '            ' this loop redraws all the icons at the same small size after the mouse has left the icon area
-'            For useloop = 0 To rdIconMaximum  'File1.ListCount - 1
+'            For useloop = 0 To rdIconUpperBound  'File1.ListCount - 1
 '
 ''                If dockPosition = vbbottom Then
 ''                    If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
@@ -5182,7 +5184,7 @@ End Sub
 '                ' NOTE: re-using the subroutine that is normally used to put small icons to the left shown in small mode
 '                ' used here instead to resize all icons
 '
-'                Call sizeEachSmallIconToLeft(useloop, rdIconMaximum, True)
+'                Call sizeEachSmallIconToLeft(useloop, rdIconUpperBound, True)
 '
 '                ' display the small size icons
 '                Call showSmallIcon(useloop)
@@ -5249,59 +5251,26 @@ Public Sub prepareArraysAndCollections()
     Dim partialStringKey As String: partialStringKey = vbNullString
     Dim largeKey As String: largeKey = vbNullString
     Dim smallKey As String: smallKey = vbNullString
-    Dim overallIconOpacity As Integer
-    Dim thisOpacity As Integer
-    Dim thisDisabled As String
+    Dim overallIconOpacity As Integer: overallIconOpacity = 0
+    Dim thisOpacity As Single: thisOpacity = 0
+    Dim thisDisabled As String: thisDisabled = vbNullString
     
-    'sDSkinSize = 30
-    
-    ' redimension the arrays to cater for the number of icons in the dock
     On Error GoTo prepareArraysAndCollections_Error
+    
     If debugflg = 1 Then debugLog "% sub prepareArraysAndCollections"
 
-    ReDim dictionaryLocationArray(rdIconMaximum) As String ' the file location of the original icons
-    ReDim sFileNameArray(rdIconMaximum) As String ' the file location of the original icons
-    ReDim sTitleArray(rdIconMaximum) As String ' the name assigned to each icon
-    ReDim sCommandArray(rdIconMaximum) As String ' the Windows command or exe assigned to each icon
-
-    ReDim targetExistsArray(rdIconMaximum) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-    ReDim processCheckArray(rdIconMaximum) As Boolean ' the array that contains true/false according to the running state of the associated process
-    ReDim explorerCheckArray(rdIconMaximum) As Boolean ' the array that contains true/false according to the running state of the associated process
-    ReDim initiatedProcessArray(rdIconMaximum) As String ' the array containing the binary name of any process initiated by the dock
-    ReDim initiatedExplorerArray(rdIconMaximum) As String ' the array containing the binary name of any process initiated by the dock
-    ReDim disabledArray(rdIconMaximum) As Integer ' the array
-    ReDim targetExistsArray(rdIconMaximum) As Integer
-
-'    ReDim sFileName2Array(rdIconMaximum) As String ' sFileName2
-'    ReDim sArgumentsArray(rdIconMaximum) As String ' sArguments
-'    ReDim sWorkingDirectoryArray(rdIconMaximum) As String ' sWorkingDirectory
-'    ReDim sShowCmdArray(rdIconMaximum) As String ' sShowCmd
-'    ReDim sOpenRunningArray(rdIconMaximum) As String ' sOpenRunning
-'    ReDim sIsSeparatorArray(rdIconMaximum) As String ' sIsSeparator
-'    ReDim sUseContextArray(rdIconMaximum) As String ' sUseContext
-'    ReDim sDockletFileArray(rdIconMaximum) As String ' sDockletFile
-'    ReDim sUseDialogArray(rdIconMaximum) As String ' sUseDialog
-'    ReDim sUseDialogAfterArray(rdIconMaximum) As String ' sUseDialogAfter
-'    ReDim sQuickLaunchArray(rdIconMaximum) As String ' sQuickLaunch
-'    ReDim sAutoHideDockArray(rdIconMaximum) As String ' sAutoHideDock
-'    ReDim sSecondAppArray(rdIconMaximum) As String ' sSecondApp
-'    ReDim sRunElevatedArray(rdIconMaximum) As String ' sRunElevated
-'    ReDim sRunSecondAppBeforehandArray(rdIconMaximum) As String ' sRunSecondAppBeforehand
-'    ReDim sAppToTerminateArray(rdIconMaximum) As String ' sAppToTerminate
-'    ReDim sDisabledArray(rdIconMaximum) As String ' sDisabled
-'
-    
-    
+    ' redimension the arrays to cater for the number of icons in the dock
+    Call redimPreserveCacheArrays
     Call loadAdditionalImagestoDictionary ' the additional images need to be added to the dictionary
+  
+    For useloop = iconArrayLowerBound To iconArrayUpperBound
     
-    ' extract filenames from Rocketdock registry or settings.ini
-    For useloop = 0 To rdIconMaximum
-        'readIconData (useloop)
-        readIconSettingsIni "Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile
+        ' extract filenames from the random acess data file
+        readIconSettingsIni useloop
 
-        partialStringKey = LTrim$(Str$(useloop))
+        partialStringKey = CStr(useloop)
         
-        ' read the two main icon variables into arrays, one for each
+        ' read the main icon variables into arrays
         sFileNameArray(useloop) = sFilename
         dictionaryLocationArray(useloop) = useloop
         sTitleArray(useloop) = sTitle
@@ -5314,8 +5283,8 @@ Public Sub prepareArraysAndCollections()
         
         If sDisabled = "1" Then
             ' reduce the opacity
+            thisOpacity = overallIconOpacity * 0.6
             
-            thisOpacity = overallIconOpacity / 4
             disabledArray(useloop) = 1
             
             ' create keys for transparent images in the collLargeIcons/collSmallIcons collections
@@ -5339,25 +5308,25 @@ Public Sub prepareArraysAndCollections()
             Else
                 resizeAndLoadImgToDict collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity
             End If
-        End If
-    
-    
-        ' cache the images to the collection at a small size at full opacity
-        If fFExists(sFilename) Then
-            resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
-        ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
-            checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
-        Else ' if the image is not found display an 'x'
-            resizeAndLoadImgToDict collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
-        End If
-        
-        ' now cache all the images to the collection at the larger size
-        If fFExists(sFilename) Then
-            resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
-        ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then  ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
-            checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
         Else
-            resizeAndLoadImgToDict collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
+    
+            ' cache the images to the collection at a small size at full opacity
+            If fFExists(sFilename) Then
+                resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
+            ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
+                checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+            Else ' if the image is not found display an 'x'
+                resizeAndLoadImgToDict collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
+            End If
+            
+            ' now cache all the images to the collection at the larger size
+            If fFExists(sFilename) Then
+                resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
+            ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then  ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
+                checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+            Else
+                resizeAndLoadImgToDict collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
+            End If
         End If
         
         ' check to see if each process is running and store the result away - this is also run on a 10s timer
@@ -5365,16 +5334,7 @@ Public Sub prepareArraysAndCollections()
         processCheckArray(useloop) = IsRunning(sCommand)
 
     Next useloop
-    
-    'redimension the array that is used to store all of the icon current positions
-    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    ReDim Preserve iconStoreLeftPixels(theCount)
-    ReDim Preserve iconStoreRightPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-    'ReDim Preserve iconStoreTopPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-    ReDim Preserve iconStoreBottomPixels(theCount) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-    
-    iconArrayUpperBound = rdIconMaximum
-    dictionaryLocationArrayUpperBound = rdIconMaximum
+
 
    On Error GoTo 0
    Exit Sub
@@ -5658,9 +5618,9 @@ Private Sub applyThemeSkinToDock(ByVal dockSkinStart As Long, ByVal dockSkinWidt
     
     dockSkinStart = iconPosLeftPxls - (sDSkinSize)
     If shortdock = False Then
-        dockSkinWidth = (rdIconMaximum * iconSizeSmallPxls) + iconSizeLargePxls * 2
+        dockSkinWidth = (rdIconUpperBound * iconSizeSmallPxls) + iconSizeLargePxls * 2
     Else
-        dockSkinWidth = (rdIconMaximum * iconSizeSmallPxls)
+        dockSkinWidth = (rdIconUpperBound * iconSizeSmallPxls)
     End If
     
     ' .49 DAEB 01/04/2021 frmMain.frm added the vertical adjustment for sliding in and out STARTS
@@ -6914,7 +6874,7 @@ Private Sub checkTargetCommandValidity()
     executableFileString = "com cmd msc cpl bat exe"
     pathString = Environ$("path")
     
-    For useloop = 0 To rdIconMaximum
+    For useloop = 1 To rdIconUpperBound
         targetExistsArray(useloop) = 0
 
         ' instead of looping through all the command stored in the docksettings.ini file, we now store all the current commands in an array
@@ -7445,7 +7405,7 @@ End Sub
 '    toArray = False
 '
 '    'loop from the start operation value to the end
-'    For useloop = startRecord To rdIconMaximum
+'    For useloop = startRecord To rdIconUpperBound
 '        If (useloop) Mod 2 = 0 Then
 '
 '            'check idle state every 2 writes - as the dock is a full screen app this test only worked when the cursor was active within another application
@@ -7465,13 +7425,13 @@ End Sub
 '            End If
 '        End If
 '        ' read from the arrays
-'        Call readIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, fromArray)
+'        Call readIconSettingsIni( useloop, dockSettingsFile, fromArray)
 '
 '        ' very slow using writeinifile APIs, needs improvement.
-'        Call writeIconSettingsIni("Software\SteamyDock\IconSettings\Icons", useloop, dockSettingsFile, toArray)
+'        Call writeIconSettingsIni( useloop, dockSettingsFile, toArray)
 '
 '        lastRecordCommitted = useloop
-'        gblRecordsToCommit = rdIconMaximum - lastRecordCommitted
+'        gblRecordsToCommit = rdIconUpperBound - lastRecordCommitted
 '    Next useloop
 '
 '    ' calculate the write timing variables and report
