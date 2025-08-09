@@ -1808,8 +1808,8 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
             Do
                 i = InStr(1, thisUProcess.szexeFile, Chr$(0))
                 SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
-    
-                If Right$(SzExename, Len(binaryName)) = LCase$(binaryName) Then
+                
+                If SzExename = LCase$(binaryName) Then
 
                         AppCount = AppCount + 1
                         procId = thisUProcess.th32ProcessID
