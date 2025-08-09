@@ -245,12 +245,36 @@ Private lstDevices(1, 25) As String
 Private lstDevicesListCount As Integer
 Public sAllDrives As String
 
-
-
 ' Steamydock global configuration variables END
 
-' APIs for useful functions START
+' APIs for asynch. shell command functions START
+'Public Type SHELLEXECUTEINFO
+'    cbSize As Long
+'    fMask As Long
+'    hWnd As Long
+'    lpVerb As String
+'    lpFile As String
+'    lpParameters As String
+'    lpDirectory As String
+'    nShow As Long
+'    hInstApp As Long
+'    lpIDList As Long
+'    lpClass As String
+'    hkeyClass As Long
+'    dwHotKey As Long
+'    hIcon As Long
+'    hProcess As Long
+'End Type
+'
+'Public Const SEE_MASK_NOCLOSEPROCESS As Long = &H40
+''Public Const SEE_MASK_NOASYNC As Long = &H0&
+'Public Const SEE_MASK_FLAG_NO_UI As Long = &H400
+'
+'Public Declare Function ShellExecuteEx Lib "shell32.dll" Alias "ShellExecuteExA" (lpExecInfo As SHELLEXECUTEINFO) As Long
 Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+' APIs for asynch. shell command functions END
+
+' APIs for useful functions START
 Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
 ' APIs for useful functions END
 
@@ -756,7 +780,7 @@ End Function
 
 '---------------------------------------------------------------------------------------
 ' Procedure : fDirExists
-' Author    : beededea
+' Author    :
 ' Date      : 17/10/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------

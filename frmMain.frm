@@ -2694,14 +2694,11 @@ Private Sub animateTimer_Timer()
     Dim useloop As Integer: useloop = 0
     Dim thiskey As String: thiskey = vbNullString
     Dim textWidth As Integer: textWidth = 0
-    Dim insideDock As Boolean: insideDock = False
-   
-    'Dim bumpFactor As Single' .61 DAEB 26/04/2021 frmMain.frm size modifier moved to the sequential bump animation
-    'bumpFactor = 0' .61 DAEB 26/04/2021 frmMain.frm size modifier moved to the sequential bump animation
+    Dim insideIcon As Boolean: insideIcon = False
     
     On Error GoTo animateTimer_Error
         
-    ' if the bounce or fade timere are running cause animation to continue even if the mouse is stationary.
+    ' if the bounce or fade timer are running cause animation to continue even if the mouse is stationary.
     If bounceUpTimer.Enabled = True Or bounceDownTimer.Enabled = True Or hourGlassTimer.Enabled = True Or autoFadeOutTimer.Enabled = True Or autoFadeInTimer.Enabled = True Or autoSlideOutTimer.Enabled = True Or autoSlideInTimer.Enabled = True Then ' .nn Changed or added as part of the drag and drop functionality
         ' carry on as usual and animate when any animation timers are running
     Else ' we are only interested in analysing if there is any Y axis movement
@@ -2723,12 +2720,15 @@ Private Sub animateTimer_Timer()
     
     ' determines if and where exactly the mouse is in the < horizontal > icon hover area and if so, determine the icon index
     For useloop = iconArrayLowerBound To iconArrayUpperBound
-        insideDock = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
+        'insideDock = apiMouse.X >= iconLeftmostPointPxls And apiMouse.X <= iconRightmostPointPxls
+        insideIcon = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
         
-        If insideDock Then
+        If insideIcon Then
             iconIndex = useloop ' this is the current icon number being hovered over
             iconXOffset = apiMouse.X - iconStoreLeftPixels(useloop)
             Exit For ' as soon as we have the index we no longer have to stay in the loop
+        Else
+            useloop = useloop
         End If
     Next useloop
     
@@ -2768,7 +2768,6 @@ Private Sub animateTimer_Timer()
     End If
     
     'stores the current icon position
-    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     iconStoreLeftPixels(UBound(iconStoreLeftPixels)) = iconPosLeftPxls
                 
    On Error GoTo 0
@@ -2976,12 +2975,12 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub storeCurrentIconPositions(useloop)
+Private Sub storeCurrentIconPositions(ByVal thisPosition As Integer)
         
    On Error GoTo storeCurrentIconPositions_Error
 
-        iconStoreLeftPixels(useloop) = Int(iconPosLeftPxls)
-        iconStoreRightPixels(useloop) = Int(iconStoreLeftPixels(useloop) + iconWidthPxls) ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
+        iconStoreLeftPixels(thisPosition) = Int(iconPosLeftPxls)
+        iconStoreRightPixels(thisPosition) = Int(iconStoreLeftPixels(thisPosition) + iconWidthPxls) ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
         'iconStoreTopPixels(useloop) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
         'iconStoreBottomPixels(useloop) =' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 
@@ -2993,63 +2992,63 @@ storeCurrentIconPositions_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure storeCurrentIconPositions of Form dock"
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : sizeDockPositionZero
-' Author    : beededea
-' Date      : 19/07/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : sizeDockPositionZero
+'' Author    : beededea
+'' Date      : 19/07/2025
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Private Sub sizeDockPositionZero(ByVal thisPosition As Integer, ByRef showsmall As Boolean)
 '
-Private Sub sizeDockPositionZero(ByVal useloop As Integer, ByRef showsmall As Boolean)
-                
-   On Error GoTo sizeDockPositionZero_Error
-
-        If useloop = 0 Then 'small icons to the left shown in small mode
-            iconHeightPxls = iconSizeSmallPxls
-            iconWidthPxls = iconSizeSmallPxls
-
-            If dockPosition = vbBottom Then
-                
-                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
-                    iconCurrentBottomPxls = ((dockDrawingPositionPxls + iconSizeLargePxls)) + xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-                ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
-                    iconCurrentBottomPxls = ((dockDrawingPositionPxls + iconSizeLargePxls)) - xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-                Else
-                    ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-                    iconCurrentTopPxls = dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
-                    iconCurrentBottomPxls = dockDrawingPositionPxls + iconSizeLargePxls ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-                End If
-            End If
-            
-            If dockPosition = vbtop Then
-                
-                ' NOTE: everything is inverted...
-                
-                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) - xAxisModifier '.nn added the slidein/out
-                    iconCurrentBottomPxls = ((dockDrawingPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-                ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) + xAxisModifier
-                    iconCurrentBottomPxls = ((dockDrawingPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-                Else
-                    iconCurrentTopPxls = dockDrawingPositionPxls '.48 DAEB 01/04/2021 frmMain.frm  removed the vertical adjustment already applied to iconCurrentTopPxls
-                End If
-            End If
-
-            'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - iconSizeSmallPxls
-            showsmall = True
-            expandedDockWidth = expandedDockWidth + iconWidthPxls
-        End If
-
-   On Error GoTo 0
-   Exit Sub
-
-sizeDockPositionZero_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeDockPositionZero of Form dock"
-End Sub
+'   On Error GoTo sizeDockPositionZero_Error
+'
+'        If thisPosition = 1 Then 'small icons to the left shown in small mode
+'            iconHeightPxls = iconSizeSmallPxls
+'            iconWidthPxls = iconSizeSmallPxls
+'
+'            If dockPosition = vbBottom Then
+'
+'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
+'                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
+'                    iconCurrentBottomPxls = ((dockDrawingPositionPxls + iconSizeLargePxls)) + xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'                ElseIf autoSlideMode = "slidein" Then
+'                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
+'                    iconCurrentBottomPxls = ((dockDrawingPositionPxls + iconSizeLargePxls)) - xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'                Else
+'                    ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
+'                    iconCurrentTopPxls = dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
+'                    iconCurrentBottomPxls = dockDrawingPositionPxls + iconSizeLargePxls ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'                End If
+'            End If
+'
+'            If dockPosition = vbtop Then
+'
+'                ' NOTE: everything is inverted...
+'
+'                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
+'                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) - xAxisModifier '.nn added the slidein/out
+'                    iconCurrentBottomPxls = ((dockDrawingPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'                ElseIf autoSlideMode = "slidein" Then
+'                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) + xAxisModifier
+'                    iconCurrentBottomPxls = ((dockDrawingPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'                Else
+'                    iconCurrentTopPxls = dockDrawingPositionPxls '.48 DAEB 01/04/2021 frmMain.frm  removed the vertical adjustment already applied to iconCurrentTopPxls
+'                End If
+'            End If
+'
+'            'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - iconSizeSmallPxls
+'            showsmall = True
+'            expandedDockWidth = expandedDockWidth + iconWidthPxls
+'        End If
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'sizeDockPositionZero_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeDockPositionZero of Form dock"
+'End Sub
 
 
 '---------------------------------------------------------------------------------------
@@ -3059,10 +3058,10 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub sizeEachSmallIconToLeft(ByVal useloop As Integer, ByVal leftmostResizedIcon As Integer, ByRef showsmall As Boolean)
+Private Sub sizeEachSmallIconToLeft(ByVal useloop As Integer, ByVal leftmostAnimatedIcon As Integer, ByRef showsmall As Boolean)
    On Error GoTo sizeEachSmallIconToLeft_Error
 
-        If useloop < leftmostResizedIcon Then  'small icons to the left shown in small mode
+        If useloop < leftmostAnimatedIcon Then  'small icons to the left shown in small mode
             iconHeightPxls = iconSizeSmallPxls
             iconWidthPxls = iconSizeSmallPxls
             
@@ -4122,11 +4121,11 @@ End Sub
 Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As String, ByVal sArguments As String, ByVal sWorkingDirectory As String, ByVal windowState As Integer, Optional ByRef targetType As String = "none")
 
     Dim ans As VbMsgBoxResult: ans = vbNo
+    Dim uShell As SHELLEXECUTEINFO
     
     On Error GoTo shellExecuteWithDialog_Error
    
-   
-   If windowState = 0 Then windowState = 1 ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
+    If windowState = 0 Then windowState = 1 ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
    
     '.nn Added new check box to allow autohide of the dock prior to launch of the chosen app
     If sAutoHideDock = "1" Then
@@ -4141,10 +4140,32 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
     Else
        autoHideProcessName = vbNullString
     End If
+    
+    ' using shellExecuteEx as a trial, shellExecuteEx can return the handle of the newly created process.
+    ' SEE_MASK_FLAG_NO_UI Do not display an error dialog if an error occurs.
+    ' SEE_MASK_NOCLOSEPROCESS returns a handle to the process that was started
+    ' This handle is typically used to allow an application to find out when a process created with ShellExecuteEx terminates, could be useful to determine exiting processes
+    
+'    ' run the selected program,
+'    With uShell
+'        .cbSize = Len(uShell)
+'        .fMask = SEE_MASK_FLAG_NO_UI
+'        .hWnd = hWnd
+'        .lpVerb = userLevel
+'        .lpFile = sCommand
+'        .lpParameters = sArguments
+'        .nShow = windowState
+'    End With
+'
+'    If ShellExecuteEx(uShell) = 0 Then
+'        MsgBox "An unexpected error occured."
+'    End If
+'
+'    CloseHandle (uShell.hProcess)
    
     ' run the selected program
     Call ShellExecute(hWnd, userLevel, sCommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
-            
+        
     userLevel = "open" ' return to default
     
     If selectedIconIndex <> 999 Then
@@ -4722,9 +4743,11 @@ Private Sub setInitialStartPoint()
          ' .nn ENDS
     End If
     
-
+    ' calculate the whole dock width
     normalDockWidthPxls = (rdIconUpperBound * iconSizeSmallPxls)
+    ' calculate the mid point
     hOffsetPxls = ((screenWidthPixels - normalDockWidthPxls) / 2)
+    ' calculate the left position from the mid point including user-specified offset
     proportionalOffset = hOffsetPxls + (hOffsetPxls * (Val(rDOffset) / 100))
     iconLeftmostPointPxls = proportionalOffset
 
@@ -5086,7 +5109,7 @@ Public Sub drawSmallStaticIcons()
         If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth, True)
                 
         ' this loop redraws all the icons at the same small size after the mouse has left the icon area
-        For useloop = 0 To iconArrayUpperBound
+        For useloop = iconArrayLowerBound To iconArrayUpperBound
                       
             ' call this to set the size of all icons in small mode, do it just once, all the subsequent icons will take that same size without recalculation.
             If useloop = iconArrayLowerBound Then Call sizeEachSmallIconToLeft(useloop, rdIconUpperBound, True)
@@ -5099,10 +5122,9 @@ Public Sub drawSmallStaticIcons()
                     
             iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
             
-            If useloop = 81 Then
-                useloop = 81
-            
-            End If
+'            If useloop = 81 Then ' debug
+'                useloop = 81
+'            End If
             
         Next useloop
                                             
@@ -5111,7 +5133,7 @@ Public Sub drawSmallStaticIcons()
     '            iconStoreRightPixels(UBound(iconStoreRightPixels)) = iconStoreLeftPixels(UBound(iconStoreLeftPixels)) + iconWidthPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
     '            iconStoreTopPixels(UBound(iconStoreRightPixels)) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
                     
-        Call storeCurrentIconPositions(UBound(iconStoreLeftPixels))
+        'Call storeCurrentIconPositions(UBound(iconStoreLeftPixels))
         
         Call updateScreenUsingGDIBitmap
             

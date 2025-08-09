@@ -1221,7 +1221,6 @@ Public Sub readDockConfiguration()
 '    If rDGeneralReadConfig = "True" Then
 
         iconArrayLowerBound = 1
-        rdIconLowerBound = 2 'largely unused within the dock
         
         ' read the rocketdock settings.ini and find the very last icon
         ' the final user icon count
