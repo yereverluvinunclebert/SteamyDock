@@ -202,6 +202,83 @@ setFirstLastIcons_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setFirstLastIcons of Module common3"
 
 End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : writeIconSettingsIni
+' Author    : beededea
+' Date      : 21/09/2019
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByVal writeArray As Boolean)
+'
+   On Error GoTo writeIconSettingsIni_Error
+   'If debugFlg = 1 Then debugLog "%writeIconSettingsIni"
+
+'   If writeArray = False Then
+   
+        Call putIconSettings(iconNumberToWrite)
+        
+'        PutINISetting location, iconNumberToWrite & "-FileName", sFilename, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-FileName2", sFileName2, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-Title", sTitle, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-Command", sCommand, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-Arguments", sArguments, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-WorkingDirectory", sWorkingDirectory, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-ShowCmd", sShowCmd, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-OpenRunning", sOpenRunning, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-RunElevated", sRunElevated, settingsFile
+'
+'        PutINISetting location, iconNumberToWrite & "-IsSeparator", sIsSeparator, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-UseContext", sUseContext, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-DockletFile", sDockletFile, settingsFile
+'
+'        'If defaultDock = 1 Then
+'        PutINISetting location, iconNumberToWrite & "-UseDialog", sUseDialog, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-UseDialogAfter", sUseDialogAfter, settingsFile ' .03 DAEB 31/01/2021 common.bas Added new checkbox to determine if a post initiation dialog should appear
+'        PutINISetting location, iconNumberToWrite & "-QuickLaunch", sQuickLaunch, settingsFile ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
+'        PutINISetting location, iconNumberToWrite & "-AutoHideDock", sAutoHideDock, settingsFile  ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
+'        PutINISetting location, iconNumberToWrite & "-SecondApp", sSecondApp, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+'
+'        PutINISetting location, iconNumberToWrite & "-RunSecondAppBeforehand", sRunSecondAppBeforehand, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-AppToTerminate", sAppToTerminate, settingsFile
+'        PutINISetting location, iconNumberToWrite & "-Disabled", sDisabled, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+        
+'    Else
+'        sFileNameArray(iconNumberToWrite) = sFilename
+'        sFileName2Array(iconNumberToWrite) = sFileName2
+'        sTitleArray(iconNumberToWrite) = sTitle
+'        sCommandArray(iconNumberToWrite) = sCommand
+'        sArgumentsArray(iconNumberToWrite) = sArguments
+'        sWorkingDirectoryArray(iconNumberToWrite) = sWorkingDirectory
+'        sShowCmdArray(iconNumberToWrite) = sShowCmd
+'        sOpenRunningArray(iconNumberToWrite) = sOpenRunning
+'        sIsSeparatorArray(iconNumberToWrite) = sIsSeparator
+'        sUseContextArray(iconNumberToWrite) = sUseContext
+'        sDockletFileArray(iconNumberToWrite) = sDockletFile
+'        sUseDialogArray(iconNumberToWrite) = sUseDialog
+'        sUseDialogAfterArray(iconNumberToWrite) = sUseDialogAfter
+'        sQuickLaunchArray(iconNumberToWrite) = sQuickLaunch
+'        sAutoHideDockArray(iconNumberToWrite) = sAutoHideDock
+'        sSecondAppArray(iconNumberToWrite) = sSecondApp
+'        sRunElevatedArray(iconNumberToWrite) = sRunElevated
+'        sRunSecondAppBeforehandArray(iconNumberToWrite) = sRunSecondAppBeforehand
+'        sAppToTerminateArray(iconNumberToWrite) = sAppToTerminate
+'        sDisabledArray(iconNumberToWrite) = sDisabled
+'    End If
+    
+
+        
+    On Error GoTo 0
+   Exit Sub
+
+writeIconSettingsIni_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconSettingsIni of Module Common"
+    
+End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : readIconSettingsIni
 ' Author    : beededea

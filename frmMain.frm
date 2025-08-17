@@ -1540,7 +1540,11 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub setUserHotKey()
-   On Error GoTo setUserHotKey_Error
+   
+    Dim theKey As Long: theKey = 0
+    Dim primaryKey As Long: primaryKey = 0
+    
+    On Error GoTo setUserHotKey_Error
    
     If debugflg = 1 Then debugLog "% sub setUserHotKey"
 
@@ -1548,19 +1552,29 @@ Private Sub setUserHotKey()
     ' if the program is run in the IDE (Debug mode) with the system wide key hook operative, the IDE will crash shortly afterward
     If Not InIDE Then
         ' .23 DAEB frmMain.frm 08/02/2021 Changed from an array to a single var
-        If rDHotKeyToggle = "F1" Then lHotKey = SetHotKey(0, vbKeyF1)
-        If rDHotKeyToggle = "F2" Then lHotKey = SetHotKey(0, vbKeyF2)
-        If rDHotKeyToggle = "F3" Then lHotKey = SetHotKey(0, vbKeyF3)
-        If rDHotKeyToggle = "F4" Then lHotKey = SetHotKey(0, vbKeyF4)
-        If rDHotKeyToggle = "F5" Then lHotKey = SetHotKey(0, vbKeyF5)
-        If rDHotKeyToggle = "F6" Then lHotKey = SetHotKey(0, vbKeyF6)
-        If rDHotKeyToggle = "F7" Then lHotKey = SetHotKey(0, vbKeyF7)
-        If rDHotKeyToggle = "F8" Then lHotKey = SetHotKey(0, vbKeyF8)
-        If rDHotKeyToggle = "F9" Then lHotKey = SetHotKey(0, vbKeyF9)
-        If rDHotKeyToggle = "F10" Then lHotKey = SetHotKey(0, vbKeyF10)
-        If rDHotKeyToggle = "F11" Then lHotKey = SetHotKey(0, vbKeyF11)
-        If rDHotKeyToggle = "F12" Then lHotKey = SetHotKey(0, vbKeyF12)
+        
+        If InStr(rDHotKeyToggle, "F1") Then theKey = vbKeyF1
+        If InStr(rDHotKeyToggle, "F2") Then theKey = vbKeyF2
+        If InStr(rDHotKeyToggle, "F3") Then theKey = vbKeyF3
+        If InStr(rDHotKeyToggle, "F4") Then theKey = vbKeyF4
+        If InStr(rDHotKeyToggle, "F5") Then theKey = vbKeyF5
+        If InStr(rDHotKeyToggle, "F6") Then theKey = vbKeyF6
+        If InStr(rDHotKeyToggle, "F7") Then theKey = vbKeyF7
+        If InStr(rDHotKeyToggle, "F8") Then theKey = vbKeyF8
+        If InStr(rDHotKeyToggle, "F9") Then theKey = vbKeyF9
+        If InStr(rDHotKeyToggle, "F10") Then theKey = vbKeyF10
+        If InStr(rDHotKeyToggle, "F11") Then theKey = vbKeyF11
+        If InStr(rDHotKeyToggle, "F12") Then theKey = vbKeyF12
+        
+        If InStr(rDHotKeyToggle, "Ctrl+") Then primaryKey = MOD_CONTROL
+        If InStr(rDHotKeyToggle, "Alt+") Then primaryKey = MOD_ALT
+        If InStr(rDHotKeyToggle, "Shift+") Then primaryKey = MOD_SHIFT
+                
+        If InStr(rDHotKeyToggle, "Unused") Then primaryKey = 0
         If rDHotKeyToggle = "Disabled" Then lHotKey = 0
+        
+        lHotKey = SetHotKey(primaryKey, theKey)
+        
     End If
    On Error GoTo 0
    Exit Sub
