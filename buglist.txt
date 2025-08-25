@@ -35,6 +35,8 @@ checkRunningProcesses added a found process to the initiatedProcessArray for mor
 checkExplorerProcessesRunning - if matching explorer process has been found it is then dropped into the initiatedExplorerArray
 tests for new gbl vars that indicate whether the main process/explorer timers are running
 
+Added support for CTRL, ALT and SHIFT for the hiding keypress 
+
 -oOo-
 
 Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
@@ -43,11 +45,14 @@ Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop c
 ' Current Task:
 ' =============
 
+' cloning a folder, the folder is partly disabled, tjhe same way it was before with another icon, check github
+
 ' 255 chars in path - modify the help
 
 fix end rdIconMAximum when adding/deleting WIP
 
-add a precursor blank icon and a final icon
+add a precursor blank icon and a final icon WIP
+
 
 
 Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity - wip
@@ -59,6 +64,8 @@ when the dock is over a certain size the background does not appear
 when a dock is wider than 2000 pixels - stitch two docks together
 
 multi-monitor support
+
+We could add a new test so that the dock reports any 'hung window', run on an infrequent timer.
 
 Private Declare Function IsHungAppWindow Lib "user32" (ByVal hWnd As Long) As Long
 
@@ -77,13 +84,17 @@ Public Function IsWindowHung(hWndOfInterest As Long) As Boolean
     IsWindowHung = IsHungAppWindow(hWndOfInterest) <> 0&
 End Function
 
+Separate the task to kill a process to an external process so that the current process, ie. the dock is not held up if the terminated process will not die.
+We already have code in restart.exe that will do exactly this.
 
 
 try adding 1-5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
 convert old settings.ini to JSON format using https://www.ediy.co.nz/vbjson-json-parser-library-in-vb6-xidc55680.html
 
-separate the task to kill a process to an external process so that the current process, ie. the dock is not held up
+
+
+
 
 ' Extracting embedded icons from DLLs and EXEs
 ' ==============================================
