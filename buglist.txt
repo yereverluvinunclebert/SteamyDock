@@ -43,6 +43,8 @@ Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop c
 ' Current Task:
 ' =============
 
+' the icon text titles do not move up as the dock is moved up from the bottom edge
+
 ' 255 chars in path - modify the help
 
 fix end rdIconMAximum when adding/deleting WIP

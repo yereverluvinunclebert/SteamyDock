@@ -2467,7 +2467,7 @@ Public Function addTargetProgram(ByVal targetText As String) As String
         End If
     End If
     
-    If Not sDockletFile = vbNullString Then
+    If Not sDockletFile = "0" Then
         If fFExists(sDockletFile) Then
             ' extract the folder name from the string
             dllPath = getFolderNameFromPath(sDockletFile)
