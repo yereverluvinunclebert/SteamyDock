@@ -1,39 +1,4 @@
- DPIawareness
- The recent change to make public vars to private, regarding isRunning changed how a click on a running program responds, it no longer brings the running window to the front - done
-
-fixed functions with no return type specified
-fixed vars with no type specified
-
-moving the windows taskbar, take the code from dock settings and migrate it to the dock.
-set a semaphore to indicate that the registry is already open when writing.
-
-add a timestamp to prevent registry changes during dock position change
-
-FindWindow("Shell_TrayWnd", vbNullString) & GetWindowThreadProcessId identify explorer main process
-add code to kill the main explorer.exe using the handle
-if explorer still not found after 1.5 seconds then restart explorer
-
-add code to flush the registry in-memory hive, add a synchronous wait until complete, replacing the later sleep 3000
-add a prod to the explorer process to read changed settings
-
-separate code to restart main explorer window handle passed according to which form calls the restart.
-
-add a function to return an explorer threadID
-click on an explorer icon should both minimise and unminimise the associated explorer window
-clicking on an explorer window should immediately trigger an entry into the explorerProceses array so cog appears
-fFExists now does second check whether file is also a folder, preventing ambiguous file existence bug
-
-Menus corrected to ensure only non admin menu items display on explorer-type dock entries
-New isExplorerItem function to determine if an item is to be opened with explorer
-
-explorer processes, cog not disappearing when explorer apps killed manually (not from the dock) - identify when this occurs
-convert use of settings.ini for the ison data to a random access data file
-cacheing of icon data within arrays and create timer process to save the data behind the scenes
-getFolderNameFromPath uses convert-from-device-harddiskvolume1
-checkRunningProcesses added a found process to the initiatedProcessArray for more regular checking
-
-checkExplorerProcessesRunning - if matching explorer process has been found it is then dropped into the initiatedExplorerArray
-tests for new gbl vars that indicate whether the main process/explorer timers are running
+  See Changes at END
 
 -oOo-
 
@@ -80,12 +45,18 @@ Public Function IsWindowHung(hWndOfInterest As Long) As Boolean
 End Function
 
 
+VG's multi-threading within the same process
+
+Olaf's multi-process threading
 
 try adding 1-5 pixels to the icons to the right/left to see if it stops oscillation/instability
 
 convert old settings.ini to JSON format using https://www.ediy.co.nz/vbjson-json-parser-library-in-vb6-xidc55680.html
 
 separate the task to kill a process to an external process so that the current process, ie. the dock is not held up
+
+' VB6 MultiProcessing (StdExe-IPC via SharedMemory)
+' https://www.vbforums.com/showthread.php?863075-VB6-MultiProcessing-(StdExe-IPC-via-SharedMemory)
 
 ' Extracting embedded icons from DLLs and EXEs
 ' ==============================================
@@ -492,7 +463,7 @@ handed over to D3D or OpenGL but recent news states this has project has been ab
 ' mdlSdMain - tidy declarations and initialisation, provide error trapping
     
     
-    
+
     
     
     
@@ -885,3 +856,44 @@ handed over to D3D or OpenGL but recent news states this has project has been ab
 ' SERIOUS: occasionally, when starting iconSettings, explorer dies taking all programs with it, incl systray apps. This occurred since we added the explorer cog testing code from Faf.
 '   check it is not something to do with iconSettings needing admin rights - it shouldn't but it might.
 ' deletion confirmation during move operation remove - done
+
+
+' Changes 2024+
+' ============
+
+ DPIawareness
+ The recent change to make public vars to private, regarding isRunning changed how a click on a running program responds, it no longer brings the running window to the front - done
+
+fixed functions with no return type specified
+fixed vars with no type specified
+
+moving the windows taskbar, take the code from dock settings and migrate it to the dock.
+set a semaphore to indicate that the registry is already open when writing.
+
+add a timestamp to prevent registry changes during dock position change
+
+FindWindow("Shell_TrayWnd", vbNullString) & GetWindowThreadProcessId identify explorer main process
+add code to kill the main explorer.exe using the handle
+if explorer still not found after 1.5 seconds then restart explorer
+
+add code to flush the registry in-memory hive, add a synchronous wait until complete, replacing the later sleep 3000
+add a prod to the explorer process to read changed settings
+
+separate code to restart main explorer window handle passed according to which form calls the restart.
+
+add a function to return an explorer threadID
+click on an explorer icon should both minimise and unminimise the associated explorer window
+clicking on an explorer window should immediately trigger an entry into the explorerProceses array so cog appears
+fFExists now does second check whether file is also a folder, preventing ambiguous file existence bug
+
+Menus corrected to ensure only non admin menu items display on explorer-type dock entries
+New isExplorerItem function to determine if an item is to be opened with explorer
+
+explorer processes, cog not disappearing when explorer apps killed manually (not from the dock) - identify when this occurs
+convert use of settings.ini for the ison data to a random access data file
+cacheing of icon data within arrays and create timer process to save the data behind the scenes
+getFolderNameFromPath uses convert-from-device-harddiskvolume1
+checkRunningProcesses added a found process to the initiatedProcessArray for more regular checking
+
+checkExplorerProcessesRunning - if matching explorer process has been found it is then dropped into the initiatedExplorerArray
+tests for new gbl vars that indicate whether the main process/explorer timers are running

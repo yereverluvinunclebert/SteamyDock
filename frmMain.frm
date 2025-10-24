@@ -4187,13 +4187,27 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
     
     If selectedIconIndex <> 999 Then
         If targetType = "none" Then
+            initiatedProcessTimer.Enabled = False
+            processTimer.Enabled = False
+            
             processCheckArray(selectedIconIndex) = True
             initiatedProcessArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
             Call checkDockProcessesRunning ' trigger a test of all running processes
+            
+            initiatedProcessTimer.Enabled = True
+            processTimer.Enabled = True
         Else
+            ' turn off the two timers that auto populate the arrays that show whether the explorer instances are running
+            initiatedExplorerTimer.Enabled = False
+            explorerTimer.Enabled = False
+            
             initiatedExplorerArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
             explorerCheckArray(selectedIconIndex) = True
             Call checkExplorerRunning
+            
+            ' turn the two timers that auto populate the arrays back on again
+            initiatedExplorerTimer.Enabled = True
+            explorerTimer.Enabled = True
         End If
     End If
     
@@ -4242,14 +4256,27 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
     
     userLevel = "open" ' return to default
     
-    ' add the process to a list of processes initiated by the dock
     If targetType = "none" Then
+        initiatedProcessTimer.Enabled = False
+        processTimer.Enabled = False
+        
         initiatedProcessArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
         Call checkDockProcessesRunning ' trigger a test of all running processes
+        
+        initiatedProcessTimer.Enabled = True
+        processTimer.Enabled = True
     Else
+        ' turn off the two timers that auto populate the arrays that show whether the explorer instances are running
+        initiatedExplorerTimer.Enabled = False
+        explorerTimer.Enabled = False
+        
         initiatedExplorerArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
         explorerCheckArray(selectedIconIndex) = True
         Call checkExplorerRunning
+        
+        ' turn the two timers that auto populate the arrays back on again
+        initiatedExplorerTimer.Enabled = True
+        explorerTimer.Enabled = True
     End If
 
     ' call up a dialog box if required
