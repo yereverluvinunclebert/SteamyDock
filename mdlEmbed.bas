@@ -27,18 +27,18 @@ Private Declare Function Ole_CreatePic Lib "olepro32" _
 Private Declare Sub ZeroMemory Lib "kernel32.dll" Alias "RtlZeroMemory" (ByRef Destination As Any, ByVal Length As Long)
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 
-Private Declare Function CreateDIBSection2 Lib "gdi32.dll" Alias "CreateDIBSection" (ByVal hdc As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal handle As Long, ByVal dw As Long) As Long
-Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hdc As Long, ByRef pBitmapInfo As BITMAPINFOHEADER, ByVal un As Long, ByRef lplpVoid As Long, ByVal handle As Long, ByVal dw As Long) As Long
+Private Declare Function CreateDIBSection2 Lib "gdi32.dll" Alias "CreateDIBSection" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Long, ByVal handle As Long, ByVal dw As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, ByRef pBitmapInfo As BITMAPINFOHEADER, ByVal un As Long, ByRef lplpVoid As Long, ByVal handle As Long, ByVal dw As Long) As Long
 
 Private Declare Function DeleteObject Lib "gdi32.dll" (ByVal hObject As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hdc As Long) As Long
-Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hdc As Long, ByVal hObject As Long) As Long
+Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
+Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Private Const DIB_RGB_COLORS As Long = 0
 Private Const BI_RGB         As Long = 0&
 
-Private Declare Function GetPixel Lib "gdi32.dll" (ByVal hdc As Long, ByVal x As Long, ByVal y As Long) As Long
-Private Declare Function CreateCompatibleBitmap Lib "gdi32.dll" (ByVal hdc As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
+Private Declare Function GetPixel Lib "gdi32.dll" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
+'Private Declare Function CreateCompatibleBitmap Lib "gdi32.dll" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
 
 Private Type BITMAPINFOHEADER
     biSize As Long
@@ -258,7 +258,7 @@ Private m_szIconDetailsArr() As String
 Private m_szIconFile         As String
 Private m_hTokenGDIP         As Long
 
-Public Function getIconAsGDIPImage(ByVal nIndex As Integer, ByVal key As String, ByVal Filename As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer) As Long
+Public Function getIconAsGDIPImage(ByVal nIndex As Integer, ByVal key As String, ByVal FileName As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer) As Long
     
     On Error GoTo EH
     Dim udtBIH As BITMAPINFOHEADER, lpDIBBits As Long, lWid As Long, lHei As Long, hDIB As Long, hDCMem As Long, bDIBBitsArr() As Byte
@@ -289,7 +289,7 @@ Public Function getIconAsGDIPImage(ByVal nIndex As Integer, ByVal key As String,
     
     On Error Resume Next
 
-    sExeName = Filename
+    sExeName = FileName
     lIconIndex = 0
     
     ' Init ret value
@@ -454,8 +454,7 @@ Public Function getIconAsGDIPImage(ByVal nIndex As Integer, ByVal key As String,
     
     ' get rid of the icons we created
     Call DestroyIcon(hIcon(i + lIconIndex - 1))
-    'Call DestroyIcon(hIcon(LBound(hIcon))
-        
+    ' Call DestroyIcon(hIcon(LBound(hIcon))
     
     ' Cleanup...
     'Call DestroyIcon(hIcon)

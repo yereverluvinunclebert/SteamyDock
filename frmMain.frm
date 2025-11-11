@@ -1199,6 +1199,9 @@ Private Sub Form_Load()
     ' resolve VB6 sizing width bug
     Call resolveVB6SizeBug ' requires MonitorProperties to be in place above to assign a value to screenTwipsPerPixelY
     
+    'set the main form upon which the dock resides to the size of the whole monitor, has to be done in twips
+    Call setMainFormDimensions
+    
     ' configuration private numeric vars that are easier to manipulate throughout the program than the string equivalents
     Call setLocalConfigurationVars
     
@@ -1212,7 +1215,7 @@ Private Sub Form_Load()
     Call readToolSettings ' program specific settings do not apply to the dock, left here just in case we need it
     
     ' Initialises GDI Plus
-    Call initialiseGDIStartup
+    Call initialiseGDIPStartup
     
     ' Create the VB collection object where the image bitmaps will be stored
     Call createDictionaryObjects
@@ -1221,7 +1224,7 @@ Private Sub Form_Load()
     Call prepareArraysAndCollections
     
     ' sets bmpInfo object to create a bitmap of the whole screen size and get a handle to the Device Context
-    Call createGDIPlusElements
+    Call createGDIStructures
            
     ' briefly display the product splash screen if set to do so
     Call showSplashScreen ' has to be at the end of the start up as we need to read the config file but also so as to not cause a clear outline to appear where the splash screen should be
@@ -1269,6 +1272,9 @@ Form_Load_Error:
     End With
     
 End Sub
+
+
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : Form_MouseDown
@@ -2347,6 +2353,7 @@ Private Sub initiatedProcessTimer_Timer()
     initiatedProcessTimer.Enabled = False
 
     For useloop = 1 To rdIconUpperBound
+
         If Not initiatedProcessArray(useloop) = vbNullString Then
             itIsRunning = IsRunning(initiatedProcessArray(useloop))
             If itIsRunning = False Then
@@ -2374,6 +2381,8 @@ initiatedProcessTimer_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure initiatedProcessTimer of Form dock"
 
 End Sub
+
+
 
 
 
@@ -2794,15 +2803,15 @@ animateTimer_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : updateScreenUsingGDIBitmap
+' Procedure : updateScreenUsingGDIPBitmap
 ' Author    : beededea
 ' Date      : 08/07/2024
 ' Purpose   : now update the image using GDIP to draw all the placed GDiP elements
 '---------------------------------------------------------------------------------------
 '
-Private Sub updateScreenUsingGDIBitmap()
+Private Sub updateScreenUsingGDIPBitmap()
 
-   On Error GoTo updateScreenUsingGDIBitmap_Error
+   On Error GoTo updateScreenUsingGDIPBitmap_Error
 
     Call GdipDeleteGraphics(iconBitmap)  'The GDIP graphics are deleted first
     Call GdipDeleteGraphics(gdipFullScreenBitmap)  'The GDIP graphics are deleted first
@@ -2812,13 +2821,16 @@ Private Sub updateScreenUsingGDIBitmap()
     
     'Update the specified whole window using the window handle (me.hwnd) selecting a handle to the bitmap (dc) and passing all the required characteristics
     UpdateLayeredWindow Me.hWnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
+    
+    ' delete temporary objects
+    Call SelectObject(dcMemory, hOldBmp)
 
    On Error GoTo 0
    Exit Sub
 
-updateScreenUsingGDIBitmap_Error:
+updateScreenUsingGDIPBitmap_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure updateScreenUsingGDIBitmap of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure updateScreenUsingGDIPBitmap of Form dock"
 
 End Sub
 
@@ -2870,7 +2882,6 @@ Private Sub sequentialBubbleAnimation()
 
     On Error GoTo sequentialBubbleAnimation_Error
     
-    DeleteObject bmpMemory ' the bitmap deleted
     Call createNewGDIPBitmap ' clears the whole previously drawn image section and the animation continues
 
     ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecessary twip conversion
@@ -2936,7 +2947,7 @@ Private Sub sequentialBubbleAnimation()
         updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
     End If
     
-    Call updateScreenUsingGDIBitmap
+    Call updateScreenUsingGDIPBitmap
     
 '    If debugflg = 1 Then
 
@@ -3567,7 +3578,6 @@ Private Sub drawDockByCursorEntryPosition()
     ' has not yet been calculated. However the code to theme the dock needs to be placed here as it is drawn first before the dock icons are drawn.
     ' this will be replaced by an animation timer that redraws the dock from the old to the current size.
     
-    DeleteObject bmpMemory ' the bitmap deleted
     Call createNewGDIPBitmap ' clears the whole previously drawn image section and the animation continues
     
     ' iconRightmostPointPxls =
@@ -3594,7 +3604,7 @@ Private Sub drawDockByCursorEntryPosition()
     Call sizeAndShowSmallIconsToRightByCEP(iconIndex, rightmostResizedIcon, rightIconWidthPxls, showsmall)
    
     ' now update the image using GDI to draw all the placed GDiP elements
-    Call updateScreenUsingGDIBitmap
+    Call updateScreenUsingGDIPBitmap
    
    On Error GoTo 0
    Exit Sub
@@ -4819,6 +4829,11 @@ End Sub
 Public Sub shutdwnGDI()
    On Error GoTo shutdwnGDI_Error
 
+    Call SelectObject(dcMemory, hOldBmp) ' releases memory for GDI handles
+    Call DeleteObject(hBmpMemory)  ' the existing bitmap deleted
+    Call ReleaseDC(dock.hWnd, dcMemory)
+    Call DeleteDC(dcMemory)
+    
     If gdipFullScreenBitmap Then
         Call GdipReleaseDC(gdipFullScreenBitmap, dcMemory)
         Call GdipDeleteGraphics(gdipFullScreenBitmap)
@@ -5147,7 +5162,6 @@ Public Sub drawSmallStaticIcons()
                     
         'Call drawSmallIconDockWithFadeEffects
                                             
-        DeleteObject bmpMemory ' the bitmap deleted
         Call createNewGDIPBitmap ' clears the whole previously drawn image section and the animation continues
     
         If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth, True)
@@ -5179,7 +5193,7 @@ Public Sub drawSmallStaticIcons()
                     
         'Call storeCurrentIconPositions(UBound(iconStoreLeftPixels))
         
-        Call updateScreenUsingGDIBitmap
+        Call updateScreenUsingGDIPBitmap
             
         smallDockBeenDrawn = True
         bDrawn = True
@@ -5217,7 +5231,6 @@ End Sub
 '    On Error GoTo drawSmallIconDockWithFadeEffects_Error
 '   'If debugflg = 1 Then debugLog "%drawSmallIconDockWithFadeEffects"
 '
-'            DeleteObject bmpMemory ' Now the bitmap may be deleted
 '            Call createNewGDIPBitmap
 '
 '            If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth)
@@ -5845,30 +5858,20 @@ Private Sub resolveVB6SizeBug()
    On Error GoTo resolveVB6SizeBug_Error
    
     If debugflg = 1 Then debugLog "% sub resolveVB6SizeBug"
-
-
-'    screenWidthTwips = 0 ' private wide vars
-'    screenHeightTwips = 0
-'    screenWidthPixels = 0
-'    screenHeightPixels = 0
-    
+                 
 '    Me.Height = Screen.Height '16200 correct
 '    Me.Width = Screen.Width ' 16200 < VB6 bug here
 
-    screenHeightTwips = GetDeviceCaps(dock.hDC, VERTRES) * screenTwipsPerPixelY
-    screenWidthTwips = GetDeviceCaps(dock.hDC, HORZRES) * screenTwipsPerPixelX
+    ' pixels for Cairo and GDI
+    screenHeightPixels = GetDeviceCaps(hdcScreen, VERTRES)
+    screenWidthPixels = GetDeviceCaps(hdcScreen, HORZRES)
     
-    screenHeightPixels = GetDeviceCaps(dock.hDC, VERTRES)
-    screenWidthPixels = GetDeviceCaps(dock.hDC, HORZRES)
+    'twips for VB6 forms and controls
+    screenHeightTwips = screenHeightPixels * screenTwipsPerPixelY
+    screenWidthTwips = screenWidthPixels * screenTwipsPerPixelX
     
     oldScreenHeightPixels = screenHeightPixels
     oldScreenWidthPixels = screenWidthPixels
-        
-    'set the main form upon which the dock resides to the size of the whole monitor, has to be done in twips
-    Me.Height = screenHeightTwips
-    Me.Width = screenWidthTwips
-
-    'Me.Left = 1000
     
    On Error GoTo 0
    Exit Sub
@@ -5879,6 +5882,28 @@ resolveVB6SizeBug_Error:
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : setMainFormDimensions
+' Author    : beededea
+' Date      : 31/10/2025
+' Purpose   : set the main form upon which the dock resides to the size of the whole monitor, has to be done in twips
+'---------------------------------------------------------------------------------------
+'
+Private Sub setMainFormDimensions()
+    '
+    On Error GoTo setMainFormDimensions_Error
+
+    Me.Height = screenHeightTwips
+    Me.Width = screenWidthTwips
+
+    On Error GoTo 0
+    Exit Sub
+
+setMainFormDimensions_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setMainFormDimensions of Form dock"
+
+End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : setLocalConfigurationVars
@@ -5909,17 +5934,17 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : initialiseGDIStartup
+' Procedure : initialiseGDIPStartup
 ' Author    : beededea
 ' Date      : 18/09/2020
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub initialiseGDIStartup()
+Private Sub initialiseGDIPStartup()
     ' Initialises GDI Plus
-   On Error GoTo initialiseGDIStartup_Error
+   On Error GoTo initialiseGDIPStartup_Error
    
-    If debugflg = 1 Then debugLog "% sub initialiseGDIStartup"
+    If debugflg = 1 Then debugLog "% sub initialiseGDIPStartup"
 
     gdipInit.GdiplusVersion = 1
     If GdiplusStartup(lngGDI, gdipInit, ByVal 0&) <> 0 Then
@@ -5930,11 +5955,11 @@ Private Sub initialiseGDIStartup()
    On Error GoTo 0
    Exit Sub
 
-initialiseGDIStartup_Error:
+initialiseGDIPStartup_Error:
 
-    If debugflg = 1 Then debugLog "Error " & Err.Number & " (" & Err.Description & ") in procedure initialiseGDIStartup of Form dock"
+    If debugflg = 1 Then debugLog "Error " & Err.Number & " (" & Err.Description & ") in procedure initialiseGDIPStartup of Form dock"
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure initialiseGDIStartup of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure initialiseGDIPStartup of Form dock"
 
 End Sub
 
@@ -5981,25 +6006,23 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : createGDIPlusElements
+' Procedure : createGDIStructures
 ' Author    : beededea
 ' Date      : 18/09/2020
 ' Purpose   : sets bmpInfo object to create a bitmap the whole screen size and get a handle to the Device Context
 '---------------------------------------------------------------------------------------
 '
-Private Sub createGDIPlusElements()
+Private Sub createGDIStructures()
     ' sets the bmpInfo object containing data to create a bitmap the whole screen size
     ' used later when creating DIB section of the correct size, width &c
-    On Error GoTo createGDIPlusElements_Error
+    On Error GoTo createGDIStructures_Error
    
-    If debugflg = 1 Then debugLog "% sub createGDIPlusElements"
+    If debugflg = 1 Then debugLog "% sub createGDIStructures"
 
     bmpInfo.bmpHeader.Size = Len(bmpInfo.bmpHeader)
     bmpInfo.bmpHeader.BitCount = 32
     bmpInfo.bmpHeader.Height = Me.ScaleHeight
-    
     bmpInfo.bmpHeader.Width = screenWidthPixels  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    
     bmpInfo.bmpHeader.Planes = 1
     bmpInfo.bmpHeader.SizeImage = bmpInfo.bmpHeader.Width * bmpInfo.bmpHeader.Height * (bmpInfo.bmpHeader.BitCount / 8)
     
@@ -6014,9 +6037,9 @@ Private Sub createGDIPlusElements()
    On Error GoTo 0
    Exit Sub
 
-createGDIPlusElements_Error:
+createGDIStructures_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure createGDIPlusElements of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure createGDIStructures of Form dock"
 
 End Sub
 
@@ -6527,7 +6550,7 @@ Public Sub HideDockNow()
     
     funcBlend32bpp.SourceConstantAlpha = 0
     
-    Call updateScreenUsingGDIBitmap
+    Call updateScreenUsingGDIPBitmap
     
     dockHidden = True
     
@@ -6565,7 +6588,7 @@ Public Sub ShowDockNow()
         
         funcBlend32bpp.SourceConstantAlpha = 255
         
-        Call updateScreenUsingGDIBitmap
+        Call updateScreenUsingGDIPBitmap
         
         responseTimer.Enabled = True
 

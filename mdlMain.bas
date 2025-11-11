@@ -71,6 +71,8 @@ Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, pB
 
 Public Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
 Public Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
+Public Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
+
 Public Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlob&, ByVal fDeleteOnRelease As Long, ppstm As stdole.IUnknown) As Long
 Public Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
 
@@ -240,6 +242,7 @@ Public Const DEFAULT_QUALITY = 0
 Public Const DEFAULT_PITCH = 0
 Public Const DEFAULT_CHARSET = 1
 Public Const OUT_DEFAULT_PRECIS = 0
+
 ' Windows+ constants END
 
 Public Const PixelFormat32bppPARGB = &HE200B
@@ -513,7 +516,8 @@ Public collLargeIcons As Object
 Public collSmallIcons As Object
 
 Public dcMemory As Long
-Public bmpMemory As Long
+Public hBmpMemory As Long
+Public hOldBmp As Long
 
 'vars for the animation
 Public iconSizeLargePxls As Byte
@@ -1563,8 +1567,17 @@ reassignArrayElements_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure reassignArrayElements of Module mdlSdMain"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : clearInitiatedExplorerArray
+' Author    : beededea
+' Date      : 10/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Sub clearInitiatedExplorerArray()
     Dim useloop As Long: useloop = 0
+
+    On Error GoTo clearInitiatedExplorerArray_Error
 
     For useloop = 1 To rdIconUpperBound
         If Not initiatedExplorerArray(useloop) = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
@@ -1573,11 +1586,27 @@ Public Sub clearInitiatedExplorerArray()
         End If
     Next useloop
 
+    On Error GoTo 0
+    Exit Sub
+
+clearInitiatedExplorerArray_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure clearInitiatedExplorerArray of Module mdlSdMain"
+
 End Sub
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : clearInitiatedProcessArray
+' Author    : beededea
+' Date      : 10/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Sub clearInitiatedProcessArray()
     Dim useloop As Long: useloop = 0
+
+    On Error GoTo clearInitiatedProcessArray_Error
 
     For useloop = 1 To rdIconUpperBound
         If Not initiatedProcessArray(useloop) = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
@@ -1585,6 +1614,13 @@ Public Sub clearInitiatedProcessArray()
                 initiatedProcessArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
         End If
     Next useloop
+
+    On Error GoTo 0
+    Exit Sub
+
+clearInitiatedProcessArray_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure clearInitiatedProcessArray of Module mdlSdMain"
 
 End Sub
 
@@ -2740,18 +2776,28 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Sub createNewGDIPBitmap()
-        
+            
     On Error GoTo createNewGDIPBitmap_Error
     
-    ' create a device independent bitmap and return a handle, bmpMemory, providing it a handle to device context allocated memory previously created with CreateCompatibleDC,
-    ' providing size information in bmpInfo and setting any attributes to the new bitmap
-    bmpMemory = CreateDIBSection(dcMemory, bmpInfo, DIB_RGB_COLORS, ByVal 0, 0, 0)
+    DeleteObject hBmpMemory ' the existing bitmap deleted
     
-    ' Make the device context use the bitmap.
-    Call SelectObject(dcMemory, bmpMemory)
+    ' create a device independent bitmap and return a handle, hBmpMemory, providing it a handle to device context allocated memory previously created with CreateCompatibleDC,
+    ' providing size information in bmpInfo and setting any attributes to the new bitmap
+    hBmpMemory = CreateDIBSection(dcMemory, bmpInfo, DIB_RGB_COLORS, ByVal 0, 0, 0)
+    
+    'might consider swapping DIB for DBB
+    ' create a compatible bitmap DDBand return a handle, hBmpMemory, providing it a handle to device context allocated memory previously created with CreateCompatibleDC,
+    ' providing size information in bmpInfo and setting any attributes to the new bitmap
+'    hBmp = CreateCompatibleBitmap(hDC, Width, Height)
+    
+    ' Make the device context dcMemory use the bitmap.  hOldBmp is a return value giving a handle which determines success and allows reverting later to release GDI handles
+    hOldBmp = SelectObject(dcMemory, hBmpMemory)
+    
+    ' Copy Cairo ARGB buffer into HBITMAP compatible DDB (usually has better GDI performance than a DIB)
+    'Call SetDIBits(memDC, hBmp, 0, Height, ByVal dataptr, bmi, 0) ' equivalent of GdipCreateFromHDC
     
     ' Creates a GDIP graphic object and provides a pointer 'gdipFullScreenBitmap' using a handle to the bitmap graphic section assigned to the device context
-    Call GdipCreateFromHDC(dcMemory, gdipFullScreenBitmap)
+    Call GdipCreateFromHDC(dcMemory, gdipFullScreenBitmap) ' dcMemory used to draw upon and place on screen using UpdateLayeredWindow later
 
    On Error GoTo 0
    Exit Sub
@@ -2821,10 +2867,10 @@ Public Sub setWindowCharacteristics()
     funcBlend32bpp.SourceConstantAlpha = 255 * Val(dockOpacity) / 100 ' this calc can be done elsewhere and we just use a passed var
     ' the above line is also replicated where the dock opacity requires dynamic modification, ie. during an autohide and reveal
 
-    GdipDeleteGraphics gdipFullScreenBitmap 'The graphics may now be deleted
+    'GdipDeleteGraphics gdipFullScreenBitmap 'The graphics may now be deleted
             
     'Update the specified window handle (hwnd) with a handle to our bitmap (dc) passing all the required characteristics
-    UpdateLayeredWindow dock.hWnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
+    'UpdateLayeredWindow dock.hWnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
     
     ' The UpdateLayeredWindow API call above does not need really to be run here as it is run repeatedly by the animate timer and the function to draw the icons small
     

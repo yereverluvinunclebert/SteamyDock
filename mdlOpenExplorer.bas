@@ -93,8 +93,7 @@ Public Function isExplorerRunning(ByRef NameProcess As String) As Boolean
     Call enumerateExplorerWindows(openExplorerPathArray(), windowCount)
     
     For useloop = 0 To windowCount - 1
-        If LCase$(NameProcess) = LCase$(openExplorerPathArray(useloop)) Then
-        
+        If NameProcess <> "" And LCase$(NameProcess) = LCase$(openExplorerPathArray(useloop)) Then
             isExplorerRunning = True
             Exit Function
         End If
@@ -223,7 +222,7 @@ Public Function findExplorerHwndByPath(sPath As String) As Long
     Dim pFolder As IShellItem
     Dim lpPath As LongPtr, sCurPath As String
     Dim nCount As Long
-    Dim I As Long
+    Dim i As Long
     Dim hr As Long
     Dim lThisHwnd As Long: lThisHwnd = 0
     Dim lProcessID As Long: lProcessID = 0
@@ -236,8 +235,8 @@ Public Function findExplorerHwndByPath(sPath As String) As Long
         Debug.Print "No open Explorer windows found."
         Exit Function
     End If
-    For I = 0 To nCount - 1
-        Set pDisp = pWindows.Item(I)
+    For i = 0 To nCount - 1
+        Set pDisp = pWindows.Item(i)
         If (pDisp Is Nothing) = False Then
             Set pSP = pDisp
             If (pSP Is Nothing) = False Then
@@ -316,7 +315,7 @@ Public Sub CloseExplorerWindowByPath(sPath As String)
     Dim pFolder As IShellItem
     Dim lpPath As LongPtr, sCurPath As String
     Dim nCount As Long
-    Dim I As Long
+    Dim i As Long
     Dim hr As Long
     
     nCount = pWindows.Count
@@ -324,8 +323,8 @@ Public Sub CloseExplorerWindowByPath(sPath As String)
         Debug.Print "No open Explorer windows found."
         Exit Sub
     End If
-    For I = 0 To nCount - 1
-        Set pDisp = pWindows.Item(I)
+    For i = 0 To nCount - 1
+        Set pDisp = pWindows.Item(i)
         If (pDisp Is Nothing) = False Then
             Set pSP = pDisp
             If (pSP Is Nothing) = False Then
