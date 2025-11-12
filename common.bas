@@ -417,7 +417,7 @@ Public Sub checkLicenceState()
     Dim slicence As String: slicence = "0"
 
     On Error GoTo checkLicenceState_Error
-    If debugflg = 1 Then debugLog "%" & " sub checkLicenceState"
+    If debugFlg = 1 Then debugLog "%" & " sub checkLicenceState"
 
     'toolSettingsFile = App.Path & "\settings.ini"
     ' read the tool's own settings file (
@@ -602,7 +602,7 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
     
     ' ******  The IDE runs in compatibility mode so it will report the wrong version and thence the incorrect working folder
     
-    If debugflg = 1 Then debugLog "%" & " sub classicThemeCapable"
+    If debugFlg = 1 Then debugLog "%" & " sub classicThemeCapable"
 
     'Get the value of "ProgramFiles", or "ProgramFilesDir"
     
@@ -1229,7 +1229,41 @@ ExtractSuffixWithDot_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ExtractSuffixWithDot of Module Common"
 End Function
 
+'---------------------------------------------------------------------------------------
+' Procedure : ExtractFilenameWithoutSuffix
+' Author    : beededea
+' Date      : 20/06/2019
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function ExtractFilenameWithoutSuffix(ByVal strPath As String) As String
 
+    ' variables declared
+    Dim AY() As String ' string array
+    Dim Min As Integer:    Min = 0
+    
+    On Error GoTo ExtractFilenameWithoutSuffix_Error
+   
+    If strPath = vbNullString Then
+        ExtractFilenameWithoutSuffix = vbNullString
+        Exit Function
+    End If
+        
+    If InStr(strPath, ".") <> 0 Then
+        AY = Split(strPath, ".")
+        Min = LBound(AY)
+        ExtractFilenameWithoutSuffix = AY(Min)
+    Else
+        ExtractFilenameWithoutSuffix = vbNullString
+    End If
+
+   On Error GoTo 0
+   Exit Function
+
+ExtractFilenameWithoutSuffix_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ExtractFilenameWithoutSuffix of Module Common"
+End Function
 
 
 '---------------------------------------------------------------------------------------
@@ -1431,7 +1465,7 @@ Public Sub checkRocketdockInstallation()
     
     ' check where rocketdock is installed
     On Error GoTo checkRocketdockInstallation_Error
-    If debugflg = 1 Then debugLog "% sub checkRocketdockInstallation"
+    If debugFlg = 1 Then debugLog "% sub checkRocketdockInstallation"
 
     RD86installed = driveCheck("Program Files (x86)\Rocketdock", "RocketDock.exe")
     RDinstalled = driveCheck("Program Files\Rocketdock", "RocketDock.exe")
@@ -1563,7 +1597,7 @@ Public Sub getAllDriveNames(sDriveStrings As String)
     
     On Error GoTo getAllDriveNames_Error
     
-    If debugflg = 1 Then debugLog "% sub sDriveStrings"
+    If debugFlg = 1 Then debugLog "% sub sDriveStrings"
 
     For Each vDrive In GetDrives(sDriveStrings) ' getdrives is a collection of drive name strings C:\, D:\ &c
         sDeviceName = GetNtDeviceNameForDrive(vDrive) ' \Device\HarddiskVolume1 are the default naming conventions for Windows drives
@@ -1810,7 +1844,7 @@ Public Sub checkSteamyDockInstallation()
     ' check where SteamyDock is installed
     On Error GoTo checkSteamyDockInstallation_Error
     
-    If debugflg = 1 Then debugLog "% sub checkSteamyDockInstallation"
+    If debugFlg = 1 Then debugLog "% sub checkSteamyDockInstallation"
 
     SD86installed = driveCheck("Program Files (x86)\SteamyDock", "steamyDock.exe")
     SDinstalled = driveCheck("Program Files\SteamyDock", "steamyDock.exe")
@@ -1866,7 +1900,7 @@ Public Sub locateDockSettingsFile()
     Dim s As String: s = 0
         
     On Error GoTo locateDockSettingsFile_Error
-    If debugflg = 1 Then debugLog "% sub locateDockSettingsFile"
+    If debugFlg = 1 Then debugLog "% sub locateDockSettingsFile"
     
     ' dock Settings main docksettings.ini
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
@@ -2398,7 +2432,7 @@ End Function
 '
 Public Sub getFileNameAndTitle(ByRef retFileName As String, ByRef retfileTitle As String)
    On Error GoTo getFileNameAndTitle_Error
-   If debugflg = 1 Then debugLog "%getFileNameAndTitle"
+   If debugFlg = 1 Then debugLog "%getFileNameAndTitle"
 
   If GetOpenFileName(x_OpenFilename) <> 0 Then
     If x_OpenFilename.lpstrFile = "*.*" Then
@@ -2436,7 +2470,7 @@ Public Function addTargetProgram(ByVal targetText As String) As String
     Const x_MaxBuffer = 256
     
     'On Error GoTo addTargetProgram_Error
-    If debugflg = 1 Then debugLog "%" & "addTargetProgram"
+    If debugFlg = 1 Then debugLog "%" & "addTargetProgram"
     
     'On Error GoTo l_err1
     'savLblTarget = txtTarget.Text
