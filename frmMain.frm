@@ -821,7 +821,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pCLSID As Long) As Long
+Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pclsid As Long) As Long
 
 
 Private Declare Function Ole_CreatePic Lib "olepro32" _
@@ -2822,8 +2822,8 @@ Private Sub updateScreenUsingGDIPBitmap()
     'Update the specified whole window using the window handle (me.hwnd) selecting a handle to the bitmap (dc) and passing all the required characteristics
     UpdateLayeredWindow Me.hWnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
     
-    ' delete temporary objects
-    Call SelectObject(dcMemory, hOldBmp)
+'    ' delete temporary objects
+'    Call SelectObject(dcMemory, hOldBmp)
 
    On Error GoTo 0
    Exit Sub
@@ -3179,7 +3179,8 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
                 End If
             End If
             
-            'DrawTheText "tmrWriteCache " & gblRecordsToCommit, dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
+            'debug location no.2
+            DrawTheText "Debug Watch funcBlend32bpp.SourceConstantAlpha = " & funcBlend32bpp.SourceConstantAlpha, dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
         
             If iconHeightPxls < iconSizeSmallPxls Then
                 iconHeightPxls = iconSizeSmallPxls
@@ -5185,6 +5186,9 @@ Public Sub drawSmallStaticIcons()
 '            End If
             
         Next useloop
+        
+        'debug location no.1
+        DrawTheText "Debug Watch funcBlend32bpp.SourceConstantAlpha = " & funcBlend32bpp.SourceConstantAlpha, dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
                                             
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     '            iconStoreLeftPixels(UBound(iconStoreLeftPixels)) = iconPosLeftPxls

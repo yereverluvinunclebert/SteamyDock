@@ -3,10 +3,14 @@
 -oOo-
 
 Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
-Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
+Needs to read icons from DLLs/exes - WIP
+a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
 
 ' Current Task:
 ' =============
+
+' when encountering an icon path to a DLL or a EXE extract the image using displayEmbeddedIcons and write the to a hidden picbox and extract the PNG image to a special profile folder
+' insert the PNG into the dictionary at runtime startup.
 
 ' the icon text titles do not move up as the dock is moved up from the bottom edge
 
@@ -15,7 +19,6 @@ Needs to read icons from DLLs/exes, a few bugs overall, deletion and drag/drop c
 fix end rdIconMAximum when adding/deleting WIP
 
 add a precursor blank icon and a final icon
-
 
 Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity - wip
 
@@ -58,21 +61,12 @@ separate the task to kill a process to an external process so that the current p
 ' VB6 MultiProcessing (StdExe-IPC via SharedMemory)
 ' https://www.vbforums.com/showthread.php?863075-VB6-MultiProcessing-(StdExe-IPC-via-SharedMemory)
 
-' Extracting embedded icons from DLLs and EXEs
-' ==============================================
-
-' Status - Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser
-'
-' See the GDI+Icons note in Cintanotes
-
-reading from an embedded icon within a DLL, extracting to a PNG fior GDI+ to pick up. Working on extracting icons using privateExtractIcon and writing them to a byte array using X3iconParser.
-
 
 ' Main Tasks:  
 ' ============
 
 '     1. Running on a second monitor
-'     2. Graphics Next Technology D2D/RC6, investigate - WIP
+'     2. Graphics Next Technology D2D/RC6, investigate - WIP - Not using RC6 until it upgrades to 64bit.
 '     3. Add known identifiers to the known apps list - WIP
 '     4. dockSettings, regular process check reduce to 5 secs minimum.
 '     5.
@@ -86,7 +80,8 @@ reading from an embedded icon within a DLL, extracting to a PNG fior GDI+ to pic
 
 '  Creation of a default DockSettings.ini for a new user of the dock where the application has never been run before.
 '
-'  How to create a desktop shortcut with a good quality icon.
+'  How to create a desktop shortcut with a good quality icon. Using vbAdvance you can load a 256x256 icon for the desktop
+
 '  icons - add icon references to the resource file and code to show on the forms themselves.
 '  http://www.vbaccelerator.com/home/VB/Tips/Setting_the_App_Icon_Correctly/article.asp
 '
@@ -221,7 +216,6 @@ The zoom: none choice, simply bounces the small icon without growing it at all
 
 use ShellExecute or ShellExecuteEx , supply an hWnd so the system will open any new windows on the same monitor as the calling application. 
 
-Cairo/GDI uses a device context that has objects like Fonts and Pens selected into it and the hBitmap is the surface that Cairo/GDI renders into, using the objects selected into the device context.
 
 
 ' Advanced animations
@@ -410,6 +404,13 @@ animate the dock widening when it shifts from static to animatebyposition
 ' require this.
 
 
+Translation to Non-RC6 Cairo
+     Testing Cairo usage in a different project
+     Create your own Window, write Cairo PNGs to the device context
+     This is in WIP and we have made some good progress
+     Cairo/GDI uses a device context that has objects like Fonts and Pens selected into it and the hBitmap is the surface that Cairo/GDI renders into, using the objects selected into the device context.
+
+
 ' Cairo and RC5/6 - 85% useful for SteamyDock Future
 ' ==============
 ' Cairo could provide an open source replacement for graphics, Cairo is still cpu-bound.
@@ -438,6 +439,8 @@ animate the dock widening when it shifts from static to animatebyposition
 handed over to D3D or OpenGL but recent news states this has project has been abandoned.
  
  
+Use of the scripting dictionary 
+ https://github.com/cristianbuse/VBA-FastDictionary/releases
 
 '
 ' Other

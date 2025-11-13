@@ -202,10 +202,6 @@ Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As 
 '                        IconSize, _
 '                        IconSize, _
 
-                ' In iconSettings we prove that it is possible to extract the PNG from extract the PNG from the DLL and write that to a file
-                ' this is of little use here as we write to a picbox and display our PNG image there
-                ' In SD, we will take this routine and use it to write a PNG to the local profile area and then insert the PNG into the dictionary at runtime startup.
-                
                 If writePNGToFile = True Then
                 
                     ' take the filename, extract just the filename body minus the suffix, then point it to the special folder with a PNG suffix.
