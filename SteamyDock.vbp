@@ -40,7 +40,7 @@ Description="A FOSS dock for Windows"
 CompatibleMode="0"
 MajorVer=0
 MinorVer=0
-RevisionVer=3226
+RevisionVer=3242
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionComments="Pre-release version. Alpha."
@@ -940,10 +940,11 @@ GenerateMap=0
 TSAware=0
 XPManifest=0
 ResBuildName=C:\Program Files (x86)\SteamyDock\SteamyDock.dll
-ReplaceIcon=0
+ReplaceIcon=1
 SendCommandArgs=0
 SymbDbgPref=0
 RevisionVersion=0
+AppIconFile=.\resources\images\SteamyRocket256.ico
 
 [TASK156]
 Description=occasionally it sits there even when ordered to fade

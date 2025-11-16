@@ -57,7 +57,7 @@ Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 ' APIs for querying processes END
 
 'Public Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal Image As Long, ByVal filename As String, clsidEncoder As CLSID, encoderParams As Any) As GpStatus
-Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal image As Long, ByVal X As Single, ByVal Y As Single) As Long
+Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal Image As Long, ByVal X As Single, ByVal Y As Single) As Long
 'Public Declare Function GdipLoadImageFromFile Lib "GdiPlus.dll" (ByVal filename As Long, GpImage As Long) As Long
 'Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClassName As String, ByVal lpszWindowName As String) As Long
 
@@ -106,20 +106,20 @@ Public Declare Function PrivateExtractIcons Lib "user32" _
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef imageattr As Long) As Long
 Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ClrAdjType As ColorAdjustType, ByVal enableFlag As Long, colourMatrix As Any, grayMatrix As Any, ByVal flags As ColorMatrixFlags) As GpStatus
 'Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal Image As Long, hBmp As Long, ByVal BGColor As Long) As Long
-Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, image As Long) As Long
-Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal Context As Long, ByVal image As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal srcX As Long, ByVal srcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal callbackData As Long) As Long
+Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, Image As Long) As Long
+Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal Context As Long, ByVal Image As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal CallbackData As Long) As Long
 Private Declare Function GdipSetPixelOffsetMode Lib "gdiplus" (ByVal Context As Long, ByVal PixOffsetMode As Long) As Long
 Private Declare Function GdipGetImageGraphicsContext Lib "gdiplus" (ByVal img As Long, Context As Long) As Long
-Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal dx As Long, ByVal dy As Long, ByVal stride As Long, ByVal PixelFormat As Long, ByVal pScanData As Long, image As Long) As Long
+Private Declare Function GdipCreateBitmapFromScan0 Lib "gdiplus" (ByVal dx As Long, ByVal dy As Long, ByVal stride As Long, ByVal PixelFormat As Long, ByVal pScanData As Long, Image As Long) As Long
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As Long, Size As Long) As GpStatus
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, encoders As Any) As GpStatus
 ' APIs image cropping
-Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal image As Long, ByRef PixelFormat As Long) As Long
+Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
 Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long, ByVal PixelFormat As Long, ByVal srcBitmap As Long, dstBitmap As Long) As GpStatus
 
 'Public APIs for GDI+
 
-Public Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal pStream As Long, image As Long) As Long
+Public Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal pStream As Long, Image As Long) As Long
 Public Declare Function GdipCreateFont Lib "gdiplus" (ByVal fontFamily As Long, ByVal emSize As Single, ByVal style As GDIPLUS_FONTSTYLE, ByVal Unit As GDIPLUS_UNIT, createdfont As Long) As Long
 Public Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal Name As String, ByVal fontCollection As Long, fontFamily As Long) As Long
 Public Declare Function GdipCreateFromHDC Lib "GdiPlus.dll" (ByVal hDC As Long, GpGraphics As Long) As Long
@@ -130,12 +130,12 @@ Public Declare Function GdipDeleteFont Lib "gdiplus" (ByVal curFont As Long) As 
 Public Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal fontFamily As Long) As Long
 Public Declare Function GdipDeleteGraphics Lib "GdiPlus.dll" (ByVal Graphics As Long) As Long
 Public Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal StringFormat As Long) As Long
-Public Declare Function GdipDisposeImage Lib "GdiPlus.dll" (ByVal image As Long) As Long
+Public Declare Function GdipDisposeImage Lib "GdiPlus.dll" (ByVal Image As Long) As Long
 Public Declare Function GdipDrawImageRectI Lib "GdiPlus.dll" (ByVal Graphics As Long, ByVal img As Long, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long) As Long
-Public Declare Function GdipDrawImageRectRect Lib "GdiPlus.dll" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal srcX As Single, ByVal srcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal callbackData As Long) As Long
+Public Declare Function GdipDrawImageRectRect Lib "GdiPlus.dll" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal SrcX As Single, ByVal SrcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal CallbackData As Long) As Long
 Public Declare Function GdipDrawString Lib "gdiplus" (ByVal Graphics As Long, ByVal Str As String, ByVal Length As Long, ByVal thefont As Long, layoutRect As RECTF, ByVal StringFormat As Long, ByVal brush As Long) As Long
-Public Declare Function GdipGetImageHeight Lib "GdiPlus.dll" (ByVal image As Long, Height As Long) As Long
-Public Declare Function GdipGetImageWidth Lib "GdiPlus.dll" (ByVal image As Long, Width As Long) As Long
+Public Declare Function GdipGetImageHeight Lib "GdiPlus.dll" (ByVal Image As Long, Height As Long) As Long
+Public Declare Function GdipGetImageWidth Lib "GdiPlus.dll" (ByVal Image As Long, Width As Long) As Long
 Public Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As Long
 Public Declare Function GdiplusStartup Lib "GdiPlus.dll" (Token As Long, gdipInput As GDIPLUS_STARTINPUT, GdiplusStartupOutput As Long) As Long
 Public Declare Function GdipReleaseDC Lib "GdiPlus.dll" (ByVal Graphics As Long, ByVal hDC As Long) As Long
@@ -301,7 +301,7 @@ Public Type BITMAPINFO
     bmpColors As RGBQUAD
 End Type
 
-Public Type CLSID
+Public Type clsid
    Data1 As Long
    Data2 As Integer
    Data3 As Integer
@@ -309,8 +309,8 @@ Public Type CLSID
 End Type
 
 Public Type ImageCodecInfo
-   ClassID As CLSID
-   FormatID As CLSID
+   ClassID As clsid
+   FormatID As clsid
    CodecName As Long      ' String Pointer; const WCHAR*
    DllName As Long        ' String Pointer; const WCHAR*
    FormatDescription As Long ' String Pointer; const WCHAR*
@@ -645,9 +645,6 @@ Public Function fTestCursorWithinDockYPosition() As Boolean
     fTestCursorWithinDockYPosition = outsideDock ' return
 
 End Function
-'---------------------------------------------------------------------------------------
-' Steamydock global configuration variables END
-'---------------------------------------------------------------------------------------
 
 
 
@@ -676,7 +673,7 @@ End Function
 'the index of the ImageCodecInfo object and copies the CLSID into the variable pointed to by
 'pClsid. If the function fails, it returns –1.
 
-Public Function GetEncoderClsid(strMimeType As String, ClassID As CLSID) As Long
+Public Function GetEncoderClsid(strMimeType As String, ClassID As clsid) As Long
    Dim num As Long
    Dim Size As Long
    Dim i As Long
@@ -1628,7 +1625,7 @@ End Sub
 ' Procedure : redimPreserveCacheArrays
 ' Author    : beededea
 ' Date      : 03/07/2025
-' Purpose   :
+' Purpose   : Resize the arrays to store the icons and the information pertaining to them
 '---------------------------------------------------------------------------------------
 '
 Public Sub redimPreserveCacheArrays()
@@ -1819,19 +1816,22 @@ End Sub
 ' the file dialog would not display when the code for the dialog was under the dock_form
 ' this may be because the dock_form is not visible at any time. Moving the file dialog form to the
 ' main dock form caused the dialog to display.
+' The only reason you would add a DLL is to replicate the Rocketdock functionality to run a Rocketdock Docklet - not going to replicate this.
+' So you will only encounter a EXE in reality.
 '---------------------------------------------------------------------------------------
 '
 Public Sub addProgramDLLorEXE()
 
-     Dim iconImage As String
-     Dim iconFilename As String
-     Dim retFileName As String
-     Dim retfileTitle As String
-     Dim dialogInitDir As String
-     Dim qPos As Integer
-     Dim filestring As String
-     Dim suffix As String
+     Dim iconImage As String: iconImage = vbNullString
+     Dim iconFilename As String: iconFilename = vbNullString
+     Dim retFileName As String: retFileName = vbNullString
+     Dim retfileTitle As String: retfileTitle = vbNullString
+     Dim dialogInitDir As String: dialogInitDir = vbNullString
+     Dim qPos As Integer: qPos = 0
+     Dim filestring As String: filestring = vbNullString
+     Dim suffix As String: suffix = vbNullString
      Dim thisTitle As String: thisTitle = vbNullString
+     'Dim bSuccess As Boolean: bSuccess = False
      
      Const x_MaxBuffer = 256
     
@@ -1876,7 +1876,12 @@ Public Sub addProgramDLLorEXE()
   ' if the user drags an icon to the dock then RD takes a icon link of the following form:
     'FileName = "C:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\vbexpress.exe?62453184"
     
-    If InStr(sFilename, "?") And readEmbeddedIcons = True Then  ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
+    ' extract the suffix
+    suffix = ExtractSuffixWithDot(filestring)
+    suffix = Right(filestring, Len(filestring) - InStr(1, filestring, "."))
+    
+    ' test as to whether it is an .EXE '
+    If InStr(1, ".exe", LCase(suffix)) And readEmbeddedIcons = True Then
         ' does the string contain a ? if so it probably has an embedded .ICO
         qPos = InStr(1, sFilename, "?")
         If qPos <> 0 Then
@@ -1884,21 +1889,13 @@ Public Sub addProgramDLLorEXE()
             filestring = Mid$(sFilename, 1, qPos - 1)
         End If
         
-        ' test the resulting filestring exists
-        If fFExists(filestring) Then
-            ' extract the suffix
-            suffix = ExtractSuffixWithDot(filestring)
-
-            suffix = Right(filestring, Len(filestring) - InStr(1, filestring, "."))
-            ' test as to whether it is an .EXE or a .DLL
-            If InStr(1, ".exe,.dll", LCase(suffix)) <> 0 Then
+    ' test the resulting filestring exists
+    If fFExists(filestring) Then
+            If rDRetainIcons = "1" Then
                 'FileName = txtCurrentIcon.Text ' revert to the relative path which is what is expected
-                'Call displayEmbeddedIcons(filestring, picBox, icoPreset)
-
-            Else
-                ' the file may have a ? in the string but does not match otherwise in any useful way
-                'FileName = rdAppPath & "\icons\" & "help.png"
+                iconFilename = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
             End If
+
         Else ' the file doesn't exist in any form with ? or otherwise as a valid path
             iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
             If fFExists(iconFilename) Then
@@ -2159,7 +2156,7 @@ End Sub
 ' Procedure : loadAdditionalImagestoDictionary
 ' Author    : beededea
 ' Date      : 29/08/2020
-' Purpose   : the dictionary is rebuilt after an icon add or delete and the additional images need to be re-added back to the dictionary
+' Purpose   : this routine adds the additional images that the dock uses, not the icons but the decoration
 '---------------------------------------------------------------------------------------
 '
 Public Sub loadAdditionalImagestoDictionary()
@@ -2502,7 +2499,7 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
 
     Dim thiskey As String
     Dim saveStatus As Boolean
-    Dim encoderCLSID As CLSID
+    Dim encoderCLSID As clsid
     Dim bytesFromFile() As Byte
     Dim Strm As stdole.IUnknown
     Dim img As Long
@@ -2515,7 +2512,7 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
     
     Dim action As String
     Dim lngPixelFormat As Long
-    Dim stat As GpStatus
+    'Dim stat As GpStatus
     'Dim imageOpacity As Integer
     
     'Dim clearBytes() As Byte
@@ -2650,7 +2647,7 @@ Public Function createScaledImg(SrcImg As Long, dxSrc As Long, dySrc As Long, dx
     Dim Ctx As Long
     Dim imgQuality As Long
     Dim SmoothingMode As Long
-    Dim stat As GpStatus
+    'Dim stat As GpStatus
     Dim imgAttr As Long
     Dim clrMatrix As ColorMatrix
     Dim graMatrix As ColorMatrix

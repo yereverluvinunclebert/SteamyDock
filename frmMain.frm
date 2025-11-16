@@ -1953,6 +1953,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     Dim nwork As String: nwork = vbNullString
     Dim nargs As String: nargs = vbNullString
     Dim thisShortcut As Link
+    'dim bSuccess As Boolean: bSuccess = False
 
     On Error GoTo Form_OLEDragDrop_Error
     
@@ -2005,32 +2006,28 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                   
                   Effect = vbDropEffectCopy
                  
-                  'if an exe is dragged and dropped onto RD it is given an id, that it appends to the binary name after an additional "?"
+                  'if an exe or DLL is dragged and dropped onto RD it is given an id, that it appends to the binary name after an additional "?"
                   ' that ? signifies what? Well, possibly it is the handle of the embedded icon only added the one time, so that when the binary is read in the future the handle is already there
                   ' and that can be used to populate image array? Untested.
-                  ' in this case we just need to note the ? and then query the binary for an embedded icon handle and compare it to the id that RD has given it.
+                  ' in this case we just need to note the exe and then query the binary for an embedded icon handle and compare it to the id that RD has given it.
                   ' if it is the same then we can perhaps simulate the same.
+                  ' RD can handle DLLs that have code that create a rocketdock add-in, Steamydock does not have that capability so we do not allow DLLs
                   
                   If suffix = ".exe" Then
-                    ' we should, if it is a EXE dig into it to determine the icon using privateExtractIcon
-                                         
-                    ' However, we do not extract the icon from the shortcut as it will be useless for steamydock
-                    ' VB6 not being able to extract and handle a transparent PNG form
-                    ' even if it was we have no current method of making a transparent PNG from a bitmap or ICO that
-                    ' I can easily transfer to the GDI collection - but I am working on it...
-                    ' the vast majority of default icons are far too small for steamydock in any case.
-                    ' the result of the above is that there is currently no icon extracted, though that may change.
-                    
-                    ' instead we have a list of apps that we can match the shortcut name against, it exists in an external comma
-                    ' delimited file. The list has two identification factors that are used to find a match and then we find an
-                    ' associated icon to use with a relative path.
-                       
-                    iconFilename = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
-                       
-                    If fFExists(iconFilename) Then
-                      iconImage = iconFilename
+                    ' dig into the EXE to determine the icon to use using privateExtractIcon
+                    If rDRetainIcons = "1" Then
+                        iconFilename = fExtractEmbeddedPNGFromEXe(iconCommand, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     Else
-                      iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+                        ' as an alternative, we have a list of apps that we can match the shortcut name against, it exists in an external comma
+                        ' delimited file. The list has two identification factors that are used to find a match and then we find an
+                        ' associated icon to use with a relative path.
+                        iconFilename = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
+                    End If
+                    
+                    If fFExists(iconFilename) Then
+                        iconImage = iconFilename
+                    Else
+                        iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
                     End If
                     
                   End If
@@ -4879,259 +4876,130 @@ End Sub
 
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : checkQuestionMark
-' Author    : beededea
-' Date      : 16/04/2021
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : checkQuestionMark
+'' Author    : beededea
+'' Date      : 16/04/2021
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Public Sub checkQuestionMark(ByVal key As String, ByRef FileName As String, ByVal Size As Byte)
+'    Dim filestring As String: filestring = vbNullString
+'    Dim suffix As String: suffix = vbNullString
+'    Dim qPos As Integer: qPos = 0
 '
-Public Sub checkQuestionMark(ByVal key As String, ByRef FileName As String, ByVal Size As Byte)
-    Dim filestring As String: filestring = vbNullString
-    Dim suffix As String: suffix = vbNullString
-    Dim qPos As Integer: qPos = 0
-
-    ' does the string contain a ? if so it probably has an embedded .ICO
-    On Error GoTo checkQuestionMark_Error
-
-    qPos = InStr(1, FileName, "?")
-    If qPos <> 0 Then
-        ' extract the string before the ? (qPos)
-        filestring = Mid$(FileName, 1, qPos - 1)
-    End If
-    
-    ' test the resulting filestring exists
-    If fFExists(filestring) Then
-        ' extract the suffix
-        suffix = ExtractSuffixWithDot(filestring)
-        ' test as to whether it is an .EXE or a .DLL
-        If InStr(1, ".exe,.dll", LCase(suffix)) <> 0 Then
-            Call displayEmbeddedIcons(key, filestring, hiddenForm.hiddenPicbox, Size)
-        Else
-            ' the file may have a ? in the string but does not match otherwise in any useful way
-            FileName = sdAppPath & "\icons\" & "help.png" ' .12 25/01/2021 DAEB Change to sdAppPath
-        End If
-    Else
-        Exit Sub
-    End If
-
-   On Error GoTo 0
-   Exit Sub
-
-checkQuestionMark_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure checkQuestionMark of Form dock"
-End Sub
-
-
-
-
-
-'---------------------------------------------------------------------------------------
-' Procedure : GetShortcutInfoNET
-' Author    : beededea
-' Date      : 17/04/2021
-' Purpose   :
-'---------------------------------------------------------------------------------------
+'    ' does the string contain a ? if so it probably has an embedded .ICO
+'    On Error GoTo checkQuestionMark_Error
 '
-Public Function GetShortcutInfoNET(ByVal ShortcutPath As String) As String
-
-    Dim Begin As Long: Begin = 0
-    Dim EndV As Long: EndV = 0
-    Dim FileInfoStartsAt As Long: FileInfoStartsAt = 0
-    Dim FileOffset As Long: FileOffset = 0
-    Dim FirstPart As String: FirstPart = vbNullString
-    Dim flags As Long: flags = 0
-    Dim fileH As Long: fileH = 0
-    Dim Offset As Integer: Offset = 0
-    Dim Link As String: Link = vbNullString
-    Dim LinkTarget As String: LinkTarget = vbNullString
-    Dim PathLength As Long: PathLength = 0
-    Dim SecondPart As String: SecondPart = vbNullString
-    Dim TotalStructLength As Long: TotalStructLength = 0
-
-   On Error GoTo GetShortcutInfoNET_Error
-
-   fileH = FreeFile()
-   If Dir$(ShortcutPath, vbNormal) = vbNullString Then Error 53
-   
-   Open ShortcutPath For Binary Lock Read Write As fileH
-      Seek #fileH, &H15
-      Get #fileH, , flags
-      If (flags And &H1) = &H1 Then
-         Seek #fileH, &H4D
-         Get #fileH, , Offset
-         Seek #fileH, Seek(fileH) + Offset
-      End If
-
-      FileInfoStartsAt = Seek(fileH) - 1
-      Get #fileH, , TotalStructLength
-      Seek #fileH, Seek(fileH) + &HC
-      Get #fileH, , FileOffset
-      Seek #fileH, FileInfoStartsAt + FileOffset + 1
-      
-      PathLength = (TotalStructLength + FileInfoStartsAt) - Seek(fileH) - 1
-      LinkTarget = Input$(PathLength, fileH)
-      Link = LinkTarget
-      
-      Begin = InStr(Link, vbNullChar & vbNullChar)
-      If Begin > 0 Then
-         EndV = InStr(Begin + 2, Link, "\\")
-         EndV = InStr(EndV, Link, vbNullChar) + 1
-       
-         FirstPart = Mid$(Link, 1, Begin - 1)
-         SecondPart = Mid$(Link, EndV)
- 
-         GetShortcutInfoNET = FirstPart & SecondPart
-         Exit Function
-      End If
-
-      GetShortcutInfoNET = Link
-      Exit Function
-   Close fileH
-
-GetShortcutInfoNET = vbNullString
-
-   On Error GoTo 0
-   Exit Function
-
-GetShortcutInfoNET_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetShortcutInfoNET of Form dock"
-End Function
-
-
-'---------------------------------------------------------------------------------------
-' Procedure : displayEmbeddedAllIcons
-' Author    : beededea
-' Date      : 05/07/2019
-' Purpose   : The program extracts icons embedded within a DLL or an executable
-'             you pass the name of the picbox you require and the image is displayed there
-'             it should return all and not only the 16 and 32 bit icons
+''    qPos = InStr(1, FileName, "?")
+''    If qPos <> 0 Then
+''        ' extract the string before the ? (qPos)
+''        filestring = Mid$(FileName, 1, qPos - 1)
+''    End If
 '
-'---------------------------------------------------------------------------------------
+'    ' test the resulting filestring exists
+'    If fFExists(filestring) Then
+'        ' extract the suffix
+'        suffix = ExtractSuffixWithDot(filestring)
+'        ' test as to whether it is an .EXE or a .DLL
+'        If InStr(1, ".exe,.dll", LCase(suffix)) <> 0 Then
 '
-Public Sub displayEmbeddedIcons(ByVal key As String, ByVal FileName As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer)
-    
-'    Dim sExeName As String: sExeName = vbNullString
-'    Dim lIconIndex As Long: lIconIndex = 0
-'    Dim xSize As Long: xSize = 0
-'    Dim ySize As Long: ySize = 0
-'    Dim hIcon() As Long: 'hIcon() = 0  cannot initialise
-'    Dim hIconID() As Long: 'hIconID() = 0  cannot initialise
-'    Dim nIcons As Long: nIcons = 0
-'    Dim Result As Long: Result = 0
-'    Dim flags As Long: flags = 0
-'    Dim i As Long: i = 0
-'    Dim pic As IPicture: 'pic cannot initialise
-'    Dim thiskey As String: thiskey = vbNullString
-'    Dim bytesFromFile() As Byte
-'    Dim Strm As stdole.IUnknown '  cannot initialise
-'    Dim img As Long: img = 0
-'    Dim dx As Long: dx = 0
-'    Dim dy As Long: dy = 0
-'    Dim strFilename As String: strFilename = vbNullString
-'    Dim opacity As String: opacity = vbNullString
+'            Call fExtractEmbeddedPNGFromEXe(filestring, hiddenForm.hiddenPicbox, Size, True)
+'        Else
+'            ' the file may have a ? in the string but does not match otherwise in any useful way
+'            FileName = sdAppPath & "\icons\" & "help.png" ' .12 25/01/2021 DAEB Change to sdAppPath
+'        End If
+'    Else
+'        Exit Sub
+'    End If
 '
+'   On Error GoTo 0
+'   Exit Sub
 '
-'    On Error Resume Next
+'checkQuestionMark_Error:
 '
-'    sExeName = Filename
-'    lIconIndex = 0
-'
-'    i = 2 ' need some experimentation here
-'
-'    'the boundaries of the icons you wish to extract, can be set to somethink like 256, 256 but that is all
-'    ' you will extract, just the one icon
-'    xSize = make32BitLong(CInt("256"), CInt("16"))
-'    ySize = make32BitLong(CInt("256"), CInt("16"))
-'
-'    flags = LR_LOADFROMFILE
-'
-'    ' Get the total number of Icons in the file.
-'    Result = PrivateExtractIcons(sExeName, lIconIndex, xSize, ySize, ByVal 0&, ByVal 0&, 0&, 0&)
-    
-    ' The sExeName is the resource string/filepath.
-    ' lIconIndex Index is the index.
-    ' xSize and ySize are the desired sizes.
-    ' phicon is the returned array of icon handles.
-    ' So you could call it with phicon set to nothing and it will return the number of icons in the file.
-    
-    ' piconid ?
-    
-    ' nicons is just the number of icons you wish to extract.
-    ' Then you call it again with nicon set to this number and niconindex=0. Then it will extract ALL icons in one go.
-    ' flags
-    '
-    '    LR_DEFAULTCOLOR
-    '    LR_CREATEDIBSECTION
-    '    LR_DEFAULTSIZE
-    '    LR_LOADFROMFILE
-    '    LR_LfsOADMAP3DCOLORS
-    '    LR_LOADTRANSPARENT
-    '    LR_MONOCHROME
-    '    LR_SHARED
-    '    LR_VGACOLOR
-    '
-    ' eg. PrivateExtractIcons ('C:\Users\Public\Documents\RAD Studio\Projects\2010\Aero Colorizer\AeroColorizer.exe', 0, 128, 128, @hIcon, @nIconId, 1, LR_LOADFROMFILE)
-    ' PrivateExtractIcons(sExeName, nIcon, cxIcon, cyIcon, phicon, piconid, nicons, 0)
-
-'    nIcons = 2 ' Result
-'
-'    ' Dimension the arrays to the number of icons.
-'    ReDim hIcon(lIconIndex To lIconIndex + nIcons * 2 - 1)
-'    ReDim hIconID(lIconIndex To lIconIndex + nIcons * 2 - 1)
-
-'  Rocketdock always uses the same ID for the same exe
-
-'   C:\Program Files (x86)\Microsoft Visual Studio\VB98\VB6.EXE?5063424
-'   E:\games\World_of_Tanks_NA\WorldOfTanks.exe?184608432
-
-' if an exe is dragged and dropped onto RD it is given an id, it is appended to the binary name after an additional "?"
-' that question mark signifies what? Possibly the handle of the embedded icon only added the first time,
-' so that when the binary is read in the future the handle is already there?
-' and that can be used to populate image array? Untested.
-' in this case we just need to note the ? and then query the binary for an embedded icon and compare it to the id that RD has given it.
-        
-    ' use the undocumented PrivateExtractIcons to extract the icons we require
-'    Result = PrivateExtractIcons(sExeName, lIconIndex, xSize, _
-'                            ySize, hIcon(LBound(hIcon)), _
-'                            hIconID(LBound(hIconID)), _
-'                            nIcons * 2, flags)
-'
-'    ' create an icon with a handle so we can test the result
-'    Set pic = CreateIcon(hIcon(i + lIconIndex - 1))
-'
-'    ' Draw the icon as normal
-'    lRet = DrawIconEx(.hdc, 0, 0, hIcon(LBound(hIcon)), IconSize, IconSize, 0, 0, DI_NORMAL)  '
-'
-'    ' get rid of the icons we created
-'    Call DestroyIcon(hIcon(i + lIconIndex - 1))
-    'Call DestroyIcon(hIcon(LBound(hIcon))
-
-    ' create a bitmap
-    ' GdipCreateBitmapFromHICON - loses transparency
-    
-'Public Sub CreateFromHICON(ByVal HICON As Long)
-'    Dim bm As Long
-'    Dispose
-'    SetStatus GdipCreateBitmapFromHICON(HICON, bm)
-'    m_img.fInit bm, m_lastResult
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure checkQuestionMark of Form dock"
 'End Sub
-    
-'1. Build an icon parser.
-'-- All icons (except embedded PNGs) are in DIB format within the icon format.
-'2. Create a 32bpp DIB section
-'3. Transfer the 32bpp icon bits to the DIB section
-'4. Destroy the icon, have GDI+ load DIB via GdipCreateBitmapFromScan0
-'5. Don't destroy the DIB till you use gdipDisposeImage on the gdi+ bitmap
-
-' If the icon is 32bpp, you have access to the bits right after the bitmapinfo structure. You can literally copy the bytes to the DIB via CopyMemory, then load DIB into GDI+
-    
 
 
 
-End Sub
+
+
+''---------------------------------------------------------------------------------------
+'' Procedure : GetShortcutInfoNET
+'' Author    : beededea
+'' Date      : 17/04/2021
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Public Function GetShortcutInfoNET(ByVal ShortcutPath As String) As String
+'
+'    Dim Begin As Long: Begin = 0
+'    Dim EndV As Long: EndV = 0
+'    Dim FileInfoStartsAt As Long: FileInfoStartsAt = 0
+'    Dim FileOffset As Long: FileOffset = 0
+'    Dim FirstPart As String: FirstPart = vbNullString
+'    Dim flags As Long: flags = 0
+'    Dim fileH As Long: fileH = 0
+'    Dim Offset As Integer: Offset = 0
+'    Dim Link As String: Link = vbNullString
+'    Dim LinkTarget As String: LinkTarget = vbNullString
+'    Dim PathLength As Long: PathLength = 0
+'    Dim SecondPart As String: SecondPart = vbNullString
+'    Dim TotalStructLength As Long: TotalStructLength = 0
+'
+'   On Error GoTo GetShortcutInfoNET_Error
+'
+'   fileH = FreeFile()
+'   If Dir$(ShortcutPath, vbNormal) = vbNullString Then Error 53
+'
+'   Open ShortcutPath For Binary Lock Read Write As fileH
+'      Seek #fileH, &H15
+'      Get #fileH, , flags
+'      If (flags And &H1) = &H1 Then
+'         Seek #fileH, &H4D
+'         Get #fileH, , Offset
+'         Seek #fileH, Seek(fileH) + Offset
+'      End If
+'
+'      FileInfoStartsAt = Seek(fileH) - 1
+'      Get #fileH, , TotalStructLength
+'      Seek #fileH, Seek(fileH) + &HC
+'      Get #fileH, , FileOffset
+'      Seek #fileH, FileInfoStartsAt + FileOffset + 1
+'
+'      PathLength = (TotalStructLength + FileInfoStartsAt) - Seek(fileH) - 1
+'      LinkTarget = Input$(PathLength, fileH)
+'      Link = LinkTarget
+'
+'      Begin = InStr(Link, vbNullChar & vbNullChar)
+'      If Begin > 0 Then
+'         EndV = InStr(Begin + 2, Link, "\\")
+'         EndV = InStr(EndV, Link, vbNullChar) + 1
+'
+'         FirstPart = Mid$(Link, 1, Begin - 1)
+'         SecondPart = Mid$(Link, EndV)
+'
+'         GetShortcutInfoNET = FirstPart & SecondPart
+'         Exit Function
+'      End If
+'
+'      GetShortcutInfoNET = Link
+'      Exit Function
+'   Close fileH
+'
+'GetShortcutInfoNET = vbNullString
+'
+'   On Error GoTo 0
+'   Exit Function
+'
+'GetShortcutInfoNET_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetShortcutInfoNET of Form dock"
+'End Function
+
+
+
 
 
 
@@ -5337,6 +5205,7 @@ Public Sub prepareArraysAndCollections()
     Dim overallIconOpacity As Integer: overallIconOpacity = 0
     Dim thisOpacity As Single: thisOpacity = 0
     Dim thisDisabled As String: thisDisabled = vbNullString
+    'Dim bSuccess As Boolean: bSuccess = False
     
     On Error GoTo prepareArraysAndCollections_Error
     
@@ -5344,11 +5213,14 @@ Public Sub prepareArraysAndCollections()
 
     ' redimension the arrays to cater for the number of icons in the dock
     Call redimPreserveCacheArrays
-    Call loadAdditionalImagestoDictionary ' the additional images need to be added to the dictionary
-  
+    
+    'this routine adds the additional images that the dock uses, not the icons but the decoration
+    Call loadAdditionalImagestoDictionary
+    
+    ' now load the user specified icons to the dictionary
     For useloop = iconArrayLowerBound To iconArrayUpperBound
     
-        ' extract filenames from the random acess data file
+        ' extract filenames from the random access data file
         readIconSettingsIni useloop
 
         partialStringKey = CStr(useloop)
@@ -5374,20 +5246,26 @@ Public Sub prepareArraysAndCollections()
             largeKey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeLargePxls))
             smallKey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
             
-            ' here is the code to cache the images to the collection transparently at a small size
+            ' here is the code to cache resized images to the small image collection.
             If fFExists(sFilename) Then
-                resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity
-            ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
-                checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+                If readEmbeddedIcons = True And ExtractSuffix(sFilename) = "exe" And rDRetainIcons = "1" Then  '
+                    ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+                    'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+                Else
+                    resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity
+                End If
             Else ' if the image is not found display an 'x'
                 resizeAndLoadImgToDict collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity
             End If
                         
             ' now cache all the images to the collection transparently at the larger size
             If fFExists(sFilename) Then
-                resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity
-            ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then  ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
-                checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+                If readEmbeddedIcons = True And ExtractSuffix(sFilename) = "exe" And rDRetainIcons = "1" Then  '
+                    ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+                    'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+                Else
+                    resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity
+                End If
             Else
                 resizeAndLoadImgToDict collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity
             End If
@@ -5395,18 +5273,25 @@ Public Sub prepareArraysAndCollections()
     
             ' cache the images to the collection at a small size at full opacity
             If fFExists(sFilename) Then
-                resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
-            ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
-                checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+                ' if the global setting allows extraction of icons from DLLs then
+                If readEmbeddedIcons = True And ExtractSuffix(sFilename) = "exe" And rDRetainIcons = "1" Then  '
+                    ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+                    'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+                Else
+                    resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
+                End If
             Else ' if the image is not found display an 'x'
                 resizeAndLoadImgToDict collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
             End If
             
             ' now cache all the images to the collection at the larger size
             If fFExists(sFilename) Then
-                resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
-            ElseIf InStr(sFilename, "?") And readEmbeddedIcons = True Then  ' Note: the question mark is an illegal character and test for a valid file will fail in VB.NET despite working in VB6 so we test it as a string instead
-                checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+                If readEmbeddedIcons = True And ExtractSuffix(sFilename) = "exe" And rDRetainIcons = "1" Then  '
+                    ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+                    'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+                Else
+                    resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
+                End If
             Else
                 resizeAndLoadImgToDict collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
             End If
