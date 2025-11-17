@@ -1954,6 +1954,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     Dim nargs As String: nargs = vbNullString
     Dim thisShortcut As Link
     'dim bSuccess As Boolean: bSuccess = False
+    Dim sJustTheFilename As String: sJustTheFilename = vbNullString
 
     On Error GoTo Form_OLEDragDrop_Error
     
@@ -2004,33 +2005,38 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
               suffix = LCase(ExtractSuffixWithDot(Data.Files(1)))
               If InStr(1, ".exe,.bat,.msc,.cpl,.lnk", suffix) <> 0 Then
                   
-                  Effect = vbDropEffectCopy
-                 
-                  'if an exe or DLL is dragged and dropped onto RD it is given an id, that it appends to the binary name after an additional "?"
-                  ' that ? signifies what? Well, possibly it is the handle of the embedded icon only added the one time, so that when the binary is read in the future the handle is already there
-                  ' and that can be used to populate image array? Untested.
-                  ' in this case we just need to note the exe and then query the binary for an embedded icon handle and compare it to the id that RD has given it.
-                  ' if it is the same then we can perhaps simulate the same.
-                  ' RD can handle DLLs that have code that create a rocketdock add-in, Steamydock does not have that capability so we do not allow DLLs
+                    Effect = vbDropEffectCopy
                   
-                  If suffix = ".exe" Then
-                    ' dig into the EXE to determine the icon to use using privateExtractIcon
-                    If rDRetainIcons = "1" Then
-                        iconFilename = fExtractEmbeddedPNGFromEXe(iconCommand, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
-                    Else
-                        ' as an alternative, we have a list of apps that we can match the shortcut name against, it exists in an external comma
-                        ' delimited file. The list has two identification factors that are used to find a match and then we find an
-                        ' associated icon to use with a relative path.
-                        iconFilename = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
-                    End If
+                    ' take the filename, extract just the filename body minus the suffix
+                    sJustTheFilename = Mid(iconTitle, InStrRev(iconTitle, "\") + 1, Len(iconTitle))
+                    sJustTheFilename = ExtractFilenameWithoutSuffix(sJustTheFilename)
+                    iconTitle = sJustTheFilename
+                 
+                    'if an exe or DLL is dragged and dropped onto RD it is given an id, that it appends to the binary name after an additional "?"
+                    ' that ? signifies what? Well, possibly it is the handle of the embedded icon only added the one time, so that when the binary is read in the future the handle is already there
+                    ' and that can be used to populate image array? Untested.
+                    ' in this case we just need to note the exe and then query the binary for an embedded icon handle and compare it to the id that RD has given it.
+                    ' if it is the same then we can perhaps simulate the same.
+                    ' RD can handle DLLs that have code that create a rocketdock add-in, Steamydock does not have that capability so we do not allow DLLs
                     
-                    If fFExists(iconFilename) Then
-                        iconImage = iconFilename
-                    Else
-                        iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+                    If suffix = ".exe" Then
+                      ' dig into the EXE to determine the icon to use using privateExtractIcon
+                      If rDRetainIcons = "1" Then
+                          iconFilename = fExtractEmbeddedPNGFromEXE(iconCommand, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+                      Else
+                          ' as an alternative, we have a list of apps that we can match the shortcut name against, it exists in an external comma
+                          ' delimited file. The list has two identification factors that are used to find a match and then we find an
+                          ' associated icon to use with a relative path.
+                          iconFilename = identifyAppIcons(iconCommand) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
+                      End If
+                      
+                      If fFExists(iconFilename) Then
+                          iconImage = iconFilename
+                      Else
+                          iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+                      End If
+                      
                     End If
-                    
-                  End If
                   
                   If suffix = ".msc" Then
                       ' if it is a MSC then  give it a SYSTEM type icon (EVENT)
