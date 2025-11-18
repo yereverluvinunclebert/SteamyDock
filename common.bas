@@ -417,7 +417,7 @@ Public Sub checkLicenceState()
     Dim slicence As String: slicence = "0"
 
     On Error GoTo checkLicenceState_Error
-    If debugFlg = 1 Then debugLog "%" & " sub checkLicenceState"
+    If debugflg = 1 Then debugLog "%" & " sub checkLicenceState"
 
     'toolSettingsFile = App.Path & "\settings.ini"
     ' read the tool's own settings file (
@@ -451,18 +451,18 @@ End Sub
 ' Procedure : LoadFileToTB
 ' Author    : beededea
 ' Date      : 26/08/2019
-' Purpose   :
+' PURPOSE   : Loads file specified by FilePath into textcontrol
+'            (e.g., Text Box, Rich Text Box) specified by TxtBox
+'
+'            If Append = true, then loaded text is appended to existing
+'             contents else existing contents are overwritten
+'
+'            Returns: True if Successful, false otherwise
 '---------------------------------------------------------------------------------------
 '
 Public Function LoadFileToTB(ByRef TxtBox As Object, ByVal FilePath As String, Optional ByVal Append As Boolean = False) As Boolean
        
-    'PURPOSE: Loads file specified by FilePath into textcontrol
-    '(e.g., Text Box, Rich Text Box) specified by TxtBox
-    
-    'If Append = true, then loaded text is appended to existing
-    ' contents else existing contents are overwritten
-    
-    'Returns: True if Successful, false otherwise
+
     
     Dim iFile As Integer: iFile = 0
     Dim s As String: s = vbNullString
@@ -602,7 +602,7 @@ Public Sub testWindowsVersion(ByRef classicThemeCapable As Boolean)
     
     ' ******  The IDE runs in compatibility mode so it will report the wrong version and thence the incorrect working folder
     
-    If debugFlg = 1 Then debugLog "%" & " sub classicThemeCapable"
+    If debugflg = 1 Then debugLog "%" & " sub classicThemeCapable"
 
     'Get the value of "ProgramFiles", or "ProgramFilesDir"
     
@@ -751,7 +751,7 @@ End Sub
 ' Procedure : fFExists
 ' Author    : beededea
 ' Date      : 17/10/2019
-' Purpose   :
+' Purpose   : Check a file exists
 '---------------------------------------------------------------------------------------
 '
 Public Function fFExists(ByRef OrigFile As String) As Boolean
@@ -782,7 +782,7 @@ End Function
 ' Procedure : fDirExists
 ' Author    :
 ' Date      : 17/10/2019
-' Purpose   :
+' Purpose   : Check a folder exists
 '---------------------------------------------------------------------------------------
 '
 Public Function fDirExists(ByRef OrigFile As String) As Boolean
@@ -810,11 +810,11 @@ End Function
 ' Procedure : SpecialFolder
 ' Author    :  si_the_geek vbforums
 ' Date      : 17/10/2019
-' Purpose   :
+' Purpose   : Returns the path to the specified special folder (AppData etc)
 '---------------------------------------------------------------------------------------
 '
 Public Function SpecialFolder(pFolder As eSpecialFolders) As String
-'Returns the path to the specified special folder (AppData etc)
+'
 
 Dim objShell  As Object  ' not going to initialise an object here
 Dim objFolder As Object
@@ -1465,7 +1465,7 @@ Public Sub checkRocketdockInstallation()
     
     ' check where rocketdock is installed
     On Error GoTo checkRocketdockInstallation_Error
-    If debugFlg = 1 Then debugLog "% sub checkRocketdockInstallation"
+    If debugflg = 1 Then debugLog "% sub checkRocketdockInstallation"
 
     RD86installed = driveCheck("Program Files (x86)\Rocketdock", "RocketDock.exe")
     RDinstalled = driveCheck("Program Files\Rocketdock", "RocketDock.exe")
@@ -1597,7 +1597,7 @@ Public Sub getAllDriveNames(sDriveStrings As String)
     
     On Error GoTo getAllDriveNames_Error
     
-    If debugFlg = 1 Then debugLog "% sub sDriveStrings"
+    If debugflg = 1 Then debugLog "% sub sDriveStrings"
 
     For Each vDrive In GetDrives(sDriveStrings) ' getdrives is a collection of drive name strings C:\, D:\ &c
         sDeviceName = GetNtDeviceNameForDrive(vDrive) ' \Device\HarddiskVolume1 are the default naming conventions for Windows drives
@@ -1844,7 +1844,7 @@ Public Sub checkSteamyDockInstallation()
     ' check where SteamyDock is installed
     On Error GoTo checkSteamyDockInstallation_Error
     
-    If debugFlg = 1 Then debugLog "% sub checkSteamyDockInstallation"
+    If debugflg = 1 Then debugLog "% sub checkSteamyDockInstallation"
 
     SD86installed = driveCheck("Program Files (x86)\SteamyDock", "steamyDock.exe")
     SDinstalled = driveCheck("Program Files\SteamyDock", "steamyDock.exe")
@@ -1900,7 +1900,7 @@ Public Sub locateDockSettingsFile()
     Dim s As String: s = 0
         
     On Error GoTo locateDockSettingsFile_Error
-    If debugFlg = 1 Then debugLog "% sub locateDockSettingsFile"
+    If debugflg = 1 Then debugLog "% sub locateDockSettingsFile"
     
     ' dock Settings main docksettings.ini
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
@@ -2432,7 +2432,7 @@ End Function
 '
 Public Sub getFileNameAndTitle(ByRef retFileName As String, ByRef retfileTitle As String)
    On Error GoTo getFileNameAndTitle_Error
-   If debugFlg = 1 Then debugLog "%getFileNameAndTitle"
+   If debugflg = 1 Then debugLog "%getFileNameAndTitle"
 
   If GetOpenFileName(x_OpenFilename) <> 0 Then
     If x_OpenFilename.lpstrFile = "*.*" Then
@@ -2470,7 +2470,7 @@ Public Function addTargetProgram(ByVal targetText As String) As String
     Const x_MaxBuffer = 256
     
     'On Error GoTo addTargetProgram_Error
-    If debugFlg = 1 Then debugLog "%" & "addTargetProgram"
+    If debugflg = 1 Then debugLog "%" & "addTargetProgram"
     
     'On Error GoTo l_err1
     'savLblTarget = txtTarget.Text

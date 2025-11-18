@@ -6,11 +6,19 @@ Overall status - Working, a good learning platform and it functions. New graphic
 Needs to read icons from DLLs/exes - WIP
 a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
 
+' when encountering an icon path to a DLL or a EXE extract the image using displayEmbeddedIcons and write the to a hidden picbox and extract the PNG image to a special profile folder
+' insert the PNG into the dictionary at runtime startup.
+
+' Test binaries, dragging to the dock, different icon sizes
+' if no icon found then drop down to the automatic selection
+
+
 ' Current Task:
 ' =============
 
-' when encountering an icon path to a DLL or a EXE extract the image using displayEmbeddedIcons and write the to a hidden picbox and extract the PNG image to a special profile folder
-' insert the PNG into the dictionary at runtime startup.
+' make a backup of iconSettings.dat on each start
+
+' some examples of icons are not extractable by the icon extraction method     - need to test why that is.
 
 ' the icon text titles do not move up as the dock is moved up from the bottom edge
 
@@ -439,7 +447,7 @@ Translation to Non-RC6 Cairo
 handed over to D3D or OpenGL but recent news states this has project has been abandoned.
  
  
-Use of the scripting dictionary 
+Use of the scripting dictionary
  https://github.com/cristianbuse/VBA-FastDictionary/releases
 
 '

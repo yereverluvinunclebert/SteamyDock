@@ -87,6 +87,11 @@
   
   <title>SteamyDock Help Page</title>
   <meta content="Dean Beedell" name="author">
+  <style type="text/css">
+.auto-style2 {
+	font-weight: bold;
+}
+</style>
 </head>
 
 
@@ -477,8 +482,9 @@ deletion,&nbsp;I aim to implement this in the future.</li>
 
 
 
-  <li>Similar animations to Rocketdock's are missing on drag and drop into the
-dock,&nbsp;I aim to implement this in the future. </li>
+  <li>Similar animations to Rocketdock's are missing on drag and drop into the 
+  dock,&nbsp;I aim to implement this in the future, at the moment you will see a 
+  rotating hourglass when you hover a dragged icon over the dock.</li>
 
 
 
@@ -2451,20 +2457,13 @@ icon". <br>
 
 
 
-<span class=""></span>If the application associated with the icon is
-already running then it
-will have a cog sitting above it. If you click on that icon then it
-will not open a new instance of the program but instead
-will&nbsp;minimise or maximise the running window as required. In
-this respect, it operates in a similar fashion to the windows taskbar.
-&nbsp;The cog will appear above running binaries and Explorer Windows.
-There may be a short delay for the cog to appear above recently
-initiated Explorer windows, this is because they cannot be enumerated
-until the window displays, populated on screen. In this case&nbsp;it
-has to await the completion of a ten second timer (max) that analyses
-running Explorer windows before the cog will appear. IF the cog fails
-to appear above an Explorer icon&nbsp; (a known bug) then another click
-on the same icon should cause it to reappear.<br>
+<span class=""></span>If the application associated with the icon is already 
+	running then it will have a cog sitting above it. If you click on that icon 
+	then it will not open a new instance of the program but instead 
+	will&nbsp;minimise or maximise the running window as required. In this respect, 
+	it operates in a similar fashion to the windows taskbar. &nbsp;The cog will 
+	appear above running binaries and Explorer Windows. There may be a very 
+	short delay for the cog to appear above recently initiated Explorer windows.<br>
 
 
 
@@ -2503,67 +2502,12 @@ Fig 04c.&nbsp;The Red X </span><span class=""><span style="font-weight: bold;">I
 will have a red 'x' sitting above it. If you click on that icon then it
 will not open a new instance of the intended program as it cannot be found, instead
 it will pop up a&nbsp;message box alerting you to the fault.<br>
-<br>
-<img style="width: 339px; height: 159px;" alt="adminMode.png" title="adminMode.png" src="adminMode.png"><br>
-<br>
-<span class="" style="font-weight: bold;">
+	<span class="" style="font-weight: bold;">
 
 
 
 
-Fig 04d.&nbsp;The Royal Sovereign Administrator Mode.<br>
-<br>
-</span>If the dock is running under Administrative Rights then the
-sovereign image will appear on the bottom left of the dock. This is
-just a reminder to you that this is so. The dock is best run <span style="text-decoration: underline;">without</span>
-admin rights as the later versions of Microsoft Windows try to
-encapsulate processes with
-enhanced privileges, so that you cannot pass a message to a program
-with admin rights
-to make it do something naughty. For example, drag and drop to the dock
-may not function with admin rights enabled. Close the dock and restart
-without
-administrator rights (right click - properties - advanced -
-administrative rights
-OFF. Also, the same in the compatibility settings.<br>
-
-
-
-
-
-
-
-
-
-
-
-
-<h3>Drag and Drop</h3>
-
-
-
-
-
-
-
-
-
-
-
-
-Drag and drop is disabled by default, you can enable or disable it at
-any time by a right click on the dock to select the option to enable. If
-drag and drop is enabled then you can drag&nbsp;single icons both to
-and from the dock. <br>
-
-
-
-
-
-
-
-
-<br>
+	<br><br>
 
 
 
@@ -2581,25 +2525,49 @@ and from the dock. <br>
 
 
 
+</span>
+</span><br><span class="">
+
+
+
+
+
+
+
+
+
+
+
+
+Drag and drop is enabled by default, you can enable or disable it at any time by 
+	a right click on the dock to select the option to enable.</span><span class="" style="font-weight: bold;"><br>
 <br>
+</span>
+<span class="">
 
 
 
 
+	When you drag an application icon to the dock you will see a rotating 
+	hourglass when you hover your cursor over the dock. This tells you where the 
+	new application icon will be placed. As you move the cursor along the dock 
+	the hourglass will move with your cursor. When you drop the icon from the 
+	Windows desktop onto the dock then Steamydock will extract an icon from the 
+	binary and create a PNG in order to place it within the dock at your chosen 
+	location. <br><br><span style="font-weight: bold;">
+<img alt="hourglass" title="adminMode.png" src="hourglass.jpg"><br>
+<span class="" style="font-weight: bold;">
 
 
 
 
-</span>If you drag an icon from the Windows desktop to the dock
-then the dock will attempt to identify it and incorporate the new icon
-into the dock.&nbsp;Note that SteamyDock does not currently extract the
-program's
-default Windows icon due to a VB6 limitation. This will be resolved in
-the near future. Instead, SteamyDock will choose a suitable icon from
-the icons available. Having done this it
-will then pop up the Icon Settings tool so that you can see the
-properties of the new icon.&nbsp; <br>
-<br>
+Fig 04d.&nbsp;The Rotating Hourglass indicating drag in operation.</span></span><br>
+	<br>In the Dock Settings Behaviour Tab there is an option <strong>&quot;Icon 
+	Origin&quot;</strong>, unclick this and SteamyDock will attempt to identify it and incorporate the new icon
+into the dock, choosing a suitable icon from
+the icon collections available. Having done this it will then pop up the Icon 
+	Settings tool so that you can see the properties of the new icon (this can 
+	be disabled in Dock Settings).<br><br>
 <span style="font-weight: bold;">Note</span>: If &nbsp;Steamydock is
 running as admin then drag and drop to the dock will not function. This
 is Microsoft's way of ensuring encapsulation of processes with
@@ -2607,7 +2575,39 @@ privileges, so you cannot pass a message to a program with admin rights
 in order to make it do something naughty. If you ever find yourself
 unable to drag and drop to the dock just close the dock and restart it
 without administrator rights (right click - properties - advanced -
-administrative rights OFF. Also, the same in the compatibility settings.<br>
+administrative rights OFF. Also, the same in the compatibility settings.</span><br>
+	<br>The sovereign image is
+just a reminder to you that the dock has admin rights. The dock is best run <span style="text-decoration: underline;">without</span>
+	admin rights.<br>
+
+
+
+
+
+
+
+
+	<span style="font-weight: bold;">
+<br>
+<img style="width: 339px; height: 159px;" alt="adminMode.png" title="adminMode.png" src="adminMode.png"><br>
+<br>
+<span class="" style="font-weight: bold;">
+
+
+
+
+Fig 04e.&nbsp;The Royal Sovereign Administrator Mode.</span><br>
+
+
+
+
+
+
+
+
+</span>
+<br>
+	<br>
 
 
 
@@ -2629,7 +2629,7 @@ administrative rights OFF. Also, the same in the compatibility settings.<br>
 
 
 
-<span style="font-weight: bold;">Drag and drop FROM the dock <br>
+<span style="font-weight: bold;">Drag FROM the dock <br>
 
 
 
@@ -2694,10 +2694,7 @@ icon deletion is intentional.<br>
 </span>If you click and drag an icon from one position of the dock to
 another then the
 dock will interpret that as an icon move, depositing the icon to the
-new location. The drag is a little slow to resolve&nbsp;at the moment,
-take pity on poor VB6 code that has no multithreading capability so the
-tasks it performs have to run in a serial fashion, I'll have to find a
-solution to this!<br>
+new location.&nbsp; <br><br>&nbsp;<br>
 
 
 
@@ -4443,7 +4440,8 @@ about screen, the help (this page) and other useful functions.<br>
 
 
 
-<big><span style="font-weight: bold;">Dock Position&nbsp;*2<br>
+<big><span style="font-weight: bold;">Screen Position&nbsp;*2<br />
+<br />
 
 
 
@@ -4452,25 +4450,23 @@ about screen, the help (this page) and other useful functions.<br>
 
 
 
-<br>
-
-
-
-
-
-
-
-
-</span></big>
-
-
-
-Now please note: Steamydock is best placed at the bottom of your
+</span></big>Please note: Steamydock is best placed at the bottom of your
 screen. However,
 in this case, the Windows taskbar is best moved to the top of the
-screen where the two utilities will not interfere with each other.
-You'll have to do that manually as Windows 10/11 do not allow the taskbar
-to be moved automatically. <br>
+screen where the two utilities will not interfere with each other. <br><br>From 
+XP, Windows 7-10 that is a straightforward task, explained in the diagrams shown 
+below. However,Windows 11 no longer has that feature (!) so instead, if you 
+navigate to the <strong>Dock Settings - Position Tab</strong> you have the
+<span class="auto-style2">Move Taskbar</span> option<span class="auto-style2">.</span> If this option is enabled 
+when the user 
+clicks <strong>Save</strong>, it will enable the automatic move of the windows taskbar to the opposite position, ie. 
+bottom to top. <br><br>Whilst this occurs, please also note that the explorer 
+backgroud and icons will flicker a little as explorer and its windows are 
+restarted. Hoping that Microsoft will see sense and restore the ability to set 
+this feature manually soon. For the moment though, we have a workaround but it 
+does require the restart of Explorer.<br><br>Steamydock will run just fine at the top of the screen but it is 
+designed to operate at the bottom of the<span class="auto-style2"> </span>screen 
+as a taskbar replacement.<br><br>
 
 
 
@@ -4595,6 +4591,15 @@ taskbar is <span style="text-decoration: underline;">not locked</span> as shown 
 
 
 <br>
+
+
+
+
+
+
+
+
+<br><br><br>
 
 
 

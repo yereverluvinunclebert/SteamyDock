@@ -217,7 +217,7 @@ Public Function fExtractEmbeddedPNGFromEXE(ByVal FileName As String, ByRef targe
     lResult = PrivateExtractIcons(FileName, lIconIndex, lxSize, lySize, ByVal 0&, ByVal 0&, 0&, 0&)
     
     If lResult = 0 Then
-        MsgBox "Failed to extract icon."
+        'MsgBox "Failed to extract icon."
         GoTo CleanUp
     End If
     
@@ -262,11 +262,11 @@ Public Function fExtractEmbeddedPNGFromEXE(ByVal FileName As String, ByRef targe
             'creates a GDI+ image bitmap (lhImage) using the icon handle from the icon handle array populated by PrivateExtractIcons
             lResult = GdipCreateBitmapFromHICON(lhIcon(LBound(lhIcon)), lhImage)
             If lResult <> 0 Or lhImage = 0 Then
-                MsgBox "Failed to create bitmap from icon."
+                ' MsgBox "Failed to create bitmap from icon."
                 GoTo CleanUp
             Else
                 ' Creates a GDIP Graphics object (lhGraphics) that is associated with the current device context, that being the target picbox
-                GdipCreateFromHDC .hDC, lhGraphics
+                GdipCreateFromHDC .hDC, lhGraphics ' wrap target DC in GDI+
                 
                 ' Draws an image at a specified location (targetPicBox) using the image bitmap and graphics object, in effect writing the image to the picbox
                 '                      lhGraphics, lhImage, destX, destY, destWidth, destHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel, hImgAttr, 0&, 0&
@@ -286,21 +286,14 @@ Public Function fExtractEmbeddedPNGFromEXE(ByVal FileName As String, ByRef targe
                     sJustTheFilename = ExtractFilenameWithoutSuffix(sJustTheFilename)
                     sOutputFilename = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\images\" & sJustTheFilename & ".png"
     
-                    'MsgBox "sOutputFilename" & sOutputFilename
-                    
                     ' set the encoder class identifier to handle the image bitmap as a PNG
                     CLSIDFromString StrPtr("{557CF406-1A04-11D3-9A73-0000F81EF32E}"), ImageFormatPNG
-                    
-                    ' Get the CLSID of the PNG encoder
-                    'Call GetEncoderClsid("image/png", encoderCLSID)
-    
+                        
                     ' extract a PNG of the image bitmap and save to file
-                    'saveStatus = GdipSaveImageToFile(iconBitmap, StrConv(App.path & "\cache\" & LTrim$(str$(Width)) & strName, vbUnicode), encoderCLSID, ByVal 0)
-
                     bSuccessSaveToPNG = GdipSaveImageToFile(lhImage, StrPtr(sOutputFilename), ImageFormatPNG, ByVal 0&) = 0&
-                    'bSuccessSaveToPNG = GdipSaveImageToFile(lhImage, StrConv(sOutputFilename, vbUnicode), encoderCLSID, ByVal 0&) = 0&
                     If bSuccessSaveToPNG = False Then
-                        MsgBox "Failed to save PNG."
+                        fExtractEmbeddedPNGFromEXE = ""
+                        ' MsgBox "Failed to save PNG."
                     Else
                         fExtractEmbeddedPNGFromEXE = sOutputFilename
                     End If
@@ -507,9 +500,10 @@ End Function
 ' Purpose   : packing variables into a 32bit LONG for an API call
 '---------------------------------------------------------------------------------------
 '
-Private Function make32BitLong(ByVal LoWord As Integer, _
-                 Optional ByVal HiWord As Integer = 0) As Long
+Private Function make32BitLong(ByVal LoWord As Integer, Optional ByVal HiWord As Integer = 0) As Long
+
    On Error GoTo make32BitLong_Error
+   
    If debugflg = 1 Then debugLog "%make32BitLong"
 
     make32BitLong = CLng(HiWord) * CLng(&H10000) + CLng(LoWord)
@@ -551,6 +545,7 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
         If (Result = OLE_ERROR_CODES.S_OK) Then
             Result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic)
             
+            ' Creates a new picture object initialized according to a PICTDESC structure.
             If (Result = OLE_ERROR_CODES.S_OK) Then
                 Set CreateIcon = pic
             End If

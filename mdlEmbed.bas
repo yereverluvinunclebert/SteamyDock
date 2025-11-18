@@ -1,7 +1,7 @@
 Attribute VB_Name = "Module2"
 Option Explicit
 
-Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pCLSID As Long) As Long
+Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pclsid As Long) As Long
 
 Private Enum OLE_ERROR_CODES
     S_OK = 0
@@ -497,17 +497,17 @@ End Function
 ' Procedure : CreateIcon
 ' Author    : beededea
 ' Date      : 14/07/2019
-' Purpose   :
+' Purpose   : This method creates an icon based on an image handle
 '---------------------------------------------------------------------------------------
 '
 Private Function CreateIcon(ByVal hImage As Long) As IPicture
-    ' This method creates an icon based on a handle
+   
     Dim pic As IPicture
     Dim dsc As PictDesc
-    Dim iid(0 To 15) As Byte
+    Dim IID(0 To 15) As Byte
     Dim Result As Long: Result = 0
     
-   On Error GoTo CreateIcon_Error
+    On Error GoTo CreateIcon_Error
 
     Set CreateIcon = Nothing
     If hImage <> 0 Then
@@ -517,12 +517,12 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
            .PicType = VBRUN.PictureTypeConstants.vbPicTypeIcon
         End With
         
-        Result = OLE_CLSIDFromString(StrPtr(IID_IPicture), _
-                                                        VarPtr(iid(0)))
+        Result = OLE_CLSIDFromString(StrPtr(IID_IPicture), VarPtr(IID(0)))
                                                     
         If (Result = OLE_ERROR_CODES.S_OK) Then
+        
             ' Creates a new picture object initialized according to a PICTDESC structure.
-            Result = Ole_CreatePic(dsc, VarPtr(iid(0)), True, pic)
+            Result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic)
             
             If (Result = OLE_ERROR_CODES.S_OK) Then
                 Set CreateIcon = pic

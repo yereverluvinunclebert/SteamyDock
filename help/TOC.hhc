@@ -6,7 +6,7 @@
 <BODY>
  <OBJECT type="text/site properties">
   <PARAM name="Window Styles" value="0x800027">
-  <PARAM name="Font" value="Centurion Light SF,10,1">
+  <PARAM name="ImageType" value="Folder">
  </OBJECT>
 <UL>
  <LI><OBJECT type="text/sitemap">
