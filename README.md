@@ -120,6 +120,8 @@ Components:
 
 No components used in this project.
 
+![componentsEmpty](https://github.com/user-attachments/assets/894ada8a-cd73-4555-a460-b18075e15ee9)
+
 Other Dependencies:
 
 o Steamydock's configuration is achieved using two other VB6 utilities. Icon-Settings-for-Steamydock 
