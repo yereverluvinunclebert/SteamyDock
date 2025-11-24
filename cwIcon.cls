@@ -11,6 +11,13 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
+'---------------------------------------------------------------------------------------
+' Module    : cwMainIcon
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   : A currently unused class that will form the basis of a class to encapsulate the properties of an icon
+'---------------------------------------------------------------------------------------
+
 Option Explicit
 
 Private mHOffset As Long
@@ -194,10 +201,10 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get Filename() As Long
+Public Property Get FileName() As Long
    On Error GoTo FilenameGet_Error
 
-   Filename = mFilename
+   FileName = mFilename
 
    On Error GoTo 0
    Exit Property
@@ -213,7 +220,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let Filename(ByVal newValue As Long)
+Public Property Let FileName(ByVal newValue As Long)
    On Error GoTo FilenameLet_Error
 
     If mFilename <> newValue Then mFilename = newValue Else Exit Property

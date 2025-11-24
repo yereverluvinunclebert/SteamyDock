@@ -100,20 +100,45 @@ Public screenHeightTwips As Long
 Public gblRequiresCommitToDisc As Boolean
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : fVirtualScreenWidth
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Function fVirtualScreenWidth() As Long
     ' This works even on Tablet PC.  The problem is: when the tablet screen is rotated, the "Screen" object of VB doesn't pick it up.
     Dim Pixels As Long: Pixels = 0
     Const SM_CXVIRTUALSCREEN = 78
     '
+    On Error GoTo fVirtualScreenWidth_Error
+
     Pixels = GetSystemMetrics(SM_CXVIRTUALSCREEN)
     fVirtualScreenWidth = Pixels * fTwipsPerPixelX
+
+    On Error GoTo 0
+    Exit Function
+
+fVirtualScreenWidth_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fVirtualScreenWidth of Module Module1"
 End Function
 
+'---------------------------------------------------------------------------------------
+' Procedure : fVirtualScreenHeight
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Function fVirtualScreenHeight(Optional bSubtractTaskbar As Boolean = False) As Long
     ' This works even on Tablet PC.  The problem is: when the tablet screen is rotated, the "Screen" object of VB doesn't pick it up.
     Dim Pixels As Long: Pixels = 0
     Const CYVIRTUALSCREEN = 79
     '
+    On Error GoTo fVirtualScreenHeight_Error
+
     Pixels = GetSystemMetrics(CYVIRTUALSCREEN)
     If bSubtractTaskbar Then
         ' The taskbar is typically 30 pixels or 450 twips, or, at least, this is the assumption made here.
@@ -123,6 +148,13 @@ Public Function fVirtualScreenHeight(Optional bSubtractTaskbar As Boolean = Fals
     Else
         fVirtualScreenHeight = Pixels * fTwipsPerPixelY
     End If
+
+    On Error GoTo 0
+    Exit Function
+
+fVirtualScreenHeight_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fVirtualScreenHeight of Module Module1"
 End Function
 
 ' Author    : Elroy from Vbforums
@@ -225,16 +257,48 @@ fTwipsPerPixelY_Error:
 
 End Function
 
+'---------------------------------------------------------------------------------------
+' Procedure : fGetMonitorCount
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Public Function fGetMonitorCount() As Long
+    On Error GoTo fGetMonitorCount_Error
+
     EnumDisplayMonitors 0, ByVal 0&, AddressOf MonitorEnumProc, fGetMonitorCount
+
+    On Error GoTo 0
+    Exit Function
+
+fGetMonitorCount_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure fGetMonitorCount of Module Module1"
 End Function
 
+'---------------------------------------------------------------------------------------
+' Procedure : MonitorEnumProc
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Function MonitorEnumProc(ByVal hMonitor As Long, ByVal hdcMonitor As Long, lprcMonitor As RECT, dwData As Long) As Long
+    On Error GoTo MonitorEnumProc_Error
+
     ReDim Preserve rcMonitors(dwData)
     rcMonitors(dwData) = lprcMonitor
     UnionRect rcVS, rcVS, lprcMonitor 'merge all monitors together to get the virtual screen coordinates
     dwData = dwData + 1 'increase monitor count
     MonitorEnumProc = 1 'continue
+
+    On Error GoTo 0
+    Exit Function
+
+MonitorEnumProc_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure MonitorEnumProc of Module Module1"
 End Function
 
 '---------------------------------------------------------------------------------------

@@ -13,7 +13,7 @@ a few bugs overall, deletion and drag/drop can be slow to complete. New animatio
 ' if no icon found then drop down to the automatic selection
 
 
-' Current Task:
+' Current Tasks:
 ' =============
 
 ' make a backup of iconSettings.dat on each start
@@ -37,6 +37,20 @@ when the dock is over a certain size the background does not appear
 when a dock is wider than 2000 pixels - stitch two docks together
 
 multi-monitor support
+
+Synchronising the three applications. We can use any of these options:
+
+A. Memeory mapped areas - https://www.vbforums.com/showthread.php?696123-VB6-MMapper-Memory-Mapped-File-Demo
+Creating memory mapped section to store data available to all three applications
+
+B. Database access for all three utilities using sqlite, MUTEX semaphores to control who has access?
+
+C. Random access as shared, we have to resolve the locking/blocking manually.
+
+D. Named pipes, we have to resolve the locking/blocking
+
+E. Bring the three programs together - we WILL do this eventually but we have development to complete.
+
 
 Private Declare Function IsHungAppWindow Lib "user32" (ByVal hWnd As Long) As Long
 

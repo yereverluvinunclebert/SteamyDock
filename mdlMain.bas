@@ -1893,7 +1893,7 @@ Public Sub addProgramDLLorEXE()
     If fFExists(filestring) Then
             If rDRetainIcons = "1" Then
                 'FileName = txtCurrentIcon.Text ' revert to the relative path which is what is expected
-                iconFilename = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+                iconFilename = fExtractEmbeddedPNGFromEXE(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
             End If
 
         Else ' the file doesn't exist in any form with ? or otherwise as a valid path
@@ -2921,7 +2921,7 @@ End Function
 
 '---------------------------------------------------------------------------------------
 ' Procedure : handleWindowConditionAndZorder
-' Author    : beededea
+' Author    : original inspired by WaynePhillips of EverythingAccess.com, heavily modified since
 ' Date      : 18/05/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------

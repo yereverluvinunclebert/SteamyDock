@@ -555,6 +555,7 @@ Attribute VB_Exposed = False
 '           Microsoft Shell Controls and Automation
 '           Microsoft scripting runtime - for the scripting dictionary usage
 '           OLEEXP Modern Shell Interfaces for VB6, v5.1
+'           VBSQLLite12.DLL for VB6 wrapper for sqlite3win32.dll for database testing that has not yet been fully implemented.
 '
 '
 '========================================================================================================
@@ -736,6 +737,10 @@ Attribute VB_Exposed = False
 ' project references utility. Point OLEEXP to the correct location (SysWoW64). You should only have one copy installed.
 ' Only needed during development as the types are compiled in. Once your project is compiled, the TLB is no longer used.
 ' It does not need to be present on end user machines.
+
+' Requires a project reference VBSQLLite12.DLL for the database testing that has not yet been implemented.
+
+' At the moment the
 
 ' Detail regarding data sources:
 ' C:\Users\<username>\AppData\Roaming\steamyDock\
@@ -1110,7 +1115,7 @@ Private Sub Form_Load()
     
     ' comment the following function back in only when debugging
     On Error GoTo Form_Load_Error
-                
+    
     ' set the application to be DPI aware using the 'forbidden' API.
     If IsProcessDPIAware() = False Then Call setDPIAware
     
@@ -1250,6 +1255,8 @@ Private Sub Form_Load()
     
     'start timers
     wallpaperTimer.Enabled = True
+    
+    'hiddenForm.Show
     
     'add to the initiated ProcessArray
     'Call checkDockProcessesRunning ' trigger a test of running processes in half a second
@@ -7549,20 +7556,20 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Function fCountFilesDir(ByVal thisFolder As String) As Long
-   Dim s As String: s = vbNullString
+   Dim S As String: S = vbNullString
    Dim z As Long: z = 0
 
    On Error GoTo fCountFilesDir_Error
 
-      s = Dir(thisFolder & "\*.*")
+      S = Dir(thisFolder & "\*.*")
       Do
-         If Len(s) = 0 Then
+         If Len(S) = 0 Then
             Exit Do
          End If
-         If (GetAttr(thisFolder & "\" & s) And vbDirectory) = 0 Then
+         If (GetAttr(thisFolder & "\" & S) And vbDirectory) = 0 Then
             z = z + 1
           End If
-         s = Dir()
+         S = Dir()
       Loop
       
       fCountFilesDir = z

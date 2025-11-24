@@ -405,6 +405,9 @@ Private Declare Function QueryDosDevice Lib "kernel32" Alias "QueryDosDeviceA" (
 'Public sRunSecondAppBeforehandArray() As String
 'Public sAppToTerminateArray() As String
 'Public sDisabledArray() As String
+
+
+
 '
 '---------------------------------------------------------------------------------------
 ' Procedure : checkLicenceState
@@ -465,7 +468,7 @@ Public Function LoadFileToTB(ByRef TxtBox As Object, ByVal FilePath As String, O
 
     
     Dim iFile As Integer: iFile = 0
-    Dim s As String: s = vbNullString
+    Dim S As String: S = vbNullString
     
    On Error GoTo LoadFileToTB_Error
       'If debugFlg = 1 Then debugLog "%" & "LoadFileToTB"
@@ -476,15 +479,15 @@ Public Function LoadFileToTB(ByRef TxtBox As Object, ByVal FilePath As String, O
     If Dir$(FilePath) = vbNullString Then Exit Function
     
     On Error GoTo ErrorHandler:
-    s = TxtBox.Text
+    S = TxtBox.Text
     
     iFile = FreeFile
     Open FilePath For Input As #iFile
-    s = Input(LOF(iFile), #iFile)
+    S = Input(LOF(iFile), #iFile)
     If Append Then
-        TxtBox.Text = TxtBox.Text & s
+        TxtBox.Text = TxtBox.Text & S
     Else
-        TxtBox.Text = s
+        TxtBox.Text = S
     End If
     
     LoadFileToTB = True
@@ -1897,7 +1900,7 @@ Public Sub locateDockSettingsFile()
     
     Dim inputData As String:  inputData = vbNullString
     Dim outputData As String: outputData = vbNullString
-    Dim s As String: s = 0
+    Dim S As String: S = 0
         
     On Error GoTo locateDockSettingsFile_Error
     If debugflg = 1 Then debugLog "% sub locateDockSettingsFile"
@@ -1935,7 +1938,7 @@ Public Sub locateDockSettingsFile()
                 Line Input #1, inputData
                 ' change any occurrence of [defaultDockLocation] to sdAppPath
                 If InStr(inputData, "[defaultDockLocation]") Then
-                    s = Replace(inputData, "[defaultDockLocation]", sdAppPath)
+                    S = Replace(inputData, "[defaultDockLocation]", sdAppPath)
                 End If
                 Write #2, outputData     ' write the line to the new docksettings.ini
                 'debugLog outputData

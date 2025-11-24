@@ -572,7 +572,8 @@ End Function
 '---------------------------------------------------------------------------------------
 ' because the icon images are drawn from the top left of the
 ' preview pictureBox we have to manually set the picbox to size and position for each icon size
-' this could be done with padding but it matches the VB6 method (no padding there)
+' this could be done with padding VB6 method has no padding property
+
 Public Sub centrePreviewImage(ByRef targetPicBox As PictureBox, ByVal IconSize As Integer, ByVal ResizeRatio As Double)
 
     If targetPicBox.Name = "picPreview" Then
