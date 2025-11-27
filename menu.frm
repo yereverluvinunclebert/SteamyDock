@@ -1157,7 +1157,10 @@ Private Sub mnuBottom_Click()
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", "9999", dockSettingsFile ' no icon changed
     
-    Call repositionWindowsTaskbar(rDSide, vbtop)
+    ' Windows 7 and prior does not have the stuckRects registry entry required by this sub.
+    If pvtBIsWin10OrGreater = True Then
+        Call repositionWindowsTaskbar(rDSide, vbtop)
+    End If
 
     Call dock.drawSmallStaticIcons
 
@@ -1799,7 +1802,10 @@ Private Sub mnuTop_Click()
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", "9999", dockSettingsFile
     
-    Call repositionWindowsTaskbar(rDSide, vbBottom)
+    ' Windows 7 and prior does not have the stuckRects registry entry required by this sub.
+    If pvtBIsWin10OrGreater = True Then
+        Call repositionWindowsTaskbar(rDSide, vbBottom)
+    End If
     
     Call dock.drawSmallStaticIcons ' here
 

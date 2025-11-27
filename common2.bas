@@ -440,7 +440,7 @@ Public Sub validateIcons()
     'If Val(rDMonitor) < 0 Or Val(rDMonitor) > 10 Then rDMonitor = "0" 'monitor 1
     If Val(rDIconOpacity) < 50 Or Val(rDIconOpacity) > 100 Then rDIconOpacity = "100" 'fully opaque
     If Val(rDZoomOpaque) <= 0 Or Val(rDZoomOpaque) > 1 Then rDZoomOpaque = "1" 'zooms opaque
-    If Val(rDIconMin) < 16 Or Val(rDIconMin) > 128 Then rDIconMin = "16" 'small
+    If Val(rDIconMin) < 12 Or Val(rDIconMin) > 128 Then rDIconMin = "12" 'small
     If Val(rDHoverFX) <= 0 Or Val(rDHoverFX) > 4 Then rDHoverFX = "1" 'bounce ' .14 DAEB 29/04/2021 docksettings Set the default zoom types available to the type of dock selected
 
     If Val(rdIconMax) < 1 Or Val(rdIconMax) > 256 Then rdIconMax = "256" 'largest size
@@ -997,6 +997,9 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
     
     On Error GoTo repositionWindowsTaskbar_Error
     If debugflg = 1 Then Debug.Print "%repositionWindowsTaskbar"
+    
+    ' Windows 7 and prior does not have the stuckRects registry entry required by this sub.
+    If pvtBIsWin10OrGreater = False Then Exit Sub
     
     ' steamydock avoids taskbar/dock position conflict.
     If rDMoveWinTaskbar = "1" Then

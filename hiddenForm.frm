@@ -1,14 +1,15 @@
 VERSION 5.00
 Begin VB.Form hiddenForm 
    Caption         =   "do not delete me as I am a temporary structure used to hold a picbox"
-   ClientHeight    =   8550
+   ClientHeight    =   7080
    ClientLeft      =   60
    ClientTop       =   345
-   ClientWidth     =   11370
+   ClientWidth     =   9855
    LinkTopic       =   "Form1"
-   ScaleHeight     =   8550
-   ScaleWidth      =   11370
+   ScaleHeight     =   7080
+   ScaleWidth      =   9855
    StartUpPosition =   3  'Windows Default
+   Visible         =   0   'False
    Begin VB.ListBox List1 
       Enabled         =   0   'False
       Height          =   2595
@@ -90,7 +91,7 @@ Option Explicit
 
 Implements ISQLiteProgressHandler
 
-Private DBConnection As SQLiteConnection  ' requires the SQLLite project reference VBSQLLite12.DLL
+Public DBConnection As SQLiteConnection  ' requires the SQLLite project reference VBSQLLite12.DLL
 
 '---------------------------------------------------------------------------------------
 ' Procedure : ISQLiteProgressHandler_Callback
@@ -214,7 +215,7 @@ Private Sub CommandConnect_Click()
                 End If
                 On Error GoTo 0
                 If .hDB <> NULL_PTR Then
-                    Set DBConnection = .Object
+                    Set DBConnection = .object
                     .SetProgressHandler Me ' Registers the progress handler callback
                     CommandInsert.Enabled = True
                     List1.Enabled = True
@@ -252,7 +253,7 @@ Private Sub CommandInsert_Click()
     If StrPtr(Text) = NULL_PTR Then Exit Sub
     On Error GoTo CATCH_EXCEPTION
     With DBConnection
-    .Execute "INSERT INTO test_table (szText) VALUES ('" & Text & "')"
+    .Execute "INSERT INTO iconData (szText) VALUES ('" & Text & "')"
     End With
     Call Requery
     Exit Sub

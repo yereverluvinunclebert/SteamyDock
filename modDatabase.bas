@@ -1,7 +1,32 @@
 Attribute VB_Name = "modDatabase"
-'Option Explicit
+Option Explicit
+
+Public DBConnection As SQLiteConnection  ' requires the SQLLite project reference VBSQLLite12.DLL
 
 
+' install the db tool 32 bit version on the Dell laptop
+' create fields for each of the following icon characteristics
+
+'FileName As String
+'FileName2 As String
+'Title As String
+'Command As String
+'Arguments As String
+'WorkingDirectory As String
+'ShowCmd As String
+'OpenRunning As String
+'IsSeparator As String
+'UseContext As String
+'DockletFile As String
+'UseDialog As String
+'UseDialogAfter As String
+'QuickLaunch As String
+'AutoHideDock As String
+'SecondApp As String
+'RunElevated As String
+'RunSecondAppBeforehand As String
+'AppToTerminate As String
+'Disabled As String
 
 
 '---------------------------------------------------------------------------------------
@@ -113,15 +138,15 @@ Public Function GetDataSinceUpdateCounter(ByVal p_UpdateCounter As Currency)
     
     Dim DataSet As SQLiteDataSet
     Set DataSet = DBConnection.OpenDataSet("SELECT key, data FROM iconData WHERE update_counter>" & p_UpdateCounter)
-    
-    ' replace with scripting collection
-
-    'Set GetDataSinceUpdateCounter = New_c.Collection(False)
+        
+    'dictionary for the database access
+    Set GetDataSinceUpdateCounter = CreateObject("Scripting.Dictionary")
+    GetDataSinceUpdateCounter.CompareMode = 1 'case-insenitive Key-Comparisons
     
     ' Select only rows whose update_counter is greater than the given value
     With DataSet
        Do Until .EOF
-          'GetDataSinceUpdateCounter.Add .Fields("data").Value, .Fields("key").Value
+          GetDataSinceUpdateCounter.Add .Columns("data").Value, .Columns("key").Value
           
           .MoveNext
        Loop

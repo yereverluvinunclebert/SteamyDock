@@ -514,6 +514,7 @@ Public bmpInfo As BITMAPINFO
 Private collTemporaryIcons As Object
 Public collLargeIcons As Object
 Public collSmallIcons As Object
+Public GetDataSinceUpdateCounter As Object
 
 Public dcMemory As Long
 Public hBmpMemory As Long

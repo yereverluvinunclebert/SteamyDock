@@ -1256,7 +1256,7 @@ Private Sub Form_Load()
     'start timers
     wallpaperTimer.Enabled = True
     
-    'hiddenForm.Show
+    hiddenForm.Show
     
     'add to the initiated ProcessArray
     'Call checkDockProcessesRunning ' trigger a test of running processes in half a second
@@ -5888,7 +5888,7 @@ Private Sub createDictionaryObjects()
     'dictionary for the smaller icons
     Set collSmallIcons = CreateObject("Scripting.Dictionary")
     collSmallIcons.CompareMode = 1 'case-insenitive Key-Comparisons
-    
+        
 '    'third temporary dictionary that is used for temporary storage whilst generating large sized, transparent disabled images on the fly
 '    Set collLargeTransparentIcons = CreateObject("Scripting.Dictionary")
 '    collLargeTransparentIcons.CompareMode = 1 'case-insenitive Key-Comparisons

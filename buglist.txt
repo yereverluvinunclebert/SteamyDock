@@ -12,9 +12,14 @@ a few bugs overall, deletion and drag/drop can be slow to complete. New animatio
 ' Test binaries, dragging to the dock, different icon sizes
 ' if no icon found then drop down to the automatic selection
 
-
 ' Current Tasks:
 ' =============
+
+' add fields to database
+' test with new fields
+' test regfree.bas to see if the VBSQL can be used regfree
+
+' remove the old entries in settings.ini
 
 ' make a backup of iconSettings.dat on each start
 
@@ -25,13 +30,14 @@ a few bugs overall, deletion and drag/drop can be slow to complete. New animatio
 ' 255 chars in path - modify the help
 
 fix end rdIconMAximum when adding/deleting WIP
+note: count is in settings.ini
 
 add a precursor blank icon and a final icon
 
 Encapsulate the main few icons as an object using classes, create a class, for type icon, assign it properties left, top, width, height, opacity - wip
 
 msgbox when killing apps needs to be on top!
-
+all non-error msgboxes need to be messageBox
 when the dock is over a certain size the background does not appear
 
 when a dock is wider than 2000 pixels - stitch two docks together
@@ -40,7 +46,7 @@ multi-monitor support
 
 Synchronising the three applications. We can use any of these options:
 
-A. Memeory mapped areas - https://www.vbforums.com/showthread.php?696123-VB6-MMapper-Memory-Mapped-File-Demo
+A. Memory mapped areas - https://www.vbforums.com/showthread.php?696123-VB6-MMapper-Memory-Mapped-File-Demo
 Creating memory mapped section to store data available to all three applications
 
 B. Database access for all three utilities using sqlite, MUTEX semaphores to control who has access?
@@ -79,6 +85,7 @@ try adding 1-5 pixels to the icons to the right/left to see if it stops oscillat
 convert old settings.ini to JSON format using https://www.ediy.co.nz/vbjson-json-parser-library-in-vb6-xidc55680.html
 
 separate the task to kill a process to an external process so that the current process, ie. the dock is not held up
+    the final task in the end routine can be to spawn a new binary, no need to have a separate binary that kills and restarts
 
 ' VB6 MultiProcessing (StdExe-IPC via SharedMemory)
 ' https://www.vbforums.com/showthread.php?863075-VB6-MultiProcessing-(StdExe-IPC-via-SharedMemory)
@@ -922,3 +929,5 @@ checkRunningProcesses added a found process to the initiatedProcessArray for mor
 
 checkExplorerProcessesRunning - if matching explorer process has been found it is then dropped into the initiatedExplorerArray
 tests for new gbl vars that indicate whether the main process/explorer timers are running
+
+' add code to prevent taskbar move operation on windows 7 and prior as registry stuckrect does not exist
