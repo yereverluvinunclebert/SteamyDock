@@ -15,11 +15,21 @@ a few bugs overall, deletion and drag/drop can be slow to complete. New animatio
 ' Current Tasks:
 ' =============
 
+
+' install the db tool 32 bit version on the Dell laptop
+' create fields for each of the icon characteristics
+
 ' add fields to database
 ' test with new fields
+' move all form code to the mosDatabase.bas
+' deletion of specific keys from the listbox = does that work in the original Krool example?
+
 ' test regfree.bas to see if the VBSQL can be used regfree
 
-' remove the old entries in settings.ini
+' error when copying the iconSettings.ini and dat files, the dock opened but generated a runtime error when the dock reached 79 items (approx.) giving errors when loading images to the collections
+' I am guessing that there was a mismatch between the count in iconSettings and the count from the .dat, possibly yhe collection length being too short.
+
+' remove the old icon entries in settings.ini
 
 ' make a backup of iconSettings.dat on each start
 

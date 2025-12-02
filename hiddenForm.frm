@@ -53,8 +53,16 @@ Begin VB.Form hiddenForm
       Top             =   360
       Width           =   2415
    End
-   Begin VB.Label Label 
+   Begin VB.Label Label1 
       Caption         =   $"hiddenForm.frx":0000
+      Height          =   795
+      Left            =   3180
+      TabIndex        =   6
+      Top             =   1110
+      Width           =   6345
+   End
+   Begin VB.Label Label 
+      Caption         =   $"hiddenForm.frx":008A
       Height          =   795
       Left            =   3240
       TabIndex        =   5
@@ -91,24 +99,23 @@ Option Explicit
 
 Implements ISQLiteProgressHandler
 
-Public DBConnection As SQLiteConnection  ' requires the SQLLite project reference VBSQLLite12.DLL
 
 '---------------------------------------------------------------------------------------
 ' Procedure : ISQLiteProgressHandler_Callback
 ' Author    : jbPro
 ' Date      : 24/11/2025
-' Purpose   :
+' Purpose   : The SetProgressHandler method (which registers this callback) has a default value of 100 for the
+'                number of virtual machine instructions that are evaluated between successive invocations of this callback.
+'                This means that this callback is never invoked for very short running SQL statements.
 '---------------------------------------------------------------------------------------
 '
-Private Sub ISQLiteProgressHandler_Callback(Cancel As Boolean)
-' The SetProgressHandler method (which registers this callback) has a default value of 100 for the
-' number of virtual machine instructions that are evaluated between successive invocations of this callback.
-' This means that this callback is never invoked for very short running SQL statements.
+Public Sub ISQLiteProgressHandler_Callback(Cancel As Boolean)
+
     On Error GoTo ISQLiteProgressHandler_Callback_Error
 
-DoEvents
-' The operation will be interrupted if the cancel parameter is set to true.
-' This can be used to implement a "cancel" button on a GUI progress dialog box.
+    DoEvents
+    ' The operation will be interrupted if the cancel parameter is set to true.
+    ' This can be used to implement a "cancel" button on a GUI progress dialog box.
 
     On Error GoTo 0
     Exit Sub
@@ -147,82 +154,55 @@ End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : CommandConnect_Click
-' Author    : Krool
+' Author    : beededea
 ' Date      : 24/11/2025
-' Purpose   :
-' Returns a shared connection to the local SQLite iconData.
-' If the database file doesn't exist, it is created and initialized
-' with the iconData table and triggers.
+' Purpose   : Returns a shared connection to the local SQLite iconDataTable.
+'                If the database file doesn't exist, it is created and initialised
+'                with the iconDataTable table and triggers.
 '---------------------------------------------------------------------------------------
 '
 Private Sub CommandConnect_Click()
+    Dim PathName As String: PathName = vbNullString
+    
     On Error GoTo CommandConnect_Click_Error
 
+    ' test connection to DB exists, if not then connect or create.
     If DBConnection Is Nothing Then
-        Dim PathName As String
-        PathName = App.Path
+            
+        PathName = App.path
         If Not Right$(PathName, 1) = "\" Then PathName = PathName & "\"
-    
         PathName = "C:\Users\beededea\AppData\Roaming\steamyDock\iconSettings.db"
-        If fFExists(PathName) Then
+        
+        ' check database file exists on the system
+        If fFExists(PathName) = True Then
             With New SQLiteConnection
+                ' attempt to connect to SQLite db
                 On Error Resume Next
                 .OpenDB PathName, SQLiteReadWrite
                 If Err.Number <> 0 Then
+                    MsgBox "Error " & PathName & " has a problem." & Err.Number & " (" & Err.Description & ") in procedure CommandConnect_Click of Form hiddenForm"
                     Err.Clear
-                    If MsgBox("iconSettings.db does not exist. Create new?", vbExclamation + vbOKCancel) <> vbCancel Then
-                        .OpenDB PathName & "iconSettings.db", SQLiteReadWriteCreate
-    
-                        ' Create main iconData table:
-                        '  - key: logical identifier (case-insensitive primary key)
-                        '  - data: payload stored as BLOB
-                        '  - update_counter: monotonically increasing integer, used for change tracking
-                        .Execute _
-                            "CREATE TABLE iconData (" & _
-                            " key TEXT NOT NULL COLLATE NOCASE," & _
-                            " data BLOB NOT NULL," & _
-                            " update_counter INTEGER NOT NULL DEFAULT 0," & _
-                            " PRIMARY KEY(key))"
-    
-                        ' Trigger to bump update_counter on UPDATE of data:
-                        '  - AFTER UPDATE OF data: only fires when the data column changes
-                        '  - Sets update_counter to current max(update_counter)+1 across the table
-                        '  - WHERE key = NEW.key ensures only the updated row is changed
-                        .Execute _
-                              "CREATE TRIGGER iconData_update_counter " & _
-                              "AFTER UPDATE OF data ON iconData " & _
-                              "FOR EACH ROW " & _
-                              "BEGIN " & _
-                              "  UPDATE iconData " & _
-                              "  SET update_counter = (SELECT COALESCE(MAX(update_counter), 0) + 1 FROM iconData) " & _
-                              "  WHERE key = NEW.key; " & _
-                              "END;"
-    
-                        ' Trigger to bump update_counter on INSERT:
-                        '  - AFTER INSERT: runs after the row is inserted
-                        '  - Sets update_counter for just the new row (NEW.key)
-                        '  - Uses same global max(update_counter)+1 logic
-                        .Execute _
-                              "CREATE TRIGGER iconData_insert_counter " & _
-                              "AFTER INSERT ON iconData " & _
-                              "BEGIN " & _
-                              "  UPDATE iconData " & _
-                              "  SET update_counter = (SELECT COALESCE(MAX(update_counter), 0) + 1 FROM iconData) " & _
-                              "  WHERE key = NEW.key; " & _
-                              "END;"
-    
-                    End If
                 End If
-                On Error GoTo 0
+                
+                ' connection is good!
                 If .hDB <> NULL_PTR Then
                     Set DBConnection = .object
-                    .SetProgressHandler Me ' Registers the progress handler callback
-                    CommandInsert.Enabled = True
-                    List1.Enabled = True
-                    Call Requery
                 End If
             End With
+        Else ' if db not exists then create it and set up the new database with hard coded schema
+            If MsgBox(PathName & " does not exist. Create new?", vbExclamation + vbOKCancel) <> vbCancel Then
+                Call createDBFromScratch(PathName)
+            End If
         End If
+        
+        With DBConnection
+            .SetProgressHandler Me ' Registers the progress handler callback
+        End With
+        
+        CommandInsert.Enabled = True
+        List1.Enabled = True
+        List1.Clear
+        Call Requery
     Else
         MsgBox "Already connected.", vbExclamation
     End If
@@ -247,50 +227,19 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub CommandInsert_Click()
-    Dim Text As String
     
-    Text = VBA.InputBox("szText")
-    If StrPtr(Text) = NULL_PTR Then Exit Sub
-    On Error GoTo CATCH_EXCEPTION
-    With DBConnection
-    .Execute "INSERT INTO iconData (szText) VALUES ('" & Text & "')"
-    End With
-    Call Requery
-    Exit Sub
-CATCH_EXCEPTION:
-    MsgBox Err.Description, vbCritical + vbOKOnly
-
-    On Error GoTo 0
-    Exit Sub
-
-End Sub
-
-'---------------------------------------------------------------------------------------
-' Procedure : Requery
-' Author    : Krool
-' Date      : 24/11/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Sub Requery()
-
-    On Error GoTo CATCH_EXCEPTION
     List1.Clear
-    Dim DataSet As SQLiteDataSet
-    Set DataSet = DBConnection.OpenDataSet("SELECT ID, szText FROM icondata")
-    DataSet.MoveFirst
-    Do Until DataSet.EOF
-        List1.AddItem DataSet!id & "_" & DataSet!szText
-        DataSet.MoveNext
-    Loop
-    Exit Sub
-CATCH_EXCEPTION:
-    MsgBox Err.Description, vbCritical + vbOKOnly
+    Call insertRecords
 
     On Error GoTo 0
     Exit Sub
 
 End Sub
+
+
+
+
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : CommandClose_Click
@@ -302,16 +251,7 @@ End Sub
 Private Sub CommandClose_Click()
     On Error GoTo CommandClose_Click_Error
 
-    If DBConnection Is Nothing Then
-        MsgBox "Not connected.", vbExclamation
-    Else
-        DBConnection.SetProgressHandler Nothing ' Unregisters the progress handler callback
-        DBConnection.CloseDB
-        Set DBConnection = Nothing
-        CommandInsert.Enabled = False
-        List1.Clear
-        List1.Enabled = False
-    End If
+    Call closeDatabase
 
     On Error GoTo 0
     Exit Sub
@@ -321,33 +261,36 @@ CommandClose_Click_Error:
      MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure CommandClose_Click of Form hiddenForm"
 End Sub
 
+
 '---------------------------------------------------------------------------------------
 ' Procedure : List1_KeyDown
-' Author    : Krool
-' Date      : 24/11/2025
+' Author    : beededea
+' Date      : 02/12/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
 Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
 
-    On Error GoTo CATCH_EXCEPTION
+    Dim keyToDelete As String
+    
+    On Error GoTo List1_KeyDown_Error
+
     If List1.ListCount > 0 Then
         If KeyCode = vbKeyDelete Then
             If MsgBox("Delete?", vbQuestion + vbYesNo) <> vbNo Then
-                Dim Command As SQLiteCommand
-                Set Command = DBConnection.CreateCommand("DELETE FROM iconData WHERE ID = @oid")
-                Command.SetParameterValue Command![@oid], Left$(List1.Text, InStr(List1.Text, "_") - 1)
-                Command.Execute
+                keyToDelete = Left$(List1.Text, InStr(List1.Text, "_") - 1)
+                Call deleteSpecificKey(keyToDelete)
                 List1.RemoveItem List1.ListIndex
             End If
         End If
     End If
-    Exit Sub
-CATCH_EXCEPTION:
-    MsgBox Err.Description, vbCritical + vbOKOnly
-
+    
     On Error GoTo 0
     Exit Sub
+
+List1_KeyDown_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure List1_KeyDown of Form hiddenForm"
 
 End Sub
 
