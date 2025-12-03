@@ -16,8 +16,7 @@ Option Explicit
 
 Public DBConnection As SQLiteConnection  ' requires the SQLLite project reference VBSQLLite12.DLL
 
-
-' databse schema
+' database schema (simplified)
 '       iconRecordNumber As Integer
 '       iconFilename As String
 '       iconFileName2 As String
@@ -40,14 +39,13 @@ Public DBConnection As SQLiteConnection  ' requires the SQLLite project referenc
 '       iconAppToTerminate As String
 '       iconDisabled As String
 
-
 '---------------------------------------------------------------------------------------
 ' Procedure : SaveToiconData
 ' Author    : jbPro
 ' Date      : 24/11/2025
 ' Purpose   : Inserts or updates a single key/value pair in the iconDataTable.
-' On CONFLICT(key), the row is updated instead of inserting a duplicate.
-' The triggers on the table ensure update_counter is bumped appropriately.
+'             On CONFLICT(key), the row is updated instead of inserting a duplicate.
+'             The triggers on the table ensure update_counter is bumped appropriately.
 '---------------------------------------------------------------------------------------
 '
 Public Sub SaveToiconData(ByVal p_Key As String, p_Data As Variant)
@@ -310,16 +308,12 @@ End Sub
 ' Procedure : createDBFromScratch
 ' Author    : beededea
 ' Date      : 02/12/2025
-' Purpose   :
+' Purpose   : used to recreate the databse from scratch if required
+'             In any case, this code is NOT required as an empty databse is never going to be shipped with the program.
+'             This is just retained retained here for later investigation and for education (mine).
 '---------------------------------------------------------------------------------------
 '
 Public Sub createDBFromScratch(ByVal pathToFile As String)
-
-    ' although the syntax is correct, these following SQL commands are not carried out for some reason, no error displayed - but the tables and triggers are not created
-    ' so, some debugging is required - have a look at the first iteration of this code from Krool
-    '
-    ' In any case, this code is NOT required as an empty databse is never going to be shipped with the program.
-    ' This is just retained retained here for later investigation and for education (mine).
     
     On Error GoTo createDBFromScratch_Error
 
@@ -336,11 +330,11 @@ Public Sub createDBFromScratch(ByVal pathToFile As String)
              "CREATE TABLE iconDataTable (" & _
              " key TEXT COLLATE NOCASE," & _
              " iconRecordNumber INTEGER DEFAULT 0, iconFilename TEXT," & _
-             " iconFileName2 TEXT, iconTitle TEXT," & _
-             " iconCommand TEXT, iconArguments TEXT," & _
+             " iconFileName2 TEXT," & _
+             " iconTitle TEXT," & _
+             " iconCommand TEXT," & _
+             " iconArguments TEXT," & _
              " iconWorkingDirectory TEXT," & _
-             " iconShowCmd TEXT, iconCommand TEXT," & _
-             " iconArguments TEXT, iconWorkingDirectory TEXT," & _
              " iconShowCmd TEXT," & _
              " iconOpenRunning TEXT," & _
              " iconIsSeparator TEXT," & _
@@ -361,12 +355,15 @@ Public Sub createDBFromScratch(ByVal pathToFile As String)
          '  - update_counter: monotonically increasing integer, used for change tracking
         .Execute _
              "CREATE TABLE updateTable (" & _
-             " update_counter INTEGER NOT NULL DEFAULT 0"
+             " key TEXT COLLATE NOCASE," & _
+             " update_counter INTEGER NOT NULL DEFAULT 0," & _
+             " PRIMARY KEY(key))"
 
-         ' Trigger to bump update_counter on UPDATE of data:
-         '  - AFTER UPDATE OF data: only fires when the data column changes
-         '  - Sets update_counter to current max(update_counter)+1 across the table
-         '  - WHERE key = NEW.key ensures only the updated row is changed
+'
+'         ' Trigger to bump update_counter on UPDATE of data:
+'         '  - AFTER UPDATE OF data: only fires when the data column changes
+'         '  - Sets update_counter to current max(update_counter)+1 across the table
+'         '  - WHERE key = NEW.key ensures only the updated row is changed
          .Execute _
                "CREATE TRIGGER iconData_update_counter " & _
                "AFTER UPDATE OF data ON iconDataTable " & _
@@ -376,16 +373,16 @@ Public Sub createDBFromScratch(ByVal pathToFile As String)
                "  SET update_counter = (SELECT COALESCE(MAX(update_counter), 0) + 1 FROM updateTable) " & _
                "  WHERE key = NEW.key; " & _
                "END;"
-
-         ' Trigger to bump update_counter on INSERT:
-         '  - AFTER INSERT: runs after the row is inserted
-         '  - Sets update_counter for just the new row (NEW.key)
-         '  - Uses same global max(update_counter)+1 logic
+'
+'         ' Trigger to bump update_counter on INSERT:
+'         '  - AFTER INSERT: runs after the row is inserted
+'         '  - Sets update_counter for just the new row (NEW.key)
+'         '  - Uses same global max(update_counter)+1 logic
          .Execute _
                "CREATE TRIGGER iconData_insert_counter " & _
                "AFTER INSERT ON iconDataTable " & _
                "BEGIN " & _
-               "  UPDATE iconDataTable " & _
+               "  UPDATE updateTable " & _
                "  SET update_counter = (SELECT COALESCE(MAX(update_counter), 0) + 1 FROM updateTable) " & _
                "  WHERE key = NEW.key; " & _
                "END;"

@@ -97,16 +97,25 @@ Option Explicit
     Private Const PTR_SIZE As Long = 4
 #End If
 
-Implements ISQLiteProgressHandler
 
+' The next line implements an Interface from an External COM DLL VBSQLite12.dll,
+' accepting COM QueryInterface calls for the specified interface ISQLiteProgressHandler
+' which is a COM/ActiveX DLL, referenced in project references that refers itself to a raw C DLL, winsqlite3.dll registered in sysWow64 using regsvr32
+' The COM object exposes a dispatch interface in its type library.
+
+Implements ISQLiteProgressHandler ' only allowed in classes and forms (classes)
 
 '---------------------------------------------------------------------------------------
 ' Procedure : ISQLiteProgressHandler_Callback
 ' Author    : jbPro
 ' Date      : 24/11/2025
 ' Purpose   : The SetProgressHandler method (which registers this callback) has a default value of 100 for the
-'                number of virtual machine instructions that are evaluated between successive invocations of this callback.
-'                This means that this callback is never invoked for very short running SQL statements.
+'             number of virtual machine instructions that are evaluated between successive invocations of this callback.
+'             This means that this callback is never invoked for very short running SQL statements.
+'
+'             Any running SQL operation will be interrupted if the cancel parameter is set to true.
+'             This can be used to implement a "cancel" button on a GUI progress dialog box.
+'
 '---------------------------------------------------------------------------------------
 '
 Public Sub ISQLiteProgressHandler_Callback(Cancel As Boolean)
@@ -114,8 +123,6 @@ Public Sub ISQLiteProgressHandler_Callback(Cancel As Boolean)
     On Error GoTo ISQLiteProgressHandler_Callback_Error
 
     DoEvents
-    ' The operation will be interrupted if the cancel parameter is set to true.
-    ' This can be used to implement a "cancel" button on a GUI progress dialog box.
 
     On Error GoTo 0
     Exit Sub
@@ -177,12 +184,12 @@ Private Sub CommandConnect_Click()
         If fFExists(PathName) = True Then
             With New SQLiteConnection
                 ' attempt to connect to SQLite db
-                On Error Resume Next
+'                On Error Resume Next
                 .OpenDB PathName, SQLiteReadWrite
-                If Err.Number <> 0 Then
-                    MsgBox "Error " & PathName & " has a problem." & Err.Number & " (" & Err.Description & ") in procedure CommandConnect_Click of Form hiddenForm"
-                    Err.Clear
-                End If
+'                If Err.Number <> 0 Then
+'                    MsgBox "Error " & PathName & " has a problem." & Err.Number & " (" & Err.Description & ") in procedure CommandConnect_Click of Form hiddenForm"
+'                    Err.Clear
+'                End If
                 
                 ' connection is good!
                 If .hDB <> NULL_PTR Then
@@ -212,7 +219,7 @@ Private Sub CommandConnect_Click()
 
 CommandConnect_Click_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure CommandConnect_Click of Form hiddenForm"
+     MsgBox "Error " & PathName & " has a problem." & Err.Number & " (" & Err.Description & ") in procedure CommandConnect_Click of Form hiddenForm"
 End Sub
 
 
