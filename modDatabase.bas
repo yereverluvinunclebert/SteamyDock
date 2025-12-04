@@ -7,7 +7,7 @@ Option Explicit
     End Enum
 #End If
 #If Win64 Then
-    Private Const NULL_PTR As LongPtr = 0 ' this may glow red but is NOT an error, suitable for 64bit TwinBasic
+    'Private Const NULL_PTR As LongPtr = 0 ' this may glow red but is NOT an error, suitable for 64bit TwinBasic
     Private Const PTR_SIZE As Long = 8
 #Else
     Private Const NULL_PTR As Long = 0
@@ -38,30 +38,6 @@ Public DBConnection As SQLiteConnection  ' requires the SQLLite project referenc
 '       iconRunSecondAppBeforehand As String
 '       iconAppToTerminate As String
 '       iconDisabled As String
-
-'---------------------------------------------------------------------------------------
-' Procedure : SaveToiconData
-' Author    : jbPro
-' Date      : 24/11/2025
-' Purpose   : Inserts or updates a single key/value pair in the iconDataTable.
-'             On CONFLICT(key), the row is updated instead of inserting a duplicate.
-'             The triggers on the table ensure update_counter is bumped appropriately.
-'---------------------------------------------------------------------------------------
-'
-Public Sub SaveToiconData(ByVal p_Key As String, p_Data As Variant)
-    On Error GoTo SaveToiconData_Error
-    
-    With DBConnection
-        .Execute "INSERT INTO iconDataTable (key, data) VALUES ('" & p_Key & "','" & p_Data & "') ON CONFLICT (key) DO UPDATE SET data=excluded.data"
-    End With
-   
-    On Error GoTo 0
-    Exit Sub
-
-SaveToiconData_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SaveToiconData of Form hiddenForm"
-End Sub
 
 
 
@@ -194,9 +170,7 @@ Public Sub closeDatabase()
         DBConnection.SetProgressHandler Nothing ' Unregisters the progress handler callback
         DBConnection.CloseDB
         Set DBConnection = Nothing
-        hiddenForm.CommandInsert.Enabled = False
-        hiddenForm.List1.Clear
-        hiddenForm.List1.Enabled = False
+
     End If
 
     On Error GoTo 0
@@ -217,18 +191,70 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub insertRecords()
+Public Sub insertRecords(Optional ByVal thisKeyValue As Integer)
 
     Dim Text As String: Text = vbNullString
+    Dim useloop As Integer
+    Dim Command As SQLiteCommand
     
     On Error GoTo insertRecords_Error
 
-    Text = VBA.InputBox("iconCommand")
+    Text = VBA.InputBox("fIconCommand")
     If StrPtr(Text) = NULL_PTR Then Exit Sub
+    
+    thisKeyValue = 2
+    
+    ' now load the user specified icons to the dictionary
+    For useloop = iconArrayLowerBound To iconArrayUpperBound
+    
+        ' extract filenames from the random access data file
+        readIconSettingsIni useloop, False
+        thisKeyValue = useloop
+        With DBConnection
+        
+        If useloop >= 87 Then
+            useloop = useloop
+        End If
+        
+            .Execute "INSERT INTO iconDataTable (Key, fIconRecordNumber) VALUES ('" & thisKeyValue & "','" & thisKeyValue & "')"
+            .Execute "INSERT INTO iconDataTable (Key, fIconFilename) VALUES ('" & thisKeyValue & "','" & sFilename & "') ON CONFLICT (Key) DO UPDATE SET fIconFilename=excluded.fIconFilename"
+            .Execute "INSERT INTO iconDataTable (Key, fIconFileName2) VALUES ('" & thisKeyValue & "','" & sFileName2 & "') ON CONFLICT (Key) DO UPDATE SET fIconFileName2=excluded.fIconFileName2"
+            '.Execute "INSERT INTO iconDataTable (Key, fIconTitle) VALUES ('" & thisKeyValue & "','" & sTitle & "') ON CONFLICT (Key) DO UPDATE SET fIconTitle=excluded.fIconTitle"
+            
+            Set Command = DBConnection.CreateCommand("INSERT INTO iconDataTable (Key, fIconTitle) VALUES (@oid,@opo) ON CONFLICT (Key) DO UPDATE SET fIconTitle=excluded.fIconTitle")
+            Command.SetParameterValue Command![@oid], thisKeyValue
+            Command.SetParameterValue Command![@opo], sTitle
+            Command.Execute
+            
+            '.Execute "INSERT INTO iconDataTable (Key, fIconCommand) VALUES ('" & thisKeyValue & "','" & sCommand & "') ON CONFLICT (Key) DO UPDATE SET fIconCommand=excluded.fIconCommand"
+            
+            Set Command = DBConnection.CreateCommand("INSERT INTO iconDataTable (Key, fIconCommand) VALUES (@oid,@opo) ON CONFLICT (Key) DO UPDATE SET fIconCommand=excluded.fIconCommand")
+            Command.SetParameterValue Command![@oid], thisKeyValue
+            Command.SetParameterValue Command![@opo], sCommand
+            Command.Execute
+           
+                  
+            .Execute "INSERT INTO iconDataTable (Key, fIconArguments) VALUES ('" & thisKeyValue & "','" & sArguments & "') ON CONFLICT (Key) DO UPDATE SET fIconArguments=excluded.fIconArguments"
+            .Execute "INSERT INTO iconDataTable (Key, fIconWorkingDirectory) VALUES ('" & thisKeyValue & "','" & sWorkingDirectory & "') ON CONFLICT (Key) DO UPDATE SET fIconWorkingDirectory=excluded.fIconWorkingDirectory"
+            .Execute "INSERT INTO iconDataTable (Key, fIconShowCmd) VALUES ('" & thisKeyValue & "','" & sShowCmd & "') ON CONFLICT (Key) DO UPDATE SET fIconShowCmd=excluded.fIconShowCmd"
+            .Execute "INSERT INTO iconDataTable (Key, fIconOpenRunning) VALUES ('" & thisKeyValue & "','" & sOpenRunning & "') ON CONFLICT (Key) DO UPDATE SET fIconOpenRunning=excluded.fIconOpenRunning"
+            .Execute "INSERT INTO iconDataTable (Key, fIconIsSeparator) VALUES ('" & thisKeyValue & "','" & sIsSeparator & "') ON CONFLICT (Key) DO UPDATE SET fIconIsSeparator=excluded.fIconIsSeparator"
+            .Execute "INSERT INTO iconDataTable (Key, fIconUseContext) VALUES ('" & thisKeyValue & "','" & sUseContext & "') ON CONFLICT (Key) DO UPDATE SET fIconUseContext=excluded.fIconUseContext"
+            .Execute "INSERT INTO iconDataTable (Key, fIconDockletFile) VALUES ('" & thisKeyValue & "','" & sDockletFile & "') ON CONFLICT (Key) DO UPDATE SET fIconDockletFile=excluded.fIconDockletFile"
+            .Execute "INSERT INTO iconDataTable (Key, fIconUseDialog) VALUES ('" & thisKeyValue & "','" & sUseDialog & "') ON CONFLICT (Key) DO UPDATE SET fIconUseDialog=excluded.fIconUseDialog"
+            .Execute "INSERT INTO iconDataTable (Key, fIconUseDialogAfter) VALUES ('" & thisKeyValue & "','" & sUseDialogAfter & "') ON CONFLICT (Key) DO UPDATE SET fIconUseDialogAfter=excluded.fIconUseDialogAfter"
+            .Execute "INSERT INTO iconDataTable (Key, fIconQuickLaunch) VALUES ('" & thisKeyValue & "','" & sQuickLaunch & "') ON CONFLICT (Key) DO UPDATE SET fIconQuickLaunch=excluded.fIconQuickLaunch"
+            .Execute "INSERT INTO iconDataTable (Key, fIconAutoHideDock) VALUES ('" & thisKeyValue & "','" & sAutoHideDock & "') ON CONFLICT (Key) DO UPDATE SET fIconAutoHideDock=excluded.fIconAutoHideDock"
+            .Execute "INSERT INTO iconDataTable (Key, fIconSecondApp) VALUES ('" & thisKeyValue & "','" & sSecondApp & "') ON CONFLICT (Key) DO UPDATE SET fIconSecondApp=excluded.fIconSecondApp"
+            .Execute "INSERT INTO iconDataTable (Key, fIconRunElevated) VALUES ('" & thisKeyValue & "','" & sRunElevated & "') ON CONFLICT (Key) DO UPDATE SET fIconRunElevated=excluded.fIconRunElevated"
+            .Execute "INSERT INTO iconDataTable (Key, fIconRunSecondAppBeforehand) VALUES ('" & thisKeyValue & "','" & sRunSecondAppBeforehand & "') ON CONFLICT (Key) DO UPDATE SET fIconRunSecondAppBeforehand=excluded.fIconRunSecondAppBeforehand"
+            .Execute "INSERT INTO iconDataTable (Key, fIconAppToTerminate) VALUES ('" & thisKeyValue & "','" & sAppToTerminate & "') ON CONFLICT (Key) DO UPDATE SET fIconAppToTerminate=excluded.fIconAppToTerminate"
+            .Execute "INSERT INTO iconDataTable (Key, fIconDisabled) VALUES ('" & thisKeyValue & "','" & sDisabled & "') ON CONFLICT (Key) DO UPDATE SET fIconDisabled=excluded.fIconDisabled"
+        End With
+        
 
-    With DBConnection
-        .Execute "INSERT INTO iconDataTable (iconCommand) VALUES ('" & Text & "')"
-    End With
+    
+    Next useloop
     Call Requery
 
     On Error GoTo 0
@@ -238,6 +264,53 @@ insertRecords_Error:
 
      MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertRecords of Form hiddenForm"
 
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : SaveToiconData
+' Author    : jbPro
+' Date      : 24/11/2025
+' Purpose   : Inserts or updates a single key/value pair in the iconDataTable.
+'             On CONFLICT(key), the row is updated instead of inserting a duplicate.
+'             The triggers on the table ensure update_counter is bumped appropriately.
+'---------------------------------------------------------------------------------------
+'
+Public Sub SaveToiconData(ByVal p_Key As String, p_Data As Variant)
+    On Error GoTo SaveToiconData_Error
+    
+' database schema (simplified)
+'      fIconRecordNumber As Integer
+'      fIconFilename As String
+'      fIconFileName2 As String
+'      fIconTitle As String
+'      fIconCommand As String
+'      fIconArguments As String
+'      fIconWorkingDirectory As String
+'      fIconShowCmd As String
+'      fIconOpenRunning As String
+'      fIconIsSeparator As String
+'      fIconUseContext As String
+'      fIconDockletFile As String
+'      fIconUseDialog As String
+'      fIconUseDialogAfter As String
+'      fIconQuickLaunch As String
+'      fIconAutoHideDock As String
+'      fIconSecondApp As String
+'      fIconRunElevated As String
+'      fIconRunSecondAppBeforehand As String
+'      fIconAppToTerminate As String
+'      fIconDisabled As String
+    
+    With DBConnection
+        .Execute "INSERT INTO iconDataTable (key, data) VALUES ('" & p_Key & "','" & p_Data & "') ON CONFLICT (key) DO UPDATE SET data=excluded.data"
+    End With
+   
+    On Error GoTo 0
+    Exit Sub
+
+SaveToiconData_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SaveToiconData of Form hiddenForm"
 End Sub
 
 
@@ -256,10 +329,10 @@ Public Sub Requery()
     
     On Error GoTo Requery_Error
 
-    Set DataSet = DBConnection.OpenDataSet("SELECT key, iconCommand FROM iconDataTable")
+    Set DataSet = DBConnection.OpenDataSet("SELECT key, fIconCommand FROM iconDataTable")
     DataSet.MoveFirst
     Do Until DataSet.EOF
-        hiddenForm.List1.AddItem DataSet!key & "_" & DataSet!iconCommand
+        hiddenForm.List1.AddItem DataSet!key & "_" & DataSet!fIconCommand
         DataSet.MoveNext
     Loop
 
@@ -277,7 +350,7 @@ End Sub
 ' Procedure : deleteSpecificKey
 ' Author    : beededea
 ' Date      : 02/12/2025
-' Purpose   : need to test Krool's original
+' Purpose   : Delete a database record
 '---------------------------------------------------------------------------------------
 '
 Public Sub deleteSpecificKey(ByVal keyToDelete As String)
@@ -308,7 +381,7 @@ End Sub
 ' Procedure : createDBFromScratch
 ' Author    : beededea
 ' Date      : 02/12/2025
-' Purpose   : used to recreate the databse from scratch if required
+' Purpose   : used to recreate the database from scratch if required
 '             In any case, this code is NOT required as an empty databse is never going to be shipped with the program.
 '             This is just retained retained here for later investigation and for education (mine).
 '---------------------------------------------------------------------------------------
@@ -328,27 +401,27 @@ Public Sub createDBFromScratch(ByVal pathToFile As String)
          ' note some lines have been concatentated as VB6 does not allow more than a certain number of line continuations
          .Execute _
              "CREATE TABLE iconDataTable (" & _
-             " key TEXT COLLATE NOCASE," & _
-             " iconRecordNumber INTEGER DEFAULT 0, iconFilename TEXT," & _
-             " iconFileName2 TEXT," & _
-             " iconTitle TEXT," & _
-             " iconCommand TEXT," & _
-             " iconArguments TEXT," & _
-             " iconWorkingDirectory TEXT," & _
-             " iconShowCmd TEXT," & _
-             " iconOpenRunning TEXT," & _
-             " iconIsSeparator TEXT," & _
-             " iconUseContext TEXT," & _
-             " iconDockletFile TEXT," & _
-             " iconUseDialog TEXT," & _
-             " iconUseDialogAfter TEXT," & _
-             " iconQuickLaunch TEXT," & _
-             " iconAutoHideDock TEXT," & _
-             " iconSecondApp TEXT," & _
-             " iconRunElevated TEXT," & _
-             " iconRunSecondAppBeforehand TEXT," & _
-             " iconAppToTerminate TEXT," & _
-             " iconDisabled TEXT," & _
+             " key INTEGER UNIQUE," & _
+             " fIconRecordNumber INTEGER DEFAULT 0, fIconFilename TEXT," & _
+             " fIconFileName2 TEXT," & _
+             " fIconTitle TEXT," & _
+             " fIconCommand TEXT," & _
+             " fIconArguments TEXT," & _
+             " fIconWorkingDirectory TEXT," & _
+             " fIconShowCmd TEXT," & _
+             " fIconOpenRunning TEXT," & _
+             " fIconIsSeparator TEXT," & _
+             " fIconUseContext TEXT," & _
+             " fIconDockletFile TEXT," & _
+             " fIconUseDialog TEXT," & _
+             " fIconUseDialogAfter TEXT," & _
+             " fIconQuickLaunch TEXT," & _
+             " fIconAutoHideDock TEXT," & _
+             " fIconSecondApp TEXT," & _
+             " fIconRunElevated TEXT," & _
+             " fIconRunSecondAppBeforehand TEXT," & _
+             " fIconAppToTerminate TEXT," & _
+             " fIconDisabled TEXT," & _
              " PRIMARY KEY(key))"
              
          ' Create updateTable table:

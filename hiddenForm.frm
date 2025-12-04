@@ -176,22 +176,17 @@ Private Sub CommandConnect_Click()
     ' test connection to DB exists, if not then connect or create.
     If DBConnection Is Nothing Then
             
-        PathName = App.path
+        PathName = App.Path
         If Not Right$(PathName, 1) = "\" Then PathName = PathName & "\"
         PathName = "C:\Users\beededea\AppData\Roaming\steamyDock\iconSettings.db"
         
         ' check database file exists on the system
         If fFExists(PathName) = True Then
             With New SQLiteConnection
-                ' attempt to connect to SQLite db
-'                On Error Resume Next
+                ' connect to SQLite db
                 .OpenDB PathName, SQLiteReadWrite
-'                If Err.Number <> 0 Then
-'                    MsgBox "Error " & PathName & " has a problem." & Err.Number & " (" & Err.Description & ") in procedure CommandConnect_Click of Form hiddenForm"
-'                    Err.Clear
-'                End If
-                
-                ' connection is good!
+
+                ' connection is good?
                 If .hDB <> NULL_PTR Then
                     Set DBConnection = .object
                 End If
@@ -259,6 +254,9 @@ Private Sub CommandClose_Click()
     On Error GoTo CommandClose_Click_Error
 
     Call closeDatabase
+    hiddenForm.CommandInsert.Enabled = False
+    hiddenForm.List1.Clear
+    hiddenForm.List1.Enabled = False
 
     On Error GoTo 0
     Exit Sub
@@ -278,14 +276,15 @@ End Sub
 '
 Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
 
-    Dim keyToDelete As String
+    Dim keyToDelete As String: keyToDelete = vbNullString
     
     On Error GoTo List1_KeyDown_Error
 
     If List1.ListCount > 0 Then
         If KeyCode = vbKeyDelete Then
-            If MsgBox("Delete?", vbQuestion + vbYesNo) <> vbNo Then
-                keyToDelete = Left$(List1.Text, InStr(List1.Text, "_") - 1)
+            keyToDelete = Left$(List1.Text, InStr(List1.Text, "_") - 1)
+        
+            If MsgBox("Delete record number " & keyToDelete & " " & List1.Text & "?", vbQuestion + vbYesNo) <> vbNo Then
                 Call deleteSpecificKey(keyToDelete)
                 List1.RemoveItem List1.ListIndex
             End If

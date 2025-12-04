@@ -48,6 +48,7 @@ Private mRunSecondAppBeforehand As String  'RunSecondAppBeforehand
 Private mAppToTerminate As String ' ' conAppToTerminate)
 Private mDisabled As String  'Disabled
 
+
 Private Sub Class_Initialize()
 ' Only the main icons
 ' require this.
