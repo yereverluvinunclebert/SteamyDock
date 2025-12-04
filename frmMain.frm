@@ -669,6 +669,11 @@ Attribute VB_Exposed = False
 ' where 0 is not an allowable position, record 1 is the default start position. To avoid confusion when reading from the data file and into associated arrays, all arrays that
 ' contain cached data from the icon data file are used as if they were option base 1 starting at element 1. Note that the first record/array element is a blank icon that is only shown
 ' in the dock as a spacer to allow smoother entry into the dock. It cannot be edited or deleted. Same with the final icon beyond the last user icon.
+
+' Globals
+'
+' All important icon and configuration variables are currently read and stored using globals as a fast cache of data. I will experiment to changing these to properties later  but I
+' don't want to slow things down, so this may not happen.
 '
 ' Skins
 '
@@ -1256,7 +1261,7 @@ Private Sub Form_Load()
     'start timers
     wallpaperTimer.Enabled = True
     
-    'hiddenForm.Show
+    hiddenForm.Show
     
     'add to the initiated ProcessArray
     'Call checkDockProcessesRunning ' trigger a test of running processes in half a second

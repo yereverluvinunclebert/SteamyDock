@@ -6,37 +6,21 @@ Overall status - Working, a good learning platform and it functions. New graphic
 Needs to read icons from DLLs/exes - WIP
 a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
 
-' when encountering an icon path to a DLL or a EXE extract the image using displayEmbeddedIcons and write the to a hidden picbox and extract the PNG image to a special profile folder
-' insert the PNG into the dictionary at runtime startup.
 
-' Test binaries, dragging to the dock, different icon sizes
-' if no icon found then drop down to the automatic selection
-
-' install the db tool 32 bit version on the Dell laptop
-' create fields for each of the icon characteristics
-
-' add fields to database
-' test with new fields
-' add real data from the binary file
-' move all form code to the modDatabase.bas
-' deletion of specific keys from the listbox
-' add status label and code
-' shift more code from the form to the modDatabse
-' add comments and top/tail to insertNonSanitisedStrings & others
 
 ' Current Tasks:
 ' =============
 
-
-' test GetFromiconData
-
+' test GetFromiconData subroutine
 ' test if the updateCounter is being updated
-
 ' test to see if the scripting dictionary is populated
-
-' test why the update does not occur when an existing key is found, possibly does not need the key specified at all 
-
+' test why the update does not occur when an existing key is found, possibly does not need the key specified at all
 ' test regfree.bas to see if the VBSQL can be used regfree
+' make tool to read/write icon random data file from database
+' test using API declarations and alternative SQL dll to test speed
+' test using RC sqlite.dll and compare speed
+
+' create a wrapper to the binary file operations and redirect them to the database for speed comparison
 
 ' error when copying the iconSettings.ini and dat files, the dock opened but generated a runtime error when the dock reached 79 items (approx.) giving errors when loading images to the collections
 ' I am guessing that there was a mismatch between the count in iconSettings and the count from the .dat, possibly yhe collection length being too short.
@@ -67,11 +51,11 @@ when a dock is wider than 2000 pixels - stitch two docks together
 multi-monitor support
 
 Synchronising the three applications. We can use any of these options:
-
+=======================================================================
 A. Memory mapped areas - https://www.vbforums.com/showthread.php?696123-VB6-MMapper-Memory-Mapped-File-Demo
 Creating memory mapped section to store data available to all three applications
 
-B. Database access for all three utilities using sqlite, MUTEX semaphores to control who has access?
+B. Database access for all three utilities using sqlite, MUTEX semaphores to control who has access? - This is WIP, we are testing this now.
 
 C. Random access as shared, we have to resolve the locking/blocking manually.
 
@@ -912,7 +896,7 @@ Use of the scripting dictionary
 ' deletion confirmation during move operation remove - done
 
 
-' Changes 2024+
+' Changes 2025+
 ' ============
 
  DPIawareness
@@ -953,3 +937,23 @@ checkExplorerProcessesRunning - if matching explorer process has been found it i
 tests for new gbl vars that indicate whether the main process/explorer timers are running
 
 ' add code to prevent taskbar move operation on windows 7 and prior as registry stuckrect does not exist
+
+' when encountering an icon path to a DLL or a EXE extract the image using displayEmbeddedIcons and write the to a hidden picbox and extract the PNG image to a special profile folder
+' insert the PNG into the dictionary at runtime startup.
+
+' Test binaries, dragging to the dock, different icon sizes
+' if no icon found then drop down to the automatic selection
+
+' install the db tool 32 bit version on the Dell laptop
+' create fields for each of the icon characteristics
+
+' add fields to database
+' test with new fields
+' add real data from the binary file
+' move all form code to the modDatabase.bas
+' deletion of specific keys from the listbox
+' add status label and code
+' shift more code from the form to the modDatabse
+' add comments and top/tail to insertNonSanitisedStrings & others
+' removed redundant code
+' speed test - slow to populate all records from binary file using sqlite3.dll

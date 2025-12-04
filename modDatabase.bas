@@ -16,62 +16,203 @@ Option Explicit
 
 Public DBConnection As SQLiteConnection  ' requires the SQLLite project reference VBSQLLite12.DLL
 
-' database schema (simplified)
-'       iconRecordNumber As Integer
-'       iconFilename As String
-'       iconFileName2 As String
-'       iconTitle As String
-'       iconCommand As String
-'       iconArguments As String
-'       iconWorkingDirectory As String
-'       iconShowCmd As String
-'       iconOpenRunning As String
-'       iconIsSeparator As String
-'       iconUseContext As String
-'       iconDockletFile As String
-'       iconUseDialog As String
-'       iconUseDialogAfter As String
-'       iconQuickLaunch As String
-'       iconAutoHideDock As String
-'       iconSecondApp As String
-'       iconRunElevated As String
-'       iconRunSecondAppBeforehand As String
-'       iconAppToTerminate As String
-'       iconDisabled As String
+
 
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : GetFromiconData
+' Procedure : getAllFieldsFromSingleRecord
 ' Author    : jbPro
 ' Date      : 24/11/2025
 ' Purpose   : Retrieves the data BLOB for a given key.
 '             Raises error 5 if the key is not found.
 '---------------------------------------------------------------------------------------
 '
-Public Function GetFromiconData(ByVal p_Key As String) As Variant
-    On Error GoTo GetFromiconData_Error
+Public Function getAllFieldsFromSingleRecord(ByVal p_Key As String) As Variant
 
     Dim DataSet As SQLiteDataSet
-    Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable  WHERE key= " & p_Key)
+    
+    On Error GoTo getAllFieldsFromSingleRecord_Error
+
+    ' select one record matching the supplied key pulling all fields/columns into a dataset
+    Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable WHERE key= " & p_Key)
     
     ' No matching row: raise a generic "Invalid procedure call or argument" (5)
     ' with a more descriptive message.
     If DataSet.RecordCount = 0 Then
-       Err.Raise 5, , "Data not found for key " & p_Key
+       Err.Raise 5, , "Data not found for this key " & p_Key
     End If
     
-    ' Return the first (and only) column: data
-    GetFromiconData = DataSet.Columns(0).Value
+    ' Return the fifth column: fIconTitle
+    getAllFieldsFromSingleRecord = DataSet.Columns(5).Value
 
     On Error GoTo 0
     Exit Function
 
-GetFromiconData_Error:
+getAllFieldsFromSingleRecord_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetFromiconData of Form hiddenForm"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getAllFieldsFromSingleRecord of Form hiddenForm"
 End Function
 
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : getFieldFromSingleRecord
+' Author    : beededea
+' Date      : 02/12/2025
+' Purpose   : select one record matching the supplied key pulling just one fields/column into a dataset
+'---------------------------------------------------------------------------------------
+'
+Public Function getFieldFromSingleRecord(ByVal fieldName As String, ByVal p_Key As String) As Variant
+
+    Dim DataSet As SQLiteDataSet
+    Dim returnedValue As String: returnedValue = vbNullString
+    
+    On Error GoTo getFieldFromSingleRecord_Error
+
+    ' select one record matching the supplied key pulling just one fields/column into a dataset
+    Set DataSet = DBConnection.OpenDataSet("SELECT " & fieldName & " FROM iconDataTable WHERE key= " & p_Key)
+    
+    ' No matching row: raise a generic "Invalid procedure call or argument" (5)
+    ' with a more descriptive message.
+    If DataSet.RecordCount = 0 Then
+       Err.Raise 5, , "Data not found for this key " & p_Key
+    End If
+    
+    ' assign the value in the required field from the dataset to the function return value
+    'Do Until DataSet.EOF
+        
+    If fieldName = "fIconRecordNumber" Then returnedValue = DataSet!key & " " & DataSet!fIconRecordNumber
+    If fieldName = "fIconFilename" Then returnedValue = DataSet!key & " " & DataSet!fIconFilename
+    If fieldName = "fIconFileName2" Then returnedValue = DataSet!key & " " & DataSet!fIconFileName2
+    If fieldName = "fIconTitle" Then returnedValue = DataSet!key & " " & DataSet!fIconTitle
+    If fieldName = "fIconCommand" Then returnedValue = DataSet!key & " " & DataSet!fIconCommand
+    If fieldName = "fIconArguments" Then returnedValue = DataSet!key & " " & DataSet!fIconArguments
+    If fieldName = "fIconWorkingDirectory" Then returnedValue = DataSet!key & " " & DataSet!fIconWorkingDirectory
+    If fieldName = "fIconShowCmd" Then returnedValue = DataSet!key & " " & DataSet!fIconShowCmd
+    If fieldName = "fIconOpenRunning" Then returnedValue = DataSet!key & " " & DataSet!fIconOpenRunning
+    If fieldName = "fIconIsSeparator" Then returnedValue = DataSet!key & " " & DataSet!fIconIsSeparator
+    If fieldName = "fIconUseContext" Then returnedValue = DataSet!key & " " & DataSet!fIconUseContext
+    If fieldName = "fIconDockletFile" Then returnedValue = DataSet!key & " " & DataSet!fIconDockletFile
+    If fieldName = "fIconUseDialog" Then returnedValue = DataSet!key & " " & DataSet!fIconUseDialog
+    If fieldName = "fIconUseDialogAfter" Then returnedValue = DataSet!key & " " & DataSet!fIconUseDialogAfter
+    If fieldName = "fIconQuickLaunch" Then returnedValue = DataSet!key & " " & DataSet!fIconQuickLaunch
+    If fieldName = "fIconAutoHideDock" Then returnedValue = DataSet!key & " " & DataSet!fIconAutoHideDock
+    If fieldName = "fIconSecondApp" Then returnedValue = DataSet!key & " " & DataSet!fIconSecondApp
+    If fieldName = "fIconRunElevated" Then returnedValue = DataSet!key & " " & DataSet!fIconRunElevated
+    If fieldName = "fIconRunSecondAppBeforehand" Then returnedValue = DataSet!key & " " & DataSet!fIconRunSecondAppBeforehand
+    If fieldName = "fIconAppToTerminate" Then returnedValue = DataSet!key & " " & DataSet!fIconAppToTerminate
+    If fieldName = "fIconDisabled" Then returnedValue = DataSet!key & " " & DataSet!fIconDisabled
+
+    'Loop
+    
+    getFieldFromSingleRecord = returnedValue
+
+    On Error GoTo 0
+    Exit Function
+
+getFieldFromSingleRecord_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFieldFromSingleRecord of Module modDatabase"
+
+End Function
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : getAllFieldsFromAllRecords
+' Author    : beededea
+' Date      : 02/12/2025
+' Purpose   : select all records pulling the key and all fields into the dataset
+'---------------------------------------------------------------------------------------
+'
+Public Sub getAllFieldsFromAllRecords()
+
+    Dim DataSet As SQLiteDataSet
+    
+    On Error GoTo getAllFieldsFromAllRecords_Error
+
+    ' select all records pulling the key and all fields into the dataset
+    Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable")
+    
+    ' move to the first record in a Recordset and makes it current
+    DataSet.MoveFirst
+    
+    ' list all records in the dataset to the listbox but only show one field from the dataset
+    Do Until DataSet.EOF
+    
+        ' need to insert these into a collection or read the resulting values into global var cache
+            
+        hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
+        DataSet.MoveNext
+    Loop
+
+    On Error GoTo 0
+    Exit Sub
+
+getAllFieldsFromAllRecords_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getAllFieldsFromAllRecords of Module modDatabase"
+
+End Sub
+
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : getFieldFromMultipleRecords
+' Author    : beededea
+' Date      : 02/12/2025
+' Purpose   : select ALL records pulling the key and the chosen field only
+'---------------------------------------------------------------------------------------
+'
+Public Sub getFieldFromMultipleRecords(ByVal fieldName As String)
+
+    Dim DataSet As SQLiteDataSet
+    
+    On Error GoTo getFieldFromMultipleRecords_Error
+
+    ' select ALL records pulling the key and the chosen field only
+    Set DataSet = DBConnection.OpenDataSet("SELECT key, " & fieldName & " FROM iconDataTable")
+    
+    ' move to the first record in a Recordset and makes it current
+    DataSet.MoveFirst
+    
+    ' list all records in the dataset to the listbox
+    Do Until DataSet.EOF
+        
+        If fieldName = "fIconRecordNumber" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconRecordNumber
+        If fieldName = "fIconFilename" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconFilename
+        If fieldName = "fIconFileName2" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconFileName2
+        If fieldName = "fIconTitle" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
+        If fieldName = "fIconCommand" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconCommand
+        If fieldName = "fIconArguments" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconArguments
+        If fieldName = "fIconWorkingDirectory" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconWorkingDirectory
+        If fieldName = "fIconShowCmd" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconShowCmd
+        If fieldName = "fIconOpenRunning" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconOpenRunning
+        If fieldName = "fIconIsSeparator" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconIsSeparator
+        If fieldName = "fIconUseContext" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconUseContext
+        If fieldName = "fIconDockletFile" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconDockletFile
+        If fieldName = "fIconUseDialog" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconUseDialog
+        If fieldName = "fIconUseDialogAfter" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconUseDialogAfter
+        If fieldName = "fIconQuickLaunch" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconQuickLaunch
+        If fieldName = "fIconAutoHideDock" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconAutoHideDock
+        If fieldName = "fIconSecondApp" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconSecondApp
+        If fieldName = "fIconRunElevated" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconRunElevated
+        If fieldName = "fIconRunSecondAppBeforehand" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconRunSecondAppBeforehand
+        If fieldName = "fIconAppToTerminate" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconAppToTerminate
+        If fieldName = "fIconDisabled" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconDisabled
+        DataSet.MoveNext
+    Loop
+
+    On Error GoTo 0
+    Exit Sub
+
+getFieldFromMultipleRecords_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFieldFromMultipleRecords of Module modDatabase"
+
+End Sub
 
 
 '---------------------------------------------------------------------------------------
@@ -200,6 +341,29 @@ Public Sub insertRecords()
     Dim Command As SQLiteCommand
     
     On Error GoTo insertRecords_Error
+    
+    ' database schema (simplified)
+    '       iconRecordNumber As Integer
+    '       iconFilename As String
+    '       iconFileName2 As String
+    '       iconTitle As String
+    '       iconCommand As String
+    '       iconArguments As String
+    '       iconWorkingDirectory As String
+    '       iconShowCmd As String
+    '       iconOpenRunning As String
+    '       iconIsSeparator As String
+    '       iconUseContext As String
+    '       iconDockletFile As String
+    '       iconUseDialog As String
+    '       iconUseDialogAfter As String
+    '       iconQuickLaunch As String
+    '       iconAutoHideDock As String
+    '       iconSecondApp As String
+    '       iconRunElevated As String
+    '       iconRunSecondAppBeforehand As String
+    '       iconAppToTerminate As String
+    '       iconDisabled As String
 
     ' now load the user specified icons to the dictionary
     For useloop = iconArrayLowerBound To iconArrayUpperBound
@@ -245,7 +409,7 @@ Public Sub insertRecords()
         End With
         
     Next useloop
-    Call Requery
+    Call getFieldFromMultipleRecords("fIconTitle")
 
     On Error GoTo 0
     Exit Sub
@@ -293,40 +457,10 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : Requery
-' Author    : beededea
-' Date      : 02/12/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Sub Requery()
-
-    Dim DataSet As SQLiteDataSet
-    
-    On Error GoTo Requery_Error
-
-    Set DataSet = DBConnection.OpenDataSet("SELECT key, fIconCommand FROM iconDataTable")
-    DataSet.MoveFirst
-    Do Until DataSet.EOF
-        hiddenForm.List1.AddItem DataSet!key & "_" & DataSet!fIconCommand
-        DataSet.MoveNext
-    Loop
-
-    On Error GoTo 0
-    Exit Sub
-
-Requery_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Requery of Module modDatabase"
-
-End Sub
-
-
-'---------------------------------------------------------------------------------------
 ' Procedure : deleteSpecificKey
 ' Author    : beededea
 ' Date      : 02/12/2025
-' Purpose   : Delete a database record
+' Purpose   : Delete a single database record
 '---------------------------------------------------------------------------------------
 '
 Public Sub deleteSpecificKey(ByVal keyToDelete As String)

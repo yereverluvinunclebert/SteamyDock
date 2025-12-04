@@ -10,6 +10,42 @@ Begin VB.Form hiddenForm
    ScaleWidth      =   9855
    StartUpPosition =   3  'Windows Default
    Visible         =   0   'False
+   Begin VB.CommandButton btnClose 
+      Caption         =   "Close"
+      Height          =   675
+      Left            =   7800
+      TabIndex        =   13
+      Top             =   6180
+      Width           =   1785
+   End
+   Begin VB.ComboBox cmbRecordNumber 
+      Enabled         =   0   'False
+      Height          =   315
+      ItemData        =   "hiddenForm.frx":0000
+      Left            =   2070
+      List            =   "hiddenForm.frx":00B5
+      Style           =   2  'Dropdown List
+      TabIndex        =   12
+      Top             =   6030
+      Width           =   675
+   End
+   Begin VB.TextBox txtSingleRecord 
+      Enabled         =   0   'False
+      Height          =   345
+      Left            =   2760
+      TabIndex        =   11
+      Top             =   6030
+      Width           =   3735
+   End
+   Begin VB.CommandButton lblGetRecord 
+      Caption         =   "Get Single Record"
+      Enabled         =   0   'False
+      Height          =   645
+      Left            =   510
+      TabIndex        =   10
+      Top             =   5880
+      Width           =   1485
+   End
    Begin VB.CommandButton Command 
       Caption         =   "Kill .db "
       Height          =   615
@@ -20,7 +56,7 @@ Begin VB.Form hiddenForm
    End
    Begin VB.ListBox List1 
       Enabled         =   0   'False
-      Height          =   2595
+      Height          =   1425
       Left            =   510
       TabIndex        =   4
       Top             =   4230
@@ -44,7 +80,7 @@ Begin VB.Form hiddenForm
       Width           =   1455
    End
    Begin VB.CommandButton CommandConnect 
-      Caption         =   "Connect.db"
+      Caption         =   "Connect.db && get multiple records"
       Height          =   615
       Left            =   540
       TabIndex        =   1
@@ -78,7 +114,7 @@ Begin VB.Form hiddenForm
       Width           =   4365
    End
    Begin VB.Label Label1 
-      Caption         =   $"hiddenForm.frx":0000
+      Caption         =   $"hiddenForm.frx":01A5
       Height          =   795
       Left            =   3180
       TabIndex        =   6
@@ -86,7 +122,7 @@ Begin VB.Form hiddenForm
       Width           =   6345
    End
    Begin VB.Label Label 
-      Caption         =   $"hiddenForm.frx":008A
+      Caption         =   $"hiddenForm.frx":022F
       Height          =   795
       Left            =   3240
       TabIndex        =   5
@@ -130,6 +166,27 @@ Option Explicit
 Implements ISQLiteProgressHandler ' only allowed in classes and forms (classes)
 
 '---------------------------------------------------------------------------------------
+' Procedure : btnClose_Click
+' Author    : beededea
+' Date      : 04/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub btnClose_Click()
+
+    On Error GoTo btnClose_Click_Error
+
+    Unload hiddenForm
+
+    On Error GoTo 0
+    Exit Sub
+
+btnClose_Click_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnClose_Click of Form hiddenForm"
+End Sub
+
+'---------------------------------------------------------------------------------------
 ' Procedure : Command_Click
 ' Author    : beededea
 ' Date      : 04/12/2025
@@ -153,6 +210,26 @@ Private Sub Command_Click()
 Command_Click_Error:
 
      MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Command_Click of Form hiddenForm"
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : Form_Load
+' Author    : beededea
+' Date      : 04/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub Form_Load()
+    On Error GoTo Form_Load_Error
+
+    cmbRecordNumber.ListIndex = 0
+
+    On Error GoTo 0
+    Exit Sub
+
+Form_Load_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Load of Form hiddenForm"
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -259,7 +336,13 @@ Private Sub CommandConnect_Click()
         CommandInsert.Enabled = True
         List1.Enabled = True
         List1.Clear
-        Call Requery
+
+        lblGetRecord.Enabled = True
+        cmbRecordNumber.Enabled = True
+        txtSingleRecord.Enabled = True
+        
+        Call getFieldFromMultipleRecords("fIconTitle")
+        
     Else
         MsgBox "Already connected.", vbExclamation
     End If
@@ -333,6 +416,32 @@ CommandClose_Click_Error:
      MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure CommandClose_Click of Form hiddenForm"
 End Sub
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : lblGetRecord_Click
+' Author    : beededea
+' Date      : 04/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub lblGetRecord_Click()
+
+    Dim recordToFind As Integer: recordToFind = 0
+    
+    On Error GoTo lblGetRecord_Click_Error
+    
+    recordToFind = CInt(cmbRecordNumber.List(cmbRecordNumber.ListIndex))
+
+    txtSingleRecord.Text = getAllFieldsFromSingleRecord(recordToFind)
+
+    On Error GoTo 0
+    Exit Sub
+
+lblGetRecord_Click_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure lblGetRecord_Click of Form hiddenForm"
+    
+End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : List1_KeyDown
