@@ -165,12 +165,11 @@ Public Sub closeDatabase()
     On Error GoTo closeDatabase_Error
 
     If DBConnection Is Nothing Then
-        MsgBox "Not connected.", vbExclamation
+        ' do nothing if nothing
     Else
         DBConnection.SetProgressHandler Nothing ' Unregisters the progress handler callback
         DBConnection.CloseDB
         Set DBConnection = Nothing
-
     End If
 
     On Error GoTo 0
@@ -199,10 +198,10 @@ Public Sub insertRecords(Optional ByVal thisKeyValue As Integer)
     
     On Error GoTo insertRecords_Error
 
-    Text = VBA.InputBox("fIconCommand")
-    If StrPtr(Text) = NULL_PTR Then Exit Sub
+'    Text = VBA.InputBox("fIconCommand")
+'    If StrPtr(Text) = NULL_PTR Then Exit Sub
     
-    thisKeyValue = 2
+'    thisKeyValue = 2
     
     ' now load the user specified icons to the dictionary
     For useloop = iconArrayLowerBound To iconArrayUpperBound
@@ -211,28 +210,15 @@ Public Sub insertRecords(Optional ByVal thisKeyValue As Integer)
         readIconSettingsIni useloop, False
         thisKeyValue = useloop
         With DBConnection
-        
-        If useloop >= 87 Then
-            useloop = useloop
-        End If
+            hiddenForm.lblRecordNum.Caption = " Record Number being written now: " & useloop
+            hiddenForm.lblRecordNum.Refresh
         
             .Execute "INSERT INTO iconDataTable (Key, fIconRecordNumber) VALUES ('" & thisKeyValue & "','" & thisKeyValue & "')"
-            .Execute "INSERT INTO iconDataTable (Key, fIconFilename) VALUES ('" & thisKeyValue & "','" & sFilename & "') ON CONFLICT (Key) DO UPDATE SET fIconFilename=excluded.fIconFilename"
-            .Execute "INSERT INTO iconDataTable (Key, fIconFileName2) VALUES ('" & thisKeyValue & "','" & sFileName2 & "') ON CONFLICT (Key) DO UPDATE SET fIconFileName2=excluded.fIconFileName2"
-            '.Execute "INSERT INTO iconDataTable (Key, fIconTitle) VALUES ('" & thisKeyValue & "','" & sTitle & "') ON CONFLICT (Key) DO UPDATE SET fIconTitle=excluded.fIconTitle"
-            
-            Set Command = DBConnection.CreateCommand("INSERT INTO iconDataTable (Key, fIconTitle) VALUES (@oid,@opo) ON CONFLICT (Key) DO UPDATE SET fIconTitle=excluded.fIconTitle")
-            Command.SetParameterValue Command![@oid], thisKeyValue
-            Command.SetParameterValue Command![@opo], sTitle
-            Command.Execute
-            
-            '.Execute "INSERT INTO iconDataTable (Key, fIconCommand) VALUES ('" & thisKeyValue & "','" & sCommand & "') ON CONFLICT (Key) DO UPDATE SET fIconCommand=excluded.fIconCommand"
-            
-            Set Command = DBConnection.CreateCommand("INSERT INTO iconDataTable (Key, fIconCommand) VALUES (@oid,@opo) ON CONFLICT (Key) DO UPDATE SET fIconCommand=excluded.fIconCommand")
-            Command.SetParameterValue Command![@oid], thisKeyValue
-            Command.SetParameterValue Command![@opo], sCommand
-            Command.Execute
-           
+
+            Call insertNonSanitisedStrings(thisKeyValue, "fIconFilename", sFilename)
+            Call insertNonSanitisedStrings(thisKeyValue, "fIconFilename2", sFileName2)
+            Call insertNonSanitisedStrings(thisKeyValue, "fIconTitle", sTitle)
+            Call insertNonSanitisedStrings(thisKeyValue, "fIconCommand", sCommand)
                   
             .Execute "INSERT INTO iconDataTable (Key, fIconArguments) VALUES ('" & thisKeyValue & "','" & sArguments & "') ON CONFLICT (Key) DO UPDATE SET fIconArguments=excluded.fIconArguments"
             .Execute "INSERT INTO iconDataTable (Key, fIconWorkingDirectory) VALUES ('" & thisKeyValue & "','" & sWorkingDirectory & "') ON CONFLICT (Key) DO UPDATE SET fIconWorkingDirectory=excluded.fIconWorkingDirectory"
@@ -245,10 +231,14 @@ Public Sub insertRecords(Optional ByVal thisKeyValue As Integer)
             .Execute "INSERT INTO iconDataTable (Key, fIconUseDialogAfter) VALUES ('" & thisKeyValue & "','" & sUseDialogAfter & "') ON CONFLICT (Key) DO UPDATE SET fIconUseDialogAfter=excluded.fIconUseDialogAfter"
             .Execute "INSERT INTO iconDataTable (Key, fIconQuickLaunch) VALUES ('" & thisKeyValue & "','" & sQuickLaunch & "') ON CONFLICT (Key) DO UPDATE SET fIconQuickLaunch=excluded.fIconQuickLaunch"
             .Execute "INSERT INTO iconDataTable (Key, fIconAutoHideDock) VALUES ('" & thisKeyValue & "','" & sAutoHideDock & "') ON CONFLICT (Key) DO UPDATE SET fIconAutoHideDock=excluded.fIconAutoHideDock"
-            .Execute "INSERT INTO iconDataTable (Key, fIconSecondApp) VALUES ('" & thisKeyValue & "','" & sSecondApp & "') ON CONFLICT (Key) DO UPDATE SET fIconSecondApp=excluded.fIconSecondApp"
+            
+            Call insertNonSanitisedStrings(thisKeyValue, "fIconSecondApp", sSecondApp)
+          
             .Execute "INSERT INTO iconDataTable (Key, fIconRunElevated) VALUES ('" & thisKeyValue & "','" & sRunElevated & "') ON CONFLICT (Key) DO UPDATE SET fIconRunElevated=excluded.fIconRunElevated"
             .Execute "INSERT INTO iconDataTable (Key, fIconRunSecondAppBeforehand) VALUES ('" & thisKeyValue & "','" & sRunSecondAppBeforehand & "') ON CONFLICT (Key) DO UPDATE SET fIconRunSecondAppBeforehand=excluded.fIconRunSecondAppBeforehand"
-            .Execute "INSERT INTO iconDataTable (Key, fIconAppToTerminate) VALUES ('" & thisKeyValue & "','" & sAppToTerminate & "') ON CONFLICT (Key) DO UPDATE SET fIconAppToTerminate=excluded.fIconAppToTerminate"
+            
+            Call insertNonSanitisedStrings(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
+            
             .Execute "INSERT INTO iconDataTable (Key, fIconDisabled) VALUES ('" & thisKeyValue & "','" & sDisabled & "') ON CONFLICT (Key) DO UPDATE SET fIconDisabled=excluded.fIconDisabled"
         End With
         
@@ -265,7 +255,20 @@ insertRecords_Error:
      MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertRecords of Form hiddenForm"
 
 End Sub
+Private Sub insertNonSanitisedStrings(ByVal thisKeyValue As Integer, ByVal fieldName As String, ByVal iconVariable As String)
 
+    Dim thisSQL As String
+
+    Dim Command As SQLiteCommand
+    
+        thisSQL = "INSERT INTO iconDataTable (Key, " & fieldName & ") VALUES (@oid,@opo) ON CONFLICT (Key) DO UPDATE SET " & fieldName & "=excluded." & fieldName
+
+        Set Command = DBConnection.CreateCommand(thisSQL)
+        Command.SetParameterValue Command![@oid], thisKeyValue
+        Command.SetParameterValue Command![@opo], iconVariable '
+        Command.Execute
+
+End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : SaveToiconData
 ' Author    : jbPro

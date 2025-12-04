@@ -10,38 +10,46 @@ Begin VB.Form hiddenForm
    ScaleWidth      =   9855
    StartUpPosition =   3  'Windows Default
    Visible         =   0   'False
+   Begin VB.CommandButton Command 
+      Caption         =   "Kill .db "
+      Height          =   615
+      Left            =   3570
+      TabIndex        =   9
+      Top             =   3300
+      Width           =   1425
+   End
    Begin VB.ListBox List1 
       Enabled         =   0   'False
       Height          =   2595
       Left            =   510
       TabIndex        =   4
       Top             =   4230
-      Width           =   4695
+      Width           =   5985
    End
    Begin VB.CommandButton CommandClose 
-      Caption         =   "Close Test.db"
+      Caption         =   "Close.db"
       Height          =   615
-      Left            =   3960
+      Left            =   5010
       TabIndex        =   3
-      Top             =   3330
+      Top             =   3300
       Width           =   1455
    End
    Begin VB.CommandButton CommandInsert 
-      Caption         =   "Insert into test_table"
+      Caption         =   "Insert fresh data into .db"
       Enabled         =   0   'False
       Height          =   615
-      Left            =   2220
+      Left            =   2070
       TabIndex        =   2
       Top             =   3300
       Width           =   1455
    End
    Begin VB.CommandButton CommandConnect 
-      Caption         =   "Connect Test.db"
+      Caption         =   "Connect.db"
       Height          =   615
       Left            =   540
       TabIndex        =   1
       Top             =   3300
-      Width           =   1455
+      Width           =   1485
    End
    Begin VB.PictureBox hiddenPicbox 
       AutoSize        =   -1  'True
@@ -52,6 +60,22 @@ Begin VB.Form hiddenForm
       TabIndex        =   0
       Top             =   360
       Width           =   2415
+   End
+   Begin VB.Label Label2 
+      Caption         =   "The buttons below will connect tot he db, clear it down and reload fresh from schema and close the db."
+      Height          =   795
+      Left            =   3240
+      TabIndex        =   8
+      Top             =   2100
+      Width           =   6345
+   End
+   Begin VB.Label lblRecordNum 
+      Caption         =   "0"
+      Height          =   225
+      Left            =   540
+      TabIndex        =   7
+      Top             =   2940
+      Width           =   4365
    End
    Begin VB.Label Label1 
       Caption         =   $"hiddenForm.frx":0000
@@ -104,6 +128,32 @@ Option Explicit
 ' The COM object exposes a dispatch interface in its type library.
 
 Implements ISQLiteProgressHandler ' only allowed in classes and forms (classes)
+
+'---------------------------------------------------------------------------------------
+' Procedure : Command_Click
+' Author    : beededea
+' Date      : 04/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub Command_Click()
+    On Error GoTo Command_Click_Error
+
+    Call closeDatabase
+    Kill SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.db"
+    lblRecordNum.Caption = "Database Deleted"
+    
+    CommandInsert.Enabled = False
+    List1.Clear
+    List1.Enabled = False
+
+    On Error GoTo 0
+    Exit Sub
+
+Command_Click_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Command_Click of Form hiddenForm"
+End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : ISQLiteProgressHandler_Callback
@@ -191,9 +241,14 @@ Private Sub CommandConnect_Click()
                     Set DBConnection = .object
                 End If
             End With
+            hiddenForm.lblRecordNum.Caption = "Database Connected."
+
         Else ' if db not exists then create it and set up the new database with hard coded schema
             If MsgBox(PathName & " does not exist. Create new?", vbExclamation + vbOKCancel) <> vbCancel Then
                 Call createDBFromScratch(PathName)
+                hiddenForm.lblRecordNum.Caption = "New Empty Database Created with Good Schema & Connected."
+            Else
+                Exit Sub
             End If
         End If
         
@@ -208,6 +263,8 @@ Private Sub CommandConnect_Click()
     Else
         MsgBox "Already connected.", vbExclamation
     End If
+    
+
 
     On Error GoTo 0
     Exit Sub
@@ -231,7 +288,11 @@ End Sub
 Private Sub CommandInsert_Click()
     
     List1.Clear
+    CommandInsert.Enabled = False
+    List1.Enabled = False
+
     Call insertRecords
+    hiddenForm.lblRecordNum.Caption = "Data Inserted."
 
     On Error GoTo 0
     Exit Sub
@@ -252,11 +313,17 @@ End Sub
 '
 Private Sub CommandClose_Click()
     On Error GoTo CommandClose_Click_Error
-
-    Call closeDatabase
-    hiddenForm.CommandInsert.Enabled = False
-    hiddenForm.List1.Clear
-    hiddenForm.List1.Enabled = False
+    
+    If DBConnection Is Nothing Then
+        MsgBox "Not connected.", vbExclamation
+    Else
+        Call closeDatabase
+        CommandInsert.Enabled = False
+        List1.Clear
+        List1.Enabled = False
+    End If
+    
+    hiddenForm.lblRecordNum.Caption = "Database closed."
 
     On Error GoTo 0
     Exit Sub
