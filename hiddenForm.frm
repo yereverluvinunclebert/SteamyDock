@@ -1,15 +1,43 @@
 VERSION 5.00
 Begin VB.Form hiddenForm 
    Caption         =   "do not delete me as I am a temporary structure used to hold a picbox"
-   ClientHeight    =   7080
+   ClientHeight    =   7740
    ClientLeft      =   60
    ClientTop       =   345
    ClientWidth     =   9855
    LinkTopic       =   "Form1"
-   ScaleHeight     =   7080
+   ScaleHeight     =   7740
    ScaleWidth      =   9855
    StartUpPosition =   3  'Windows Default
    Visible         =   0   'False
+   Begin VB.TextBox txtSingleField 
+      Enabled         =   0   'False
+      Height          =   345
+      Left            =   2760
+      TabIndex        =   16
+      Top             =   6720
+      Width           =   3735
+   End
+   Begin VB.ComboBox cmbSingleFieldRecordNumber 
+      Enabled         =   0   'False
+      Height          =   315
+      ItemData        =   "hiddenForm.frx":0000
+      Left            =   2070
+      List            =   "hiddenForm.frx":00B5
+      Style           =   2  'Dropdown List
+      TabIndex        =   15
+      Top             =   6750
+      Width           =   675
+   End
+   Begin VB.CommandButton lblGetField 
+      Caption         =   "Get Single Record, One Field"
+      Enabled         =   0   'False
+      Height          =   645
+      Left            =   510
+      TabIndex        =   14
+      Top             =   6630
+      Width           =   1485
+   End
    Begin VB.CommandButton btnClose 
       Caption         =   "Close"
       Height          =   675
@@ -21,9 +49,9 @@ Begin VB.Form hiddenForm
    Begin VB.ComboBox cmbRecordNumber 
       Enabled         =   0   'False
       Height          =   315
-      ItemData        =   "hiddenForm.frx":0000
+      ItemData        =   "hiddenForm.frx":01A5
       Left            =   2070
-      List            =   "hiddenForm.frx":00B5
+      List            =   "hiddenForm.frx":025A
       Style           =   2  'Dropdown List
       TabIndex        =   12
       Top             =   6030
@@ -38,7 +66,7 @@ Begin VB.Form hiddenForm
       Width           =   3735
    End
    Begin VB.CommandButton lblGetRecord 
-      Caption         =   "Get Single Record"
+      Caption         =   "Get Single Record All Fields"
       Enabled         =   0   'False
       Height          =   645
       Left            =   510
@@ -114,7 +142,7 @@ Begin VB.Form hiddenForm
       Width           =   4365
    End
    Begin VB.Label Label1 
-      Caption         =   $"hiddenForm.frx":01A5
+      Caption         =   $"hiddenForm.frx":034A
       Height          =   795
       Left            =   3180
       TabIndex        =   6
@@ -122,7 +150,7 @@ Begin VB.Form hiddenForm
       Width           =   6345
    End
    Begin VB.Label Label 
-      Caption         =   $"hiddenForm.frx":022F
+      Caption         =   $"hiddenForm.frx":03D4
       Height          =   795
       Left            =   3240
       TabIndex        =   5
@@ -213,6 +241,31 @@ Command_Click_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
+' Procedure : lblGetField_Click
+' Author    : beededea
+' Date      : 04/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub lblGetField_Click()
+
+    Dim recordToFind As Integer: recordToFind = 0
+    
+    On Error GoTo lblGetField_Click_Error
+
+    recordToFind = CInt(cmbSingleFieldRecordNumber.List(cmbSingleFieldRecordNumber.ListIndex))
+
+    txtSingleField.Text = getFieldFromSingleRecord("fIconCommand", recordToFind)
+
+    On Error GoTo 0
+    Exit Sub
+
+lblGetField_Click_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure lblGetField_Click of Form hiddenForm"
+End Sub
+
+'---------------------------------------------------------------------------------------
 ' Procedure : Form_Load
 ' Author    : beededea
 ' Date      : 04/12/2025
@@ -223,7 +276,8 @@ Private Sub Form_Load()
     On Error GoTo Form_Load_Error
 
     cmbRecordNumber.ListIndex = 0
-
+    cmbSingleFieldRecordNumber.ListIndex = 0
+    
     On Error GoTo 0
     Exit Sub
 
@@ -340,6 +394,10 @@ Private Sub CommandConnect_Click()
         lblGetRecord.Enabled = True
         cmbRecordNumber.Enabled = True
         txtSingleRecord.Enabled = True
+        
+        lblGetField.Enabled = True
+        cmbSingleFieldRecordNumber.Enabled = True
+        txtSingleField.Enabled = True
         
         Call getFieldFromMultipleRecords("fIconTitle")
         

@@ -66,7 +66,7 @@ End Function
 Public Function getFieldFromSingleRecord(ByVal fieldName As String, ByVal p_Key As String) As Variant
 
     Dim DataSet As SQLiteDataSet
-    Dim returnedValue As String: returnedValue = vbNullString
+    Dim returnedValue As Variant
     
     On Error GoTo getFieldFromSingleRecord_Error
 
@@ -80,31 +80,28 @@ Public Function getFieldFromSingleRecord(ByVal fieldName As String, ByVal p_Key 
     End If
     
     ' assign the value in the required field from the dataset to the function return value
-    'Do Until DataSet.EOF
         
-    If fieldName = "fIconRecordNumber" Then returnedValue = DataSet!key & " " & DataSet!fIconRecordNumber
-    If fieldName = "fIconFilename" Then returnedValue = DataSet!key & " " & DataSet!fIconFilename
-    If fieldName = "fIconFileName2" Then returnedValue = DataSet!key & " " & DataSet!fIconFileName2
-    If fieldName = "fIconTitle" Then returnedValue = DataSet!key & " " & DataSet!fIconTitle
-    If fieldName = "fIconCommand" Then returnedValue = DataSet!key & " " & DataSet!fIconCommand
-    If fieldName = "fIconArguments" Then returnedValue = DataSet!key & " " & DataSet!fIconArguments
-    If fieldName = "fIconWorkingDirectory" Then returnedValue = DataSet!key & " " & DataSet!fIconWorkingDirectory
-    If fieldName = "fIconShowCmd" Then returnedValue = DataSet!key & " " & DataSet!fIconShowCmd
-    If fieldName = "fIconOpenRunning" Then returnedValue = DataSet!key & " " & DataSet!fIconOpenRunning
-    If fieldName = "fIconIsSeparator" Then returnedValue = DataSet!key & " " & DataSet!fIconIsSeparator
-    If fieldName = "fIconUseContext" Then returnedValue = DataSet!key & " " & DataSet!fIconUseContext
-    If fieldName = "fIconDockletFile" Then returnedValue = DataSet!key & " " & DataSet!fIconDockletFile
-    If fieldName = "fIconUseDialog" Then returnedValue = DataSet!key & " " & DataSet!fIconUseDialog
-    If fieldName = "fIconUseDialogAfter" Then returnedValue = DataSet!key & " " & DataSet!fIconUseDialogAfter
-    If fieldName = "fIconQuickLaunch" Then returnedValue = DataSet!key & " " & DataSet!fIconQuickLaunch
-    If fieldName = "fIconAutoHideDock" Then returnedValue = DataSet!key & " " & DataSet!fIconAutoHideDock
-    If fieldName = "fIconSecondApp" Then returnedValue = DataSet!key & " " & DataSet!fIconSecondApp
-    If fieldName = "fIconRunElevated" Then returnedValue = DataSet!key & " " & DataSet!fIconRunElevated
-    If fieldName = "fIconRunSecondAppBeforehand" Then returnedValue = DataSet!key & " " & DataSet!fIconRunSecondAppBeforehand
-    If fieldName = "fIconAppToTerminate" Then returnedValue = DataSet!key & " " & DataSet!fIconAppToTerminate
-    If fieldName = "fIconDisabled" Then returnedValue = DataSet!key & " " & DataSet!fIconDisabled
-
-    'Loop
+    If fieldName = "fIconRecordNumber" Then returnedValue = DataSet!fIconRecordNumber
+    If fieldName = "fIconFilename" Then returnedValue = DataSet!fIconFilename
+    If fieldName = "fIconFileName2" Then returnedValue = DataSet!fIconFileName2
+    If fieldName = "fIconTitle" Then returnedValue = DataSet!fIconTitle
+    If fieldName = "fIconCommand" Then returnedValue = DataSet!fIconCommand
+    If fieldName = "fIconArguments" Then returnedValue = DataSet!fIconArguments
+    If fieldName = "fIconWorkingDirectory" Then returnedValue = DataSet!fIconWorkingDirectory
+    If fieldName = "fIconShowCmd" Then returnedValue = DataSet!fIconShowCmd
+    If fieldName = "fIconOpenRunning" Then returnedValue = DataSet!fIconOpenRunning
+    If fieldName = "fIconIsSeparator" Then returnedValue = DataSet!fIconIsSeparator
+    If fieldName = "fIconUseContext" Then returnedValue = DataSet!fIconUseContext
+    If fieldName = "fIconDockletFile" Then returnedValue = DataSet!fIconDockletFile
+    If fieldName = "fIconUseDialog" Then returnedValue = DataSet!fIconUseDialog
+    If fieldName = "fIconUseDialogAfter" Then returnedValue = DataSet!fIconUseDialogAfter
+    If fieldName = "fIconQuickLaunch" Then returnedValue = DataSet!fIconQuickLaunch
+    If fieldName = "fIconAutoHideDock" Then returnedValue = DataSet!fIconAutoHideDock
+    If fieldName = "fIconSecondApp" Then returnedValue = DataSet!fIconSecondApp
+    If fieldName = "fIconRunElevated" Then returnedValue = DataSet!fIconRunElevated
+    If fieldName = "fIconRunSecondAppBeforehand" Then returnedValue = DataSet!fIconRunSecondAppBeforehand
+    If fieldName = "fIconAppToTerminate" Then returnedValue = DataSet!fIconAppToTerminate
+    If fieldName = "fIconDisabled" Then returnedValue = DataSet!fIconDisabled
     
     getFieldFromSingleRecord = returnedValue
 
