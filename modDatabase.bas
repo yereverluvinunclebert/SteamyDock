@@ -7,7 +7,7 @@ Option Explicit
     End Enum
 #End If
 #If Win64 Then
-    'Private Const NULL_PTR As LongPtr = 0 ' this may glow red but is NOT an error, suitable for 64bit TwinBasic
+    Private Const NULL_PTR As LongPtr = 0 ' this may glow red but is NOT an error, suitable for 64bit TwinBasic
     Private Const PTR_SIZE As Long = 8
 #Else
     Private Const NULL_PTR As Long = 0
@@ -185,41 +185,43 @@ End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : insertRecords
-' Author    : Krool
+' Author    : beededea
 ' Date      : 01/12/2025
-' Purpose   :
+' Purpose   : Inserts or updates a single key/value pair in the iconDataTable.
+'             On CONFLICT(key), the row is updated instead of inserting a duplicate.
+'             The triggers on the table ensure update_counter is bumped appropriately.
 '---------------------------------------------------------------------------------------
 '
-Public Sub insertRecords(Optional ByVal thisKeyValue As Integer)
+Public Sub insertRecords()
 
     Dim Text As String: Text = vbNullString
-    Dim useloop As Integer
+    Dim useloop As Integer: useloop = 0
+    Dim thisKeyValue As Integer: thisKeyValue = 0
     Dim Command As SQLiteCommand
     
     On Error GoTo insertRecords_Error
 
-'    Text = VBA.InputBox("fIconCommand")
-'    If StrPtr(Text) = NULL_PTR Then Exit Sub
-    
-'    thisKeyValue = 2
-    
     ' now load the user specified icons to the dictionary
     For useloop = iconArrayLowerBound To iconArrayUpperBound
     
         ' extract filenames from the random access data file
         readIconSettingsIni useloop, False
+        
         thisKeyValue = useloop
         With DBConnection
             hiddenForm.lblRecordNum.Caption = " Record Number being written now: " & useloop
             hiddenForm.lblRecordNum.Refresh
         
+            ' insert values that do not need to be sanitised
             .Execute "INSERT INTO iconDataTable (Key, fIconRecordNumber) VALUES ('" & thisKeyValue & "','" & thisKeyValue & "')"
 
+            ' insert values that can possibly contain dodgy characters
             Call insertNonSanitisedStrings(thisKeyValue, "fIconFilename", sFilename)
             Call insertNonSanitisedStrings(thisKeyValue, "fIconFilename2", sFileName2)
             Call insertNonSanitisedStrings(thisKeyValue, "fIconTitle", sTitle)
             Call insertNonSanitisedStrings(thisKeyValue, "fIconCommand", sCommand)
                   
+            ' insert more values that do not need to be sanitised
             .Execute "INSERT INTO iconDataTable (Key, fIconArguments) VALUES ('" & thisKeyValue & "','" & sArguments & "') ON CONFLICT (Key) DO UPDATE SET fIconArguments=excluded.fIconArguments"
             .Execute "INSERT INTO iconDataTable (Key, fIconWorkingDirectory) VALUES ('" & thisKeyValue & "','" & sWorkingDirectory & "') ON CONFLICT (Key) DO UPDATE SET fIconWorkingDirectory=excluded.fIconWorkingDirectory"
             .Execute "INSERT INTO iconDataTable (Key, fIconShowCmd) VALUES ('" & thisKeyValue & "','" & sShowCmd & "') ON CONFLICT (Key) DO UPDATE SET fIconShowCmd=excluded.fIconShowCmd"
@@ -242,8 +244,6 @@ Public Sub insertRecords(Optional ByVal thisKeyValue As Integer)
             .Execute "INSERT INTO iconDataTable (Key, fIconDisabled) VALUES ('" & thisKeyValue & "','" & sDisabled & "') ON CONFLICT (Key) DO UPDATE SET fIconDisabled=excluded.fIconDisabled"
         End With
         
-
-    
     Next useloop
     Call Requery
 
@@ -255,12 +255,21 @@ insertRecords_Error:
      MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertRecords of Form hiddenForm"
 
 End Sub
+'---------------------------------------------------------------------------------------
+' Procedure : insertNonSanitisedStrings
+' Author    : beededea
+' Date      : 04/12/2025
+' Purpose   : user-entered text or file/folder names can contain characters that an SQL statement can baulk at.
+'             Instead the text is entered as a parameter
+'---------------------------------------------------------------------------------------
+'
 Private Sub insertNonSanitisedStrings(ByVal thisKeyValue As Integer, ByVal fieldName As String, ByVal iconVariable As String)
 
-    Dim thisSQL As String
-
+    Dim thisSQL As String: thisSQL = vbNullString
     Dim Command As SQLiteCommand
     
+    On Error GoTo insertNonSanitisedStrings_Error
+
         thisSQL = "INSERT INTO iconDataTable (Key, " & fieldName & ") VALUES (@oid,@opo) ON CONFLICT (Key) DO UPDATE SET " & fieldName & "=excluded." & fieldName
 
         Set Command = DBConnection.CreateCommand(thisSQL)
@@ -268,53 +277,17 @@ Private Sub insertNonSanitisedStrings(ByVal thisKeyValue As Integer, ByVal field
         Command.SetParameterValue Command![@opo], iconVariable '
         Command.Execute
 
-End Sub
-'---------------------------------------------------------------------------------------
-' Procedure : SaveToiconData
-' Author    : jbPro
-' Date      : 24/11/2025
-' Purpose   : Inserts or updates a single key/value pair in the iconDataTable.
-'             On CONFLICT(key), the row is updated instead of inserting a duplicate.
-'             The triggers on the table ensure update_counter is bumped appropriately.
-'---------------------------------------------------------------------------------------
-'
-Public Sub SaveToiconData(ByVal p_Key As String, p_Data As Variant)
-    On Error GoTo SaveToiconData_Error
-    
-' database schema (simplified)
-'      fIconRecordNumber As Integer
-'      fIconFilename As String
-'      fIconFileName2 As String
-'      fIconTitle As String
-'      fIconCommand As String
-'      fIconArguments As String
-'      fIconWorkingDirectory As String
-'      fIconShowCmd As String
-'      fIconOpenRunning As String
-'      fIconIsSeparator As String
-'      fIconUseContext As String
-'      fIconDockletFile As String
-'      fIconUseDialog As String
-'      fIconUseDialogAfter As String
-'      fIconQuickLaunch As String
-'      fIconAutoHideDock As String
-'      fIconSecondApp As String
-'      fIconRunElevated As String
-'      fIconRunSecondAppBeforehand As String
-'      fIconAppToTerminate As String
-'      fIconDisabled As String
-    
-    With DBConnection
-        .Execute "INSERT INTO iconDataTable (key, data) VALUES ('" & p_Key & "','" & p_Data & "') ON CONFLICT (key) DO UPDATE SET data=excluded.data"
-    End With
-   
     On Error GoTo 0
     Exit Sub
 
-SaveToiconData_Error:
+insertNonSanitisedStrings_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SaveToiconData of Form hiddenForm"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertNonSanitisedStrings of Module modDatabase"
+
 End Sub
+
+
+
 
 
 

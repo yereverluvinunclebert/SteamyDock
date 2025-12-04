@@ -12,17 +12,29 @@ a few bugs overall, deletion and drag/drop can be slow to complete. New animatio
 ' Test binaries, dragging to the dock, different icon sizes
 ' if no icon found then drop down to the automatic selection
 
-' Current Tasks:
-' =============
-
-
 ' install the db tool 32 bit version on the Dell laptop
 ' create fields for each of the icon characteristics
 
 ' add fields to database
 ' test with new fields
-' move all form code to the mosDatabase.bas
-' deletion of specific keys from the listbox = does that work in the original Krool example?
+' add real data from the binary file
+' move all form code to the modDatabase.bas
+' deletion of specific keys from the listbox
+' add status label and code
+' shift more code from the form to the modDatabse
+' add comments and top/tail to insertNonSanitisedStrings & others
+
+' Current Tasks:
+' =============
+
+
+' test GetFromiconData
+
+' test if the updateCounter is being updated
+
+' test to see if the scripting dictionary is populated
+
+' test why the update does not occur when an existing key is found, possibly does not need the key specified at all 
 
 ' test regfree.bas to see if the VBSQL can be used regfree
 
