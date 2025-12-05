@@ -57,18 +57,18 @@ End Function
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : getFieldFromSingleRecord
+' Procedure : getSingleFieldFromSingleRecord
 ' Author    : beededea
 ' Date      : 02/12/2025
 ' Purpose   : select one record matching the supplied key pulling just one fields/column into a dataset
 '---------------------------------------------------------------------------------------
 '
-Public Function getFieldFromSingleRecord(ByVal fieldName As String, ByVal p_Key As String) As Variant
+Public Function getSingleFieldFromSingleRecord(ByVal fieldName As String, ByVal p_Key As String) As Variant
 
     Dim DataSet As SQLiteDataSet
     Dim returnedValue As Variant
     
-    On Error GoTo getFieldFromSingleRecord_Error
+    On Error GoTo getSingleFieldFromSingleRecord_Error
 
     ' select one record matching the supplied key pulling just one fields/column into a dataset
     Set DataSet = DBConnection.OpenDataSet("SELECT " & fieldName & " FROM iconDataTable WHERE key= " & p_Key)
@@ -80,6 +80,8 @@ Public Function getFieldFromSingleRecord(ByVal fieldName As String, ByVal p_Key 
     End If
     
     ' assign the value in the required field from the dataset to the function return value
+    
+    ' if this seems a bit wordy, it is, I cannot replace the DataSet!fieldName as a variable
         
     If fieldName = "fIconRecordNumber" Then returnedValue = DataSet!fIconRecordNumber
     If fieldName = "fIconFilename" Then returnedValue = DataSet!fIconFilename
@@ -103,14 +105,14 @@ Public Function getFieldFromSingleRecord(ByVal fieldName As String, ByVal p_Key 
     If fieldName = "fIconAppToTerminate" Then returnedValue = DataSet!fIconAppToTerminate
     If fieldName = "fIconDisabled" Then returnedValue = DataSet!fIconDisabled
     
-    getFieldFromSingleRecord = returnedValue
+    getSingleFieldFromSingleRecord = returnedValue
 
     On Error GoTo 0
     Exit Function
 
-getFieldFromSingleRecord_Error:
+getSingleFieldFromSingleRecord_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFieldFromSingleRecord of Module modDatabase"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getSingleFieldFromSingleRecord of Module modDatabase"
 
 End Function
 
@@ -138,7 +140,7 @@ Public Sub getAllFieldsFromAllRecords()
     ' list all records in the dataset to the listbox but only show one field from the dataset
     Do Until DataSet.EOF
     
-        ' need to insert these into a collection or read the resulting values into global var cache
+        ' need to insert these into a collection or read the resulting values into the global var cache
             
         hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
         DataSet.MoveNext
@@ -157,17 +159,17 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : getFieldFromMultipleRecords
+' Procedure : getSingleFieldFromMultipleRecords
 ' Author    : beededea
 ' Date      : 02/12/2025
 ' Purpose   : select ALL records pulling the key and the chosen field only
 '---------------------------------------------------------------------------------------
 '
-Public Sub getFieldFromMultipleRecords(ByVal fieldName As String)
+Public Sub getSingleFieldFromMultipleRecords(ByVal fieldName As String)
 
     Dim DataSet As SQLiteDataSet
     
-    On Error GoTo getFieldFromMultipleRecords_Error
+    On Error GoTo getSingleFieldFromMultipleRecords_Error
 
     ' select ALL records pulling the key and the chosen field only
     Set DataSet = DBConnection.OpenDataSet("SELECT key, " & fieldName & " FROM iconDataTable")
@@ -177,6 +179,8 @@ Public Sub getFieldFromMultipleRecords(ByVal fieldName As String)
     
     ' list all records in the dataset to the listbox
     Do Until DataSet.EOF
+    
+        ' need to insert these into a collection or read the resulting values into the global var cache
         
         If fieldName = "fIconRecordNumber" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconRecordNumber
         If fieldName = "fIconFilename" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconFilename
@@ -205,9 +209,9 @@ Public Sub getFieldFromMultipleRecords(ByVal fieldName As String)
     On Error GoTo 0
     Exit Sub
 
-getFieldFromMultipleRecords_Error:
+getSingleFieldFromMultipleRecords_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getFieldFromMultipleRecords of Module modDatabase"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getSingleFieldFromMultipleRecords of Module modDatabase"
 
 End Sub
 
@@ -286,12 +290,6 @@ End Function
 
 
 
-
-' END of JBPro's suggested subs and functions
-
-
-
-
 '---------------------------------------------------------------------------------------
 ' Procedure : closeDatabase
 ' Author    : Krool
@@ -322,7 +320,7 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : insertRecords
+' Procedure : insertRecordsFromRandomFile
 ' Author    : beededea
 ' Date      : 01/12/2025
 ' Purpose   : Inserts or updates a single key/value pair in the iconDataTable.
@@ -330,14 +328,14 @@ End Sub
 '             The triggers on the table ensure update_counter is bumped appropriately.
 '---------------------------------------------------------------------------------------
 '
-Public Sub insertRecords()
+Public Sub insertRecordsFromRandomFile()
 
     Dim Text As String: Text = vbNullString
     Dim useloop As Integer: useloop = 0
     Dim thisKeyValue As Integer: thisKeyValue = 0
     Dim Command As SQLiteCommand
     
-    On Error GoTo insertRecords_Error
+    On Error GoTo insertRecordsFromRandomFile_Error
     
     ' database schema (simplified)
     '       iconRecordNumber As Integer
@@ -376,11 +374,11 @@ Public Sub insertRecords()
             ' insert values that do not need to be sanitised
             .Execute "INSERT INTO iconDataTable (Key, fIconRecordNumber) VALUES ('" & thisKeyValue & "','" & thisKeyValue & "')"
 
-            ' insert values that can possibly contain dodgy characters
-            Call insertNonSanitisedStrings(thisKeyValue, "fIconFilename", sFilename)
-            Call insertNonSanitisedStrings(thisKeyValue, "fIconFilename2", sFileName2)
-            Call insertNonSanitisedStrings(thisKeyValue, "fIconTitle", sTitle)
-            Call insertNonSanitisedStrings(thisKeyValue, "fIconCommand", sCommand)
+            ' insert values into fields that can possibly contain dodgy characters as they are user-typed
+            Call insertFieldToSingleRecord(thisKeyValue, "fIconFilename", sFilename)
+            Call insertFieldToSingleRecord(thisKeyValue, "fIconFilename2", sFileName2)
+            Call insertFieldToSingleRecord(thisKeyValue, "fIconTitle", sTitle)
+            Call insertFieldToSingleRecord(thisKeyValue, "fIconCommand", sCommand)
                   
             ' insert more values that do not need to be sanitised
             .Execute "INSERT INTO iconDataTable (Key, fIconArguments) VALUES ('" & thisKeyValue & "','" & sArguments & "') ON CONFLICT (Key) DO UPDATE SET fIconArguments=excluded.fIconArguments"
@@ -395,41 +393,84 @@ Public Sub insertRecords()
             .Execute "INSERT INTO iconDataTable (Key, fIconQuickLaunch) VALUES ('" & thisKeyValue & "','" & sQuickLaunch & "') ON CONFLICT (Key) DO UPDATE SET fIconQuickLaunch=excluded.fIconQuickLaunch"
             .Execute "INSERT INTO iconDataTable (Key, fIconAutoHideDock) VALUES ('" & thisKeyValue & "','" & sAutoHideDock & "') ON CONFLICT (Key) DO UPDATE SET fIconAutoHideDock=excluded.fIconAutoHideDock"
             
-            Call insertNonSanitisedStrings(thisKeyValue, "fIconSecondApp", sSecondApp)
+            Call insertFieldToSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
           
             .Execute "INSERT INTO iconDataTable (Key, fIconRunElevated) VALUES ('" & thisKeyValue & "','" & sRunElevated & "') ON CONFLICT (Key) DO UPDATE SET fIconRunElevated=excluded.fIconRunElevated"
             .Execute "INSERT INTO iconDataTable (Key, fIconRunSecondAppBeforehand) VALUES ('" & thisKeyValue & "','" & sRunSecondAppBeforehand & "') ON CONFLICT (Key) DO UPDATE SET fIconRunSecondAppBeforehand=excluded.fIconRunSecondAppBeforehand"
             
-            Call insertNonSanitisedStrings(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
+            Call insertFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
             
             .Execute "INSERT INTO iconDataTable (Key, fIconDisabled) VALUES ('" & thisKeyValue & "','" & sDisabled & "') ON CONFLICT (Key) DO UPDATE SET fIconDisabled=excluded.fIconDisabled"
         End With
         
     Next useloop
-    Call getFieldFromMultipleRecords("fIconTitle")
+    
+    ' at the end we prove that this has been achieved
+    Call getSingleFieldFromMultipleRecords("fIconTitle")
 
     On Error GoTo 0
     Exit Sub
 
-insertRecords_Error:
+insertRecordsFromRandomFile_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertRecords of Form hiddenForm"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertRecordsFromRandomFile of Form hiddenForm"
 
 End Sub
+
+
 '---------------------------------------------------------------------------------------
-' Procedure : insertNonSanitisedStrings
+' Procedure : insertAllFieldsIntoRandomFile
+' Author    : beededea
+' Date      : 05/12/2025
+' Purpose   : keep the random access data file in sunch with the SQLite database,
+'             writing all the data from the iconSettings.db to the iconSettings.dat
+'---------------------------------------------------------------------------------------
+'
+Public Sub insertAllFieldsIntoRandomFile()
+
+    Dim DataSet As SQLiteDataSet
+    Dim useloop As Integer: useloop = 0
+    
+    On Error GoTo insertAllFieldsIntoRandomFile_Error
+
+    ' select all records pulling the key and all fields into the dataset
+    Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable")
+    
+    ' move to the first record in a Recordset and makes it current
+    DataSet.MoveFirst
+    
+    ' list all records in the dataset to the listbox but only show one field from the dataset
+    Do Until DataSet.EOF
+        
+        hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
+        DataSet.MoveNext
+        
+        useloop = useloop + 1
+        Call writeIconSettingsIni(useloop, False)
+    Loop
+    On Error GoTo 0
+    Exit Sub
+
+insertAllFieldsIntoRandomFile_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertAllFieldsIntoRandomFile of Module modDatabase"
+End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : insertFieldToSingleRecord
 ' Author    : beededea
 ' Date      : 04/12/2025
 ' Purpose   : user-entered text or file/folder names can contain characters that an SQL statement can baulk at.
 '             Instead the text is entered as a parameter
 '---------------------------------------------------------------------------------------
 '
-Private Sub insertNonSanitisedStrings(ByVal thisKeyValue As Integer, ByVal fieldName As String, ByVal iconVariable As String)
+Public Sub insertFieldToSingleRecord(ByVal thisKeyValue As Integer, ByVal fieldName As String, ByVal iconVariable As String)
 
     Dim thisSQL As String: thisSQL = vbNullString
     Dim Command As SQLiteCommand
     
-    On Error GoTo insertNonSanitisedStrings_Error
+    On Error GoTo insertFieldToSingleRecord_Error
 
         thisSQL = "INSERT INTO iconDataTable (Key, " & fieldName & ") VALUES (@oid,@opo) ON CONFLICT (Key) DO UPDATE SET " & fieldName & "=excluded." & fieldName
 
@@ -441,12 +482,11 @@ Private Sub insertNonSanitisedStrings(ByVal thisKeyValue As Integer, ByVal field
     On Error GoTo 0
     Exit Sub
 
-insertNonSanitisedStrings_Error:
+insertFieldToSingleRecord_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertNonSanitisedStrings of Module modDatabase"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertFieldToSingleRecord of Module modDatabase"
 
 End Sub
-
 
 
 

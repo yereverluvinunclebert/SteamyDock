@@ -1261,7 +1261,7 @@ Private Sub Form_Load()
     'start timers
     wallpaperTimer.Enabled = True
     
-    hiddenForm.Show
+    'hiddenForm.Show
     
     'add to the initiated ProcessArray
     'Call checkDockProcessesRunning ' trigger a test of running processes in half a second

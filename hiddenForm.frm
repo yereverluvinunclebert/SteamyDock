@@ -1,15 +1,24 @@
 VERSION 5.00
 Begin VB.Form hiddenForm 
    Caption         =   "do not delete me as I am a temporary structure used to hold a picbox"
-   ClientHeight    =   7740
+   ClientHeight    =   8430
    ClientLeft      =   60
    ClientTop       =   345
    ClientWidth     =   9855
    LinkTopic       =   "Form1"
-   ScaleHeight     =   7740
+   ScaleHeight     =   8430
    ScaleWidth      =   9855
    StartUpPosition =   3  'Windows Default
    Visible         =   0   'False
+   Begin VB.CommandButton btnWriteRandom 
+      Caption         =   "Write Random File"
+      Enabled         =   0   'False
+      Height          =   705
+      Left            =   540
+      TabIndex        =   17
+      Top             =   7470
+      Width           =   1455
+   End
    Begin VB.TextBox txtSingleField 
       Enabled         =   0   'False
       Height          =   345
@@ -41,9 +50,9 @@ Begin VB.Form hiddenForm
    Begin VB.CommandButton btnClose 
       Caption         =   "Close"
       Height          =   675
-      Left            =   7800
+      Left            =   7830
       TabIndex        =   13
-      Top             =   6180
+      Top             =   7500
       Width           =   1785
    End
    Begin VB.ComboBox cmbRecordNumber 
@@ -215,6 +224,41 @@ btnClose_Click_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
+' Procedure : btnWriteRandom_Click
+' Author    : beededea
+' Date      : 05/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub btnWriteRandom_Click()
+
+    Dim srcFile As String
+    Dim trgtFile As String
+
+    On Error GoTo btnWriteRandom_Click_Error
+
+    srcFile = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.dat"
+    trgtFile = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.bkp"
+    
+    List1.Clear
+    
+    'FileCopy srcFile, trgtFile
+    
+    lblRecordNum.Caption = "Reading from Database, inserting into file."
+
+    Call insertAllFieldsIntoRandomFile
+
+    lblRecordNum.Caption = "Inserting into file complete."
+
+    On Error GoTo 0
+    Exit Sub
+
+btnWriteRandom_Click_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnWriteRandom_Click of Form hiddenForm"
+End Sub
+
+'---------------------------------------------------------------------------------------
 ' Procedure : Command_Click
 ' Author    : beededea
 ' Date      : 04/12/2025
@@ -225,7 +269,9 @@ Private Sub Command_Click()
     On Error GoTo Command_Click_Error
 
     Call closeDatabase
+    
     Kill SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.db"
+    
     lblRecordNum.Caption = "Database Deleted"
     
     CommandInsert.Enabled = False
@@ -237,7 +283,7 @@ Private Sub Command_Click()
 
 Command_Click_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Command_Click of Form hiddenForm"
+     MsgBox "Error " & Err.Number & " Database could not be deleted, probably due to it being open by the DB browser or other instance of this program. (" & Err.Description & ") in procedure Command_Click of Form hiddenForm"
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -255,7 +301,7 @@ Private Sub lblGetField_Click()
 
     recordToFind = CInt(cmbSingleFieldRecordNumber.List(cmbSingleFieldRecordNumber.ListIndex))
 
-    txtSingleField.Text = getFieldFromSingleRecord("fIconCommand", recordToFind)
+    txtSingleField.Text = getSingleFieldFromSingleRecord("fIconCommand", recordToFind)
 
     On Error GoTo 0
     Exit Sub
@@ -399,7 +445,9 @@ Private Sub CommandConnect_Click()
         cmbSingleFieldRecordNumber.Enabled = True
         txtSingleField.Enabled = True
         
-        Call getFieldFromMultipleRecords("fIconTitle")
+        btnWriteRandom.Enabled = True
+        
+        Call getSingleFieldFromMultipleRecords("fIconTitle")
         
     Else
         MsgBox "Already connected.", vbExclamation
@@ -432,7 +480,7 @@ Private Sub CommandInsert_Click()
     CommandInsert.Enabled = False
     List1.Enabled = False
 
-    Call insertRecords
+    Call insertRecordsFromRandomFile
     hiddenForm.lblRecordNum.Caption = "Data Inserted."
 
     On Error GoTo 0
