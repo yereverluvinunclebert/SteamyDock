@@ -246,7 +246,7 @@ Private Sub btnWriteRandom_Click()
     
     lblRecordNum.Caption = "Reading from Database, inserting into file."
 
-    Call insertAllFieldsIntoRandomFile
+    Call insertAllFieldsIntoRandomDataFile
 
     lblRecordNum.Caption = "Inserting into file complete."
 
@@ -480,7 +480,7 @@ Private Sub CommandInsert_Click()
     CommandInsert.Enabled = False
     List1.Enabled = False
 
-    Call insertRecordsFromRandomFile
+    Call insertRecordsFromRandomDataFileIntoDatabase
     hiddenForm.lblRecordNum.Caption = "Data Inserted."
 
     On Error GoTo 0

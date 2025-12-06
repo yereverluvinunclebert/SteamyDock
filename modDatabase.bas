@@ -24,7 +24,7 @@ Public DBConnection As SQLiteConnection  ' requires the SQLLite project referenc
 ' Procedure : getAllFieldsFromSingleRecord
 ' Author    : jbPro
 ' Date      : 24/11/2025
-' Purpose   : Retrieves the data BLOB for a given key.
+' Purpose   : Retrieves the data fields for a given key.
 '             Raises error 5 if the key is not found.
 '---------------------------------------------------------------------------------------
 '
@@ -225,24 +225,24 @@ End Sub
 ' Returns 0 if table is empty or MAX() is NULL.
 '---------------------------------------------------------------------------------------
 '
-Public Function MaxUpdateCounter() As Currency
-    On Error GoTo MaxUpdateCounter_Error
-    
-    Dim DataSet As SQLiteDataSet
-    Set DataSet = DBConnection.OpenDataSet("SELECT MAX(update_counter) FROM iconDataTable")
-
-    If DataSet.RecordCount > 0 Then
-       ' If the result is NULL, this will default to 0 when assigned to Currency.
-       MaxUpdateCounter = DataSet.Columns(0)
-    End If
-
-    On Error GoTo 0
-    Exit Function
-
-MaxUpdateCounter_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure MaxUpdateCounter of Form hiddenForm"
-End Function
+'Public Function MaxUpdateCounter() As Currency
+'    On Error GoTo MaxUpdateCounter_Error
+'
+'    Dim DataSet As SQLiteDataSet
+'    Set DataSet = DBConnection.OpenDataSet("SELECT MAX(update_counter) FROM iconDataTable")
+'
+'    If DataSet.RecordCount > 0 Then
+'       ' If the result is NULL, this will default to 0 when assigned to Currency.
+'       MaxUpdateCounter = DataSet.Columns(0)
+'    End If
+'
+'    On Error GoTo 0
+'    Exit Function
+'
+'MaxUpdateCounter_Error:
+'
+'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure MaxUpdateCounter of Form hiddenForm"
+'End Function
 
 
 
@@ -258,35 +258,35 @@ End Function
 ' Result:
 '   - A collection of:
 '       Keys: iconDataTable key (String)
-'       Items: iconDataTable data (Variant / BLOB)
+'       Items: iconDataTable data ()
 '---------------------------------------------------------------------------------------
 '
-Public Function GetDataSinceUpdateCounter(ByVal p_UpdateCounter As Currency)
-    On Error GoTo GetDataSinceUpdateCounter_Error
-    
-    Dim DataSet As SQLiteDataSet
-    Set DataSet = DBConnection.OpenDataSet("SELECT key, data FROM iconDataTable WHERE update_counter>" & p_UpdateCounter)
-        
-    'dictionary for the database access
-    Set GetDataSinceUpdateCounter = CreateObject("Scripting.Dictionary")
-    GetDataSinceUpdateCounter.CompareMode = 1 'case-insenitive Key-Comparisons
-    
-    ' Select only rows whose update_counter is greater than the given value
-    With DataSet
-       Do Until .EOF
-          GetDataSinceUpdateCounter.Add .Columns("data").Value, .Columns("key").Value
-          
-          .MoveNext
-       Loop
-    End With
-
-    On Error GoTo 0
-    Exit Function
-
-GetDataSinceUpdateCounter_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetDataSinceUpdateCounter of Form hiddenForm"
-End Function
+'Public Function GetDataSinceUpdateCounter(ByVal p_UpdateCounter As Currency)
+'    On Error GoTo GetDataSinceUpdateCounter_Error
+'
+'    Dim DataSet As SQLiteDataSet
+'    Set DataSet = DBConnection.OpenDataSet("SELECT key, data FROM iconDataTable WHERE update_counter>" & p_UpdateCounter)
+'
+'    'dictionary for the database access
+'    Set GetDataSinceUpdateCounter = CreateObject("Scripting.Dictionary")
+'    GetDataSinceUpdateCounter.CompareMode = 1 'case-insenitive Key-Comparisons
+'
+'    ' Select only rows whose update_counter is greater than the given value
+'    With DataSet
+'       Do Until .EOF
+'          GetDataSinceUpdateCounter.Add .Columns("data").Value, .Columns("key").Value
+'
+'          .MoveNext
+'       Loop
+'    End With
+'
+'    On Error GoTo 0
+'    Exit Function
+'
+'GetDataSinceUpdateCounter_Error:
+'
+'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetDataSinceUpdateCounter of Form hiddenForm"
+'End Function
 
 
 
@@ -320,22 +320,23 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : insertRecordsFromRandomFile
+' Procedure : insertRecordsFromRandomDataFileIntoDatabase
 ' Author    : beededea
 ' Date      : 01/12/2025
-' Purpose   : Inserts or updates a single key/value pair in the iconDataTable.
+' Purpose   : Reading from the random access data file
+'             Inserts or updates multiple records into the iconDataTable.
 '             On CONFLICT(key), the row is updated instead of inserting a duplicate.
 '             The triggers on the table ensure update_counter is bumped appropriately.
 '---------------------------------------------------------------------------------------
 '
-Public Sub insertRecordsFromRandomFile()
+Public Sub insertRecordsFromRandomDataFileIntoDatabase()
 
-    Dim Text As String: Text = vbNullString
+    'Dim Text As String: Text = vbNullString
     Dim useloop As Integer: useloop = 0
     Dim thisKeyValue As Integer: thisKeyValue = 0
-    Dim Command As SQLiteCommand
+    'Dim Command As SQLiteCommand
     
-    On Error GoTo insertRecordsFromRandomFile_Error
+    On Error GoTo insertRecordsFromRandomDataFileIntoDatabase_Error
     
     ' database schema (simplified)
     '       iconRecordNumber As Integer
@@ -360,11 +361,11 @@ Public Sub insertRecordsFromRandomFile()
     '       iconAppToTerminate As String
     '       iconDisabled As String
 
-    ' now load the user specified icons to the dictionary
+    ' loop through all the records in data file
     For useloop = iconArrayLowerBound To iconArrayUpperBound
     
         ' extract filenames from the random access data file
-        readIconSettingsIni useloop, False
+        Call getIconSettings(useloop)
         
         thisKeyValue = useloop
         With DBConnection
@@ -411,27 +412,139 @@ Public Sub insertRecordsFromRandomFile()
     On Error GoTo 0
     Exit Sub
 
-insertRecordsFromRandomFile_Error:
+insertRecordsFromRandomDataFileIntoDatabase_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertRecordsFromRandomFile of Form hiddenForm"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertRecordsFromRandomDataFileIntoDatabase of Form hiddenForm"
 
 End Sub
 
 
+'
 '---------------------------------------------------------------------------------------
-' Procedure : insertAllFieldsIntoRandomFile
+' Procedure : putIconSettingsIntoDatabase
+' Author    : beededea
+' Date      : 05/07/2019
+' Purpose   : Save icon values to database rather than to the random access data file
+'---------------------------------------------------------------------------------------
+'
+Public Sub putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer)
+
+    On Error GoTo putIconSettingsIntoDatabase_Error
+    
+    With DBConnection
+        ' a simple SQL statement inserts values that do not need to be sanitised, no weird characters)
+        .Execute "INSERT INTO iconDataTable (Key, fIconRecordNumber) VALUES ('" & thisKeyValue & "','" & thisKeyValue & "')"
+        
+        ' insert values into fields that can possibly contain dodgy characters as they are user-typed
+        Call insertFieldToSingleRecord(thisKeyValue, "fIconFilename", sFilename)
+        Call insertFieldToSingleRecord(thisKeyValue, "fIconFilename2", sFileName2)
+        Call insertFieldToSingleRecord(thisKeyValue, "fIconTitle", sTitle)
+        Call insertFieldToSingleRecord(thisKeyValue, "fIconCommand", sCommand)
+          
+        ' insert more values that do not need to be sanitised
+        .Execute "INSERT INTO iconDataTable (Key, fIconArguments) VALUES ('" & thisKeyValue & "','" & sArguments & "') ON CONFLICT (Key) DO UPDATE SET fIconArguments=excluded.fIconArguments"
+        .Execute "INSERT INTO iconDataTable (Key, fIconWorkingDirectory) VALUES ('" & thisKeyValue & "','" & sWorkingDirectory & "') ON CONFLICT (Key) DO UPDATE SET fIconWorkingDirectory=excluded.fIconWorkingDirectory"
+        .Execute "INSERT INTO iconDataTable (Key, fIconShowCmd) VALUES ('" & thisKeyValue & "','" & sShowCmd & "') ON CONFLICT (Key) DO UPDATE SET fIconShowCmd=excluded.fIconShowCmd"
+        .Execute "INSERT INTO iconDataTable (Key, fIconOpenRunning) VALUES ('" & thisKeyValue & "','" & sOpenRunning & "') ON CONFLICT (Key) DO UPDATE SET fIconOpenRunning=excluded.fIconOpenRunning"
+        .Execute "INSERT INTO iconDataTable (Key, fIconIsSeparator) VALUES ('" & thisKeyValue & "','" & sIsSeparator & "') ON CONFLICT (Key) DO UPDATE SET fIconIsSeparator=excluded.fIconIsSeparator"
+        .Execute "INSERT INTO iconDataTable (Key, fIconUseContext) VALUES ('" & thisKeyValue & "','" & sUseContext & "') ON CONFLICT (Key) DO UPDATE SET fIconUseContext=excluded.fIconUseContext"
+        .Execute "INSERT INTO iconDataTable (Key, fIconDockletFile) VALUES ('" & thisKeyValue & "','" & sDockletFile & "') ON CONFLICT (Key) DO UPDATE SET fIconDockletFile=excluded.fIconDockletFile"
+        .Execute "INSERT INTO iconDataTable (Key, fIconUseDialog) VALUES ('" & thisKeyValue & "','" & sUseDialog & "') ON CONFLICT (Key) DO UPDATE SET fIconUseDialog=excluded.fIconUseDialog"
+        .Execute "INSERT INTO iconDataTable (Key, fIconUseDialogAfter) VALUES ('" & thisKeyValue & "','" & sUseDialogAfter & "') ON CONFLICT (Key) DO UPDATE SET fIconUseDialogAfter=excluded.fIconUseDialogAfter"
+        .Execute "INSERT INTO iconDataTable (Key, fIconQuickLaunch) VALUES ('" & thisKeyValue & "','" & sQuickLaunch & "') ON CONFLICT (Key) DO UPDATE SET fIconQuickLaunch=excluded.fIconQuickLaunch"
+        .Execute "INSERT INTO iconDataTable (Key, fIconAutoHideDock) VALUES ('" & thisKeyValue & "','" & sAutoHideDock & "') ON CONFLICT (Key) DO UPDATE SET fIconAutoHideDock=excluded.fIconAutoHideDock"
+        
+        Call insertFieldToSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
+        
+        .Execute "INSERT INTO iconDataTable (Key, fIconRunElevated) VALUES ('" & thisKeyValue & "','" & sRunElevated & "') ON CONFLICT (Key) DO UPDATE SET fIconRunElevated=excluded.fIconRunElevated"
+        .Execute "INSERT INTO iconDataTable (Key, fIconRunSecondAppBeforehand) VALUES ('" & thisKeyValue & "','" & sRunSecondAppBeforehand & "') ON CONFLICT (Key) DO UPDATE SET fIconRunSecondAppBeforehand=excluded.fIconRunSecondAppBeforehand"
+        
+        Call insertFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
+        
+        .Execute "INSERT INTO iconDataTable (Key, fIconDisabled) VALUES ('" & thisKeyValue & "','" & sDisabled & "') ON CONFLICT (Key) DO UPDATE SET fIconDisabled=excluded.fIconDisabled"
+    End With
+                
+   On Error GoTo 0
+   Exit Sub
+
+putIconSettingsIntoDatabase_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure putIconSettingsIntoDatabase of Module Common"
+End Sub
+
+
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : getIconSettingsFromDatabase
+' Author    : beededea
+' Date      : 24/11/2025
+' Purpose   : Retrieves all the data fields for a given key.
+'             Raises error 5 if the key is not found.
+'---------------------------------------------------------------------------------------
+'
+Public Sub getIconSettingsFromDatabase(ByVal thisKeyValue As String)
+
+    Dim DataSet As SQLiteDataSet
+    
+    On Error GoTo getIconSettingsFromDatabase_Error
+
+    ' select one record matching the supplied key pulling all fields/columns into a dataset
+    Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable WHERE key= " & thisKeyValue)
+    
+    ' No matching row: raise a generic "Invalid procedure call or argument" (5)
+    ' with a more descriptive message.
+    If DataSet.RecordCount = 0 Then
+       Err.Raise 5, , "Data not found for this key " & thisKeyValue
+       GoTo getIconSettingsFromDatabase_Error
+    End If
+    
+    sFilename = DataSet!fIconFilename
+    sFileName2 = DataSet!fIconFileName2
+    sTitle = DataSet!fIconTitle
+    sCommand = DataSet!fIconCommand
+    sArguments = DataSet!fIconArguments
+    sWorkingDirectory = DataSet!fIconWorkingDirectory
+    sShowCmd = DataSet!fIconShowCmd
+    sOpenRunning = DataSet!fIconOpenRunning
+    sIsSeparator = DataSet!fIconIsSeparator
+    sUseContext = DataSet!fIconUseContext
+    sDockletFile = DataSet!fIconDockletFile
+    sUseDialog = DataSet!fIconUseDialog
+    sUseDialogAfter = DataSet!fIconUseDialogAfter
+    sQuickLaunch = DataSet!fIconQuickLaunch
+    sAutoHideDock = DataSet!fIconAutoHideDock
+    sSecondApp = DataSet!fIconSecondApp
+    sRunElevated = DataSet!fIconRunElevated
+    sRunSecondAppBeforehand = DataSet!fIconRunSecondAppBeforehand
+    sAppToTerminate = DataSet!fIconAppToTerminate
+    sDisabled = DataSet!fIconDisabled
+    
+    On Error GoTo 0
+    Exit Sub
+
+getIconSettingsFromDatabase_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getIconSettingsFromDatabase of Form hiddenForm"
+End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : insertAllFieldsIntoRandomDataFile
 ' Author    : beededea
 ' Date      : 05/12/2025
-' Purpose   : keep the random access data file in sunch with the SQLite database,
+' Purpose   : keep the random access data file in synch. with the SQLite database,
 '             writing all the data from the iconSettings.db to the iconSettings.dat
 '---------------------------------------------------------------------------------------
 '
-Public Sub insertAllFieldsIntoRandomFile()
+Public Sub insertAllFieldsIntoRandomDataFile()
 
     Dim DataSet As SQLiteDataSet
     Dim useloop As Integer: useloop = 0
     
-    On Error GoTo insertAllFieldsIntoRandomFile_Error
+    On Error GoTo insertAllFieldsIntoRandomDataFile_Error
 
     ' select all records pulling the key and all fields into the dataset
     Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable")
@@ -446,14 +559,14 @@ Public Sub insertAllFieldsIntoRandomFile()
         DataSet.MoveNext
         
         useloop = useloop + 1
-        Call writeIconSettingsIni(useloop, False)
+        Call putIconSettings(useloop)
     Loop
     On Error GoTo 0
     Exit Sub
 
-insertAllFieldsIntoRandomFile_Error:
+insertAllFieldsIntoRandomDataFile_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertAllFieldsIntoRandomFile of Module modDatabase"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertAllFieldsIntoRandomDataFile of Module modDatabase"
 End Sub
 
 
@@ -472,12 +585,12 @@ Public Sub insertFieldToSingleRecord(ByVal thisKeyValue As Integer, ByVal fieldN
     
     On Error GoTo insertFieldToSingleRecord_Error
 
-        thisSQL = "INSERT INTO iconDataTable (Key, " & fieldName & ") VALUES (@oid,@opo) ON CONFLICT (Key) DO UPDATE SET " & fieldName & "=excluded." & fieldName
+    thisSQL = "INSERT INTO iconDataTable (Key, " & fieldName & ") VALUES (@oid,@opo) ON CONFLICT (Key) DO UPDATE SET " & fieldName & "=excluded." & fieldName
 
-        Set Command = DBConnection.CreateCommand(thisSQL)
-        Command.SetParameterValue Command![@oid], thisKeyValue
-        Command.SetParameterValue Command![@opo], iconVariable '
-        Command.Execute
+    Set Command = DBConnection.CreateCommand(thisSQL)
+    Command.SetParameterValue Command![@oid], thisKeyValue
+    Command.SetParameterValue Command![@opo], iconVariable '
+    Command.Execute
 
     On Error GoTo 0
     Exit Sub

@@ -220,6 +220,7 @@ Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByV
 '   If writeArray = False Then
    
         Call putIconSettings(iconNumberToWrite)
+        'Call putIconSettingsIntoDatabase(iconNumberToWrite)
         
 '        PutINISetting location, iconNumberToWrite & "-FileName", sFilename, settingsFile
 '        PutINISetting location, iconNumberToWrite & "-FileName2", sFileName2, settingsFile
@@ -295,7 +296,8 @@ Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer, Optional ByVal
    ' If readArray = False Then
     
         Call getIconSettings(iconNumberToRead)
-    
+        'Call getIconSettingsFromDatabase(iconNumberToRead)
+        
         ' now write it straight away into the array cache
         
 '        sFileNameArray(iconNumberToRead) = sFilename
