@@ -10,6 +10,14 @@ Begin VB.Form hiddenForm
    ScaleWidth      =   9855
    StartUpPosition =   3  'Windows Default
    Visible         =   0   'False
+   Begin VB.CommandButton btnUpdateSingle 
+      Caption         =   "Update single record"
+      Height          =   705
+      Left            =   2280
+      TabIndex        =   18
+      Top             =   7470
+      Width           =   1455
+   End
    Begin VB.CommandButton btnWriteRandom 
       Caption         =   "Write Random File"
       Enabled         =   0   'False
@@ -181,18 +189,18 @@ Attribute VB_Exposed = False
 '---------------------------------------------------------------------------------------
 
 Option Explicit
-#If (VBA7 = 0) Then
-    Private Enum LongPtr
-        [_]
-    End Enum
-#End If
-#If Win64 Then
-    Private Const NULL_PTR As LongPtr = 0 ' this may glow red but is NOT an error, suitable for 64bit TwinBasic
-    Private Const PTR_SIZE As Long = 8
-#Else
-    Private Const NULL_PTR As Long = 0
-    Private Const PTR_SIZE As Long = 4
-#End If
+'#If (VBA7 = 0) Then
+'    Private Enum LongPtr
+'        [_]
+'    End Enum
+'#End If
+'#If Win64 Then
+'    Private Const NULL_PTR As LongPtr = 0 ' this may glow red but is NOT an error, suitable for 64bit TwinBasic
+'    Private Const PTR_SIZE As Long = 8
+'#Else
+'    Private Const NULL_PTR As Long = 0
+'    Private Const PTR_SIZE As Long = 4
+'#End If
 
 
 ' The next line implements an Interface from an External COM DLL VBSQLite12.dll,
@@ -200,7 +208,7 @@ Option Explicit
 ' which is a COM/ActiveX DLL, referenced in project references that refers itself to a raw C DLL, winsqlite3.dll registered in sysWow64 using regsvr32
 ' The COM object exposes a dispatch interface in its type library.
 
-Implements ISQLiteProgressHandler ' only allowed in classes and forms (classes)
+'Implements ISQLiteProgressHandler ' only allowed in classes and forms (classes)
 
 '---------------------------------------------------------------------------------------
 ' Procedure : btnClose_Click
@@ -221,6 +229,27 @@ Private Sub btnClose_Click()
 btnClose_Click_Error:
 
      MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnClose_Click of Form hiddenForm"
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : btnUpdateSingle_Click
+' Author    : beededea
+' Date      : 07/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub btnUpdateSingle_Click()
+
+    On Error GoTo btnUpdateSingle_Click_Error
+
+    Call UPDATEFieldInSingleRecord(3, "fIconTitle", "arseburgers")
+
+    On Error GoTo 0
+    Exit Sub
+
+btnUpdateSingle_Click_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnUpdateSingle_Click of Form hiddenForm"
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -332,32 +361,32 @@ Form_Load_Error:
      MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_Load of Form hiddenForm"
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : ISQLiteProgressHandler_Callback
-' Author    : jbPro
-' Date      : 24/11/2025
-' Purpose   : The SetProgressHandler method (which registers this callback) has a default value of 100 for the
-'             number of virtual machine instructions that are evaluated between successive invocations of this callback.
-'             This means that this callback is never invoked for very short running SQL statements.
+''---------------------------------------------------------------------------------------
+'' Procedure : ISQLiteProgressHandler_Callback
+'' Author    : jbPro
+'' Date      : 24/11/2025
+'' Purpose   : The SetProgressHandler method (which registers this callback) has a default value of 100 for the
+''             number of virtual machine instructions that are evaluated between successive invocations of this callback.
+''             This means that this callback is never invoked for very short running SQL statements.
+''
+''             Any running SQL operation will be interrupted if the cancel parameter is set to true.
+''             This can be used to implement a "cancel" button on a GUI progress dialog box.
+''
+''---------------------------------------------------------------------------------------
+''
+'Public Sub ISQLiteProgressHandler_Callback(Cancel As Boolean)
 '
-'             Any running SQL operation will be interrupted if the cancel parameter is set to true.
-'             This can be used to implement a "cancel" button on a GUI progress dialog box.
+'    On Error GoTo ISQLiteProgressHandler_Callback_Error
 '
-'---------------------------------------------------------------------------------------
+'    DoEvents
 '
-Public Sub ISQLiteProgressHandler_Callback(Cancel As Boolean)
-
-    On Error GoTo ISQLiteProgressHandler_Callback_Error
-
-    DoEvents
-
-    On Error GoTo 0
-    Exit Sub
-
-ISQLiteProgressHandler_Callback_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ISQLiteProgressHandler_Callback of Form hiddenForm"
-End Sub
+'    On Error GoTo 0
+'    Exit Sub
+'
+'ISQLiteProgressHandler_Callback_Error:
+'
+'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ISQLiteProgressHandler_Callback of Form hiddenForm"
+'End Sub
 
 
 
@@ -372,7 +401,9 @@ End Sub
 Private Sub Form_Unload(Cancel As Integer)
     On Error GoTo Form_Unload_Error
 
-    If Not DBConnection Is Nothing Then DBConnection.CloseDB
+    'If Not DBConnection Is Nothing Then DBConnection.CloseDB
+    
+    Call closeDatabase
 
     On Error GoTo 0
     Exit Sub
@@ -397,42 +428,52 @@ End Sub
 '
 Private Sub CommandConnect_Click()
     Dim PathName As String: PathName = vbNullString
+    Dim retResult As String: retResult = vbNullString
     
     On Error GoTo CommandConnect_Click_Error
-
+    
     ' test connection to DB exists, if not then connect or create.
+    'retResult = connectDatabase
+   
+'    If DBConnection Is Nothing Then
+'
+'        PathName = App.Path
+'        If Not Right$(PathName, 1) = "\" Then PathName = PathName & "\"
+'        PathName = "C:\Users\beededea\AppData\Roaming\steamyDock\iconSettings.db"
+'
+'        ' check database file exists on the system
+'        If fFExists(PathName) = True Then
+'            With New SQLiteConnection
+'                ' connect to SQLite db
+'                .OpenDB PathName, SQLiteReadWrite
+'
+'                ' connection is good?
+'                If .hDB <> NULL_PTR Then
+'                    Set DBConnection = .object
+'                End If
+'            End With
+'            hiddenForm.lblRecordNum.Caption = "Database Connected."
+'
+'        Else ' if db not exists then create it and set up the new database with hard coded schema
+'            If MsgBox(PathName & " does not exist. Create new?", vbExclamation + vbOKCancel) <> vbCancel Then
+'                Call createDBFromScratch(PathName)
+'
+'            Else
+'                Exit Sub
+'            End If
+'        End If
+'    End If
+    
+  
+        
     If DBConnection Is Nothing Then
-            
-        PathName = App.Path
-        If Not Right$(PathName, 1) = "\" Then PathName = PathName & "\"
-        PathName = "C:\Users\beededea\AppData\Roaming\steamyDock\iconSettings.db"
-        
-        ' check database file exists on the system
-        If fFExists(PathName) = True Then
-            With New SQLiteConnection
-                ' connect to SQLite db
-                .OpenDB PathName, SQLiteReadWrite
-
-                ' connection is good?
-                If .hDB <> NULL_PTR Then
-                    Set DBConnection = .object
-                End If
-            End With
-            hiddenForm.lblRecordNum.Caption = "Database Connected."
-
-        Else ' if db not exists then create it and set up the new database with hard coded schema
-            If MsgBox(PathName & " does not exist. Create new?", vbExclamation + vbOKCancel) <> vbCancel Then
-                Call createDBFromScratch(PathName)
-                hiddenForm.lblRecordNum.Caption = "New Empty Database Created with Good Schema & Connected."
-            Else
-                Exit Sub
-            End If
-        End If
-        
-        With DBConnection
-            .SetProgressHandler Me ' Registers the progress handler callback
-        End With
-        
+        ' do nothing
+    Else
+    
+'        With DBConnection
+'            .SetProgressHandler Me ' Registers the progress handler callback
+'        End With
+    
         CommandInsert.Enabled = True
         List1.Enabled = True
         List1.Clear
@@ -445,12 +486,13 @@ Private Sub CommandConnect_Click()
         cmbSingleFieldRecordNumber.Enabled = True
         txtSingleField.Enabled = True
         
-        btnWriteRandom.Enabled = True
+        'btnWriteRandom.Enabled = True
         
         Call getSingleFieldFromMultipleRecords("fIconTitle")
         
-    Else
-        MsgBox "Already connected.", vbExclamation
+'    Else
+'        MsgBox "Already connected.", vbExclamation
+
     End If
     
 

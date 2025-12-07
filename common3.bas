@@ -219,8 +219,15 @@ Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByV
 
 '   If writeArray = False Then
    
+        ' write the icon data to random access data file
         Call putIconSettings(iconNumberToWrite)
+        
+         ' write the icon data to the SQLite database
         'Call putIconSettingsIntoDatabase(iconNumberToWrite)
+        
+        ' the array cache was used for all the variables to speed up access when reading/writing the settings file
+        ' this was due to using a settings.ini file using Windows APIs to read/write (very slow indeed)
+        ' then the random access data file was implemented and the speed increased dramatically.
         
 '        PutINISetting location, iconNumberToWrite & "-FileName", sFilename, settingsFile
 '        PutINISetting location, iconNumberToWrite & "-FileName2", sFileName2, settingsFile
@@ -295,8 +302,16 @@ Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer, Optional ByVal
     
    ' If readArray = False Then
     
-        Call getIconSettings(iconNumberToRead)
+        ' obtain the icon data from random access data file
+        Call getIconSettings(iconNumberToRead) 'retained here for testing
+        
+         ' obtain the icon data from the SQLite database - tested seems good
         'Call getIconSettingsFromDatabase(iconNumberToRead)
+
+        ' the array cache was used for all the variables to speed up access when reading/writing the settings file
+        ' this was due to using a settings.ini file using Windows APIs to read/write (very slow indeed)
+        ' then the random access data file was implemented and the speed increased dramatically.
+    
         
         ' now write it straight away into the array cache
         

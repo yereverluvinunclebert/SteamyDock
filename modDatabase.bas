@@ -14,10 +14,61 @@ Option Explicit
     Private Const PTR_SIZE As Long = 4
 #End If
 
-Public DBConnection As SQLiteConnection  ' requires the SQLLite project reference VBSQLLite12.DLL
+Public DBConnection As SQLiteConnection  ' requires the SQLite project reference VBSQLite12.DLL
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : connectDatabase
+' Author    : beededea
+' Date      : 07/12/2025
+' Purpose   : test connection to DB exists, if not then connect or create.
+'---------------------------------------------------------------------------------------
+'
+Public Function connectDatabase() As String
 
+    Dim PathName As String: PathName = vbNullString
+
+    On Error GoTo connectDatabase_Error
+    
+    connectDatabase = "No Database"
+
+    If DBConnection Is Nothing Then
+            
+        PathName = App.Path
+        If Not Right$(PathName, 1) = "\" Then PathName = PathName & "\"
+        PathName = "C:\Users\beededea\AppData\Roaming\steamyDock\iconSettings.db"
+        
+        ' check database file exists on the system
+        If fFExists(PathName) = True Then
+            With New SQLiteConnection
+                ' connect to SQLite db
+                .OpenDB PathName, SQLiteReadWrite
+
+                ' connection is good?
+                If .hDB <> NULL_PTR Then
+                    Set DBConnection = .object
+                End If
+            End With
+            connectDatabase = "Database Connected."
+
+        Else ' if db not exists then create it and set up the new database with hard coded schema
+            If MsgBox(PathName & " does not exist. Create new?", vbExclamation + vbOKCancel) <> vbCancel Then
+                Call createDBFromScratch(PathName)
+                connectDatabase = "New Empty Database Created with Good Schema & Connected."
+            Else
+                Exit Function
+            End If
+        End If
+    End If
+
+    On Error GoTo 0
+    Exit Function
+
+connectDatabase_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure connectDatabase of Form dock"
+
+End Function
 
 
 '---------------------------------------------------------------------------------------
@@ -51,7 +102,7 @@ Public Function getAllFieldsFromSingleRecord(ByVal p_Key As String) As Variant
 
 getAllFieldsFromSingleRecord_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getAllFieldsFromSingleRecord of Form hiddenForm"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getAllFieldsFromSingleRecord of module ModDatase"
 End Function
 
 
@@ -142,7 +193,7 @@ Public Sub getAllFieldsFromAllRecords()
     
         ' need to insert these into a collection or read the resulting values into the global var cache
             
-        hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
+        'hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
         DataSet.MoveNext
     Loop
 
@@ -182,27 +233,27 @@ Public Sub getSingleFieldFromMultipleRecords(ByVal fieldName As String)
     
         ' need to insert these into a collection or read the resulting values into the global var cache
         
-        If fieldName = "fIconRecordNumber" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconRecordNumber
-        If fieldName = "fIconFilename" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconFilename
-        If fieldName = "fIconFileName2" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconFileName2
-        If fieldName = "fIconTitle" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
-        If fieldName = "fIconCommand" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconCommand
-        If fieldName = "fIconArguments" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconArguments
-        If fieldName = "fIconWorkingDirectory" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconWorkingDirectory
-        If fieldName = "fIconShowCmd" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconShowCmd
-        If fieldName = "fIconOpenRunning" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconOpenRunning
-        If fieldName = "fIconIsSeparator" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconIsSeparator
-        If fieldName = "fIconUseContext" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconUseContext
-        If fieldName = "fIconDockletFile" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconDockletFile
-        If fieldName = "fIconUseDialog" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconUseDialog
-        If fieldName = "fIconUseDialogAfter" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconUseDialogAfter
-        If fieldName = "fIconQuickLaunch" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconQuickLaunch
-        If fieldName = "fIconAutoHideDock" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconAutoHideDock
-        If fieldName = "fIconSecondApp" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconSecondApp
-        If fieldName = "fIconRunElevated" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconRunElevated
-        If fieldName = "fIconRunSecondAppBeforehand" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconRunSecondAppBeforehand
-        If fieldName = "fIconAppToTerminate" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconAppToTerminate
-        If fieldName = "fIconDisabled" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconDisabled
+'        If fieldName = "fIconRecordNumber" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconRecordNumber
+'        If fieldName = "fIconFilename" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconFilename
+'        If fieldName = "fIconFileName2" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconFileName2
+'        If fieldName = "fIconTitle" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
+'        If fieldName = "fIconCommand" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconCommand
+'        If fieldName = "fIconArguments" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconArguments
+'        If fieldName = "fIconWorkingDirectory" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconWorkingDirectory
+'        If fieldName = "fIconShowCmd" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconShowCmd
+'        If fieldName = "fIconOpenRunning" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconOpenRunning
+'        If fieldName = "fIconIsSeparator" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconIsSeparator
+'        If fieldName = "fIconUseContext" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconUseContext
+'        If fieldName = "fIconDockletFile" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconDockletFile
+'        If fieldName = "fIconUseDialog" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconUseDialog
+'        If fieldName = "fIconUseDialogAfter" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconUseDialogAfter
+'        If fieldName = "fIconQuickLaunch" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconQuickLaunch
+'        If fieldName = "fIconAutoHideDock" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconAutoHideDock
+'        If fieldName = "fIconSecondApp" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconSecondApp
+'        If fieldName = "fIconRunElevated" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconRunElevated
+'        If fieldName = "fIconRunSecondAppBeforehand" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconRunSecondAppBeforehand
+'        If fieldName = "fIconAppToTerminate" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconAppToTerminate
+'        If fieldName = "fIconDisabled" Then hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconDisabled
         DataSet.MoveNext
     Loop
 
@@ -241,7 +292,7 @@ End Sub
 '
 'MaxUpdateCounter_Error:
 '
-'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure MaxUpdateCounter of Form hiddenForm"
+'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure MaxUpdateCounter of module ModDatase"
 'End Function
 
 
@@ -285,7 +336,7 @@ End Sub
 '
 'GetDataSinceUpdateCounter_Error:
 '
-'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetDataSinceUpdateCounter of Form hiddenForm"
+'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetDataSinceUpdateCounter of module ModDatase"
 'End Function
 
 
@@ -313,7 +364,7 @@ Public Sub closeDatabase()
 
 closeDatabase_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure closeDatabase of Form hiddenForm"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure closeDatabase of module ModDatase"
 
 End Sub
 
@@ -369,17 +420,17 @@ Public Sub insertRecordsFromRandomDataFileIntoDatabase()
         
         thisKeyValue = useloop
         With DBConnection
-            hiddenForm.lblRecordNum.Caption = " Record Number being written now: " & useloop
-            hiddenForm.lblRecordNum.Refresh
+'            hiddenForm.lblRecordNum.Caption = " Record Number being written now: " & useloop
+'            hiddenForm.lblRecordNum.Refresh
         
             ' insert values that do not need to be sanitised
             .Execute "INSERT INTO iconDataTable (Key, fIconRecordNumber) VALUES ('" & thisKeyValue & "','" & thisKeyValue & "')"
 
             ' insert values into fields that can possibly contain dodgy characters as they are user-typed
-            Call insertFieldToSingleRecord(thisKeyValue, "fIconFilename", sFilename)
-            Call insertFieldToSingleRecord(thisKeyValue, "fIconFilename2", sFileName2)
-            Call insertFieldToSingleRecord(thisKeyValue, "fIconTitle", sTitle)
-            Call insertFieldToSingleRecord(thisKeyValue, "fIconCommand", sCommand)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconFilename", sFilename)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconFilename2", sFileName2)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconTitle", sTitle)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconCommand", sCommand)
                   
             ' insert more values that do not need to be sanitised
             .Execute "INSERT INTO iconDataTable (Key, fIconArguments) VALUES ('" & thisKeyValue & "','" & sArguments & "') ON CONFLICT (Key) DO UPDATE SET fIconArguments=excluded.fIconArguments"
@@ -394,12 +445,12 @@ Public Sub insertRecordsFromRandomDataFileIntoDatabase()
             .Execute "INSERT INTO iconDataTable (Key, fIconQuickLaunch) VALUES ('" & thisKeyValue & "','" & sQuickLaunch & "') ON CONFLICT (Key) DO UPDATE SET fIconQuickLaunch=excluded.fIconQuickLaunch"
             .Execute "INSERT INTO iconDataTable (Key, fIconAutoHideDock) VALUES ('" & thisKeyValue & "','" & sAutoHideDock & "') ON CONFLICT (Key) DO UPDATE SET fIconAutoHideDock=excluded.fIconAutoHideDock"
             
-            Call insertFieldToSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
           
             .Execute "INSERT INTO iconDataTable (Key, fIconRunElevated) VALUES ('" & thisKeyValue & "','" & sRunElevated & "') ON CONFLICT (Key) DO UPDATE SET fIconRunElevated=excluded.fIconRunElevated"
             .Execute "INSERT INTO iconDataTable (Key, fIconRunSecondAppBeforehand) VALUES ('" & thisKeyValue & "','" & sRunSecondAppBeforehand & "') ON CONFLICT (Key) DO UPDATE SET fIconRunSecondAppBeforehand=excluded.fIconRunSecondAppBeforehand"
             
-            Call insertFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
             
             .Execute "INSERT INTO iconDataTable (Key, fIconDisabled) VALUES ('" & thisKeyValue & "','" & sDisabled & "') ON CONFLICT (Key) DO UPDATE SET fIconDisabled=excluded.fIconDisabled"
         End With
@@ -414,7 +465,7 @@ Public Sub insertRecordsFromRandomDataFileIntoDatabase()
 
 insertRecordsFromRandomDataFileIntoDatabase_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertRecordsFromRandomDataFileIntoDatabase of Form hiddenForm"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertRecordsFromRandomDataFileIntoDatabase of module ModDatase"
 
 End Sub
 
@@ -432,36 +483,31 @@ Public Sub putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer)
     On Error GoTo putIconSettingsIntoDatabase_Error
     
     With DBConnection
-        ' a simple SQL statement inserts values that do not need to be sanitised, no weird characters)
-        .Execute "INSERT INTO iconDataTable (Key, fIconRecordNumber) VALUES ('" & thisKeyValue & "','" & thisKeyValue & "')"
+        ' a simple SQL statement UPDATEs values that do not need to be sanitised, no weird characters)
         
-        ' insert values into fields that can possibly contain dodgy characters as they are user-typed
-        Call insertFieldToSingleRecord(thisKeyValue, "fIconFilename", sFilename)
-        Call insertFieldToSingleRecord(thisKeyValue, "fIconFilename2", sFileName2)
-        Call insertFieldToSingleRecord(thisKeyValue, "fIconTitle", sTitle)
-        Call insertFieldToSingleRecord(thisKeyValue, "fIconCommand", sCommand)
-          
-        ' insert more values that do not need to be sanitised
-        .Execute "INSERT INTO iconDataTable (Key, fIconArguments) VALUES ('" & thisKeyValue & "','" & sArguments & "') ON CONFLICT (Key) DO UPDATE SET fIconArguments=excluded.fIconArguments"
-        .Execute "INSERT INTO iconDataTable (Key, fIconWorkingDirectory) VALUES ('" & thisKeyValue & "','" & sWorkingDirectory & "') ON CONFLICT (Key) DO UPDATE SET fIconWorkingDirectory=excluded.fIconWorkingDirectory"
-        .Execute "INSERT INTO iconDataTable (Key, fIconShowCmd) VALUES ('" & thisKeyValue & "','" & sShowCmd & "') ON CONFLICT (Key) DO UPDATE SET fIconShowCmd=excluded.fIconShowCmd"
-        .Execute "INSERT INTO iconDataTable (Key, fIconOpenRunning) VALUES ('" & thisKeyValue & "','" & sOpenRunning & "') ON CONFLICT (Key) DO UPDATE SET fIconOpenRunning=excluded.fIconOpenRunning"
-        .Execute "INSERT INTO iconDataTable (Key, fIconIsSeparator) VALUES ('" & thisKeyValue & "','" & sIsSeparator & "') ON CONFLICT (Key) DO UPDATE SET fIconIsSeparator=excluded.fIconIsSeparator"
-        .Execute "INSERT INTO iconDataTable (Key, fIconUseContext) VALUES ('" & thisKeyValue & "','" & sUseContext & "') ON CONFLICT (Key) DO UPDATE SET fIconUseContext=excluded.fIconUseContext"
-        .Execute "INSERT INTO iconDataTable (Key, fIconDockletFile) VALUES ('" & thisKeyValue & "','" & sDockletFile & "') ON CONFLICT (Key) DO UPDATE SET fIconDockletFile=excluded.fIconDockletFile"
-        .Execute "INSERT INTO iconDataTable (Key, fIconUseDialog) VALUES ('" & thisKeyValue & "','" & sUseDialog & "') ON CONFLICT (Key) DO UPDATE SET fIconUseDialog=excluded.fIconUseDialog"
-        .Execute "INSERT INTO iconDataTable (Key, fIconUseDialogAfter) VALUES ('" & thisKeyValue & "','" & sUseDialogAfter & "') ON CONFLICT (Key) DO UPDATE SET fIconUseDialogAfter=excluded.fIconUseDialogAfter"
-        .Execute "INSERT INTO iconDataTable (Key, fIconQuickLaunch) VALUES ('" & thisKeyValue & "','" & sQuickLaunch & "') ON CONFLICT (Key) DO UPDATE SET fIconQuickLaunch=excluded.fIconQuickLaunch"
-        .Execute "INSERT INTO iconDataTable (Key, fIconAutoHideDock) VALUES ('" & thisKeyValue & "','" & sAutoHideDock & "') ON CONFLICT (Key) DO UPDATE SET fIconAutoHideDock=excluded.fIconAutoHideDock"
+        ' INSERT values into fields that can possibly contain dodgy characters as they are user-typed
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconFilename", sFilename)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconFilename2", sFileName2)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconTitle", sTitle)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconCommand", sCommand)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconArguments", sArguments)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconWorkingDirectory", sWorkingDirectory)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconShowCmd", sShowCmd)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconOpenRunning", sOpenRunning)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconIsSeparator", sIsSeparator)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconUseContext", sUseContext)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconDockletFile", sDockletFile)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconUseDialog", sUseDialog)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconUseDialogAfter", sUseDialogAfter)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconQuickLaunch", sQuickLaunch)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconAutoHideDock", sAutoHideDock)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconRunElevated", sRunElevated)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconRunElevated", sRunElevated)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconRunSecondAppBeforehand", sRunSecondAppBeforehand)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
+        Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconDisabled", sDisabled)
         
-        Call insertFieldToSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
-        
-        .Execute "INSERT INTO iconDataTable (Key, fIconRunElevated) VALUES ('" & thisKeyValue & "','" & sRunElevated & "') ON CONFLICT (Key) DO UPDATE SET fIconRunElevated=excluded.fIconRunElevated"
-        .Execute "INSERT INTO iconDataTable (Key, fIconRunSecondAppBeforehand) VALUES ('" & thisKeyValue & "','" & sRunSecondAppBeforehand & "') ON CONFLICT (Key) DO UPDATE SET fIconRunSecondAppBeforehand=excluded.fIconRunSecondAppBeforehand"
-        
-        Call insertFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
-        
-        .Execute "INSERT INTO iconDataTable (Key, fIconDisabled) VALUES ('" & thisKeyValue & "','" & sDisabled & "') ON CONFLICT (Key) DO UPDATE SET fIconDisabled=excluded.fIconDisabled"
     End With
                 
    On Error GoTo 0
@@ -526,7 +572,7 @@ Public Sub getIconSettingsFromDatabase(ByVal thisKeyValue As String)
 
 getIconSettingsFromDatabase_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getIconSettingsFromDatabase of Form hiddenForm"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getIconSettingsFromDatabase of module ModDatase"
 End Sub
 
 
@@ -555,7 +601,7 @@ Public Sub insertAllFieldsIntoRandomDataFile()
     ' list all records in the dataset to the listbox but only show one field from the dataset
     Do Until DataSet.EOF
         
-        hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
+        'hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
         DataSet.MoveNext
         
         useloop = useloop + 1
@@ -571,40 +617,104 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : insertFieldToSingleRecord
+' Procedure : INSERTFieldToSingleRecord
 ' Author    : beededea
 ' Date      : 04/12/2025
 ' Purpose   : user-entered text or file/folder names can contain characters that an SQL statement can baulk at.
 '             Instead the text is entered as a parameter
 '---------------------------------------------------------------------------------------
 '
-Public Sub insertFieldToSingleRecord(ByVal thisKeyValue As Integer, ByVal fieldName As String, ByVal iconVariable As String)
+Public Sub INSERTFieldToSingleRecord(ByVal thisKeyValue As Integer, ByVal fieldName As String, ByVal iconVariable As String)
 
     Dim thisSQL As String: thisSQL = vbNullString
     Dim Command As SQLiteCommand
     
-    On Error GoTo insertFieldToSingleRecord_Error
+    On Error GoTo INSERTFieldToSingleRecord_Error
 
     thisSQL = "INSERT INTO iconDataTable (Key, " & fieldName & ") VALUES (@oid,@opo) ON CONFLICT (Key) DO UPDATE SET " & fieldName & "=excluded." & fieldName
 
     Set Command = DBConnection.CreateCommand(thisSQL)
     Command.SetParameterValue Command![@oid], thisKeyValue
+    Command.SetParameterValue Command![@opo], iconVariable
+    Command.Execute
+
+    On Error GoTo 0
+    Exit Sub
+
+INSERTFieldToSingleRecord_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure INSERTFieldToSingleRecord of Module modDatabase"
+
+End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : UPDATEFieldInSingleRecord
+' Author    : beededea
+' Date      : 04/12/2025
+' Purpose   : user-entered text or file/folder names can contain characters that an SQL statement can baulk at.
+'             Instead the text is entered as a parameter
+'---------------------------------------------------------------------------------------
+'
+Public Sub UPDATEFieldInSingleRecord(ByVal thisKeyValue As Integer, ByVal fieldName As String, ByVal iconVariable As String)
+
+    Dim thisSQL As String: thisSQL = vbNullString
+    Dim Command As SQLiteCommand
+    
+    On Error GoTo UPDATEFieldInSingleRecord_Error
+
+   ' ON CONFLICT (Key) DO UPDATE SET " & fieldName & "=excluded." & fieldName
+
+    thisSQL = "UPDATE iconDataTable SET (" & fieldName & ") = (@opo) WHERE key = " & thisKeyValue
+    Set Command = DBConnection.CreateCommand(thisSQL)
     Command.SetParameterValue Command![@opo], iconVariable '
     Command.Execute
 
     On Error GoTo 0
     Exit Sub
 
-insertFieldToSingleRecord_Error:
+UPDATEFieldInSingleRecord_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertFieldToSingleRecord of Module modDatabase"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure UPDATEFieldInSingleRecord of Module modDatabase"
 
 End Sub
 
 
-
-
-
+'
+''---------------------------------------------------------------------------------------
+'' Procedure : UPDATEFieldInSingleRecordX
+'' Author    : beededea
+'' Date      : 04/12/2025
+'' Purpose   : user-entered text or file/folder names can contain characters that an SQL statement can baulk at.
+''             Instead the text is entered as a parameter
+''---------------------------------------------------------------------------------------
+''
+'Public Sub UPDATEFieldInSingleRecordX(ByVal thisKeyValue As Integer, ByVal fieldName As String, ByVal iconVariable As String)
+'
+'    Dim thisSQL As String: thisSQL = vbNullString
+'    Dim Command As SQLiteCommand
+'
+'    On Error GoTo UPDATEFieldInSingleRecordX_Error
+''    thisSQL = "UPDATE iconDataTable SET (" & fieldName & ") = '" & iconVariable & "' WHERE key = " & thisKeyValue
+''
+''    With DBConnection
+''        .Execute thisSQL
+''    End With
+'
+'    thisSQL = "UPDATE iconDataTable SET (" & fieldName & ") = (@opo) WHERE key = " & thisKeyValue
+'    Set Command = DBConnection.CreateCommand(thisSQL)
+'    Command.SetParameterValue Command![@opo], iconVariable '
+'    Command.Execute
+'
+'    On Error GoTo 0
+'    Exit Sub
+'
+'UPDATEFieldInSingleRecordX_Error:
+'
+'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure UPDATEFieldInSingleRecordX of Module modDatabase"
+'
+'End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : deleteSpecificKey

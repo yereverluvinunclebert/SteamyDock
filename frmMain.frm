@@ -1037,69 +1037,33 @@ End Type
 Private Declare Function GetLastInputInfo Lib "user32" (plii As Any) As Long
 '------------------------------------------------------ ENDS
 
-Private Sub clickBlankTimer_Timer()
-' In VB6 you cannot obtain a 1 millisecond timer. The clock resolution on Windows is not high enough.
-' By default it increments 64 times per second. The smallest interval you can get is therefore 16 milliseconds.
-    
-    ' set the current icon key to that of the blank icon
-    blankClickEvent = False
-    clickBlankTimer.Enabled = False
-End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : clearAllMessageBoxRegistryEntries
-' Author    : beededea
-' Date      : 11/04/2023
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Sub clearAllMessageBoxRegistryEntries()
-    On Error GoTo clearAllMessageBoxRegistryEntries_Error
+'------------------------------------------------------ STARTS
+'#If (VBA7 = 0) Then
+'    Private Enum LongPtr
+'        [_]
+'    End Enum
+'#End If
+'#If Win64 Then
+'    Private Const NULL_PTR As LongPtr = 0 ' this may glow red but is NOT an error, suitable for 64bit TwinBasic
+'    Private Const PTR_SIZE As Long = 8
+'#Else
+'    Private Const NULL_PTR As Long = 0
+'    Private Const PTR_SIZE As Long = 4
+'#End If
 
-    SaveSetting App.EXEName, "Options", "Show message" & "dragAndDeleteThisIcon", 0
-    SaveSetting App.EXEName, "Options", "Show message" & "deleteThisIcon", 0
-    SaveSetting App.EXEName, "Options", "Show message" & "confirmEachKill", 0
-    SaveSetting App.EXEName, "Options", "Show message" & "confirmEachKillPutWindowBehind", 0
-    
+'Public DBConnection As SQLiteConnection  ' requires the SQLLite project reference VBSQLLite12.DLL
 
-    On Error GoTo 0
-    Exit Sub
+' The next line implements an Interface from an External COM DLL VBSQLite12.dll,
+' accepting COM QueryInterface calls for the specified interface ISQLiteProgressHandler
+' which is a COM/ActiveX DLL, referenced in project references that refers itself to a raw C DLL, winsqlite3.dll registered in sysWow64 using regsvr32
+' The COM object exposes a dispatch interface in its type library.
 
-clearAllMessageBoxRegistryEntries_Error:
+Implements ISQLiteProgressHandler ' only allowed in classes and forms (classes)
+'------------------------------------------------------ ENDS
 
-    With Err
-         If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure clearAllMessageBoxRegistryEntries of Form dock"
-            Resume Next
-          End If
-    End With
-    
-End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : explorerTimer_Timer
-' Author    : beededea
-' Date      : 10/04/2023
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Sub explorerTimer_Timer()
-    On Error GoTo explorerTimer_Timer_Error
 
-    Call checkExplorerRunning
-
-    On Error GoTo 0
-    Exit Sub
-
-explorerTimer_Timer_Error:
-
-    With Err
-         If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure explorerTimer_Timer of Form dock"
-            Resume Next
-          End If
-    End With
-End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : Form_Load
@@ -1155,6 +1119,9 @@ Private Sub Form_Load()
     
     ' turn off the option to run as administrator
     Call disableAdmin  ' .17 DAEB frmMain.frm 27/01/2021 Moved disabling admin to a separate routine
+    
+    ' call the function to connect to or create the database
+    Call connectSQLDatabase
 
     ' we check to see if rocketdock is installed in order to know the location of the settings.ini file used by Rocketdock
     'Call checkRocketdockInstallation ' also sets rdAppPath
@@ -1285,8 +1252,59 @@ Form_Load_Error:
     
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : connectSQLDatabase
+' Author    : beededea
+' Date      : 07/12/2025
+' Purpose   : test connection to DB exists, if not then connect or create.
+'---------------------------------------------------------------------------------------
+'
+Private Sub connectSQLDatabase()
+    On Error GoTo connectSQLDatabase_Error
+    
+        ' call the function to connect to or create the database
+        Call connectDatabase
 
+        ' Registers the progress handler callback
+'        With DBConnection
+'            .SetProgressHandler me
+'        End With
 
+    On Error GoTo 0
+    Exit Sub
+
+connectSQLDatabase_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure connectSQLDatabase of Form dock"
+
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : ISQLiteProgressHandler_Callback
+' Author    : jbPro
+' Date      : 24/11/2025
+' Purpose   : The SetProgressHandler method (which registers this callback) has a default value of 100 for the
+'             number of virtual machine instructions that are evaluated between successive invocations of this callback.
+'             This means that this callback is never invoked for very short running SQL statements.
+'
+'             Any running SQL operation will be interrupted if the cancel parameter is set to true.
+'             This can be used to implement a "cancel" button on a GUI progress dialog box.
+'
+'---------------------------------------------------------------------------------------
+'
+Public Sub ISQLiteProgressHandler_Callback(Cancel As Boolean)
+
+    On Error GoTo ISQLiteProgressHandler_Callback_Error
+
+    DoEvents
+
+    On Error GoTo 0
+    Exit Sub
+
+ISQLiteProgressHandler_Callback_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ISQLiteProgressHandler_Callback of Form dock"
+End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : Form_MouseDown
@@ -4001,7 +4019,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
 
     ' Rocketdock quit compatibility
     If thisCommand = "[Quit]" Then
-        Call dock.shutdwnGDI
+        Call dock.shutDownGDIP
         End
     End If
     ' Rocketdock settings compatibility
@@ -4836,14 +4854,14 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : shutdwnGDI
+' Procedure : shutDownGDIP
 ' Author    : beededea
 ' Date      : 08/04/2020
-' Purpose   :
+' Purpose   : shutdown GDIP
 '---------------------------------------------------------------------------------------
 '
-Public Sub shutdwnGDI()
-   On Error GoTo shutdwnGDI_Error
+Public Sub shutDownGDIP()
+   On Error GoTo shutDownGDIP_Error
 
     Call SelectObject(dcMemory, hOldBmp) ' releases memory for GDI handles
     Call DeleteObject(hBmpMemory)  ' the existing bitmap deleted
@@ -4860,9 +4878,9 @@ Public Sub shutdwnGDI()
    On Error GoTo 0
    Exit Sub
 
-shutdwnGDI_Error:
+shutDownGDIP_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure shutdwnGDI of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure shutDownGDIP of Form dock"
 
 End Sub
 
@@ -7754,3 +7772,69 @@ End Sub
 '    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure idleTimer_Timer of Form rDIconConfigForm"
 '
 'End Sub
+
+
+
+Private Sub clickBlankTimer_Timer()
+' In VB6 you cannot obtain a 1 millisecond timer. The clock resolution on Windows is not high enough.
+' By default it increments 64 times per second. The smallest interval you can get is therefore 16 milliseconds.
+    
+    ' set the current icon key to that of the blank icon
+    blankClickEvent = False
+    clickBlankTimer.Enabled = False
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : clearAllMessageBoxRegistryEntries
+' Author    : beededea
+' Date      : 11/04/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub clearAllMessageBoxRegistryEntries()
+    On Error GoTo clearAllMessageBoxRegistryEntries_Error
+
+    SaveSetting App.EXEName, "Options", "Show message" & "dragAndDeleteThisIcon", 0
+    SaveSetting App.EXEName, "Options", "Show message" & "deleteThisIcon", 0
+    SaveSetting App.EXEName, "Options", "Show message" & "confirmEachKill", 0
+    SaveSetting App.EXEName, "Options", "Show message" & "confirmEachKillPutWindowBehind", 0
+    
+
+    On Error GoTo 0
+    Exit Sub
+
+clearAllMessageBoxRegistryEntries_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure clearAllMessageBoxRegistryEntries of Form dock"
+            Resume Next
+          End If
+    End With
+    
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : explorerTimer_Timer
+' Author    : beededea
+' Date      : 10/04/2023
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub explorerTimer_Timer()
+    On Error GoTo explorerTimer_Timer_Error
+
+    Call checkExplorerRunning
+
+    On Error GoTo 0
+    Exit Sub
+
+explorerTimer_Timer_Error:
+
+    With Err
+         If .Number <> 0 Then
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure explorerTimer_Timer of Form dock"
+            Resume Next
+          End If
+    End With
+End Sub

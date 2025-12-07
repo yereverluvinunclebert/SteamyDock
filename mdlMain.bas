@@ -1228,7 +1228,7 @@ Public Sub readDockConfiguration()
         ' the final user icon count
         rdIconUpperBound = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", dockSettingsFile))
 
-        iconArrayUpperBound = rdIconUpperBound + 1
+        iconArrayUpperBound = rdIconUpperBound
         
         Call redimPreserveCacheArrays
 
@@ -3373,11 +3373,19 @@ End Sub
 Public Sub thisFormUnload()
    On Error GoTo thisFormUnload_Error
    
+    ' close the random data files
+    
     Close #1
     Close #2
     Close #3
+    
+    ' close SQL
+    
+    Call closeDatabase
 
-    Call dock.shutdwnGDI
+    ' shutdown GDIP
+    
+    Call dock.shutDownGDIP
 
     ' unload the other native VB6forms
     
