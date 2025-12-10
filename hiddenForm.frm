@@ -189,6 +189,9 @@ Attribute VB_Exposed = False
 '---------------------------------------------------------------------------------------
 
 Option Explicit
+
+Private mIsLoaded As Boolean ' property
+
 '#If (VBA7 = 0) Then
 '    Private Enum LongPtr
 '        [_]
@@ -350,6 +353,7 @@ End Sub
 Private Sub Form_Load()
     On Error GoTo Form_Load_Error
 
+    IsLoaded = True
     cmbRecordNumber.ListIndex = 0
     cmbSingleFieldRecordNumber.ListIndex = 0
     
@@ -403,7 +407,7 @@ Private Sub Form_Unload(Cancel As Integer)
 
     'If Not DBConnection Is Nothing Then DBConnection.CloseDB
     
-    Call closeDatabase
+    'Call closeDatabase
 
     On Error GoTo 0
     Exit Sub
@@ -456,7 +460,7 @@ Private Sub CommandConnect_Click()
 '
 '        Else ' if db not exists then create it and set up the new database with hard coded schema
 '            If MsgBox(PathName & " does not exist. Create new?", vbExclamation + vbOKCancel) <> vbCancel Then
-'                Call createDBFromScratch(PathName)
+'                Call createUnpopulatedDBFromSchema(PathName)
 '
 '            Else
 '                Exit Sub
@@ -473,6 +477,8 @@ Private Sub CommandConnect_Click()
 '        With DBConnection
 '            .SetProgressHandler Me ' Registers the progress handler callback
 '        End With
+
+        hiddenForm.lblRecordNum.Caption = "Database Connected."
     
         CommandInsert.Enabled = True
         List1.Enabled = True
@@ -486,7 +492,7 @@ Private Sub CommandConnect_Click()
         cmbSingleFieldRecordNumber.Enabled = True
         txtSingleField.Enabled = True
         
-        'btnWriteRandom.Enabled = True
+        btnWriteRandom.Enabled = True
         
         Call getSingleFieldFromMultipleRecords("fIconTitle")
         
@@ -627,3 +633,49 @@ End Sub
 
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : IsLoaded
+' Author    : beededea
+' Date      : 16/12/2024
+' Purpose   : property by val to manually determine whether the preference form is loaded. It does this without
+'             touching a VB6 intrinsic form property which would then load the form itself.
+'---------------------------------------------------------------------------------------
+'
+Public Property Get IsLoaded() As Boolean
+ 
+   On Error GoTo IsLoaded_Error
+
+    IsLoaded = mIsLoaded
+    
+
+   On Error GoTo 0
+   Exit Property
+
+IsLoaded_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure IsLoaded of Form widgetPrefs"
+ 
+End Property
+
+'---------------------------------------------------------------------------------------
+' Procedure : IsLoaded
+' Author    : beededea
+' Date      : 16/12/2024
+' Purpose   : property by val to manually determine whether the preference form is loaded. It does this without
+'             touching a VB6 intrinsic form property which would then load the form itself.
+'---------------------------------------------------------------------------------------
+'
+Public Property Let IsLoaded(ByVal newValue As Boolean)
+ 
+   On Error GoTo IsLoaded_Error
+
+   If mIsLoaded <> newValue Then mIsLoaded = newValue Else Exit Property
+
+   On Error GoTo 0
+   Exit Property
+
+IsLoaded_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure IsLoaded of Form widgetPrefs"
+ 
+End Property

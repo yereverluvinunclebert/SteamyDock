@@ -213,17 +213,24 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByVal writeArray As Boolean)
-'
+    
+    Dim errCnt As Integer: errCnt = 0
+    Static writeDBFlag As Integer
+        
    On Error GoTo writeIconSettingsIni_Error
    'If debugFlg = 1 Then debugLog "%writeIconSettingsIni"
 
 '   If writeArray = False Then
    
         ' write the icon data to random access data file
-        Call putIconSettings(iconNumberToWrite)
+        'Call putIconSettings(iconNumberToWrite)
         
-         ' write the icon data to the SQLite database
-        'Call putIconSettingsIntoDatabase(iconNumberToWrite)
+        ' check to see if there have been any prior errors reading records from the db, if so, don't read any more records
+        If writeDBFlag > 0 Then Exit Sub
+        
+         ' write the icon data to the SQLite database with error check returned
+        errCnt = putIconSettingsIntoDatabase(iconNumberToWrite)
+        writeDBFlag = writeDBFlag + errCnt
         
         ' the array cache was used for all the variables to speed up access when reading/writing the settings file
         ' this was due to using a settings.ini file using Windows APIs to read/write (very slow indeed)
@@ -276,9 +283,7 @@ Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByV
 '        sAppToTerminateArray(iconNumberToWrite) = sAppToTerminate
 '        sDisabledArray(iconNumberToWrite) = sDisabled
 '    End If
-    
-
-        
+            
     On Error GoTo 0
    Exit Sub
 
@@ -297,16 +302,23 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer, Optional ByVal readArray As Boolean)
+
+    Dim errCnt As Integer: errCnt = 0
+    Static readDBFlag As Integer
         
-   On Error GoTo readIconSettingsIni_Error
+    On Error GoTo readIconSettingsIni_Error
     
    ' If readArray = False Then
     
         ' obtain the icon data from random access data file
-        Call getIconSettings(iconNumberToRead) 'retained here for testing
+        'Call getIconSettings(iconNumberToRead) 'retained here for testing
         
-         ' obtain the icon data from the SQLite database - tested seems good
-        'Call getIconSettingsFromDatabase(iconNumberToRead)
+        ' check to see if there have been any prior errors reading records from the db, if so, don't read any more records
+        If readDBFlag > 0 Then Exit Sub
+        
+         ' obtain the icon data from the SQLite database with error check returned
+        errCnt = getIconSettingsFromDatabase(iconNumberToRead)
+        readDBFlag = readDBFlag + errCnt
 
         ' the array cache was used for all the variables to speed up access when reading/writing the settings file
         ' this was due to using a settings.ini file using Windows APIs to read/write (very slow indeed)

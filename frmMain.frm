@@ -1228,6 +1228,7 @@ Private Sub Form_Load()
     'start timers
     wallpaperTimer.Enabled = True
     
+    ' this form should only be revealed for db maintenance uses.
     'hiddenForm.Show
     
     'add to the initiated ProcessArray
@@ -2007,9 +2008,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     ' if there is more than one file dropped reject the drop
     ' if the dock is not the bottom layer then pop up a message box
     ' ie. don't pop it up if layered underneath everything as no-one will see the msgbox
-    If Data.Files.Count > 1 And (rDzOrderMode = "0" Or rDzOrderMode = "1") Then
+    If Data.Files.count > 1 And (rDzOrderMode = "0" Or rDzOrderMode = "1") Then
        ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.Count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count
         Exit Sub
     End If

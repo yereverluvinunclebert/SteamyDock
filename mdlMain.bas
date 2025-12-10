@@ -1472,7 +1472,7 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
    ' dynamically extend the number of picture boxes by one
     thisIcon = useloop + 1
     rdIconUpperBound = rdIconUpperBound + 1
-    iconArrayUpperBound = rdIconUpperBound + 1
+    iconArrayUpperBound = rdIconUpperBound
     
     'amend the count in the alternative rdSettings.ini
     PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
@@ -2106,7 +2106,7 @@ Public Sub deleteThisIcon()
         Next useloop
                     
         ' then re-read the config for every icon - moving the image and arrays
-        For useloop = selectedIconIndex To rdIconUpperBound + 1
+        For useloop = selectedIconIndex To rdIconUpperBound
             Call readIconSettingsIni(useloop, toArray)  ' , read from array from the beginning
             reassignArrayElements (useloop)
     
@@ -3107,20 +3107,20 @@ End Sub
 '
 Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As Long) As Boolean
 
-    Dim Count As Long: Count = 0
+    Dim count As Long: count = 0
     Dim hIcon() As Long: 'hIcon() = 0
     Dim i As Long: i = 0
     Dim pid As Long: pid = 0
 
     On Error GoTo isSysTray_Error
 
-    Count = GetIconCount(hTray)
+    count = GetIconCount(hTray)
 
-    If Count <> 0 Then
-        Call GetIconHandles(hTray, Count, hIcon)
+    If count <> 0 Then
+        Call GetIconHandles(hTray, count, hIcon)
     End If
 
-    For i = 0 To Count - 1
+    For i = 0 To count - 1
         pid = GetPidByWindow(hIcon(i))
         'if the extracted pid matches the supplied processID then we have the window handle
         If pid = processID Then
