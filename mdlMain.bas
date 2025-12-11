@@ -1226,8 +1226,10 @@ Public Sub readDockConfiguration()
         
         ' read the rocketdock settings.ini and find the very last icon
         ' the final user icon count
-        rdIconUpperBound = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", dockSettingsFile))
-
+        'rdIconUpperBound = Val(GetINISetting("Software\SteamyDock\IconSettings\Icons", "count", dockSettingsFile))
+        
+        ' read the database and get the record count
+        rdIconUpperBound = getRecordCount()
         iconArrayUpperBound = rdIconUpperBound
         
         Call redimPreserveCacheArrays
@@ -1475,7 +1477,7 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     iconArrayUpperBound = rdIconUpperBound
     
     'amend the count in the alternative rdSettings.ini
-    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
+    'PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
     
     'resize all arrays used for storing icon information
     Call redimPreserveCacheArrays
@@ -2135,7 +2137,7 @@ Public Sub deleteThisIcon()
     iconArrayUpperBound = iconArrayUpperBound - 1
 
     'amend the count in both the alternative rdSettings.ini
-    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
+    'PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
 
@@ -3112,20 +3114,20 @@ End Sub
 '
 Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As Long) As Boolean
 
-    Dim count As Long: count = 0
+    Dim Count As Long: Count = 0
     Dim hIcon() As Long: 'hIcon() = 0
     Dim i As Long: i = 0
     Dim pid As Long: pid = 0
 
     On Error GoTo isSysTray_Error
 
-    count = GetIconCount(hTray)
+    Count = GetIconCount(hTray)
 
-    If count <> 0 Then
-        Call GetIconHandles(hTray, count, hIcon)
+    If Count <> 0 Then
+        Call GetIconHandles(hTray, Count, hIcon)
     End If
 
-    For i = 0 To count - 1
+    For i = 0 To Count - 1
         pid = GetPidByWindow(hIcon(i))
         'if the extracted pid matches the supplied processID then we have the window handle
         If pid = processID Then

@@ -469,6 +469,33 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
+' Procedure : getRecordCount
+' Author    : beededea
+' Date      : 11/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function getRecordCount() As Integer
+
+    Dim DataSet As SQLiteDataSet
+    
+    On Error GoTo getRecordCount_Error
+
+    ' select one record matching the supplied key pulling all fields/columns into a dataset
+    Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable")
+    getRecordCount = DataSet.RecordCount
+
+    On Error GoTo 0
+    Exit Function
+
+getRecordCount_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getRecordCount of Module modDatabase"
+End Function
+
+
+
+'---------------------------------------------------------------------------------------
 ' From this point on these are test and administration only routines
 '---------------------------------------------------------------------------------------
 

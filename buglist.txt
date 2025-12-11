@@ -3,33 +3,25 @@
 -oOo-
 
 Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
-Needs to read icons from DLLs/exes - WIP
+Operations to SQLite database in progress, all working, need to test working with iconSettings at the same time, testing for conflicts &c
 a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
-
 
 
 ' Current Tasks:
 ' =============
 
-' test GetFromiconData subroutine
 ' test if the updateCounter is being updated
-' test to see if the scripting dictionary is populated
-' test why the update does not occur when an existing key is found, possibly does not need the key specified at all
-' test regfree.bas to see if the VBSQL can be used regfree
-' make tool to read/write icon random data file from database
+' test regfree.bas to see if the VBSQL10.dll can be used regfree
 ' test using API declarations and alternative SQL dll to test speed
 ' test using RC sqlite.dll and compare speed
+' add a switch to enable/disable the random access data file & toggle databse access for testing speed.
+' fix the path to the database
 
-' create a wrapper to the binary file operations and redirect them to the database for speed comparison
+' remove the old text icon entries in settings.ini
 
-' error when copying the iconSettings.ini and dat files, the dock opened but generated a runtime error when the dock reached 79 items (approx.) giving errors when loading images to the collections
-' I am guessing that there was a mismatch between the count in iconSettings and the count from the .dat, possibly yhe collection length being too short.
+' make a backup of iconSettings.dat and .db on each start?
 
-' remove the old icon entries in settings.ini
-
-' make a backup of iconSettings.dat on each start
-
-' some examples of icons are not extractable by the icon extraction method     - need to test why that is.
+' some examples of icons are not extractable by the icon extraction method - need to test why that is.
 
 ' the icon text titles do not move up as the dock is moved up from the bottom edge
 
@@ -104,7 +96,7 @@ separate the task to kill a process to an external process so that the current p
 '     2. Graphics Next Technology D2D/RC6, investigate - WIP - Not using RC6 until it upgrades to 64bit.
 '     3. Add known identifiers to the known apps list - WIP
 '     4. dockSettings, regular process check reduce to 5 secs minimum.
-'     5.
+'     5. sqlite database operation
 '     6. creating new icons WIP
 '     8. Animating more than just the three icons - WIP
 '     9.
@@ -179,11 +171,11 @@ separate the task to kill a process to an external process so that the current p
     ' drawDockByCursorEntryPosition - calculates and draws ONCE using the initial dock position from the cursor entry point
     ' sequentialBubbleAnimation - performs the regular animation of the central three icons.
 '
-'When you enter an icon in Rocketdock it is not full size, it does not grow to full size until the middle of the icon is reached.
-'This is unlike SD that makes sure that the centre icon is full size so that when you traverse across it you have
-'a fixed size icon to use to calculate the distance across the central icon.
+' When you enter an icon in Rocketdock it is not full size, it does not grow to full size until the middle of the icon is reached.
+' This is unlike SD that makes sure that the centre icon is full size so that when you traverse across it you have
+' a fixed size icon to use to calculate the distance across the central icon.
 '
-'When you scroll further across the icon mid-point it then starts to decrease in size.
+' When you scroll further across the icon mid-point it then starts to decrease in size.
 '
 ' This implies that RD is calculating from the icon's left hand size to the middle 0-100% to determine the icon sizes and not calculating across one icon's width as SD is currently doing.
 
@@ -956,4 +948,39 @@ tests for new gbl vars that indicate whether the main process/explorer timers ar
 ' shift more code from the form to the modDatabse
 ' add comments and top/tail to insertNonSanitisedStrings & others
 ' removed redundant code
-' speed test - slow to populate all records from binary file using sqlite3.dll
+' speed test - slow to populate all records from binary file using sqlite3.dll can be sped up using TRANSACTION BEGIN and END
+
+' On delete of icon the last record is removed from the database, also:
+o querySingleRecordFromDatabase CREATED TO TEST EXISTENCE OF A RECORD
+o removed hiddenForm status label calls as code is shared with iconSettings
+
+' replaced the random access data file usage with the database replacement
+o delete icon fix, rdiconmaximum +1
+o add error checks to the database read/write routines
+o added isLoaded property to the hidden form
+o added sub to write to hidden form status label from modDatabase
+o removed closeDb from the hidden form_close
+o renamed to createUnpopulatedDBFromSchema
+o sorted the routine order in modDatabase
+o replaced text SQL statements with INSERTFieldToSingleRecord
+o added UPDATEFieldInSingleRecord when a record exists (no upsert)
+
+' New UPDATEFieldInSingleRecord sub
+o moved some top subs to another location
+o new connectDatabase that checks the db exists and connects
+o new connectSQLDatabase calls the above
+o removed all hiddenForm references
+
+' new subs to get/put SettingsIntoDatabase
+o getIconSettingsFromDatabase
+o putIconSettingsIntoDatabase
+o renamed insertRecordsFromRandomDataFileIntoDatabase
+o within modDatabase swap readIconSettingsIni  for getIconSettings
+o within modDatabase swap writeIconSettingsIni  for putIconSettings
+
+' make tool to read/write icon random data file from database
+' create a wrapper to the binary file operations and redirect them to the database for speed comparison - slower
+' error when copying the iconSettings.ini and dat files, the dock opened but generated a runtime error when the dock reached 79 items (approx.) giving errors when loading images to the collections
+' I am guessing that there was a mismatch between the count in iconSettings and the count from the .dat, possibly the collection length being too short.
+
+' Needs to read icons from DLLs/exes - WIP
