@@ -217,7 +217,7 @@ Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByV
     Dim errCnt As Integer: errCnt = 0
     Static writeDBFlag As Integer
         
-   On Error GoTo writeIconSettingsIni_Error
+    On Error GoTo writeIconSettingsIni_Error
    'If debugFlg = 1 Then debugLog "%writeIconSettingsIni"
 
 '   If writeArray = False Then

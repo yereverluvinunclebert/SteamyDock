@@ -273,6 +273,40 @@ putIconSettingsIntoDatabase_Error:
 End Function
 
 
+'---------------------------------------------------------------------------------------
+' Procedure : querySingleRecordFromDatabase
+' Author    : beededea
+' Date      : 24/11/2025
+' Purpose   : Retrieves all the data fields for a given key.
+'             Raises error 5 if the key is not found.
+'---------------------------------------------------------------------------------------
+'
+Public Function querySingleRecordFromDatabase(ByVal thisKeyValue As String) As Boolean
+
+    Dim DataSet As SQLiteDataSet
+    
+    On Error GoTo querySingleRecordFromDatabase_Error
+
+    ' select one record matching the supplied key pulling all fields/columns into a dataset
+    Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable WHERE key= " & thisKeyValue)
+    
+    ' No matching row
+    If DataSet.RecordCount = 0 Then
+        querySingleRecordFromDatabase = False
+    Else
+        querySingleRecordFromDatabase = True
+    End If
+    
+    On Error GoTo 0
+    Exit Function
+
+querySingleRecordFromDatabase_Error:
+    
+    ' error count of 1 passed back to calling routine
+    querySingleRecordFromDatabase = 1
+
+     MsgBox "Error Data not found for this key " & thisKeyValue & " or other error - " & Err.Number & " (" & Err.Description & ") in procedure querySingleRecordFromDatabase of module ModDatase"
+End Function
 
 
 
@@ -434,7 +468,9 @@ End Sub
 
 
 
+'---------------------------------------------------------------------------------------
 ' From this point on these are test and administration only routines
+'---------------------------------------------------------------------------------------
 
 
 '---------------------------------------------------------------------------------------
@@ -626,7 +662,10 @@ Public Sub insertRecordsFromRandomDataFileIntoDatabase()
         
         thisKeyValue = useloop
         With DBConnection
-            If hiddenForm.IsLoaded = True Then Call writeHiddenFormLabel(" Record Number being written now: ", useloop)
+            'If hiddenForm.IsLoaded = True Then Call writeHiddenFormLabel(" Record Number being written now: ", useloop)
+            
+            ' this is slow but will probably improve with a BEGIN TRANSACTION" then execute with "END TRANSACTION" but not worth the development time as this will seldom ever be used.
+            
         
             ' insert a value that does not need to be sanitised
             .Execute "INSERT INTO iconDataTable (Key, fIconRecordNumber) VALUES ('" & thisKeyValue & "','" & thisKeyValue & "')"
@@ -871,29 +910,29 @@ End Sub
 
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : writeHiddenFormLabel
-' Author    : beededea
-' Date      : 08/12/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : writeHiddenFormLabel
+'' Author    : beededea
+'' Date      : 08/12/2025
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Private Sub writeHiddenFormLabel(textForLabel As String, Optional ByVal count As Integer)
+'    Dim textToDisplay As String: textToDisplay = vbNullString
 '
-Private Sub writeHiddenFormLabel(textForLabel As String, Optional ByVal count As Integer)
-    Dim textToDisplay As String: textToDisplay = vbNullString
-    
-    On Error GoTo writeHiddenFormLabel_Error
-
-    textToDisplay = textForLabel
-    If count > 0 Then textToDisplay = textToDisplay & count
-    hiddenForm.lblRecordNum.Caption = textToDisplay
-    hiddenForm.lblRecordNum.Refresh
-
-    On Error GoTo 0
-    Exit Sub
-
-writeHiddenFormLabel_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeHiddenFormLabel of Module modDatabase"
-End Sub
+'    On Error GoTo writeHiddenFormLabel_Error
+'
+'    textToDisplay = textForLabel
+'    If count > 0 Then textToDisplay = textToDisplay & count
+'    hiddenForm.lblRecordNum.Caption = textToDisplay
+'    hiddenForm.lblRecordNum.Refresh
+'
+'    On Error GoTo 0
+'    Exit Sub
+'
+'writeHiddenFormLabel_Error:
+'
+'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeHiddenFormLabel of Module modDatabase"
+'End Sub
 
 

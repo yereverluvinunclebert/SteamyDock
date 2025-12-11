@@ -743,7 +743,10 @@ Attribute VB_Exposed = False
 ' Only needed during development as the types are compiled in. Once your project is compiled, the TLB is no longer used.
 ' It does not need to be present on end user machines.
 
-' Requires a project reference VBSQLLite12.DLL for the database testing that has not yet been implemented.
+' Requires a project reference VBSQLLite12.DLL for the SQLite database that holds the icon data.
+'
+' https://github.com/Kr00l/VBSQLite
+' The 32bit DLL can be found here: https://github.com/VBForumsCommunity/sqlite3win32/tree/master/Bin
 
 ' At the moment the
 

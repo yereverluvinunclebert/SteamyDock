@@ -2119,13 +2119,18 @@ Public Sub deleteThisIcon()
     End If
     
     ' as we are writing to the in-memory cache at some point later we need to write to disc set a flag stating the settings file changes needs to be committed
-    ' to disc as they are just in memory at the moment, retained for possible future use.
+    ' to disc as they are just in memory at the moment, * retained for possible future use *
 '    gblRequiresCommitToDisc = False
 '    dock.tmrWriteCache.Enabled = False
     
-    ' here we would normally delete the final unwanted record at rdIconUpperBound but it is not possible to delete a VB6 random access record, instead we do not care and leave it to be!
+    ' Here we would normally delete the final unwanted record at rdIconUpperBound but when using a VB6 random access record, it is not possible to delete, instead we do not care and leave it to be!
+    ' The usage of the random access data file has now been removed from the program, replaced by an SQL database.
+    ' In the dcurrent atabase version, if we did not tidy up then we would be left with an unused record, so we delete it here.
+    
+    ' query the database for the record, if the record is found then delete it
+    If querySingleRecordFromDatabase(rdIconUpperBound) = True Then Call deleteSpecificKey(rdIconUpperBound)
         
-    'decrement the icon count and the maximum icon
+    'now the changes are complete, decrement the icon count and the maximum icon
     rdIconUpperBound = rdIconUpperBound - 1
     iconArrayUpperBound = iconArrayUpperBound - 1
 
