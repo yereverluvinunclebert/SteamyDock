@@ -618,6 +618,9 @@ Public gblExplorerTimerRunning As Boolean
 Public gblProcessTimerRunning As Boolean
 
 
+' icon class
+Public fMainIcon As New cfMainIcon
+
 '---------------------------------------------------------------------------------------
 ' Procedure : fTestCursorWithinDockYPosition
 ' Author    : beededea
@@ -628,19 +631,19 @@ Public gblProcessTimerRunning As Boolean
 Public Function fTestCursorWithinDockYPosition() As Boolean
     Dim outsideDock  As Boolean: outsideDock = False
     
-    iconRightmostPointPxls = iconStoreRightPixels(UBound(iconStoreLeftPixels))
+    rightMostIconPositionPxls = iconStoreRightPixels(UBound(iconStoreLeftPixels))
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
     If dockPosition = vbBottom Then
-        outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconRightmostPointPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > rightMostIconPositionPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > rightMostIconPositionPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '            outsideDock = True
 '        Else
 '            outsideDock = False
 '        End If
     End If
     If dockPosition = vbtop Then
-        outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < iconLeftmostPointPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     End If
     
     fTestCursorWithinDockYPosition = outsideDock ' return
@@ -661,7 +664,7 @@ End Function
 '   image/jpeg
 '   image/gif
 '   image/tiff
-'   image/png
+'   image/pngI received a
 '
 ' Notes When Saving:
 'The JPEG encoder supports the Transformation, Quality, LuminanceTable, and ChrominanceTable parameter categories.
@@ -1825,7 +1828,7 @@ End Sub
 '
 Public Sub addProgramDLLorEXE()
 
-     Dim iconImage As String: iconImage = vbNullString
+     Dim IconImage As String: IconImage = vbNullString
      Dim iconFilename As String: iconFilename = vbNullString
      Dim retFileName As String: retFileName = vbNullString
      Dim retfileTitle As String: retfileTitle = vbNullString
@@ -1902,9 +1905,9 @@ Public Sub addProgramDLLorEXE()
         Else ' the file doesn't exist in any form with ? or otherwise as a valid path
             iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
             If fFExists(iconFilename) Then
-                iconImage = iconFilename
+                IconImage = iconFilename
             Else
-                iconImage = App.Path & "\iconSettings\Icons\help.png"
+                IconImage = App.Path & "\iconSettings\Icons\help.png"
             End If
         End If
     Else
@@ -1927,13 +1930,13 @@ Public Sub addProgramDLLorEXE()
         iconFilename = identifyAppIcons(retFileName) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                     
         If fFExists(iconFilename) Then
-          iconImage = iconFilename
+          IconImage = iconFilename
         Else
             iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
             If fFExists(iconFilename) Then
-                iconImage = iconFilename
+                IconImage = iconFilename
             Else
-                iconImage = App.Path & "\iconSettings\Icons\help.png"
+                IconImage = App.Path & "\iconSettings\Icons\help.png"
             End If
         End If
 
@@ -1943,8 +1946,8 @@ Public Sub addProgramDLLorEXE()
     
     dock.Refresh
     
-    Call insertNewIconDataIntoCurrentPosition(iconImage, thisTitle, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(iconImage, retFileName)
+    Call insertNewIconDataIntoCurrentPosition(IconImage, thisTitle, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(IconImage, retFileName)
         
     ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
     If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location

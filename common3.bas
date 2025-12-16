@@ -14,8 +14,8 @@ Option Explicit
 '------------------------------------------------------------
 
 Public gblOutsideDock As Boolean
-Public iconLeftmostPointPxls As Single
-Public iconRightmostPointPxls As Single
+Public leftMostIconPositionPxls As Single
+Public rightMostIconPositionPxls As Single
 Public dockYEntrancePoint As Integer
 'Public glbStartRecord As Integer
 'Public gblRecordsToCommit As Integer

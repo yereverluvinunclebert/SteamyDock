@@ -863,7 +863,7 @@ Private Const VERTRES = 10
 'Private lngHeight As Long
 'Private lngWidth As Long
 Private lngCursor As Long
-Private iconIndex As Single
+Private IconIndex As Single
 Private iconProportion As Double
 Private iconXOffset As Double
 
@@ -1331,7 +1331,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
     mouseDownTime = GetTickCount 'we do not use TimeValue(Now) as it does not count milliseconds
     
     ' .75 DAEB 12/05/2021 frmMain.frm Changed Form_MouseMove to act as the correct event to a drag and drop operating from the dock
-    selectedIconIndex = iconIndex ' this is the icon we will be bouncing
+    selectedIconIndex = IconIndex ' this is the icon we will be bouncing
         
     'clicking on the 'blank' icons at the beginning and the end
     If selectedIconIndex = 0 Then Exit Sub
@@ -1508,7 +1508,7 @@ Public Sub initialiseGlobalVars()
     iconCurrentBottomPxls = 0 ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
     screenHorizontalEdge = 0
     dockDrawingPositionPxls = 0
-    iconLeftmostPointPxls = 0
+    leftMostIconPositionPxls = 0
     dockYEntrancePoint = 0
     differenceFromLeftMostResizedIconPxls = 0
     normalDockWidthPxls = 0
@@ -1519,7 +1519,7 @@ Public Sub initialiseGlobalVars()
     saveStartLeftPxls = 0 ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     
     ' icon selection vars
-    iconIndex = 0
+    IconIndex = 0
     prevIconIndex = 0
     
     ' environment vars
@@ -1852,10 +1852,10 @@ Public Sub fMouseUp(Button As Integer)
             If insideDockFlg = True Then 'allow a MouseUp to capture a drag from one part of the dock to another
                 dragFromDockOperating = False
                 dragInsideDockOperating = True 'check for dragInsideDockOperating
-                If selectedIconIndex <> iconIndex Then ' cannot drop onto itself
+                If selectedIconIndex <> IconIndex Then ' cannot drop onto itself
                     ' we read the source icon details
                     sourceIconIndex = selectedIconIndex
-                    targetIconIndex = iconIndex
+                    targetIconIndex = IconIndex
                     
                     selectedIconIndex = targetIconIndex ' reset the selectedIconIndex
                     thisFilename = sFilename
@@ -1974,7 +1974,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
    
     Dim suffix As String: suffix = vbNullString
     Dim FileName As String: FileName = vbNullString
-    Dim iconImage As String: iconImage = vbNullString
+    Dim IconImage As String: IconImage = vbNullString
     Dim iconTitle As String: iconTitle = vbNullString
     Dim iconFilename As String: iconFilename = vbNullString
     Dim iconCommand As String: iconCommand = vbNullString
@@ -2001,19 +2001,19 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         Exit Sub
     End If
     
-    iconImage = vbNullString
+    IconImage = vbNullString
     iconTitle = vbNullString
     iconArguments = vbNullString
     iconWorkingDirectory = vbNullString
         
-    selectedIconIndex = iconIndex ' this is the icon we will be bouncing
+    selectedIconIndex = IconIndex ' this is the icon we will be bouncing
     
     ' if there is more than one file dropped reject the drop
     ' if the dock is not the bottom layer then pop up a message box
     ' ie. don't pop it up if layered underneath everything as no-one will see the msgbox
-    If Data.Files.count > 1 And (rDzOrderMode = "0" Or rDzOrderMode = "1") Then
+    If Data.Files.Count > 1 And (rDzOrderMode = "0" Or rDzOrderMode = "1") Then
        ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.Count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count
         Exit Sub
     End If
@@ -2032,7 +2032,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         If fDirExists(iconTitle) Then
             iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-dir.png"
             If fFExists(iconFilename) Then
-                iconImage = iconFilename
+                IconImage = iconFilename
             End If
         Else ' otherwise it is a file
     
@@ -2065,9 +2065,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       End If
                       
                       If fFExists(iconFilename) Then
-                          iconImage = iconFilename
+                          IconImage = iconFilename
                       Else
-                          iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+                          IconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
                       End If
                       
                     End If
@@ -2079,7 +2079,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                        ' check the icon exists
                       iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-msc.png"
                       If fFExists(iconFilename) Then
-                          iconImage = iconFilename
+                          IconImage = iconFilename
                       End If
                   End If
                   
@@ -2090,7 +2090,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                        ' check the icon exists
                       iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-bat.png"
                       If fFExists(iconFilename) Then
-                          iconImage = iconFilename
+                          IconImage = iconFilename
                       End If
                   End If
                   
@@ -2101,7 +2101,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                        ' check the icon exists
                       iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-cpl.png"
                       If fFExists(iconFilename) Then
-                          iconImage = iconFilename
+                          IconImage = iconFilename
                       End If
                   End If
                   
@@ -2147,9 +2147,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       iconFilename = identifyAppIcons(iconCommand)
                        
                       If fFExists(iconFilename) Then
-                        iconImage = iconFilename
+                        IconImage = iconFilename
                       Else
-                        iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-lnk.png"
+                        IconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-lnk.png"
                       End If
                   End If
             
@@ -2159,8 +2159,8 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                   
                   Effect = vbDropEffectCopy
                   
-                  iconImage = iconCommand
-                  If Not fFExists(iconImage) Then
+                  IconImage = iconCommand
+                  If Not fFExists(IconImage) Then
                       Exit Sub
                   End If
               
@@ -2182,13 +2182,13 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                 Effect = vbDropEffectCopy
                   
                 suffix = LCase$(ExtractSuffix(Data.Files(1)))
-                iconImage = App.Path & "\my collection\steampunk icons MKVI\document-" & suffix & ".png"
+                IconImage = App.Path & "\my collection\steampunk icons MKVI\document-" & suffix & ".png"
                 iconCommand = Data.Files(1)
-                If Not fFExists(iconImage) Then
-                    iconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-zip.png"
+                If Not fFExists(IconImage) Then
+                    IconImage = App.Path & "\my collection\steampunk icons MKVI" & "\document-zip.png"
                 End If
                 
-                If Not fFExists(iconImage) Then
+                If Not fFExists(IconImage) Then
                     Exit Sub
                 End If
             
@@ -2202,24 +2202,24 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                   Effect = vbDropEffectCopy
                   
                   suffix = LCase(ExtractSuffix(Data.Files(1)))
-                  iconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI\document-" & suffix & ".png"
+                  IconImage = App.Path & "\iconSettings\my collection\steampunk icons MKVI\document-" & suffix & ".png"
                   iconCommand = Data.Files(1)
-                  If Not fFExists(iconImage) Then
-                      iconImage = App.Path & "\nixietubelargeQ.png"
+                  If Not fFExists(IconImage) Then
+                      IconImage = App.Path & "\nixietubelargeQ.png"
                   End If
                       
               End If
         End If
         
         ' if no specific image found
-        If iconImage = vbNullString Then
-            iconImage = App.Path & "\nixietubelargeQ.png"
+        If IconImage = vbNullString Then
+            IconImage = App.Path & "\nixietubelargeQ.png"
         End If
         
-        If fFExists(iconImage) Then ' last check that the default ? image has not been deleted.
-            Call insertNewIconDataIntoCurrentPosition(iconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        If fFExists(IconImage) Then ' last check that the default ? image has not been deleted.
+            Call insertNewIconDataIntoCurrentPosition(IconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             ' .51 DAEB 08/04/2021 frmMain.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
-            Call menuForm.addImageToDictionaryAndCheckForRunningProcess(iconImage, iconTitle)
+            Call menuForm.addImageToDictionaryAndCheckForRunningProcess(IconImage, iconTitle)
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
              'MessageBox Me.hwnd, iconTitle & " dropped successfully to the dock. ", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
              '            MsgBox iconTitle & " dropped successfully to the dock. ", vbSystemModal
@@ -2778,13 +2778,15 @@ Private Sub animateTimer_Timer()
     bDrawn = False
     expandedDockWidth = 0
     
-    ' determines if and where exactly the mouse is in the < horizontal > icon hover area and if so, determine the icon index
+    ' determines if and where exactly the mouse is in the < horizontal > icon hover area
     For useloop = iconArrayLowerBound To iconArrayUpperBound
-        'insideDock = apiMouse.X >= iconLeftmostPointPxls And apiMouse.X <= iconRightmostPointPxls
+        'insideDock = apiMouse.X >= leftMostIconPositionPxls And apiMouse.X <= rightMostIconPositionPxls
+        
+        ' determines the icon index, ie. which icon is clicked upon
         insideIcon = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
         
         If insideIcon Then
-            iconIndex = useloop ' this is the current icon number being hovered over
+            IconIndex = useloop ' this is the current icon number being hovered over
             iconXOffset = apiMouse.X - iconStoreLeftPixels(useloop)
             Exit For ' as soon as we have the index we no longer have to stay in the loop
         Else
@@ -2792,9 +2794,9 @@ Private Sub animateTimer_Timer()
         End If
     Next useloop
     
-    iconPosLeftPxls = iconLeftmostPointPxls ' put starting left position back again for the dock bg
+    ' put starting left position back again for the dock background
+    iconPosLeftPxls = leftMostIconPositionPxls
     
-        
     ' NOTE:
     ' if it is the first time the dock is entered then it is drawDockByCursorEntryPosition that draws all the icons into the correct location.
     ' when the icons have been ordered correctly then sequentialBubbleAnimation provides the animation from that point on.
@@ -2934,7 +2936,7 @@ Private Sub sequentialBubbleAnimation()
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
         
         ' this is the actual line that does the main animation
-        dynamicSizeModifierPxls = ((apiMouse.X) - iconStoreLeftPixels(iconIndex)) / (bumpFactor)
+        dynamicSizeModifierPxls = ((apiMouse.X) - iconStoreLeftPixels(IconIndex)) / (bumpFactor)
     
     Else
         usedMenuFlag = False ' the menu causes the mouse to move far away from the icon centre and so icon sizing was massive
@@ -2979,7 +2981,7 @@ Private Sub sequentialBubbleAnimation()
     Next useloop
 
     ' .nn Changed or added as part of the drag and drop functionality
-    ' 12/05/2021 .nn DAEB Displays a smaller size icon at the cursor position when a drag from the dock is underway.
+    ' 12/05/2021 .nn DAEB Displays a copy of the icon that is being dragged at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
         updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
     End If
@@ -3020,8 +3022,8 @@ Private Sub determineDynamicIconRangeToAnimate(ByRef leftmostResizedIcon As Inte
     End If
      
     ' what is the group size? extract the index of the group and calculate the leftmost member
-    leftmostResizedIcon = iconIndex - (rDZoomWidth - 1) / 2 '
-    rightmostResizedIcon = iconIndex + (rDZoomWidth - 1) / 2
+    leftmostResizedIcon = IconIndex - (rDZoomWidth - 1) / 2 '
+    rightmostResizedIcon = IconIndex + (rDZoomWidth - 1) / 2
 
    On Error GoTo 0
    Exit Sub
@@ -3099,7 +3101,7 @@ End Sub
 '                End If
 '            End If
 '
-'            'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - iconSizeSmallPxls
+'            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
 '            showsmall = True
 '            expandedDockWidth = expandedDockWidth + iconWidthPxls
 '        End If
@@ -3157,7 +3159,7 @@ Private Sub sizeEachSmallIconToLeft(ByVal useloop As Integer, ByVal leftmostAnim
                 End If
             End If
 
-            'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - iconSizeSmallPxls
+            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
             showsmall = True
             expandedDockWidth = expandedDockWidth + iconWidthPxls
         End If
@@ -3191,8 +3193,8 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
 
         
     ' the group of icons to the left of the main icon, resized dynamically
-    If useloop < iconIndex And useloop >= leftmostResizedIcon Then
-       For useloop2 = leftmostResizedIcon To (iconIndex - 1)
+    If useloop < IconIndex And useloop >= leftmostResizedIcon Then
+       For useloop2 = leftmostResizedIcon To (IconIndex - 1)
 
             iconHeightPxls = iconSizeLargePxls - (dynamicSizeModifierPxls) '* resizeProportion) 'dynamicSizeModifierPxls is the difference from the midpoint of the current icon in the x axis
               
@@ -3225,7 +3227,7 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
             End If
             iconWidthPxls = iconHeightPxls
             
-             'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeLargePxls - dynamicSizeModifierPxls)
+             'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - (iconSizeLargePxls - dynamicSizeModifierPxls)
             
              expandedDockWidth = expandedDockWidth + iconWidthPxls
              showsmall = False
@@ -3246,30 +3248,17 @@ End Sub
 ' Procedure : sizeFullSizeIcon
 ' Author    : beededea
 ' Date      : 19/07/2025
-' Purpose   :
+' Purpose   : the main fullsize icon
 '---------------------------------------------------------------------------------------
 '
 Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolean)
-         ' the main fullsize icon
                      
    On Error GoTo sizeFullSizeIcon_Error
 
-        If useloop = iconIndex Then
+        If useloop = IconIndex Then
 
-'            If useloop = 0 Then
-'                iconHeightPxls = iconSizeSmallPxls
-'                iconWidthPxls = iconSizeSmallPxls
-'            Else
-                iconHeightPxls = iconSizeLargePxls
-                iconWidthPxls = iconSizeLargePxls
-'            End If
-
-'            iconHeightPxls = iconHeightPxls - iconGrowthModifier
-'            If iconHeightPxls >= iconSizeLargePxls Then
-'                iconGrowthModifier = 0
-'                iconGrowthTimer.Enabled = False
-'            End If
-'            iconWidthPxls = iconHeightPxls
+            iconHeightPxls = iconSizeLargePxls
+            iconWidthPxls = iconSizeLargePxls
             
             If dockPosition = vbBottom Then
                 
@@ -3282,14 +3271,14 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
                     iconCurrentTopPxls = dockDrawingPositionPxls
                 End If
                 
-                If selectedIconIndex = iconIndex Then
+                If selectedIconIndex = IconIndex Then
                     iconCurrentTopPxls = iconCurrentTopPxls - bounceHeight
                 End If
             End If
             
             If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
                 
-                '.nn added the slidein/out
+                ' the slidein/out
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
                     iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) - xAxisModifier
                 ElseIf autoSlideMode = "slidein" Then
@@ -3298,16 +3287,22 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
                     iconCurrentTopPxls = dockDrawingPositionPxls
                 End If
                 
-                If selectedIconIndex = iconIndex Then iconCurrentTopPxls = dockDrawingPositionPxls + bounceHeight
+                If selectedIconIndex = IconIndex Then iconCurrentTopPxls = dockDrawingPositionPxls + bounceHeight
             End If
-        
-        
-            'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - iconSizeLargePxls
+
+            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - iconSizeLargePxls
 '            If useloop = 0 Then
                 showsmall = False
 '            Else
 '                showsmall = False
 '            End If
+
+            ' pass the values to the icon properties
+            fMainIcon.IconIndex = useloop
+            fMainIcon.IconHeight = iconSizeLargePxls
+            fMainIcon.IconWidth = iconSizeLargePxls
+            fMainIcon.iconVOffset = iconCurrentTopPxls
+
             expandedDockWidth = expandedDockWidth + (iconWidthPxls)
     End If
 
@@ -3328,7 +3323,7 @@ End Sub
 Private Sub sizeEachResizedIconToRight(ByVal useloop As Integer, ByVal rightmostResizedIcon As Integer, ByRef showsmall As Boolean)
    On Error GoTo sizeEachResizedIconToRight_Error
 
-    If useloop > iconIndex And useloop <= rightmostResizedIcon Then
+    If useloop > IconIndex And useloop <= rightmostResizedIcon Then
 
     
         iconHeightPxls = iconSizeSmallPxls + dynamicSizeModifierPxls
@@ -3360,7 +3355,7 @@ Private Sub sizeEachResizedIconToRight(ByVal useloop As Integer, ByVal rightmost
         End If
         
         
-        'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)
+        'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)
         expandedDockWidth = expandedDockWidth + iconWidthPxls
         showsmall = False
     End If
@@ -3413,7 +3408,7 @@ Private Sub sizeEachSmallIconToRight(ByVal useloop As Integer, ByVal rightmostRe
                 End If
             End If
 
-            'If dockPosition = vbRight Then iconPosLeftPxls = iconLeftmostPointPxls + iconSizeLargePxls - iconSizeSmallPxls
+            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
             expandedDockWidth = expandedDockWidth + iconWidthPxls
             showsmall = True
         End If
@@ -3504,7 +3499,7 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
     updateDisplayFromDictionary collLargeIcons, vbNullString, "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconWidthPxls)
 
     ' Added a faded red background when dragged .56 DAEB 19/04/2021 frmMain.frm Added a faded red background to the current image when the drag and drop is in operation.
-    If dragToDockOperating = True And useloop = iconIndex Then
+    If dragToDockOperating = True And useloop = IconIndex Then
         updateDisplayFromDictionary collLargeIcons, vbNullString, "redresizedImg256", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     End If
     
@@ -3516,7 +3511,7 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
     End If
                          
     ' a small rotating hourglass for 'running' actions ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
-    If dragToDockOperating = True And useloop = iconIndex Then
+    If dragToDockOperating = True And useloop = IconIndex Then
         If hourglassimage = vbNullString Then hourglassimage = "hourglass1resizedImg128"
         updateDisplayFromDictionary collLargeIcons, vbNullString, hourglassimage, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     End If
@@ -3554,17 +3549,17 @@ Private Sub drawTextAboveIcon(ByVal useloop As Integer, ByVal textWidth As Integ
         
    On Error GoTo drawTextAboveIcon_Error
 
-        If useloop = iconIndex Then ' this section is located here to ensure the text is above the icon image
+        If useloop = IconIndex Then ' this section is located here to ensure the text is above the icon image
             'now draw the icon text above the selected icon
             If rDHideLabels = "0" Then
                 
-                If Not sTitleArray(iconIndex) = "Separator" Then
+                If Not sTitleArray(IconIndex) = "Separator" Then
                     textWidth = iconSizeLargePxls
                     If dockPosition = vbtop Then
-                        DrawTheText sTitleArray(iconIndex), iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                        DrawTheText sTitleArray(IconIndex), iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                     ElseIf dockPosition = vbBottom Then
                         ' puts the text 10% +10 px above the icon
-                        DrawTheText sTitleArray(iconIndex), dockDrawingPositionPxls - ((iconSizeLargePxls / 10) + 40), iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                        DrawTheText sTitleArray(IconIndex), dockDrawingPositionPxls - ((iconSizeLargePxls / 10) + 40), iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                         'DrawTheText sTitleArray(iconIndex), (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                         'DrawTheText textToDisplay, (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                     End If
@@ -3618,28 +3613,28 @@ Private Sub drawDockByCursorEntryPosition()
     
     Call createNewGDIPBitmap ' clears the whole previously drawn image section and the animation continues
     
-    ' iconRightmostPointPxls =
+    ' rightMostIconPositionPxls =
     
     If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth)
     
     Call determineDynamicIconRangeToAnimate(leftmostResizedIcon, rightmostResizedIcon)
 
     ' the main fullsize icon
-    Call sizeAndShowFullSizeIconByCEP(iconIndex, showsmall)
+    Call sizeAndShowFullSizeIconByCEP(IconIndex, showsmall)
     mainIconWidthPxls = iconWidthPxls
     
     ' what should be the group of icons to the left of the main icon, resized dynamically, currently caters only for one
-    Call sizeAndShowSingleMainIconToLeftByCEP(iconIndex, leftmostResizedIcon, showsmall)
+    Call sizeAndShowSingleMainIconToLeftByCEP(IconIndex, leftmostResizedIcon, showsmall)
 
     ' what should be the group of icons to the right of the main icon, resized dynamically, currently caters only for one
-    Call sizeAndShowSingleMainIconToRightByCEP(iconIndex, rightmostResizedIcon, mainIconWidthPxls, showsmall)
+    Call sizeAndShowSingleMainIconToRightByCEP(IconIndex, rightmostResizedIcon, mainIconWidthPxls, showsmall)
     rightIconWidthPxls = iconWidthPxls
 
     ' small icons to the left shown in small mode
-    Call sizeAndShowSmallIconsToLeftByCEP(iconIndex, leftmostResizedIcon, showsmall)
+    Call sizeAndShowSmallIconsToLeftByCEP(IconIndex, leftmostResizedIcon, showsmall)
 
     ' small icons to the right shown in small mode
-    Call sizeAndShowSmallIconsToRightByCEP(iconIndex, rightmostResizedIcon, rightIconWidthPxls, showsmall)
+    Call sizeAndShowSmallIconsToRightByCEP(IconIndex, rightmostResizedIcon, rightIconWidthPxls, showsmall)
    
     ' now update the image using GDI to draw all the placed GDiP elements
     Call updateScreenUsingGDIPBitmap
@@ -3677,7 +3672,7 @@ Private Sub sizeAndShowFullSizeIconByCEP(ByVal thisIconIndex As Integer, ByRef s
     ' the following two lines  position the main icon initially to the main icon's leftmost start point when small
     ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     '
-    iconPosLeftPxls = iconStoreLeftPixels(iconIndex)
+    iconPosLeftPxls = iconStoreLeftPixels(IconIndex)
     
     Call storeCurrentIconPositions(thisIconIndex)
     
@@ -3731,7 +3726,7 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
         Call showLargeIconTypes(thisIconIndex - 1)
     End If
 
-     ' iconLeftmostPointPxls = iconPosLeftPxls
+     ' leftMostIconPositionPxls = iconPosLeftPxls
 
    On Error GoTo 0
    Exit Sub
@@ -3836,7 +3831,7 @@ Private Sub sizeAndShowSmallIconsToRightByCEP(ByVal thisIconIndex As Integer, By
     If thisIconIndex < rdIconUpperBound Then   'check it isn't trying to animate a non-existent icon after the last icon
 
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-       iconPosLeftPxls = (iconStoreLeftPixels(iconIndex + 1)) + rightIconWidthPxls
+       iconPosLeftPxls = (iconStoreLeftPixels(IconIndex + 1)) + rightIconWidthPxls
        
        For rightLoop = thisIconIndex + 2 To iconArrayUpperBound
 
@@ -4841,9 +4836,9 @@ Private Sub setInitialStartPoint()
     hOffsetPxls = ((screenWidthPixels - normalDockWidthPxls) / 2)
     ' calculate the left position from the mid point including user-specified offset
     proportionalOffset = hOffsetPxls + (hOffsetPxls * (Val(rDOffset) / 100))
-    iconLeftmostPointPxls = proportionalOffset
+    leftMostIconPositionPxls = proportionalOffset
 
-    iconPosLeftPxls = iconLeftmostPointPxls ' rDOffset
+    iconPosLeftPxls = leftMostIconPositionPxls ' rDOffset
 
 
    On Error GoTo 0
@@ -5064,7 +5059,7 @@ Public Sub drawSmallStaticIcons()
     
     ' Check bDrawn so the program doesn't redraw the whole icon picture more than once
     If bDrawn = False Then
-        iconPosLeftPxls = iconLeftmostPointPxls
+        iconPosLeftPxls = leftMostIconPositionPxls
         normalDockWidthPxls = 0
         iconHeightPxls = iconSizeSmallPxls
         iconWidthPxls = iconSizeSmallPxls

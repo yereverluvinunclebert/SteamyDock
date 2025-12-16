@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "cwMainIcon"
+Attribute VB_Name = "cfMainIcon"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -15,76 +15,94 @@ Attribute VB_Exposed = False
 ' Module    : cwMainIcon
 ' Author    : beededea
 ' Date      : 20/11/2025
-' Purpose   : A currently unused class that will form the basis of a class to encapsulate the properties of an icon
+' Purpose   : A currently unused class that will form the basis of a class to encapsulate the properties of the main animated icons
 '---------------------------------------------------------------------------------------
 
 Option Explicit
 
-Private mHOffset As Long
-Private mVOffset As Long
+' local property holders for this class
+
+Private mIconHOffset As Long
+Private mIconVOffset As Long
+Private mIconHeight As Long
 Private mIconWidth As Long
 Private mIconIndex As Integer
 Private mIconOpacity As Integer
 Private mIconImage As String
-
 Private mFilename As String
-Private mFileName2 As String ' ' conFileName2)
-Private mTitle As String ' ' conTitle)
-Private mCommand As String ' ' conCommand)
-Private mArguments As String ' ' conArguments)
-Private mWorkingDirectory As String ' ' conWorkingDirectory)
-Private mShowCmd As String  'ShowCmd
-Private mOpenRunning As String  'OpenRunning
-Private mIsSeparator As String  'IsSeparator
-Private mUseContext As String  'UseContext
-Private mDockletFile As String ' ' conDockletFile)
-Private mUseDialog As String  'UseDialog
-Private mUseDialogAfter As String  'UseDialogAfter
-Private mQuickLaunch As String  'QuickLaunch
-Private mAutoHideDock As String  'AutoHideDock
-Private mSecondApp As String ' ' conSecondApp)
-Private mRunElevated As String  'RunElevated
-Private mRunSecondAppBeforehand As String  'RunSecondAppBeforehand
-Private mAppToTerminate As String ' ' conAppToTerminate)
-Private mDisabled As String  'Disabled
+Private mFileName2 As String
+Private mTitle As String
+Private mCommand As String
+Private mArguments As String
+Private mWorkingDirectory As String
+Private mShowCmd As String
+Private mOpenRunning As Boolean
+Private mIsSeparator As Boolean
+Private mUseContext As Boolean
+Private mDockletFile As Boolean
+Private mUseDialog As Boolean
+Private mUseDialogAfter As Boolean
+Private mQuickLaunch As Boolean
+Private mAutoHideDock As Boolean
+Private mSecondApp As String
+Private mRunElevated As Boolean
+Private mRunSecondAppBeforehand As String
+Private mAppToTerminate As String
+Private mDisabled As Boolean
+Private mRefresh As Boolean
 
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : Class_Initialize
+' Author    : beededea
+' Date      : 13/12/2025
+' Purpose   : Only the main animated icons require this.
+'---------------------------------------------------------------------------------------
+'
 Private Sub Class_Initialize()
-' Only the main icons
-' require this.
-
 
     'mainIconxo = 0: mainIconyo = 0
 
+    On Error GoTo Class_Initialize_Error
+
+    
+
+    On Error GoTo 0
+    Exit Sub
+
+Class_Initialize_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Class_Initialize of Class Module cwMainIcon"
 End Sub
 '---------------------------------------------------------------------------------------
 ' Property  : iconIndex
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get iconIndex() As Integer
-   On Error GoTo iconIndexGet_Error
+Public Property Get IconIndex() As Integer
+   On Error GoTo IconIndexGet_Error
 
-   iconIndex = mIconIndex
+   IconIndex = mIconIndex
 
    On Error GoTo 0
    Exit Property
 
-iconIndexGet_Error:
+IconIndexGet_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconIndex of Class Module cwIcon"
 End Property
 '---------------------------------------------------------------------------------------
 ' Property  : iconIndex
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let iconIndex(ByVal newValue As Integer)
-   On Error GoTo iconIndexLet_Error
+Public Property Let IconIndex(ByVal newValue As Integer)
+   On Error GoTo IconIndexLet_Error
 
     If mIconIndex <> newValue Then mIconIndex = newValue Else Exit Property
     
@@ -97,43 +115,43 @@ Public Property Let iconIndex(ByVal newValue As Integer)
    On Error GoTo 0
    Exit Property
 
-iconIndexLet_Error:
+IconIndexLet_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconIndex of Class Module cwIcon"
 End Property
 '
 '---------------------------------------------------------------------------------------
-' Property  : hOffset
+' Property  : iconHOffset
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get hOffset() As Long
-   On Error GoTo hOffsetGet_Error
+Public Property Get iconHOffset() As Long
+   On Error GoTo iconHOffsetGet_Error
 
-   hOffset = mHOffset
+   iconHOffset = mIconHOffset
 
    On Error GoTo 0
    Exit Property
 
-hOffsetGet_Error:
+iconHOffsetGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property hOffset of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconHOffset of Class Module cwIcon"
 End Property
 '---------------------------------------------------------------------------------------
-' Property  : hOffset
+' Property  : iconHOffset
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let hOffset(ByVal newValue As Long)
-   On Error GoTo hOffsetLet_Error
+Public Property Let iconHOffset(ByVal newValue As Long)
+   On Error GoTo iconHOffsetLet_Error
 
-    If mHOffset <> newValue Then mHOffset = newValue Else Exit Property
+    If mIconHOffset <> newValue Then mIconHOffset = newValue Else Exit Property
     
-    If mHOffset = True Then
+    If mIconHOffset = True Then
     
     Else
     
@@ -142,45 +160,45 @@ Public Property Let hOffset(ByVal newValue As Long)
    On Error GoTo 0
    Exit Property
 
-hOffsetLet_Error:
+iconHOffsetLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property hOffset of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconHOffset of Class Module cwIcon"
 End Property
 
 
 '
 '---------------------------------------------------------------------------------------
-' Property  : vOffset
+' Property  : iconVOffset
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get vOffset() As Long
-   On Error GoTo vOffsetGet_Error
+Public Property Get iconVOffset() As Long
+   On Error GoTo iconVOffsetGet_Error
 
-   vOffset = mVOffset
+   iconVOffset = mIconVOffset
 
    On Error GoTo 0
    Exit Property
 
-vOffsetGet_Error:
+iconVOffsetGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property vOffset of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconVOffset of Class Module cwIcon"
 End Property
 '---------------------------------------------------------------------------------------
-' Property  : vOffset
+' Property  : iconVOffset
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let vOffset(ByVal newValue As Long)
-   On Error GoTo vOffsetLet_Error
+Public Property Let iconVOffset(ByVal newValue As Long)
+   On Error GoTo iconVOffsetLet_Error
 
-    If mVOffset <> newValue Then mVOffset = newValue Else Exit Property
+    If mIconVOffset <> newValue Then mIconVOffset = newValue Else Exit Property
     
-    If mVOffset = True Then
+    If mIconVOffset = True Then
     
     Else
     
@@ -189,20 +207,20 @@ Public Property Let vOffset(ByVal newValue As Long)
    On Error GoTo 0
    Exit Property
 
-vOffsetLet_Error:
+iconVOffsetLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property vOffset of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconVOffset of Class Module cwIcon"
 End Property
 
 '
 '---------------------------------------------------------------------------------------
 ' Property  : Filename
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get FileName() As Long
+Public Property Get FileName() As String
    On Error GoTo FilenameGet_Error
 
    FileName = mFilename
@@ -217,11 +235,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : Filename
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let FileName(ByVal newValue As Long)
+Public Property Let FileName(ByVal newValue As String)
    On Error GoTo FilenameLet_Error
 
     If mFilename <> newValue Then mFilename = newValue Else Exit Property
@@ -245,11 +263,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : FileName2
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get FileName2() As Long
+Public Property Get FileName2() As String
    On Error GoTo FileName2Get_Error
 
    FileName2 = mFileName2
@@ -264,11 +282,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : FileName2
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let FileName2(ByVal newValue As Long)
+Public Property Let FileName2(ByVal newValue As String)
    On Error GoTo FileName2Let_Error
 
     If mFileName2 <> newValue Then mFileName2 = newValue Else Exit Property
@@ -291,11 +309,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : Title
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get Title() As Long
+Public Property Get Title() As String
    On Error GoTo TitleGet_Error
 
    Title = mTitle
@@ -310,11 +328,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : Title
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let Title(ByVal newValue As Long)
+Public Property Let Title(ByVal newValue As String)
    On Error GoTo TitleLet_Error
 
     If mTitle <> newValue Then mTitle = newValue Else Exit Property
@@ -337,11 +355,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : Command
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get Command() As Long
+Public Property Get Command() As String
    On Error GoTo CommandGet_Error
 
    Command = mCommand
@@ -356,11 +374,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : Command
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let Command(ByVal newValue As Long)
+Public Property Let Command(ByVal newValue As String)
    On Error GoTo CommandLet_Error
 
     If mCommand <> newValue Then mCommand = newValue Else Exit Property
@@ -384,11 +402,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : Arguments
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get Arguments() As Long
+Public Property Get Arguments() As String
    On Error GoTo ArgumentsGet_Error
 
    Arguments = mArguments
@@ -403,11 +421,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : Arguments
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let Arguments(ByVal newValue As Long)
+Public Property Let Arguments(ByVal newValue As String)
    On Error GoTo ArgumentsLet_Error
 
     If mArguments <> newValue Then mArguments = newValue Else Exit Property
@@ -430,11 +448,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : WorkingDirectory
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get WorkingDirectory() As Long
+Public Property Get WorkingDirectory() As String
    On Error GoTo WorkingDirectoryGet_Error
 
    WorkingDirectory = mWorkingDirectory
@@ -449,11 +467,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : WorkingDirectory
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let WorkingDirectory(ByVal newValue As Long)
+Public Property Let WorkingDirectory(ByVal newValue As String)
    On Error GoTo WorkingDirectoryLet_Error
 
     If mWorkingDirectory <> newValue Then mWorkingDirectory = newValue Else Exit Property
@@ -477,11 +495,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : ShowCmd
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get ShowCmd() As Long
+Public Property Get ShowCmd() As Boolean
    On Error GoTo ShowCmdGet_Error
 
    ShowCmd = mShowCmd
@@ -496,11 +514,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : ShowCmd
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let ShowCmd(ByVal newValue As Long)
+Public Property Let ShowCmd(ByVal newValue As Boolean)
    On Error GoTo ShowCmdLet_Error
 
     If mShowCmd <> newValue Then mShowCmd = newValue Else Exit Property
@@ -524,11 +542,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : OpenRunning
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get OpenRunning() As Long
+Public Property Get OpenRunning() As Boolean
    On Error GoTo OpenRunningGet_Error
 
    OpenRunning = mOpenRunning
@@ -543,11 +561,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : OpenRunning
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let OpenRunning(ByVal newValue As Long)
+Public Property Let OpenRunning(ByVal newValue As Boolean)
    On Error GoTo OpenRunningLet_Error
 
     If mOpenRunning <> newValue Then mOpenRunning = newValue Else Exit Property
@@ -571,11 +589,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : IsSeparator
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get IsSeparator() As Long
+Public Property Get IsSeparator() As Boolean
    On Error GoTo IsSeparatorGet_Error
 
    IsSeparator = mIsSeparator
@@ -590,11 +608,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : IsSeparator
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let IsSeparator(ByVal newValue As Long)
+Public Property Let IsSeparator(ByVal newValue As Boolean)
    On Error GoTo IsSeparatorLet_Error
 
     If mIsSeparator <> newValue Then mIsSeparator = newValue Else Exit Property
@@ -618,11 +636,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : UseContext
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get UseContext() As Long
+Public Property Get UseContext() As Boolean
    On Error GoTo UseContextGet_Error
 
    UseContext = mUseContext
@@ -637,11 +655,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : UseContext
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let UseContext(ByVal newValue As Long)
+Public Property Let UseContext(ByVal newValue As Boolean)
    On Error GoTo UseContextLet_Error
 
     If mUseContext <> newValue Then mUseContext = newValue Else Exit Property
@@ -665,11 +683,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : DockletFile
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get DockletFile() As Long
+Public Property Get DockletFile() As Boolean
    On Error GoTo DockletFileGet_Error
 
    DockletFile = mDockletFile
@@ -684,11 +702,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : DockletFile
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let DockletFile(ByVal newValue As Long)
+Public Property Let DockletFile(ByVal newValue As Boolean)
    On Error GoTo DockletFileLet_Error
 
     If mDockletFile <> newValue Then mDockletFile = newValue Else Exit Property
@@ -711,11 +729,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : UseDialog
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get UseDialog() As Long
+Public Property Get UseDialog() As Boolean
    On Error GoTo UseDialogGet_Error
 
    UseDialog = mUseDialog
@@ -730,11 +748,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : UseDialog
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let UseDialog(ByVal newValue As Long)
+Public Property Let UseDialog(ByVal newValue As Boolean)
    On Error GoTo UseDialogLet_Error
 
     If mUseDialog <> newValue Then mUseDialog = newValue Else Exit Property
@@ -758,11 +776,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : UseDialogAfter
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get UseDialogAfter() As Long
+Public Property Get UseDialogAfter() As Boolean
    On Error GoTo UseDialogAfterGet_Error
 
    UseDialogAfter = mUseDialogAfter
@@ -777,11 +795,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : UseDialogAfter
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let UseDialogAfter(ByVal newValue As Long)
+Public Property Let UseDialogAfter(ByVal newValue As Boolean)
    On Error GoTo UseDialogAfterLet_Error
 
     If mUseDialogAfter <> newValue Then mUseDialogAfter = newValue Else Exit Property
@@ -804,11 +822,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : QuickLaunch
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get QuickLaunch() As Long
+Public Property Get QuickLaunch() As Boolean
    On Error GoTo QuickLaunchGet_Error
 
    QuickLaunch = mQuickLaunch
@@ -823,11 +841,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : QuickLaunch
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let QuickLaunch(ByVal newValue As Long)
+Public Property Let QuickLaunch(ByVal newValue As Boolean)
    On Error GoTo QuickLaunchLet_Error
 
     If mQuickLaunch <> newValue Then mQuickLaunch = newValue Else Exit Property
@@ -850,11 +868,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : AutoHideDock
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get AutoHideDock() As Long
+Public Property Get AutoHideDock() As Boolean
    On Error GoTo AutoHideDockGet_Error
 
    AutoHideDock = mAutoHideDock
@@ -869,11 +887,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : AutoHideDock
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let AutoHideDock(ByVal newValue As Long)
+Public Property Let AutoHideDock(ByVal newValue As Boolean)
    On Error GoTo AutoHideDockLet_Error
 
     If mAutoHideDock <> newValue Then mAutoHideDock = newValue Else Exit Property
@@ -897,11 +915,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : SecondApp
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get SecondApp() As Long
+Public Property Get SecondApp() As String
    On Error GoTo SecondAppGet_Error
 
    SecondApp = mSecondApp
@@ -916,11 +934,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : SecondApp
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let SecondApp(ByVal newValue As Long)
+Public Property Let SecondApp(ByVal newValue As String)
    On Error GoTo SecondAppLet_Error
 
     If mSecondApp <> newValue Then mSecondApp = newValue Else Exit Property
@@ -943,11 +961,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : RunElevated
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get RunElevated() As Long
+Public Property Get RunElevated() As Boolean
    On Error GoTo RunElevatedGet_Error
 
    RunElevated = mRunElevated
@@ -962,11 +980,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : RunElevated
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let RunElevated(ByVal newValue As Long)
+Public Property Let RunElevated(ByVal newValue As Boolean)
    On Error GoTo RunElevatedLet_Error
 
     If mRunElevated <> newValue Then mRunElevated = newValue Else Exit Property
@@ -990,11 +1008,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : RunSecondAppBeforehand
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get RunSecondAppBeforehand() As Long
+Public Property Get RunSecondAppBeforehand() As String
    On Error GoTo RunSecondAppBeforehandGet_Error
 
    RunSecondAppBeforehand = mRunSecondAppBeforehand
@@ -1009,11 +1027,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : RunSecondAppBeforehand
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let RunSecondAppBeforehand(ByVal newValue As Long)
+Public Property Let RunSecondAppBeforehand(ByVal newValue As String)
    On Error GoTo RunSecondAppBeforehandLet_Error
 
     If mRunSecondAppBeforehand <> newValue Then mRunSecondAppBeforehand = newValue Else Exit Property
@@ -1036,11 +1054,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : AppToTerminate
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get AppToTerminate() As Long
+Public Property Get AppToTerminate() As String
    On Error GoTo AppToTerminateGet_Error
 
    AppToTerminate = mAppToTerminate
@@ -1055,11 +1073,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : AppToTerminate
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let AppToTerminate(ByVal newValue As Long)
+Public Property Let AppToTerminate(ByVal newValue As String)
    On Error GoTo AppToTerminateLet_Error
 
     If mAppToTerminate <> newValue Then mAppToTerminate = newValue Else Exit Property
@@ -1082,11 +1100,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : Disabled
 ' Author    : beededea
-' Date      : 17/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get Disabled() As Long
+Public Property Get Disabled() As Boolean
    On Error GoTo DisabledGet_Error
 
    Disabled = mDisabled
@@ -1101,11 +1119,11 @@ End Property
 '---------------------------------------------------------------------------------------
 ' Property  : Disabled
 ' Author    : beededea
-' Date      : 10/05/2023
+' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let Disabled(ByVal newValue As Long)
+Public Property Let Disabled(ByVal newValue As Boolean)
    On Error GoTo DisabledLet_Error
 
     If mDisabled <> newValue Then mDisabled = newValue Else Exit Property
@@ -1123,4 +1141,266 @@ DisabledLet_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Disabled of Class Module cwIcon"
 End Property
+
+'
+'---------------------------------------------------------------------------------------
+' Property  : IconHeight
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get IconHeight() As Long
+   On Error GoTo IconHeightGet_Error
+
+   IconHeight = mIconHeight
+
+   On Error GoTo 0
+   Exit Property
+
+IconHeightGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconHeight of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : IconHeight
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let IconHeight(ByVal newValue As Long)
+   On Error GoTo IconHeightLet_Error
+
+    If mIconHeight <> newValue Then mIconHeight = newValue Else Exit Property
+    
+    If mIconHeight = True Then
+    
+    Else
+    
+    End If
+
+   On Error GoTo 0
+   Exit Property
+
+IconHeightLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconHeight of Class Module cwIcon"
+End Property
+
+
+'---------------------------------------------------------------------------------------
+' Property  : IconWidth
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get IconWidth() As Long
+   On Error GoTo IconWidthGet_Error
+
+   IconWidth = mIconWidth
+
+   On Error GoTo 0
+   Exit Property
+
+IconWidthGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconWidth of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : IconWidth
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let IconWidth(ByVal newValue As Long)
+   On Error GoTo IconWidthLet_Error
+
+    If mIconWidth <> newValue Then mIconWidth = newValue Else Exit Property
+    
+    If mIconWidth = True Then
+    
+    Else
+    
+    End If
+
+   On Error GoTo 0
+   Exit Property
+
+IconWidthLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconWidth of Class Module cwIcon"
+End Property
+
+
+
+'
+'---------------------------------------------------------------------------------------
+' Property  : IconOpacity
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get IconOpacity() As Long
+   On Error GoTo IconOpacityGet_Error
+
+   IconOpacity = mIconOpacity
+
+   On Error GoTo 0
+   Exit Property
+
+IconOpacityGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconOpacity of Class Module cwIcon"
+End Property
+
+'---------------------------------------------------------------------------------------
+' Property  : IconOpacity
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let IconOpacity(ByVal newValue As Long)
+   On Error GoTo IconOpacityLet_Error
+
+    If mIconOpacity <> newValue Then mIconOpacity = newValue Else Exit Property
+    
+    If mIconOpacity = True Then
+    
+    Else
+    
+    End If
+
+   On Error GoTo 0
+   Exit Property
+
+IconOpacityLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconOpacity of Class Module cwIcon"
+End Property
+
+
+
+
+'---------------------------------------------------------------------------------------
+' Property  : IconImage
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get IconImage() As String
+   On Error GoTo IconImageGet_Error
+
+   IconImage = mIconImage
+
+   On Error GoTo 0
+   Exit Property
+
+IconImageGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconImage of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : IconImage
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let IconImage(ByVal newValue As String)
+   On Error GoTo IconImageLet_Error
+
+    If mIconImage <> newValue Then mIconImage = newValue Else Exit Property
+    
+    If mIconImage = True Then
+    
+    Else
+    
+    End If
+
+   On Error GoTo 0
+   Exit Property
+
+IconImageLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconImage of Class Module cwIcon"
+End Property
+
+
+'---------------------------------------------------------------------------------------
+' Property  : Refresh
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get Refresh() As String
+   On Error GoTo RefreshGet_Error
+
+   Refresh = mRefresh
+
+   On Error GoTo 0
+   Exit Property
+
+RefreshGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Refresh of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : Refresh
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let Refresh(ByVal newValue As String)
+   On Error GoTo RefreshLet_Error
+
+    If mRefresh <> newValue Then mRefresh = newValue Else Exit Property
+    
+    Paint
+
+   On Error GoTo 0
+   Exit Property
+
+RefreshLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Refresh of Class Module cwIcon"
+End Property
+
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : W_Paint
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub Paint()
+' ByVal xAbs As Single, ByVal yAbs As Single, ByVal dx_Aligned As Single, ByVal dy_Aligned As Single, UserObj As Object)
+
+    Dim someOpacity As Double: someOpacity = 0
+   
+    On Error GoTo W_Paint_Error
+    
+    .someOpacity = (Val(mThisOpacity) / 100) * 0.75
+    
+    'Call updateScreenUsingGDIPBitmap
+
+   On Error GoTo 0
+   Exit Sub
+
+W_Paint_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure W_Paint of Class Module cwOverlay"
+End Sub
+ 
+
 
