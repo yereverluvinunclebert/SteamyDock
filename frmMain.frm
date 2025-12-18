@@ -2533,7 +2533,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Function fSetDockUpperHeightLimit() As Long
-    Dim dockHeightPxls: dockHeightPxls = 0
+    Dim dockHeightPxls As Long: dockHeightPxls = 0
     
     On Error GoTo fSetDockUpperHeightLimit_Error
     
@@ -5693,7 +5693,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Function BounceIn(ByVal t As Double)
+Function BounceIn(ByVal t As Double) As Double
    On Error GoTo BounceIn_Error
 
   BounceIn = 1 - BounceOut(1 - t) ' return
@@ -5712,7 +5712,7 @@ End Function
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Function BounceOut(ByVal t As Double)
+Function BounceOut(ByVal t As Double) As Double
    On Error GoTo BounceOut_Error
 
   If (t < (1 / 2.75)) Then BounceOut = 7.5625 * t ^ 2: Exit Function
@@ -6812,26 +6812,26 @@ sleepTimer_Timer_Error:
 End Sub
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : transit
-' Author    : beededea
-' Date      : 17/05/2021
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : transit
+'' Author    : beededea
+'' Date      : 17/05/2021
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Private Sub transit(fromX, fromY, toX, toY)
 '
-Private Sub transit(fromX, fromY, toX, toY)
-
-    On Error GoTo transit_Error
-
-    
-
-    On Error GoTo 0
-    Exit Sub
-
-transit_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure transit of Form dock"
-End Sub
+'    On Error GoTo transit_Error
+'
+'
+'
+'    On Error GoTo 0
+'    Exit Sub
+'
+'transit_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure transit of Form dock"
+'End Sub
 
 ' .86 DAEB 08/12/2022 frmMain.frm Added new timer to inspect each target command in turn and highlight if missing.
 '---------------------------------------------------------------------------------------

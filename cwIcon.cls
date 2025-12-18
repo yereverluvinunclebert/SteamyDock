@@ -1390,7 +1390,7 @@ Private Sub Paint()
    
     On Error GoTo W_Paint_Error
     
-    .someOpacity = (Val(mThisOpacity) / 100) * 0.75
+    'someOpacity = (Val(mThisOpacity) / 100) * 0.75
     
     'Call updateScreenUsingGDIPBitmap
 
