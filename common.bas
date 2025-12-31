@@ -24,7 +24,7 @@ Option Explicit
 '------------------------------------------------------------
 
 ' APIs and variables for querying processes START
-Type PROCESSENTRY32
+Private Type PROCESSENTRY32
     dwSize As Long
     cntUsage As Long
     th32ProcessID As Long
@@ -34,7 +34,8 @@ Type PROCESSENTRY32
     th32ParentProcessID As Long
     pcPriClassBase As Long
     dwFlags As Long
-    szexeFile As String * 260
+    szexeFile(0 To 259) As Byte ' to reduce heap churn - chatGPT
+    'szexeFile As String * 260
 End Type
 
 Private Const PROCESS_ALL_ACCESS = &H1F0FFF
@@ -45,7 +46,7 @@ Private hSnapshot As Long
 Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
 Private Declare Function ProcessFirst Lib "kernel32.dll" Alias "Process32First" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long
 Private Declare Function ProcessNext Lib "kernel32.dll" Alias "Process32Next" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long
-Private Declare Function CreateToolhelpSnapshot Lib "kernel32.dll" (ByVal lFlags As Long, ByRef lProcessID As Long) As Long ' Alias "CreateToolhelp32Snapshot"
+'Private Declare Function CreateToolhelpSnapshot Lib "kernel32.dll" (ByVal lFlags As Long, ByRef lProcessID As Long) As Long ' Alias "CreateToolhelp32Snapshot"
 Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long
 Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
@@ -158,7 +159,7 @@ End Type
 Private Declare Function SHBrowseForFolderA Lib "shell32.dll" (binfo As BROWSEINFO) As Long
 Private Declare Function SHGetPathFromIDListA Lib "shell32.dll" (ByVal pidl&, ByVal szPath$) As Long
 Private Declare Function CoTaskMemFree Lib "ole32.dll" (lp As Any) As Long
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 ' APIs and structures for opening a common dialog box to select files without OCX dependencies STARTS
 
 ' Rocketdock compatible icon global variables START
@@ -271,7 +272,7 @@ Public sAllDrives As String
 'Public Const SEE_MASK_FLAG_NO_UI As Long = &H400
 '
 'Public Declare Function ShellExecuteEx Lib "shell32.dll" Alias "ShellExecuteExA" (lpExecInfo As SHELLEXECUTEINFO) As Long
-Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 ' APIs for asynch. shell command functions END
 
 ' APIs for useful functions START
@@ -298,7 +299,7 @@ Private Declare Function GetDriveTypeA Lib "kernel32" (ByVal nDrive As String) A
 Public storeWindowHwnd As Long '.nn
 
 ' .05 DAEB 01/04/2021 common.bas Added declaration to allow replacement of some modal msgbox with the non-modal versions
-Public Declare Function MessageBox Lib "user32" Alias "MessageBoxA" (ByVal hWnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
+Public Declare Function MessageBox Lib "user32" Alias "MessageBoxA" (ByVal hwnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
 
 ' Flag for debug mode '.06 DAEB 19/04/2021 common.bas moved to the common area so that it can be used by each of the utilities
 Private mbDebugMode As Boolean ' .30 DAEB 03/03/2021 frmMain.frm replaced the inIDE function that used a variant to one without
@@ -926,11 +927,13 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformChe
                             checkAndKill = confirmEachKill(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode)
                         End If
                     End If
+                    Call CloseHandle(processToKill)
             End If
             RProcessFound = ProcessNext(thisHSnapshot, thisUProcess)
             
           Loop While RProcessFound
           Call CloseHandle(thisHSnapshot)
+          
     End If
 
 
@@ -944,46 +947,7 @@ checkAndKill_Error:
 End Function
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : getExePathFromPID
-' Author    : beededea
-' Date      : 25/08/2020
-' Purpose   : getting the full path of a running process is not as easy as you'd expect
-'---------------------------------------------------------------------------------------
-'
-Public Function getExePathFromPID(ByVal idProc As Long) As String
-    Dim sBuf As String:  sBuf = vbNullString
-    Dim sChar As Long: sChar = 0
-    Dim useloop As Integer: useloop = 0
-    Dim hProcess As Long: hProcess = 0
-    
-    On Error GoTo getExePathFromPID_Error
 
-    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0, idProc)
-    If hProcess Then
-        sBuf = String$(260, vbNullChar)
-        sChar = GetProcessImageFileName(hProcess, sBuf, 260)
-        If sChar Then
-            sBuf = NoNulls(sBuf)
-            ' this loop replaces the internal windows volume name with the legacy naming convention, ie. C:\, D:\ &c
-            For useloop = 1 To lstDevicesListCount
-                If InStr(1, sBuf, lstDevices(1, useloop)) > 0 Then
-                    sBuf = Replace(sBuf, lstDevices(1, useloop), Chr$(lstDevices(0, useloop)) & ":")
-                    Exit For
-                End If
-            Next useloop
-            getExePathFromPID = sBuf
-        End If
-        CloseHandle hProcess
-    End If
-
-   On Error GoTo 0
-   Exit Function
-
-getExePathFromPID_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getExePathFromPID of Module common"
-End Function
 
 '---------------------------------------------------------------------------------------
 ' Procedure : NoNulls
@@ -1335,13 +1299,13 @@ End Function
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Function BrowseCallbackProc(ByVal hWnd&, ByVal Msg&, ByVal lp&, ByVal initDir$) As Long
+Private Function BrowseCallbackProc(ByVal hwnd&, ByVal Msg&, ByVal lp&, ByVal initDir$) As Long
    Const BFFM_INITIALIZED As Long = 1
    Const BFFM_SETSELECTION As Long = &H466
    On Error GoTo BrowseCallbackProc_Error
 
    If (Msg = BFFM_INITIALIZED) And (initDir <> vbNullString) Then
-      Call SendMessage(hWnd, BFFM_SETSELECTION, 1, ByVal initDir$)
+      Call SendMessage(hwnd, BFFM_SETSELECTION, 1, ByVal initDir$)
    End If
    BrowseCallbackProc = 0
 
@@ -1717,13 +1681,15 @@ End Function
 ' Procedure : IsRunning
 ' Author    : beededea
 ' Date      : 21/09/2019
-' Purpose   : determines if a process is running or not
+' Purpose   : determines if a process is running or not, takes a system snapshot, loops through all
+'             processes until it finds a match, then stops checking, returns a VB6 boolean as to
+'             whether the named process is running and also the processID.
 '---------------------------------------------------------------------------------------
 '
 Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID As Long) As Boolean
 
     Dim AppCount As Integer: AppCount = 0
-    Dim RProcessFound As Long: RProcessFound = 0
+    Dim RProcessFound As Long: RProcessFound = 0 ' API returns a non-VB6 boolean 0 or 1
     Dim SzExename As String: SzExename = vbNullString
     Dim ExitCode As Long: ExitCode = 0
     Dim procId As Long: procId = 0
@@ -1732,15 +1698,13 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
-        
     Dim thisHSnapshot As Long: thisHSnapshot = 0
     Dim thisUProcess As PROCESSENTRY32
-
 
     On Error GoTo IsRunning_Error
     'If debugFlg = 1 Then debugLog "%IsRunning"
     
-    ' ignore a Windows binary that can persist
+    ' ignore a Windows binary type that can persist
     If InStr(LCase$(NameProcess), "rundll32.exe") > 0 Then
         IsRunning = False
         Exit Function
@@ -1749,29 +1713,42 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
     If NameProcess <> vbNullString Then
             AppCount = 0
                      
+            ' the target is a CLSID so invalid
             If InStr(NameProcess, "::{") > 0 Then
                 IsRunning = False
-                Exit Function  ' the target is a CLSID so invalid
+                Exit Function
             End If
 
+            ' extract just filename of the binary supplied from the stored process array
             binaryName = getFileNameFromPath(NameProcess)
-            'If binaryName = vbNullString Then Exit Function
             
-            ' extract just folder name of the binary in the stored process array
+            ' extract just folder name of the binary supplied from the stored process array
             folderName = getFolderNameFromPath(NameProcess)
+            
+            ' no binary name, the target is a folder so invalid
             If binaryName = "" Then
                 IsRunning = False
-                Exit Function  ' the target is a folder so also invalid
+                Exit Function
             End If
             
+            ' normalise and extract the binary name alone and test for a match
+            binaryName = LCase$(binaryName)
+            
+            ' initialise the dwSize member of the PROCESSENTRY32, required for ProcessFirst
             thisUProcess.dwSize = Len(thisUProcess)
+            
+            ' Takes a snapshot of the specified processes, as well as the heaps, modules, and threads used by these processes.
             thisHSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0&)
+            
+            ' Provides a pointer thisUProcess giving information about the first process encountered in the system snapshot.
             RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
+            
+            ' loop through all subsequent process entries in the snapshot
             Do
-                i = InStr(1, thisUProcess.szexeFile, Chr$(0))
+                ' extract the binary name alone and test for a match
+                i = InStr(1, thisUProcess.szexeFile, Chr$(0)) ' up until the null
                 SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
-                
-                If SzExename = LCase$(binaryName) Then
+                If SzExename = binaryName Then
 
                         AppCount = AppCount + 1
                         procId = thisUProcess.th32ProcessID
@@ -1779,21 +1756,89 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
                         ' extract the folder name of the running binary that appears to be a match, we do this for confirmation purposes
                         runningProcessFolder = getFolderNameFromPath(getExePathFromPID(procId))
                         
-                        ' some processes can only be interrogated when running with admin
+                        ' the folder path of some processes can only be interrogated when running with admin rights
                         If runningProcessFolder = vbNullString Then
-                                IsRunning = True
-                                processID = procId
+                            IsRunning = True
+                            processID = procId
                         Else
                             ' if we have an extracted path then we need to compare it with our stored folder path name
                             If LCase$(runningProcessFolder) = LCase$(folderName) Then
                                 IsRunning = True
                                 processID = procId
                             Else
-                                'MsgBox runningProcessFolder & " " & binaryName
                                 IsRunning = False
                             End If
                         End If
                         
+                        GoTo Cleanup
+                End If
+                
+                'Provides a pointer thisUProcess giving information about the next process recorded in the system snapshot
+                RProcessFound = ProcessNext(thisHSnapshot, thisUProcess)
+    
+            Loop While RProcessFound ' bool 0/1
+    End If
+
+Cleanup:
+    If thisHSnapshot <> 0 Then CloseHandle thisHSnapshot
+    
+    On Error GoTo 0
+    Exit Function
+
+IsRunning_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure IsRunning of Module common"
+
+End Function
+
+'---------------------------------------------------------------------------------------
+' Procedure : getExePathFromPID
+' Author    : beededea
+' Date      : 25/08/2020
+' Purpose   : getting the full path of a running process is not as easy as you'd expect
+'---------------------------------------------------------------------------------------
+'
+Public Function getExePathFromPID(ByVal idProc As Long) As String
+    Dim sBuf As String:  sBuf = vbNullString
+    Dim sChar As Long: sChar = 0
+    Dim useloop As Integer: useloop = 0
+    Dim hProcess As Long: hProcess = 0
+    
+    On Error GoTo getExePathFromPID_Error
+
+    hProcess = OpenProcess(PROCESS_QUERY_INFORMATION Or PROCESS_VM_READ, 0, idProc)
+    If hProcess Then
+        sBuf = String$(260, vbNullChar)
+        sChar = GetProcessImageFileName(hProcess, sBuf, 260)
+        If sChar Then
+            sBuf = NoNulls(sBuf)
+            ' this loop replaces the internal windows volume name with the legacy naming convention, ie. C:\, D:\ &c
+            For useloop = 1 To lstDevicesListCount
+                If InStr(1, sBuf, lstDevices(1, useloop)) > 0 Then
+                    sBuf = Replace(sBuf, lstDevices(1, useloop), Chr$(lstDevices(0, useloop)) & ":")
+                    Exit For
+                End If
+            Next useloop
+            getExePathFromPID = sBuf
+        End If
+        CloseHandle hProcess
+    End If
+    
+Cleanup:
+    If hProcess <> 0 Then CloseHandle hProcess
+     
+    On Error GoTo 0
+    Exit Function
+
+getExePathFromPID_Error:
+
+    Resume Cleanup
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getExePathFromPID of Module common"
+End Function
+
+
+
 '                        If NameProcess = "C:\Program Files\CPUID\CPU-Z\cpuz.exe" Then
 '                            If runningProcessFolder = vbNullString Then
 '                                MsgBox "error obtaining runningProcessFolder from " & aa
@@ -1808,25 +1853,6 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
 '                            'MsgBox runningProcessFolder & " " & binaryName
 '                            IsRunning = False
 '                        End If
-                        
-                        CloseHandle (thisHSnapshot)
-                        Exit Function
-                End If
-                RProcessFound = ProcessNext(thisHSnapshot, thisUProcess)
-    
-            Loop While RProcessFound
-            Call CloseHandle(thisHSnapshot)
-    End If
-
-
-   On Error GoTo 0
-   Exit Function
-
-IsRunning_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure IsRunning of Module common"
-
-End Function
 
 ' .02 STARTS DAEB 25/01/2021 Moved from mdlmain.bas to common to ensure the checkSteamyDockInstalled subroutine can be run from anywhere, specifically for the variable sdAppPath
 '---------------------------------------------------------------------------------------

@@ -151,7 +151,7 @@ Public Enum NOTIFY_EVENTS
 End Enum
 
 Declare Sub SendMessageTimeout Lib "user32" Alias "SendMessageTimeoutA" ( _
-    ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, _
+    ByVal hwnd As Long, ByVal Msg As Long, ByVal wParam As Long, _
     ByVal lParam As String, ByVal fuFlags As Long, ByVal uTimeout As Long, _
     pdwResult As Long)
 
@@ -166,7 +166,7 @@ Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess 
 Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
 Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
-Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
+Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
 
 Private Const PROCESS_ALL_ACCESS = &H1F0FFF
 
@@ -1064,6 +1064,8 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
                 
                 ' here we kill explorer.exe using the process handle
                 retval = TerminateProcess(ProcessHandle, ExitCode)
+                
+                ' now tidy up
                 CloseHandle ProcessHandle
                 
                 ' if explorer still not found after 1.5 seconds then restart explorer

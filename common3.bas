@@ -215,7 +215,7 @@ End Sub
 Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByVal writeArray As Boolean)
     
     Dim errCnt As Integer: errCnt = 0
-    Static writeDBFlag As Integer
+    Static writeDBErrorCount As Integer
         
     On Error GoTo writeIconSettingsIni_Error
    'If debugFlg = 1 Then debugLog "%writeIconSettingsIni"
@@ -226,11 +226,11 @@ Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByV
         'Call putIconSettings(iconNumberToWrite)
         
         ' check to see if there have been any prior errors reading records from the db, if so, don't read any more records
-        If writeDBFlag > 0 Then Exit Sub
+        If writeDBErrorCount > 0 Then Exit Sub
         
          ' write the icon data to the SQLite database with error check returned
         errCnt = putIconSettingsIntoDatabase(iconNumberToWrite)
-        writeDBFlag = writeDBFlag + errCnt
+        writeDBErrorCount = writeDBErrorCount + errCnt
         
         ' the array cache was used for all the variables to speed up access when reading/writing the settings file
         ' this was due to using a settings.ini file using Windows APIs to read/write (very slow indeed)

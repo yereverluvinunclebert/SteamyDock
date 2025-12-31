@@ -992,8 +992,8 @@ Private Declare Function SetProcessDpiAwareness Lib "shcore.dll" (ByVal Value As
 
 Private Declare Function BitBlt Lib "gdi32" ( _
     ByVal hDestDC As Long, _
-    ByVal X As Long, _
-    ByVal Y As Long, _
+    ByVal x As Long, _
+    ByVal y As Long, _
     ByVal nWidth As Long, _
     ByVal nHeight As Long, _
     ByVal hSrcDC As Long, _
@@ -1008,16 +1008,16 @@ Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" ( _
 ) As Long
  
 Private Declare Function GetWindowDC Lib "user32" ( _
-    ByVal hWnd As Long _
+    ByVal hwnd As Long _
 ) As Long
  
 Private Declare Function GetWindowRect Lib "user32" ( _
-    ByVal hWnd As Long, _
+    ByVal hwnd As Long, _
     ByRef lpRect As RECT _
 ) As Long
  
 Private Declare Function ReleaseDC Lib "user32" ( _
-    ByVal hWnd As Long, _
+    ByVal hwnd As Long, _
     ByVal hDC As Long _
 ) As Long
  
@@ -1317,7 +1317,7 @@ End Sub
 ' Purpose   : We handle the mouse events during mouseUp, we only set some states here
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
 
     On Error GoTo Form_MouseDown_Error
     
@@ -1358,7 +1358,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
     Dim timeDiff As Long: timeDiff = 0
     Dim tickCount As Long: tickCount = 0
     
@@ -1667,7 +1667,7 @@ End Sub
 ' Purpose   : this is the equivalent of an icon MouseUp event, a click anywhere on the form
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
 
    On Error GoTo Form_MouseUp_Error
 
@@ -1970,7 +1970,7 @@ End Function
     'Files = 15 (vbCFFiles)
     'RTF = -16639
     '
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
    
     Dim suffix As String: suffix = vbNullString
     Dim FileName As String: FileName = vbNullString
@@ -1996,7 +1996,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     ' ie. don't pop it up if layered underneath everything as no-one will see the msgbox
     If rDLockIcons = 1 And (rDzOrderMode = "0" Or rDzOrderMode = "1") Then
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Sorry, the dock is currently locked, so drag and drop is disabled!", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Sorry, the dock is currently locked, so drag and drop is disabled!", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Sorry, the dock is currently locked, so drag and drop is disabled!"
         Exit Sub
     End If
@@ -2013,7 +2013,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     ' ie. don't pop it up if layered underneath everything as no-one will see the msgbox
     If Data.Files.Count > 1 And (rDzOrderMode = "0" Or rDzOrderMode = "1") Then
        ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.Count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.Count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count
         Exit Sub
     End If
@@ -2234,7 +2234,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         
     Else
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, " unknown file Object OLE dropped onto SteamyDock.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, " unknown file Object OLE dropped onto SteamyDock.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         'MsgBox " unknown file Object OLE dropped onto SteamyDock."
     End If
     
@@ -2258,7 +2258,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
    On Error GoTo Form_OLEDragOver_Error
 
     If rDLockIcons = 0 Then
@@ -2344,7 +2344,7 @@ Private Sub initiatedExplorerTimer_Timer()
     Next useloop
     
     ' restart this timer now work is done
-    initiatedExplorerTimer.Enabled = True
+    Call enableInitiatedExplorerTimer
 
    On Error GoTo 0
    Exit Sub
@@ -2408,7 +2408,7 @@ Private Sub initiatedProcessTimer_Timer()
     Next useloop
     
     ' restart the timer
-    initiatedProcessTimer.Enabled = True
+    Call enableInitiatedProcessTimer
 
    On Error GoTo 0
    Exit Sub
@@ -2440,11 +2440,11 @@ Private Sub positionZTimer_Timer()
     
     If dockZorder = "high" Then
         If rDzOrderMode = "0" Then
-            SetWindowPos dock.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+            SetWindowPos dock.hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
         ElseIf rDzOrderMode = "1" Then
-            SetWindowPos dock.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+            SetWindowPos dock.hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
         ElseIf rDzOrderMode = "2" Then
-            SetWindowPos dock.hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
+            SetWindowPos dock.hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
         End If
         dockZorder = "low"
     End If
@@ -2675,7 +2675,7 @@ Private Sub startAnimating()
         
         animateTimer.Enabled = True
        
-        SetWindowPos Me.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_SHOWWINDOW Or SWP_NOMOVE Or SWP_NOSIZE
+        SetWindowPos Me.hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_SHOWWINDOW Or SWP_NOMOVE Or SWP_NOSIZE
         
         '.nn Set the cursor to a pointer, if for some reason it has been set to anything other than a normal pointy cursor
         lngCursor = LoadCursor(0, 32512&)
@@ -2768,11 +2768,11 @@ Private Sub animateTimer_Timer()
             responseTimer.Enabled = True
 '            Exit Sub             ' if the timer that does the bouncing is running then we need to animate even if the mouse is stationary...
         'End If
-        If savApIMouseX = apiMouse.X And savApIMouseY <> apiMouse.Y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
+        If savApIMouseX = apiMouse.x And savApIMouseY <> apiMouse.y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
     End If
 
-    savApIMouseY = apiMouse.Y
-    savApIMouseX = apiMouse.X
+    savApIMouseY = apiMouse.y
+    savApIMouseX = apiMouse.x
     
     showsmall = True
     bDrawn = False
@@ -2783,11 +2783,11 @@ Private Sub animateTimer_Timer()
         'insideDock = apiMouse.X >= leftMostIconPositionPxls And apiMouse.X <= rightMostIconPositionPxls
         
         ' determines the icon index, ie. which icon is clicked upon
-        insideIcon = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
+        insideIcon = apiMouse.x >= iconStoreLeftPixels(useloop) And apiMouse.x <= iconStoreRightPixels(useloop)
         
         If insideIcon Then
             IconIndex = useloop ' this is the current icon number being hovered over
-            iconXOffset = apiMouse.X - iconStoreLeftPixels(useloop)
+            iconXOffset = apiMouse.x - iconStoreLeftPixels(useloop)
             Exit For ' as soon as we have the index we no longer have to stay in the loop
         Else
             useloop = useloop
@@ -2859,7 +2859,7 @@ Private Sub updateScreenUsingGDIPBitmap()
     ' If the current position is not changing, pptDst can be NULL. It is null. We can play with it to move the screen
     
     'Update the specified whole window using the window handle (me.hwnd) selecting a handle to the bitmap (dc) and passing all the required characteristics
-    UpdateLayeredWindow Me.hWnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
+    UpdateLayeredWindow Me.hwnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
     
 '    ' delete temporary objects
 '    Call SelectObject(dcMemory, hOldBmp)
@@ -2936,7 +2936,7 @@ Private Sub sequentialBubbleAnimation()
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
         
         ' this is the actual line that does the main animation
-        dynamicSizeModifierPxls = ((apiMouse.X) - iconStoreLeftPixels(IconIndex)) / (bumpFactor)
+        dynamicSizeModifierPxls = ((apiMouse.x) - iconStoreLeftPixels(IconIndex)) / (bumpFactor)
     
     Else
         usedMenuFlag = False ' the menu causes the mouse to move far away from the icon centre and so icon sizing was massive
@@ -2983,7 +2983,7 @@ Private Sub sequentialBubbleAnimation()
     ' .nn Changed or added as part of the drag and drop functionality
     ' 12/05/2021 .nn DAEB Displays a copy of the icon that is being dragged at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
-        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
+        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplayKey, (apiMouse.x - iconSizeLargePxls / 2), (apiMouse.y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
     End If
     
     Call updateScreenUsingGDIPBitmap
@@ -4118,7 +4118,7 @@ tryMSCFullPAth:
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
         Else
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-            MessageBox Me.hWnd, thisCommand & " - this batch file does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+            MessageBox Me.hwnd, thisCommand & " - this batch file does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
             ' MsgBox (thisCommand & " - this batch file does not exist")
         End If
         Exit Sub
@@ -4156,7 +4156,7 @@ tryMSCFullPAth:
                 Exit Sub
             ElseIf validURL = False Then
                 ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-                MessageBox Me.hWnd, thisCommand & " - That isn't valid as a target file or a folder, or it doesn't exist - so SteamyDock can't run it.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+                MessageBox Me.hwnd, thisCommand & " - That isn't valid as a target file or a folder, or it doesn't exist - so SteamyDock can't run it.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
             End If
         Next useloop
     End If
@@ -4224,7 +4224,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
 '    CloseHandle (uShell.hProcess)
    
     ' run the selected program
-    Call ShellExecute(hWnd, userLevel, sCommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
+    Call ShellExecute(hwnd, userLevel, sCommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
         
     userLevel = "open" ' return to default
     
@@ -4237,8 +4237,8 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
             initiatedProcessArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
             Call checkDockProcessesRunning ' trigger a test of all running processes
             
-            initiatedProcessTimer.Enabled = True
-            processTimer.Enabled = True
+            Call enableInitiatedProcessTimer
+            'processTimer.Enabled = True ' not commented by me during this test
         Else
             ' turn off the two timers that auto populate the arrays that show whether the explorer instances are running
             initiatedExplorerTimer.Enabled = False
@@ -4249,8 +4249,8 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
             Call checkExplorerRunning
             
             ' turn the two timers that auto populate the arrays back on again
-            initiatedExplorerTimer.Enabled = True
-            explorerTimer.Enabled = True
+            Call enableInitiatedExplorerTimer
+            Call enableExplorerTimer ' dean RAM
         End If
     End If
     
@@ -4306,8 +4306,8 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
         initiatedProcessArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
         Call checkDockProcessesRunning ' trigger a test of all running processes
         
-        initiatedProcessTimer.Enabled = True
-        processTimer.Enabled = True
+        Call enableInitiatedProcessTimer
+        Call enableProcessTimer
     Else
         ' turn off the two timers that auto populate the arrays that show whether the explorer instances are running
         initiatedExplorerTimer.Enabled = False
@@ -4318,14 +4318,14 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
         Call checkExplorerRunning
         
         ' turn the two timers that auto populate the arrays back on again
-        initiatedExplorerTimer.Enabled = True
-        explorerTimer.Enabled = True
+        Call enableInitiatedExplorerTimer
+        Call enableExplorerTimer ' dean RAM
     End If
 
     ' call up a dialog box if required
     If sUseDialogAfter = "1" Then
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hwnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -4864,7 +4864,7 @@ Public Sub shutDownGDIP()
 
     Call SelectObject(dcMemory, hOldBmp) ' releases memory for GDI handles
     Call DeleteObject(hBmpMemory)  ' the existing bitmap deleted
-    Call ReleaseDC(dock.hWnd, dcMemory)
+    Call ReleaseDC(dock.hwnd, dcMemory)
     Call DeleteDC(dcMemory)
     
     If gdipFullScreenBitmap Then
@@ -6014,16 +6014,16 @@ Private Sub setUpProcessTimers()
     explorerTimer.Interval = Val(rDRunAppInterval) * 1000
     
     If rDShowRunning = "1" Then
-        processTimer.Enabled = True
-        explorerTimer.Enabled = True
+        Call enableProcessTimer
+        Call enableExplorerTimer
     Else
         processTimer.Enabled = False
         explorerTimer.Enabled = False
     End If
     
-    initiatedProcessTimer.Enabled = True ' this was enabled by default on a 5 second timer but is now here with a reduced interval, this manual start giving time to the whole tool to get its stuff done before it runs.
-    initiatedExplorerTimer.Enabled = True
-    targetExistsTimer.Enabled = True
+    Call enableInitiatedProcessTimer  ' 130,944 - 135,640 ' this was enabled by default on a 5 second timer but is now here with a reduced interval, this manual start giving time to the whole tool to get its stuff done before it runs.
+    Call enableInitiatedExplorerTimer ' 131,276 - 142,608 overnight with a sleep
+    Call enabledTargetExistsTimer ' 131,600
     
    On Error GoTo 0
    Exit Sub
@@ -6796,7 +6796,13 @@ Private Sub sleepTimer_Timer()
         'MsgBox "System has just woken up from a sleep"
         'MessageBox Me.hwnd, "System has just woken up from a sleep - animatedIconsRaised =" & animatedIconsRaised, "SteamyDock Information Message", vbOKOnly
 
-        ' at this point we should lower the dock and redraw the small icons.
+        ' close and re-open the database to test RAM reduction
+'        Call closeDatabase
+'        Call connectSQLDatabase
+'
+'        Sleep 2000
+        
+        ' at this point we lower the dock and redraw the small icons.
         Call animateTimer_Timer
     End If
     
@@ -7733,7 +7739,7 @@ Private Sub captureWindow(ByVal thisWindowHWND As Long)
              0, _
              vbSrcCopy
  
-    ReleaseDC Me.hWnd, lhDC
+    ReleaseDC Me.hwnd, lhDC
     picture1.Refresh
 End Sub
 

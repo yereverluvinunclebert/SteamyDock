@@ -2,20 +2,28 @@
 
 -oOo-
 
-Overall status - Working, a good learning platform and it functions. New graphics method using classes for the main 3-5 icons retaining GDI+
-Operations to SQLite database in progress, all working, need to test working with iconSettings at the same time, testing for conflicts &c
-a few bugs overall, deletion and drag/drop can be slow to complete. New animations required. Multi-monitor.
+Overall status - Working, a good learning platform and the dock functions.
+
+o New graphics method using classes for the main 3-5 icons retaining GDI+  just starting this.
+o Operations to SQLite database in progress, all working, need to test working with iconSettings at the same time, testing for conflicts &c
+o Possible RAM leak or SQL eating up the RAM slowly
+o a Few bugs overall, deletion and drag/drop can be slowish to complete. New animations required. Multi-monitor.
+o new timer code implemented for in-code timers. Not yet utilised. May be used for the new icon class animation, unsure.
+o new scripting replacement code is available from Cristian Buse - Can replace the old scripting dictionary seamlessly. Not yet implemented. 
+o test the TB collection as a replacement as it takes PNGS by default - would reduce some of the dependency on GDI+
 
 
 ' Current Tasks:
 ' =============
 
+' fix the path to the database
 ' test if the updateCounter is being updated
 ' test regfree.bas to see if the VBSQL10.dll can be used regfree
 ' test using API declarations and alternative SQL dll to test speed
 ' test using RC sqlite.dll and compare speed
-' add a switch to enable/disable the random access data file & toggle databse access for testing speed.
-' fix the path to the database
+' add a switch to enable/disable the random access data file & toggle database access for testing speed and RAM usage.
+
+' Replace all the scripting.dictionary code with TB collections, faster and capable of loading PNGs without all the GDI+ stuff.
 
 ' remove the old text icon entries in settings.ini
 

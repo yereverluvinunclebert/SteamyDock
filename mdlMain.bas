@@ -27,7 +27,7 @@ Option Explicit
 '------------------------------------------------------------
 
 ' APIs and variables for querying processes START
-Type PROCESSENTRY32
+Private Type PROCESSENTRY32
     dwSize As Long
     cntUsage As Long
     th32ProcessID As Long
@@ -37,7 +37,8 @@ Type PROCESSENTRY32
     th32ParentProcessID As Long
     pcPriClassBase As Long
     dwFlags As Long
-    szexeFile As String * 260
+    'szexeFile As String * 260
+    szexeFile(0 To 259) As Byte ' to reduce heap churn - chatGPT
 End Type
 
 Private Const PROCESS_ALL_ACCESS = &H1F0FFF
@@ -48,7 +49,7 @@ Private hSnapshot As Long
 Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
 Private Declare Function ProcessFirst Lib "kernel32.dll" Alias "Process32First" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long
 Private Declare Function ProcessNext Lib "kernel32.dll" Alias "Process32Next" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long
-Private Declare Function CreateToolhelpSnapshot Lib "kernel32.dll" (ByVal lFlags As Long, ByRef lProcessID As Long) As Long ' Alias "CreateToolhelp32Snapshot"
+'Private Declare Function CreateToolhelpSnapshot Lib "kernel32.dll" (ByVal lFlags As Long, ByRef lProcessID As Long) As Long ' Alias "CreateToolhelp32Snapshot"
 Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long
 Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
@@ -57,7 +58,7 @@ Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 ' APIs for querying processes END
 
 'Public Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal Image As Long, ByVal filename As String, clsidEncoder As CLSID, encoderParams As Any) As GpStatus
-Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal Image As Long, ByVal X As Single, ByVal Y As Single) As Long
+Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal Image As Long, ByVal x As Single, ByVal y As Single) As Long
 'Public Declare Function GdipLoadImageFromFile Lib "GdiPlus.dll" (ByVal filename As Long, GpImage As Long) As Long
 'Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClassName As String, ByVal lpszWindowName As String) As Long
 
@@ -76,13 +77,13 @@ Public Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
 Public Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlob&, ByVal fDeleteOnRelease As Long, ppstm As stdole.IUnknown) As Long
 Public Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
 
-Public Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Public Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long) As Long
 Public Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Public Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Public Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
-Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
-Public Declare Function UpdateLayeredWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal hdcDst As Long, pptDst As Any, psize As Any, ByVal hdcSrc As Long, pptSrc As Any, ByVal crKey As Long, ByRef pblend As BLENDFUNCTION, ByVal dwFlags As Long) As Long
+Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
+Public Declare Function UpdateLayeredWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal hdcDst As Long, pptDst As Any, psize As Any, ByVal hdcSrc As Long, pptSrc As Any, ByVal crKey As Long, ByRef pblend As BLENDFUNCTION, ByVal dwFlags As Long) As Long
 Public Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 ' API to obtain correct screen width (to correct VB6 bug)
 Public Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
@@ -115,7 +116,7 @@ Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As 
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, encoders As Any) As GpStatus
 ' APIs image cropping
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
-Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long, ByVal PixelFormat As Long, ByVal srcBitmap As Long, dstBitmap As Long) As GpStatus
+Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long, ByVal PixelFormat As Long, ByVal srcBitmap As Long, dstBitmap As Long) As GpStatus
 
 'Public APIs for GDI+
 
@@ -131,7 +132,7 @@ Public Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal fontFamily As 
 Public Declare Function GdipDeleteGraphics Lib "GdiPlus.dll" (ByVal Graphics As Long) As Long
 Public Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal StringFormat As Long) As Long
 Public Declare Function GdipDisposeImage Lib "GdiPlus.dll" (ByVal Image As Long) As Long
-Public Declare Function GdipDrawImageRectI Lib "GdiPlus.dll" (ByVal Graphics As Long, ByVal img As Long, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long) As Long
+Public Declare Function GdipDrawImageRectI Lib "GdiPlus.dll" (ByVal Graphics As Long, ByVal img As Long, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long) As Long
 Public Declare Function GdipDrawImageRectRect Lib "GdiPlus.dll" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal SrcX As Single, ByVal SrcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal CallbackData As Long) As Long
 Public Declare Function GdipDrawString Lib "gdiplus" (ByVal Graphics As Long, ByVal Str As String, ByVal Length As Long, ByVal thefont As Long, layoutRect As RECTF, ByVal StringFormat As Long, ByVal brush As Long) As Long
 Public Declare Function GdipGetImageHeight Lib "GdiPlus.dll" (ByVal Image As Long, Height As Long) As Long
@@ -171,31 +172,31 @@ Public Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal String
 
 ' Private APIs and vars for enumerating running windows START
 Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
-Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetParent Lib "user32.dll" (ByVal hWnd As Long) As Long
-Private Declare Function GetWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
-Private Declare Function GetAncestor Lib "user32" (ByVal hWnd As Long, ByVal gaFlags As Long) As Long
-Private Declare Function IsTopWIndow Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function GetParent Lib "user32.dll" (ByVal hwnd As Long) As Long
+Private Declare Function GetWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function GetAncestor Lib "user32" (ByVal hwnd As Long, ByVal gaFlags As Long) As Long
+Private Declare Function IsTopWIndow Lib "user32" (ByVal hwnd As Long) As Long
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 ' Private APIs and vars for enumerating running windows END
 
 ' Public APIs and vars for enumerating running windows START
-Public Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
-Public Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
-Public Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
+Public Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
+Public Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hwnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
+Public Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hwnd As Long) As Long
 
 ' .38 DAEB 18/03/2021 frmMain.frm utilised SetActiveWindow to give window focus without bringing it to fore
-Public Declare Function SetActiveWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
-Public Declare Function IsIconic Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function SetActiveWindow Lib "user32.dll" (ByVal hwnd As Long) As Long
+Public Declare Function IsIconic Lib "user32" (ByVal hwnd As Long) As Long
     
 ' .25 DAEB frmMain.bas 10/02/2021 added API and vars to test to see if a window is zoomed
-Public Declare Function IsZoomed Lib "user32" (ByVal hWnd As Long) As Long
-Public Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
-Public Declare Function ShowWindowAsync Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Integer) As Boolean
+Public Declare Function IsZoomed Lib "user32" (ByVal hwnd As Long) As Long
+Public Declare Function ShowWindow Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Long) As Long
+Public Declare Function ShowWindowAsync Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Integer) As Boolean
 Public Declare Function AttachThreadInput Lib "user32" (ByVal idAttach As Long, ByVal idAttachTo As Long, ByVal fAttach As Long) As Long
 Public Declare Function GetForegroundWindow Lib "user32" () As Long
 ' .39 DAEB 18/03/2021 frmMain.frm utilised BringWindowToTop instead of SetWindowPos & HWND_TOP as that was used by a C program that worked perfectly.
-Public Declare Function BringWindowToTop Lib "user32.dll" (ByVal hWnd As Long) As Long
+Public Declare Function BringWindowToTop Lib "user32.dll" (ByVal hwnd As Long) As Long
 
 'APIs and vars for enumerating running windows ENDS
 
@@ -278,8 +279,8 @@ Public Type GDIPLUS_STARTINPUT
 End Type
 
 Public Type POINTAPI
-    X As Long
-    Y As Long
+    x As Long
+    y As Long
 End Type
 
 Public Type RECTF
@@ -635,7 +636,7 @@ Public Function fTestCursorWithinDockYPosition() As Boolean
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
     If dockPosition = vbBottom Then
-        outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > rightMostIconPositionPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.y < dockYEntrancePoint Or apiMouse.x < leftMostIconPositionPxls Or apiMouse.x > rightMostIconPositionPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > rightMostIconPositionPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '            outsideDock = True
 '        Else
@@ -643,7 +644,7 @@ Public Function fTestCursorWithinDockYPosition() As Boolean
 '        End If
     End If
     If dockPosition = vbtop Then
-        outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.y > dockYEntrancePoint Or apiMouse.x < leftMostIconPositionPxls Or apiMouse.x > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     End If
     
     fTestCursorWithinDockYPosition = outsideDock ' return
@@ -871,6 +872,7 @@ Public Sub checkDockProcessesRunning()
     
     On Error GoTo checkDockProcessesRunning_Error
 
+    ' flag that tells other timers that this timer is doing something NOW
     gblProcessTimerRunning = True
     dock.processTimer.Enabled = False
         
@@ -885,8 +887,9 @@ Public Sub checkDockProcessesRunning()
         End If
     Next useloop
     
-    dock.processTimer.Enabled = True
-    gblProcessTimerRunning = False
+    ' restart the timer
+    Call enableProcessTimer
+    gblProcessTimerRunning = False ' we have finished, lower the flag
             
    On Error GoTo 0
    Exit Sub
@@ -897,6 +900,117 @@ checkDockProcessesRunning_Error:
 
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : enableProcessTimer
+' Author    : beededea
+' Date      : 28/12/2025
+' Purpose   : routine so that I can prevent the process timer being enabled elsewhere
+'             as it is started in several places
+'---------------------------------------------------------------------------------------
+'
+Public Sub enableProcessTimer()
+
+    On Error GoTo enableProcessTimer_Error
+
+    dock.processTimer.Enabled = True
+
+    On Error GoTo 0
+    Exit Sub
+
+enableProcessTimer_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure enableProcessTimer of Module mdlSdMain"
+End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : enableExplorerTimer
+' Author    : beededea
+' Date      : 28/12/2025
+' Purpose   : routine so that I can prevent the explorerTimer being enabled elsewhere
+'             as it is started in several places
+'---------------------------------------------------------------------------------------
+'
+Public Sub enableExplorerTimer()
+    On Error GoTo enableExplorerTimer_Error
+
+    dock.explorerTimer.Enabled = True
+
+    On Error GoTo 0
+    Exit Sub
+
+enableExplorerTimer_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure enableExplorerTimer of Module mdlSdMain"
+End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : enableInitiatedProcessTimer
+' Author    : beededea
+' Date      : 28/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub enableInitiatedProcessTimer()
+
+    On Error GoTo enableInitiatedProcessTimer_Error
+
+    dock.initiatedProcessTimer.Enabled = True
+
+    On Error GoTo 0
+    Exit Sub
+
+enableInitiatedProcessTimer_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure enableInitiatedProcessTimer of Module mdlSdMain"
+End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : enableInitiatedExplorerTimer
+' Author    : beededea
+' Date      : 28/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub enableInitiatedExplorerTimer()
+
+    On Error GoTo enableInitiatedExplorerTimer_Error
+
+    dock.initiatedExplorerTimer.Enabled = True
+
+    On Error GoTo 0
+    Exit Sub
+
+enableInitiatedExplorerTimer_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure enableInitiatedExplorerTimer of Module mdlSdMain"
+End Sub
+
+'---------------------------------------------------------------------------------------
+' Procedure : enabledTargetExistsTimer
+' Author    : beededea
+' Date      : 28/12/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub enabledTargetExistsTimer()
+
+    On Error GoTo enabledTargetExistsTimer_Error
+
+    dock.targetExistsTimer.Enabled = True
+
+    On Error GoTo 0
+    Exit Sub
+
+enabledTargetExistsTimer_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure enabledTargetExistsTimer of Module mdlSdMain"
+
+End Sub
 
 
 '---------------------------------------------------------------------------------------
@@ -924,6 +1038,7 @@ Public Sub checkExplorerRunning()
     
     ' stop this timer during the run
     dock.explorerTimer.Enabled = False
+    ' flag that tells other timers that this timer is doing something NOW
     gblExplorerTimerRunning = True
     
     ' put all the currently open explorer windows into an array so that they can be quickly referenced
@@ -948,7 +1063,7 @@ Public Sub checkExplorerRunning()
     Next windowLoop
     
     ' restart this timer when complete
-    dock.explorerTimer.Enabled = True
+    Call enableExplorerTimer
     gblExplorerTimerRunning = False
         
    On Error GoTo 0
@@ -1043,7 +1158,7 @@ End Sub
 '
 '---------------------------------------------------------------------------------------
 '
-Private Function fEnumWindowsCallBack(ByVal hWnd As Long, ByVal lParam As Long) As Long
+Private Function fEnumWindowsCallBack(ByVal hwnd As Long, ByVal lParam As Long) As Long
 Dim lReturn     As Long
 Dim lExStyle    As Long
 Dim bNoOwner    As Boolean
@@ -1064,26 +1179,26 @@ On Error GoTo fEnumWindowsCallBack_Error
 
 pid = lParam
 
-If hWnd <> dock.hWnd Then
+If hwnd <> dock.hwnd Then
         ' check if window is visible or not
-        If IsWindowVisible(hWnd) Then
+        If IsWindowVisible(hwnd) Then
             ' This is a top-level window. See if it has the target instance handle.
             ' test_pid is the process ID returned for the window handle
             
             ' GetWindowThreadProcessId finds the process ID given for the thread which owns the window
-            Thread_ID = GetWindowThreadProcessId(hWnd, test_pid)
+            Thread_ID = GetWindowThreadProcessId(hwnd, test_pid)
                       
             If test_pid = pid Then
-                If GetParent(hWnd) = 0 Then
-                    bNoOwner = (GetWindow(hWnd, GW_OWNER) = 0)
-                    lExStyle = GetWindowLong(hWnd, GWL_EXSTYLE)
+                If GetParent(hwnd) = 0 Then
+                    bNoOwner = (GetWindow(hwnd, GW_OWNER) = 0)
+                    lExStyle = GetWindowLong(hwnd, GWL_EXSTYLE)
 
                         If (((lExStyle And WS_EX_TOOLWINDOW) = 0) And bNoOwner) Or _
                             ((lExStyle And WS_EX_APPWINDOW) And Not bNoOwner) Then
         
-                                hWnd = GetAncestor(hWnd, GA_ROOT)
+                                hwnd = GetAncestor(hwnd, GA_ROOT)
         
-                                storeWindowHwnd = hWnd ' a bit of a kludge, a global var that carries the window handle to the calling function
+                                storeWindowHwnd = hwnd ' a bit of a kludge, a global var that carries the window handle to the calling function
                                 Exit Function
                         End If
                 End If
@@ -2831,8 +2946,8 @@ Public Sub setWindowCharacteristics()
     If debugflg = 1 Then debugLog "% sub setWindowCharacteristics"
     
     'set the transparency of the underlying form with click through
-    windowLngReturn = GetWindowLong(dock.hWnd, GWL_EXSTYLE)
-    SetWindowLong dock.hWnd, GWL_EXSTYLE, windowLngReturn Or WS_EX_LAYERED
+    windowLngReturn = GetWindowLong(dock.hwnd, GWL_EXSTYLE)
+    SetWindowLong dock.hwnd, GWL_EXSTYLE, windowLngReturn Or WS_EX_LAYERED
     
     ' determine the z position of the dock with respect to other application and o/s windows.
     ' this also changes the window positioning and size:
@@ -2844,20 +2959,20 @@ Public Sub setWindowCharacteristics()
     ' we may have to set GDI to the width of the whole virtual screen
     
     If rDzOrderMode = "0" Then
-        SetWindowPos dock.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+        SetWindowPos dock.hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
     ElseIf rDzOrderMode = "1" Then
-        SetWindowPos dock.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+        SetWindowPos dock.hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
     ElseIf rDzOrderMode = "2" Then
-        SetWindowPos dock.hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
+        SetWindowPos dock.hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
     End If
     
     ' point structure that specifies the location of the layer updated in UpdateLayeredWindow
-    apiPoint.X = 0
-    apiPoint.Y = 0
+    apiPoint.x = 0
+    apiPoint.y = 0
     
     ' point structure that specifies the size of the window in pixels
-    apiWindow.X = screenWidthPixels ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    apiWindow.Y = screenHeightPixels  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    apiWindow.x = screenWidthPixels ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    apiWindow.y = screenHeightPixels  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     
     ' the third parameter to UpdateLayeredWindow is a pointer to a structure that specifies the new screen position of the layered window.
     ' If the current position is not changing, pptDst can be NULL. It is null.
@@ -3115,7 +3230,7 @@ End Sub
 ' Purpose   : .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
 '---------------------------------------------------------------------------------------
 '
-Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As Long) As Boolean
+Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hwnd As Long) As Boolean
 
     Dim Count As Long: Count = 0
     Dim hIcon() As Long: 'hIcon() = 0
@@ -3134,7 +3249,7 @@ Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As 
         pid = GetPidByWindow(hIcon(i))
         'if the extracted pid matches the supplied processID then we have the window handle
         If pid = processID Then
-            hWnd = hIcon(i)
+            hwnd = hIcon(i)
             Exit Function
         End If
     Next
@@ -3286,6 +3401,7 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
             
           Loop While RProcessFound
           Call CloseHandle(thisHSnapshot)
+          Call CloseHandle(processToKill)
     End If
 
 
@@ -3316,7 +3432,7 @@ Public Sub restartSteamydock()
         If userLevel <> "runas" Then userLevel = "open"
         Call dock.runCommand("focus", thisCommand)
     Else
-         MessageBox dock.hWnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox dock.hwnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
     End If
 
 
@@ -3446,7 +3562,7 @@ End Sub
 Public Function executeSettings() As Long
    On Error GoTo executeSettings_Error
 
-    executeSettings = ShellExecute(dock.hWnd, "runas", "c:\windows\explorer.exe", vbNullString, vbNullString, 1)
+    executeSettings = ShellExecute(dock.hwnd, "runas", "c:\windows\explorer.exe", vbNullString, vbNullString, 1)
 
    On Error GoTo 0
    Exit Function

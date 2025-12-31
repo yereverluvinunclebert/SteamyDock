@@ -1,12 +1,12 @@
 VERSION 5.00
 Begin VB.Form hiddenForm 
    Caption         =   "do not delete me as I am a temporary structure used to hold a picbox"
-   ClientHeight    =   8430
+   ClientHeight    =   6825
    ClientLeft      =   60
    ClientTop       =   345
    ClientWidth     =   9855
    LinkTopic       =   "Form1"
-   ScaleHeight     =   8430
+   ScaleHeight     =   6825
    ScaleWidth      =   9855
    StartUpPosition =   3  'Windows Default
    Visible         =   0   'False
@@ -14,8 +14,8 @@ Begin VB.Form hiddenForm
       Caption         =   "Update single record"
       Height          =   705
       Left            =   2280
-      TabIndex        =   18
-      Top             =   7470
+      TabIndex        =   17
+      Top             =   5790
       Width           =   1455
    End
    Begin VB.CommandButton btnWriteRandom 
@@ -23,16 +23,16 @@ Begin VB.Form hiddenForm
       Enabled         =   0   'False
       Height          =   705
       Left            =   540
-      TabIndex        =   17
-      Top             =   7470
+      TabIndex        =   16
+      Top             =   5790
       Width           =   1455
    End
    Begin VB.TextBox txtSingleField 
       Enabled         =   0   'False
       Height          =   345
       Left            =   2760
-      TabIndex        =   16
-      Top             =   6720
+      TabIndex        =   15
+      Top             =   5040
       Width           =   3735
    End
    Begin VB.ComboBox cmbSingleFieldRecordNumber 
@@ -42,8 +42,8 @@ Begin VB.Form hiddenForm
       Left            =   2070
       List            =   "hiddenForm.frx":00B5
       Style           =   2  'Dropdown List
-      TabIndex        =   15
-      Top             =   6750
+      TabIndex        =   14
+      Top             =   5070
       Width           =   675
    End
    Begin VB.CommandButton lblGetField 
@@ -51,16 +51,16 @@ Begin VB.Form hiddenForm
       Enabled         =   0   'False
       Height          =   645
       Left            =   510
-      TabIndex        =   14
-      Top             =   6630
+      TabIndex        =   13
+      Top             =   4950
       Width           =   1485
    End
    Begin VB.CommandButton btnClose 
       Caption         =   "Close"
       Height          =   675
       Left            =   7830
-      TabIndex        =   13
-      Top             =   7500
+      TabIndex        =   12
+      Top             =   5820
       Width           =   1785
    End
    Begin VB.ComboBox cmbRecordNumber 
@@ -70,16 +70,16 @@ Begin VB.Form hiddenForm
       Left            =   2070
       List            =   "hiddenForm.frx":025A
       Style           =   2  'Dropdown List
-      TabIndex        =   12
-      Top             =   6030
+      TabIndex        =   11
+      Top             =   4350
       Width           =   675
    End
    Begin VB.TextBox txtSingleRecord 
       Enabled         =   0   'False
       Height          =   345
       Left            =   2760
-      TabIndex        =   11
-      Top             =   6030
+      TabIndex        =   10
+      Top             =   4350
       Width           =   3735
    End
    Begin VB.CommandButton lblGetRecord 
@@ -87,25 +87,17 @@ Begin VB.Form hiddenForm
       Enabled         =   0   'False
       Height          =   645
       Left            =   510
-      TabIndex        =   10
-      Top             =   5880
+      TabIndex        =   9
+      Top             =   4200
       Width           =   1485
    End
    Begin VB.CommandButton Command 
       Caption         =   "Kill .db "
       Height          =   615
       Left            =   3570
-      TabIndex        =   9
+      TabIndex        =   8
       Top             =   3300
       Width           =   1425
-   End
-   Begin VB.ListBox List1 
-      Enabled         =   0   'False
-      Height          =   1425
-      Left            =   510
-      TabIndex        =   4
-      Top             =   4230
-      Width           =   5985
    End
    Begin VB.CommandButton CommandClose 
       Caption         =   "Close.db"
@@ -146,7 +138,7 @@ Begin VB.Form hiddenForm
       Caption         =   "The buttons below will connect tot he db, clear it down and reload fresh from schema and close the db."
       Height          =   795
       Left            =   3240
-      TabIndex        =   8
+      TabIndex        =   7
       Top             =   2100
       Width           =   6345
    End
@@ -154,7 +146,7 @@ Begin VB.Form hiddenForm
       Caption         =   "0"
       Height          =   225
       Left            =   540
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   2940
       Width           =   4365
    End
@@ -162,7 +154,7 @@ Begin VB.Form hiddenForm
       Caption         =   $"hiddenForm.frx":034A
       Height          =   795
       Left            =   3180
-      TabIndex        =   6
+      TabIndex        =   5
       Top             =   1110
       Width           =   6345
    End
@@ -170,7 +162,7 @@ Begin VB.Form hiddenForm
       Caption         =   $"hiddenForm.frx":03D4
       Height          =   795
       Left            =   3240
-      TabIndex        =   5
+      TabIndex        =   4
       Top             =   360
       Width           =   6345
    End
@@ -272,7 +264,7 @@ Private Sub btnWriteRandom_Click()
     srcFile = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.dat"
     trgtFile = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.bkp"
     
-    List1.Clear
+    'List1.Clear
     
     'FileCopy srcFile, trgtFile
     
@@ -298,7 +290,13 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub Command_Click()
+
+    Dim ans As VbMsgBoxResult
+    
     On Error GoTo Command_Click_Error
+    
+    ans = MsgBox("This will close and then remove the database completely by deleting it, are you sure you wish to do this?")
+    If ans = vbNo Then Exit Sub
 
     Call closeDatabase
     
@@ -307,8 +305,8 @@ Private Sub Command_Click()
     lblRecordNum.Caption = "Database Deleted"
     
     CommandInsert.Enabled = False
-    List1.Clear
-    List1.Enabled = False
+    'List1.Clear
+    'List1.Enabled = False
 
     On Error GoTo 0
     Exit Sub
@@ -481,8 +479,8 @@ Private Sub CommandConnect_Click()
         hiddenForm.lblRecordNum.Caption = "Database Connected."
     
         CommandInsert.Enabled = True
-        List1.Enabled = True
-        List1.Clear
+'        List1.Enabled = True
+'        List1.Clear
 
         lblGetRecord.Enabled = True
         cmbRecordNumber.Enabled = True
@@ -524,9 +522,14 @@ End Sub
 '
 Private Sub CommandInsert_Click()
     
-    List1.Clear
+    Dim ans As VbMsgBoxResult
+    
+'    List1.Clear
     CommandInsert.Enabled = False
-    List1.Enabled = False
+'    List1.Enabled = False
+        
+    ans = MsgBox("This will remove all the icon elements from the database, are you sure you wish to do this?")
+    If ans = vbNo Then Exit Sub
 
     Call insertRecordsFromRandomDataFileIntoDatabase
     hiddenForm.lblRecordNum.Caption = "Data Inserted."
@@ -551,13 +554,18 @@ End Sub
 Private Sub CommandClose_Click()
     On Error GoTo CommandClose_Click_Error
     
+    Dim ans As VbMsgBoxResult
+        
+    ans = MsgBox("This will close the database which will have a negative effect on the dock and any current dock operations, are you sure you wish to do this?")
+    If ans = vbNo Then Exit Sub
+    
     If DBConnection Is Nothing Then
         MsgBox "Not connected.", vbExclamation
     Else
         Call closeDatabase
         CommandInsert.Enabled = False
-        List1.Clear
-        List1.Enabled = False
+'        List1.Clear
+'        List1.Enabled = False
     End If
     
     hiddenForm.lblRecordNum.Caption = "Database closed."
@@ -597,38 +605,38 @@ lblGetRecord_Click_Error:
     
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : List1_KeyDown
-' Author    : beededea
-' Date      : 02/12/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : List1_KeyDown
+'' Author    : beededea
+'' Date      : 02/12/2025
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
 '
-Private Sub List1_KeyDown(KeyCode As Integer, Shift As Integer)
-
-    Dim keyToDelete As String: keyToDelete = vbNullString
-    
-    On Error GoTo List1_KeyDown_Error
-
-    If List1.ListCount > 0 Then
-        If KeyCode = vbKeyDelete Then
-            keyToDelete = Left$(List1.Text, InStr(List1.Text, "_") - 1)
-        
-            If MsgBox("Delete record number " & keyToDelete & " " & List1.Text & "?", vbQuestion + vbYesNo) <> vbNo Then
-                Call deleteSpecificKey(keyToDelete)
-                List1.RemoveItem List1.ListIndex
-            End If
-        End If
-    End If
-    
-    On Error GoTo 0
-    Exit Sub
-
-List1_KeyDown_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure List1_KeyDown of Form hiddenForm"
-
-End Sub
+'    Dim keyToDelete As String: keyToDelete = vbNullString
+'
+'    On Error GoTo List1_KeyDown_Error
+'
+'    If List1.ListCount > 0 Then
+'        If KeyCode = vbKeyDelete Then
+'            keyToDelete = Left$(List1.Text, InStr(List1.Text, "_") - 1)
+'
+'            If MsgBox("Delete record number " & keyToDelete & " " & List1.Text & "?", vbQuestion + vbYesNo) <> vbNo Then
+'                Call deleteSpecificKey(keyToDelete)
+'                List1.RemoveItem List1.ListIndex
+'            End If
+'        End If
+'    End If
+'
+'    On Error GoTo 0
+'    Exit Sub
+'
+'List1_KeyDown_Error:
+'
+'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure List1_KeyDown of Form hiddenForm"
+'
+'End Sub
 
 
 
