@@ -862,6 +862,7 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformChe
     Dim AppCount As Integer: AppCount = 0
     Dim RProcessFound As Long: RProcessFound = 0
     Dim SzExename As String: SzExename = vbNullString
+    Dim uProcessExeFile As String: uProcessExeFile = vbNullString
     Dim MyProcess As Long: MyProcess = 0
     Dim i As Integer: i = 0
     Dim binaryName As String: binaryName = vbNullString
@@ -901,8 +902,14 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformChe
           'hSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
           RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
           Do
-            i = InStr(1, thisUProcess.szexeFile, Chr(0))
-            SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
+          
+            ' convert the byte array to a string
+            uProcessExeFile = StrConv(thisUProcess.szexeFile, vbUnicode)
+            
+            ' extract the binary name alone and test for a match
+            i = InStr(1, uProcessExeFile, Chr$(0)) ' up until the null
+            SzExename = LCase$(Left$(uProcessExeFile, i - 1))
+                
             'WinDirEnv = Environ("Windir") + "\"
             'WinDirEnv = LCase$(WinDirEnv)
 
@@ -927,12 +934,12 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformChe
                             checkAndKill = confirmEachKill(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode)
                         End If
                     End If
-                    Call CloseHandle(processToKill)
             End If
             RProcessFound = ProcessNext(thisHSnapshot, thisUProcess)
             
           Loop While RProcessFound
           Call CloseHandle(thisHSnapshot)
+          Call CloseHandle(processToKill)
           
     End If
 
@@ -1691,6 +1698,7 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
     Dim AppCount As Integer: AppCount = 0
     Dim RProcessFound As Long: RProcessFound = 0 ' API returns a non-VB6 boolean 0 or 1
     Dim SzExename As String: SzExename = vbNullString
+    Dim uProcessExeFile As String: uProcessExeFile = vbNullString
     Dim ExitCode As Long: ExitCode = 0
     Dim procId As Long: procId = 0
     Dim a As Integer: a = 0
@@ -1745,9 +1753,13 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
             
             ' loop through all subsequent process entries in the snapshot
             Do
+                ' convert the byte array to a string
+                uProcessExeFile = StrConv(thisUProcess.szexeFile, vbUnicode)
+                
                 ' extract the binary name alone and test for a match
-                i = InStr(1, thisUProcess.szexeFile, Chr$(0)) ' up until the null
-                SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
+                i = InStr(1, uProcessExeFile, Chr$(0)) ' up until the null
+                SzExename = LCase$(Left$(uProcessExeFile, i - 1))
+                
                 If SzExename = binaryName Then
 
                         AppCount = AppCount + 1
@@ -1770,7 +1782,7 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
                             End If
                         End If
                         
-                        GoTo Cleanup
+                        GoTo CleanUp
                 End If
                 
                 'Provides a pointer thisUProcess giving information about the next process recorded in the system snapshot
@@ -1779,7 +1791,7 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
             Loop While RProcessFound ' bool 0/1
     End If
 
-Cleanup:
+CleanUp:
     If thisHSnapshot <> 0 Then CloseHandle thisHSnapshot
     
     On Error GoTo 0
@@ -1824,7 +1836,7 @@ Public Function getExePathFromPID(ByVal idProc As Long) As String
         CloseHandle hProcess
     End If
     
-Cleanup:
+CleanUp:
     If hProcess <> 0 Then CloseHandle hProcess
      
     On Error GoTo 0
@@ -1832,7 +1844,7 @@ Cleanup:
 
 getExePathFromPID_Error:
 
-    Resume Cleanup
+    Resume CleanUp
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getExePathFromPID of Module common"
 End Function

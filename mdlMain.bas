@@ -1001,7 +1001,7 @@ Public Sub enabledTargetExistsTimer()
 
     On Error GoTo enabledTargetExistsTimer_Error
 
-    dock.targetExistsTimer.Enabled = True
+    ' dock.targetExistsTimer.Enabled = True
 
     On Error GoTo 0
     Exit Sub
@@ -3333,6 +3333,7 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
     Dim AppCount As Integer: AppCount = 0
     Dim RProcessFound As Long: RProcessFound = 0
     Dim SzExename As String: SzExename = vbNullString
+    Dim uProcessExeFile As String: uProcessExeFile = vbNullString
     Dim MyProcess As Long: MyProcess = 0
     Dim i As Integer: i = 0
     Dim binaryName As String: binaryName = vbNullString
@@ -3367,8 +3368,14 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
           'thisHSnapshot = CreateToolhelpSnapshot(TH32CS_SNAPPROCESS, 0&)
           RProcessFound = ProcessFirst(thisHSnapshot, thisUProcess)
           Do
-            i = InStr(1, thisUProcess.szexeFile, Chr(0))
-            SzExename = LCase$(Left$(thisUProcess.szexeFile, i - 1))
+          
+            ' convert the byte array to a string
+            uProcessExeFile = StrConv(thisUProcess.szexeFile, vbUnicode)
+            
+            ' extract the binary name alone and test for a match
+            i = InStr(1, uProcessExeFile, Chr$(0)) ' up until the null
+            SzExename = LCase$(Left$(uProcessExeFile, i - 1))
+                
             'WinDirEnv = Environ("Windir") + "\"
             'WinDirEnv = LCase$(WinDirEnv)
 
