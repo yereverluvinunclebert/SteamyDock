@@ -62,13 +62,26 @@ o Microsoft VB6 IDE installed with its runtime components. The program runs
 without any additional Microsoft OCX components, just the basic controls that 
 ship with VB6.
 
-o GDI+ 
+o GDI+ gdip is used extensively within this program. GDI+ is part of Windows so 
+no configuration is required.
 
 o Requires a steamydock folder in C:\Users\<user>\AppData\Roaming\
 eg: C:\Users\<user>\AppData\Roaming\steamydock
 Requires a docksettings.ini file to exist in C:\Users\<user>\AppData\Roaming\PzEasteamydockrth
 The above will be created automatically by the compiled program when run for the
 first time.
+
+o VBSQLite12.DLL - An SQLite Wrapper used to access sqlite3win32.dll, also included with this program
+that is used to store configuration information for each of the icons.
+
+During development you will need to register the VBSQLite12.DLL using the script provided. Double 
+click on the script, RegisterSQLWapper.vbs and registration will take place.
+
+In the VB6 IDE select the menu - project - references, then browse and select the VBSQLite12.DLL. 
+You might have to restart the IDE to make use of the TLB references.
+
+At runtime the VBSQLite12 will be referenced automatically using a RegFree method. The registration 
+above is only required during development.
 
 o OLEEXP.TLB placed in sysWoW64 - required to obtain the explorer paths only
 during development. OLEEXP.TLB placed in sysWoW64 - required to obtain the
@@ -101,8 +114,7 @@ folder in a 64bit system) and register it.
 	REGTLIBV12.EXE %SystemRoot%\SYSWOW64\OLEEXP.TLB  ' 64 bit
 	"Registration of C:\WINDOWS\SYSWOW64\OLEEXP.TLB successful"
 
-In the VB6 IDE select the menu - project - references, then browse and select the OLEEXP.tlb. You might have to restart the IDE to make 
-use of the TLB references.
+In the VB6 IDE select the menu - project - references, then browse and select the OLEEXP.tlb. You might have to restart the IDE to make use of the TLB references.
 
 Project References:
 
@@ -113,6 +125,7 @@ Project References:
 	Microsoft Shell Controls and Automation  
 	Microsoft scripting runtime - for the scripting dictionary usage  
 	OLEEXP Modern Shell Interfaces for VB6, v5.1
+	VB SQLITE LIBRARY 1.2
 
  ![oleexp](https://github.com/user-attachments/assets/a2c4cc48-b2fe-4467-9505-b76752690036)
 
@@ -151,17 +164,24 @@ http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=55352&lngWId=1
 
 Olaf Schmidt - used some of Olafs code as examples of how to implement the
 handling of images using GDI+ and specifically used two routines,
-createScaledImg & ReadBytesFromFile.
+createScaledImg & ReadBytesFromFile. Also, the registrations script and RegFree code
+originated from Olaf's RC5 package.
 
 Also critically, the idea of using the scripting dictionary as a repository
-for a collection of image bitmaps.
+for a collection of image bitmaps was an Olaf suggestion.
 
 In addition, the easeing functions to do the bounce animation, I initially
-used a converted .js implementation but Olafs was better.
+used a converted .js implementation but Olaf's was better.
+
+In-code timers developed with the help of chatGPT.
+
+Scripting dictionary replacement courtesy of Cristian Buse. This allows use of a collection that 
+does not require the project reference to the Microsoft scripting runtime. This gives the program  
+independence from the impending Microsoft VB scripting obsolescence.
 
 Spider Harper Is64bit() function.
 
-Wayne Phillips Used a heavily modified version of his code to bring an external
+Wayne Phillips - I used a heavily modified version of his code to bring an external
 application window to the foreground
 https://www.everythingaccess.com/tutorials.asp?ID=Bring-an-external-application-window-to-the-foreground
 
