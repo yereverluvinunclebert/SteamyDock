@@ -127,7 +127,7 @@ Project References:
 	OLEEXP Modern Shell Interfaces for VB6, v5.1
 	VB SQLITE LIBRARY 1.2
 
- ![oleexp](https://github.com/user-attachments/assets/a2c4cc48-b2fe-4467-9505-b76752690036)
+![SDProjectReferences](https://github.com/user-attachments/assets/ca268c6f-d265-4b91-a702-13dbd89442e1)
 
 Components: 
 
