@@ -54,6 +54,16 @@ Tested on :
 	Windows 10 Home 64bit on AMD  
 	Windows 11 64bit on Intel
 
+Runtime and User Installation:
+
+No release is planned. There will eventually be a 32bit installer tested on Win 7, Windows 10 and Windows XP. That will NOT be 
+released until I am content that ALL the bugs/problems are worked out. There are NO fixed timescales.
+
+Development:
+
+If you want to build a running version of SteamyDock, then you will need to follow the build instructions below: 
+As this dock is under continual development then you are likely to need some assistance from me which I am happy to offer as long as it we can keep it brief and to the point.
+
 Dependencies:
 
 o A windows-alike o/s such as Windows XP, 7-11 or ReactOS.
