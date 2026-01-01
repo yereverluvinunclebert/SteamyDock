@@ -67,9 +67,15 @@ no configuration is required.
 
 o Requires a steamydock folder in C:\Users\<user>\AppData\Roaming\
 eg: C:\Users\<user>\AppData\Roaming\steamydock
-Requires a docksettings.ini file to exist in C:\Users\<user>\AppData\Roaming\PzEasteamydockrth
-The above will be created automatically by the compiled program when run for the
-first time.
+
+Requires the following files to exist in folder above:
+
+* docksettings.ini
+* iconsettings.dat
+* iconsettings.db 
+
+The docksettings.ini will be created automatically by the compiled program when run for the
+first time. The other two will need to be copied manually. This will be fixed soon.
 
 o VBSQLite12.DLL - An SQLite Wrapper used to access sqlite3win32.dll, also included with this program
 that is used to store configuration information for each of the icons.
