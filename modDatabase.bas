@@ -37,6 +37,8 @@ Public Function connectDatabase() As String
         PathName = App.Path
         If Not Right$(PathName, 1) = "\" Then PathName = PathName & "\"
         PathName = "C:\Users\beededea\AppData\Roaming\steamyDock\iconSettings.db"
+        PathName = iconDataBase
+
         
         ' check database file exists on the system
         If fFExists(PathName) = True Then

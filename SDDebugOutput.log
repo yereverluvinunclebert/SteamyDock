@@ -17707,3 +17707,41 @@
 2025-12-31 00:55:19.144 ******************************
 2025-12-31 00:55:19.144 % SteamyDock startup complete.
 2025-12-31 00:55:19.144 ******************************
+2026-01-02 01:42:24.597 % sub toggleDebugging
+2026-01-02 01:42:24.643 *****************************
+2026-01-02 01:42:24.643 % SteamyDock program started.
+2026-01-02 01:42:24.643 *****************************
+2026-01-02 01:42:24.643 % sub sDriveStrings
+2026-01-02 01:42:24.644 % sub testDockRunning
+2026-01-02 01:42:24.644 % sub checkLicenceState
+2026-01-02 01:42:24.673 % sub classicThemeCapable
+2026-01-02 01:42:24.673 % sub disableAdmin
+2026-01-02 01:43:28.068 % sub toggleDebugging
+2026-01-02 01:43:28.101 *****************************
+2026-01-02 01:43:28.101 % SteamyDock program started.
+2026-01-02 01:43:28.101 *****************************
+2026-01-02 01:43:28.101 % sub sDriveStrings
+2026-01-02 01:43:28.102 % sub testDockRunning
+2026-01-02 01:43:28.102 % sub checkLicenceState
+2026-01-02 01:43:28.135 % sub classicThemeCapable
+2026-01-02 01:43:28.135 % sub disableAdmin
+2026-01-02 01:43:28.135 % sub checkSteamyDockInstallation
+2026-01-02 01:43:28.136 % sub locateDockSettingsFile
+2026-01-02 01:43:45.909 % sub readDockConfiguration
+2026-01-02 01:43:45.914 % sub readDockSettingsFile
+2026-01-02 01:43:45.961 % sub setUserHotKey
+2026-01-02 01:43:45.961 % func monitorProperties
+2026-01-02 01:43:45.961 % sub resolveVB6SizeBug
+2026-01-02 01:43:45.970 % sub setLocalConfigurationVars
+2026-01-02 01:43:45.971 % sub initialiseGDIPStartup
+2026-01-02 01:43:45.972 % sub createDictionaryObjects
+2026-01-02 01:43:45.973 % sub prepareArraysAndCollections
+2026-01-02 01:43:48.244 % sub createGDIStructures
+2026-01-02 01:43:48.244 % sub showSplashScreen
+2026-01-02 01:43:48.292 % sub createNewGDIPBitmap
+2026-01-02 01:43:48.293 % sub setAutoHide
+2026-01-02 01:43:48.293 % sub setWindowCharacteristics
+2026-01-02 01:43:48.309 % sub setUpProcessTimers
+2026-01-02 01:43:48.319 ******************************
+2026-01-02 01:43:48.319 % SteamyDock startup complete.
+2026-01-02 01:43:48.319 ******************************

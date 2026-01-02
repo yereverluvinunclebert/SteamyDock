@@ -1122,9 +1122,6 @@ Private Sub Form_Load()
     
     ' turn off the option to run as administrator
     Call disableAdmin  ' .17 DAEB frmMain.frm 27/01/2021 Moved disabling admin to a separate routine
-    
-    ' call the function to connect to or create the database
-    Call connectSQLDatabase
 
     ' we check to see if rocketdock is installed in order to know the location of the settings.ini file used by Rocketdock
     'Call checkRocketdockInstallation ' also sets rdAppPath
@@ -1139,6 +1136,9 @@ Private Sub Form_Load()
     
     ' get the location of the dock's new settings file
     Call locateDockSettingsFile
+    
+    ' call the function to connect to or create the database
+    Call connectSQLDatabase
 
     ' read the dock settings from INI
     Call readDockConfiguration

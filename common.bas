@@ -194,6 +194,7 @@ Public usedMenuFlag As Boolean
 
 Public dockSettingsFile As String
 Public iconDataFile As String
+Public iconDataBase As String
 Public iconTempDataFile As String
 
 Public toolSettingsFile  As String
@@ -1948,6 +1949,8 @@ Public Sub locateDockSettingsFile()
     dockSettingsBackupDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\backup" ' just for this user alone
     dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
     iconDataFile = dockSettingsDir & "\iconsettings.dat" ' the random access dat file for the icon data alone
+    iconDataBase = dockSettingsDir & "\iconSettings.db"
+    
     'iconTempDataFile = dockSettingsDir & "\icontempsettings.dat" ' the random access dat file for the icon data alone
 
     'if the folder does not exist then create the folder
