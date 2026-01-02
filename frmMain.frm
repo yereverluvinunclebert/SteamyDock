@@ -1590,7 +1590,7 @@ Private Sub setUserHotKey()
 
     ' check to see whether the program is running within the IDE - if so disable system key hooks that capture F key by default
     ' if the program is run in the IDE (Debug mode) with the system wide key hook operative, the IDE will crash shortly afterward
-    If Not InIDE Then
+    If Not InIde Then
         ' .23 DAEB frmMain.frm 08/02/2021 Changed from an array to a single var
         
         If InStr(rDHotKeyToggle, "F1") Then theKey = vbKeyF1
@@ -3794,7 +3794,7 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
         iconPosLeftPxls = iconStoreLeftPixels(thisIconIndex - 1)
 
-        For leftLoop = thisIconIndex - 2 To 0 Step -1
+        For leftLoop = thisIconIndex - 2 To 1 Step -1
 
             ' small icons to the left shown in small mode, we only need to do this on the first small icon
             If sized = False Then
@@ -5904,11 +5904,15 @@ Private Sub createDictionaryObjects()
     If debugflg = 1 Then debugLog "% sub createDictionaryObjects"
    
     ' dictionary for the larger icons
-    Set collLargeIcons = CreateObject("Scripting.Dictionary")
+    'Set collLargeIcons = CreateObject("Scripting.Dictionary")
+    Set collLargeIcons = New Dictionary
+    
     collLargeIcons.CompareMode = 1 'case-insenitive Key-Comparisons
     
     'dictionary for the smaller icons
-    Set collSmallIcons = CreateObject("Scripting.Dictionary")
+    'Set collSmallIcons = CreateObject("Scripting.Dictionary")
+    Set collSmallIcons = New Dictionary
+    
     collSmallIcons.CompareMode = 1 'case-insenitive Key-Comparisons
         
 '    'third temporary dictionary that is used for temporary storage whilst generating large sized, transparent disabled images on the fly
@@ -7584,20 +7588,20 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Function fCountFilesDir(ByVal thisFolder As String) As Long
-   Dim S As String: S = vbNullString
+   Dim s As String: s = vbNullString
    Dim z As Long: z = 0
 
    On Error GoTo fCountFilesDir_Error
 
-      S = Dir(thisFolder & "\*.*")
+      s = Dir(thisFolder & "\*.*")
       Do
-         If Len(S) = 0 Then
+         If Len(s) = 0 Then
             Exit Do
          End If
-         If (GetAttr(thisFolder & "\" & S) And vbDirectory) = 0 Then
+         If (GetAttr(thisFolder & "\" & s) And vbDirectory) = 0 Then
             z = z + 1
           End If
-         S = Dir()
+         s = Dir()
       Loop
       
       fCountFilesDir = z
@@ -7619,12 +7623,12 @@ End Function
 Private Function fSecondsFromDateString(ByVal dateString As String, Optional msFrac As Integer) As Currency
 Const Estart As Double = #1/1/1970#
 
-    Dim C As String
-    Dim E As String
+    Dim c As String
+    Dim e As String
     Dim d As Date
     
-    C = Mid$(dateString, 1, 19)
-    d = CDate(C)
+    c = Mid$(dateString, 1, 19)
+    d = CDate(c)
     msFrac = Val(Mid$(dateString, 21, 3))
     
     fSecondsFromDateString = CLng((d - Estart) * 86400) '  1643899670

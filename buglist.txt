@@ -9,14 +9,15 @@ o Operations to SQLite database in progress, all working, need to test working w
 o Possible RAM leak or SQL eating up the RAM slowly
 o a Few bugs overall, deletion and drag/drop can be slowish to complete. New animations required. Multi-monitor.
 o new timer code implemented for in-code timers. Not yet utilised. May be used for the new icon class animation, unsure.
-o new scripting replacement code is available from Cristian Buse - Can replace the old scripting dictionary seamlessly. Not yet implemented. 
+o new scripting replacement code is available from Cristian Buse - Can replace the old scripting dictionary seamlessly. Not yet implemented.
 o test the TB collection as a replacement as it takes PNGS by default - would reduce some of the dependency on GDI+
 
 
 ' Current Tasks:
 ' =============
 
-' fix the path to the database
+' remove the modification date/time test from iconSettings
+
 ' test if the updateCounter is being updated
 ' test regfree.bas to see if the VBSQL10.dll can be used regfree
 ' test using API declarations and alternative SQL dll to test speed
@@ -992,3 +993,10 @@ o within modDatabase swap writeIconSettingsIni  for putIconSettings
 ' I am guessing that there was a mismatch between the count in iconSettings and the count from the .dat, possibly the collection length being too short.
 
 ' Needs to read icons from DLLs/exes - WIP
+
+' Changes 2026+
+' ============
+
+' fix the path to the database
+
+' Replace all the scripting.dictionary code with Cristian Buse' VBA collection alternative for planned scripting obsolescence-proofing.

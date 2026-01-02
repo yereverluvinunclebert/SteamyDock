@@ -194,7 +194,7 @@ Public usedMenuFlag As Boolean
 
 Public dockSettingsFile As String
 Public iconDataFile As String
-Public iconDataBase As String
+Public gblsIconDataBase As String
 Public iconTempDataFile As String
 
 Public toolSettingsFile  As String
@@ -470,7 +470,7 @@ Public Function LoadFileToTB(ByRef TxtBox As Object, ByVal FilePath As String, O
 
     
     Dim iFile As Integer: iFile = 0
-    Dim S As String: S = vbNullString
+    Dim s As String: s = vbNullString
     
    On Error GoTo LoadFileToTB_Error
       'If debugFlg = 1 Then debugLog "%" & "LoadFileToTB"
@@ -481,15 +481,15 @@ Public Function LoadFileToTB(ByRef TxtBox As Object, ByVal FilePath As String, O
     If Dir$(FilePath) = vbNullString Then Exit Function
     
     On Error GoTo ErrorHandler:
-    S = TxtBox.Text
+    s = TxtBox.Text
     
     iFile = FreeFile
     Open FilePath For Input As #iFile
-    S = Input(LOF(iFile), #iFile)
+    s = Input(LOF(iFile), #iFile)
     If Append Then
-        TxtBox.Text = TxtBox.Text & S
+        TxtBox.Text = TxtBox.Text & s
     Else
-        TxtBox.Text = S
+        TxtBox.Text = s
     End If
     
     LoadFileToTB = True
@@ -1939,7 +1939,7 @@ Public Sub locateDockSettingsFile()
     
     Dim inputData As String:  inputData = vbNullString
     Dim outputData As String: outputData = vbNullString
-    Dim S As String: S = 0
+    Dim s As String: s = 0
         
     On Error GoTo locateDockSettingsFile_Error
     If debugflg = 1 Then debugLog "% sub locateDockSettingsFile"
@@ -1949,7 +1949,7 @@ Public Sub locateDockSettingsFile()
     dockSettingsBackupDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\backup" ' just for this user alone
     dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
     iconDataFile = dockSettingsDir & "\iconsettings.dat" ' the random access dat file for the icon data alone
-    iconDataBase = dockSettingsDir & "\iconSettings.db"
+    gblsIconDataBase = dockSettingsDir & "\iconSettings.db"
     
     'iconTempDataFile = dockSettingsDir & "\icontempsettings.dat" ' the random access dat file for the icon data alone
 
@@ -1979,7 +1979,7 @@ Public Sub locateDockSettingsFile()
                 Line Input #1, inputData
                 ' change any occurrence of [defaultDockLocation] to sdAppPath
                 If InStr(inputData, "[defaultDockLocation]") Then
-                    S = Replace(inputData, "[defaultDockLocation]", sdAppPath)
+                    s = Replace(inputData, "[defaultDockLocation]", sdAppPath)
                 End If
                 Write #2, outputData     ' write the line to the new docksettings.ini
                 'debugLog outputData
@@ -2015,7 +2015,7 @@ End Sub
 ' Purpose   : checks whether the code is running in the VB6 IDE or not
 '---------------------------------------------------------------------------------------
 '
-Public Function InIDE() As Boolean
+Public Function InIde() As Boolean
 
    On Error GoTo InIDE_Error
 
@@ -2023,7 +2023,7 @@ Public Function InIDE() As Boolean
     ' This will only be done if in the IDE
     Debug.Assert InDebugMode
     If mbDebugMode Then
-        InIDE = True
+        InIde = True
     End If
 
    On Error GoTo 0

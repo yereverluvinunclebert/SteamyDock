@@ -512,10 +512,15 @@ Public bmpInfo As BITMAPINFO
 
 
 ' collection objects
-Private collTemporaryIcons As Object
-Public collLargeIcons As Object
-Public collSmallIcons As Object
-Public GetDataSinceUpdateCounter As Object
+'Private collTemporaryIcons As Object
+'Public collLargeIcons As Object
+'Public collSmallIcons As Object
+'
+'Private collTemporaryIcons As Dictionary
+Public collLargeIcons As Dictionary
+Public collSmallIcons As Dictionary
+
+'Public GetDataSinceUpdateCounter As Object
 
 Public dcMemory As Long
 Public hBmpMemory As Long
@@ -2516,7 +2521,7 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
 
     Dim useloop As Integer
     Dim thiskey As String
-    Dim newKey As String
+    Dim NewKey As String
     Dim partialStringKey As String: partialStringKey = ""
     Dim imageOpacity As Integer: imageOpacity = 0
 
@@ -2621,7 +2626,7 @@ End Sub
 
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, Optional ByVal fullStringKey As String = "", Optional ByVal imageOpacity As Integer) As Long
+Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal Key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, Optional ByVal fullStringKey As String = "", Optional ByVal imageOpacity As Integer) As Long
 
     Dim thiskey As String
     Dim saveStatus As Boolean
@@ -2669,7 +2674,7 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
     ' Rocketdock has a background theme image in a single image, it is cropped left and right to extract the ends whilst the middle is both cropped and stretched.
 
     ' uses a function createScaledImg extracted from Olaf Schmidt's code in gdiPlusCacheCls to create and resize the image
-    If key = "sDSkinMid" Then
+    If Key = "sDSkinMid" Then
         dockSkinWidth = (rdIconUpperBound * iconSizeSmallPxls) + iconSizeLargePxls * 2
 
         ' Get the current image pixel format. The C++ SDK clone example used PixelFormatDontCare, but this can limit what you can do with the image.
@@ -2697,7 +2702,7 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal key
     'override the key
     If fullStringKey = "" Then
         ' create a unique key string
-        thiskey = key & "ResizedImg" & LTrim$(Str$(Width))
+        thiskey = Key & "ResizedImg" & LTrim$(Str$(Width))
     Else
         thiskey = fullStringKey
     End If
@@ -2867,13 +2872,13 @@ End Function
 ' Purpose   : This utility displays using GDI+, one of several icon images stored in a dictionary collection by key.
 '---------------------------------------------------------------------------------------
 '
-Public Function updateDisplayFromDictionary(thisCollection As Object, strFilename As String, ByVal key As String, Optional Left As Long = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1) As Boolean
+Public Function updateDisplayFromDictionary(thisCollection As Dictionary, strFilename As String, ByVal Key As String, Optional Left As Long = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1) As Boolean
 
    On Error GoTo updateDisplayFromDictionary_Error
 
     ' get the stored image from the collection if it exists
-    If thisCollection(key) <> 0 Then
-        iconBitmap = thisCollection(key)
+    If thisCollection(Key) <> 0 Then
+        iconBitmap = thisCollection(Key)
     Else
         Exit Function
     End If
