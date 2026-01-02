@@ -54,6 +54,16 @@ Tested on :
 	Windows 10 Home 64bit on AMD  
 	Windows 11 64bit on Intel
 
+Runtime and User Installation:
+
+No release is planned. There will eventually be a 32bit installer tested on Win 7, Windows 10 and Windows XP. That will NOT be 
+released until I am content that ALL the bugs/problems are worked out. There are NO fixed timescales.
+
+Development:
+
+If you want to build a running version of SteamyDock, then you will need to follow the build instructions below: 
+As this dock is under continual development then you are likely to need some assistance from me which I am happy to offer as long as it we can keep it brief and to the point.
+
 Dependencies:
 
 o A windows-alike o/s such as Windows XP, 7-11 or ReactOS.
@@ -67,9 +77,15 @@ no configuration is required.
 
 o Requires a steamydock folder in C:\Users\<user>\AppData\Roaming\
 eg: C:\Users\<user>\AppData\Roaming\steamydock
-Requires a docksettings.ini file to exist in C:\Users\<user>\AppData\Roaming\PzEasteamydockrth
-The above will be created automatically by the compiled program when run for the
-first time.
+
+Requires the following files to exist in folder above:
+
+* docksettings.ini
+* iconsettings.dat
+* iconsettings.db 
+
+The docksettings.ini will be created automatically by the compiled program when run for the
+first time. The other two will need to be copied manually. This will be fixed soon.
 
 o VBSQLite12.DLL - An SQLite Wrapper used to access sqlite3win32.dll, also included with this program
 that is used to store configuration information for each of the icons.
@@ -127,7 +143,7 @@ Project References:
 	OLEEXP Modern Shell Interfaces for VB6, v5.1
 	VB SQLITE LIBRARY 1.2
 
- ![oleexp](https://github.com/user-attachments/assets/a2c4cc48-b2fe-4467-9505-b76752690036)
+![SDProjectReferences](https://github.com/user-attachments/assets/ca268c6f-d265-4b91-a702-13dbd89442e1)
 
 Components: 
 
