@@ -30,7 +30,7 @@ Framework 2.2 & Rubberduck 2.4.1.
 
 In addition, changes have been made to make it compatible with TwinBasic, so it now compiles and runs using TwinBasic.
 
-Links:
+*Links:
 
 	MZ-TOOLS https://www.mztools.com/  
 	CodeHelp http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62468&lngWId=1  
