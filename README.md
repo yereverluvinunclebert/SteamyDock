@@ -30,7 +30,7 @@ Framework 2.2 & Rubberduck 2.4.1.
 
 In addition, changes have been made to make it compatible with TwinBasic, so it now compiles and runs using TwinBasic.
 
-*Links:
+** Links:
 
 	MZ-TOOLS https://www.mztools.com/  
 	CodeHelp http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62468&lngWId=1  
@@ -45,7 +45,7 @@ In addition, changes have been made to make it compatible with TwinBasic, so it 
 	Fafalone for the enumerate Explorer windows code
 
 
-Tested on :
+** Tested on :
 
 	ReactOS 0.4.14 32bit on virtualBox  
 	Windows 7 Professional 32bit on Intel  
@@ -56,10 +56,23 @@ Tested on :
 	Windows 10 Home 64bit on AMD  
 	Windows 11 64bit on Intel
 
-Runtime and User Installation:
+** Runtime and User Installation:
 
 No release is planned. There will eventually be a 32bit installer tested on Win 7, Windows 10 and Windows XP. That will NOT be 
 released until I am content that ALL the bugs/problems are worked out. There are NO fixed timescales.
+
+Please be aware that this is a PET project of mine, designed to teach me technologies available using VB6 and TwinBasic and to 
+act as a repository should anyone wish to pick this project up and play with it some time in the future. 
+
+I will not be releasing this imminently for the following reasons:
+
+o Windows 11 (that's a damn good reason in itself)
+o I don't want to support grumpy people being grumpy when raising bugs/issues
+o I don't want the responsibility of SteamyDock mucking up your computer
+o It is NOT ready, I am playing with new technologies all the time.
+
+Having said that, if you ever do want a release, you only have to ask nicely but be aware that I will not answer support queries 
+nor fix bugs in a timely manner. This is my PET project and done for my FUN alone.
 
 Development:
 
