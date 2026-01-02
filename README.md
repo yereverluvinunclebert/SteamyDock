@@ -30,7 +30,7 @@ Framework 2.2 & Rubberduck 2.4.1.
 
 In addition, changes have been made to make it compatible with TwinBasic, so it now compiles and runs using TwinBasic.
 
-** Links:
+**Links:**
 
 	MZ-TOOLS https://www.mztools.com/  
 	CodeHelp http://www.planetsourcecode.com/vb/scripts/ShowCode.asp?txtCodeId=62468&lngWId=1  
@@ -45,7 +45,7 @@ In addition, changes have been made to make it compatible with TwinBasic, so it 
 	Fafalone for the enumerate Explorer windows code
 
 
-** Tested on :
+**Tested on :**
 
 	ReactOS 0.4.14 32bit on virtualBox  
 	Windows 7 Professional 32bit on Intel  
@@ -56,7 +56,7 @@ In addition, changes have been made to make it compatible with TwinBasic, so it 
 	Windows 10 Home 64bit on AMD  
 	Windows 11 64bit on Intel
 
-** Runtime and User Installation:
+**Runtime and User Installation:**
 
 No release is planned. There will eventually be a 32bit installer tested on Win 7, Windows 10 and Windows XP. That will NOT be 
 released until I am content that ALL the bugs/problems are worked out. There are NO fixed timescales.
@@ -74,12 +74,12 @@ o It is NOT ready, I am playing with new technologies all the time.
 Having said that, if you ever do want a release, you only have to ask nicely but be aware that I will not answer support queries 
 nor fix bugs in a timely manner. This is my PET project and done for my FUN alone.
 
-Development:
+**Development:**
 
 If you want to build a running version of SteamyDock, then you will need to follow the build instructions below: 
 As this dock is under continual development then you are likely to need some assistance from me which I am happy to offer as long as it we can keep it brief and to the point.
 
-Dependencies:
+**Dependencies:**
 
 o A windows-alike o/s such as Windows XP, 7-11 or ReactOS.
 
@@ -135,7 +135,7 @@ folder in a 64bit system) and register it.
 
 In the VB6 IDE select the menu - project - references, then browse and select the OLEEXP.tlb. You might have to restart the IDE to make use of the TLB references.
 
-Project References:
+**Project References:**
 
 	VisualBasic for Applications  
 	VisualBasic Runtime Objects and Procedures  
@@ -147,19 +147,19 @@ Project References:
 
 ![SDProjectReferences](https://github.com/user-attachments/assets/ca268c6f-d265-4b91-a702-13dbd89442e1)
 
-Components: 
+**Components:** 
 
 No components used in this project.
 
 ![componentsEmpty](https://github.com/user-attachments/assets/894ada8a-cd73-4555-a460-b18075e15ee9)
 
-Other Dependencies:
+**Other Dependencies:**
 
 o Steamydock's configuration is achieved using two other VB6 utilities. Icon-Settings-for-Steamydock 
 and DockSettings-for-Steamydock. Requires the SteamyDock program source code to be downloaded and available in 
 an adjacent folder as some of the BAS modules are common and shared.
 
-Example folder structure:
+**Example folder structure:**
 	
 	E:\VB6\steamydock   ! this repo.
 	E:\VB6\docksettings ! from [https://github.com/yereverluvinunclebert/dockSettings](https://github.com/yereverluvinunclebert/DockSettings-for-Steamydock)
@@ -168,7 +168,7 @@ Example folder structure:
 VB6 does not allow the native creation of DLLs without some chicanery, so this project has no
 shared library DLLs, instead it shares code via .BAS modules with the other utils listed above.
 
-Credits:
+**Credits:**
 
 I have really tried to maintain the credits as the project has progressed. If I
 have made a mistake and left someone out then do forgive me. I will make amends
@@ -245,7 +245,7 @@ Krool for the SQLite12 code to allow SQL commands to be used extensively within 
 
 ![steamydock](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/6191a067-fa96-44e3-8c7b-30f009214487)
 
-LICENCE AGREEMENTS:
+**LICENCE AGREEMENTS:**
 
 Copyright 2023 Dean Beedell
 
@@ -256,7 +256,7 @@ original artist using my name or one of my pseudonyms and a link to my site.
 With regard to the commercial use of incorporated images, permission and a
 licence would need to be obtained from the original owner and creator, ie. me.
 
-Background:
+**Background:**
 
 I always loved Rocketdock for its ease of use, the fact that it was
 free to download but more importantly because it allowed each of your
