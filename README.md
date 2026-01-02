@@ -18,8 +18,10 @@ is a dock and the icons are steamy... so there you have it.
 
 ![dockS-fullscreen](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/e94eef2c-38dd-4e77-aa57-7478eb8cab15)
 
-SteamyDock is Alpha-grade software, under development, not yet ready
-to use on a production system - use at your own risk.
+SteamyDock is Alpha-grade software, under development, NOT yet ready
+to use on a live/production system - compile and use at your own risk.
+
+![steamydocksqlite001](https://github.com/user-attachments/assets/58187c42-3076-4da2-8292-f48bd9472565)
 
 BUILD: The program runs without any Microsoft plugins.
 
