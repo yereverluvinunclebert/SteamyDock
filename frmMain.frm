@@ -3422,12 +3422,6 @@ sizeEachSmallIconToRight_Error:
 End Sub
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : showSmallIcon
-' Author    : beededea
-' Date      : 14/01/2023
-' Purpose   :
-'---------------------------------------------------------------------------------------
 '
 '---------------------------------------------------------------------------------------
 ' Procedure : showSmallIcon
@@ -3448,6 +3442,12 @@ Private Sub showSmallIcon(ByVal useloop As Integer)
     Else
         thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
     End If
+    
+    ' next line is a temporary bug fix to issue where the scripting dictionary allows for a useloop value of 0 resulting in a malformed key but Cristian Buse'
+    ' dictionary replacement does not allow it as it based upon arrays. I don't want to alter the calling code  as that had unforessen effects
+    ' so, for the moment a workaround.
+    
+    If useloop = 0 Then Exit Sub
     
     updateDisplayFromDictionary collSmallIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls)
     
@@ -3794,7 +3794,7 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
         iconPosLeftPxls = iconStoreLeftPixels(thisIconIndex - 1)
 
-        For leftLoop = thisIconIndex - 2 To 1 Step -1
+        For leftLoop = thisIconIndex - 2 To 0 Step -1
 
             ' small icons to the left shown in small mode, we only need to do this on the first small icon
             If sized = False Then

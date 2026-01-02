@@ -821,7 +821,7 @@ End Function
 Public Function SpecialFolder(pFolder As eSpecialFolders) As String
 '
 
-Dim objShell  As Object  ' not going to initialise an object here
+Dim objShell  As Object
 Dim objFolder As Object
 
    On Error GoTo SpecialFolder_Error

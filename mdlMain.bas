@@ -512,11 +512,10 @@ Public bmpInfo As BITMAPINFO
 
 
 ' collection objects
-'Private collTemporaryIcons As Object
+
 'Public collLargeIcons As Object
 'Public collSmallIcons As Object
-'
-'Private collTemporaryIcons As Dictionary
+
 Public collLargeIcons As Dictionary
 Public collSmallIcons As Dictionary
 
@@ -2626,7 +2625,7 @@ End Sub
 
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Object, ByVal Key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, Optional ByVal fullStringKey As String = "", Optional ByVal imageOpacity As Integer) As Long
+Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Dictionary, ByVal Key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, Optional ByVal fullStringKey As String = "", Optional ByVal imageOpacity As Integer) As Long
 
     Dim thiskey As String
     Dim saveStatus As Boolean
