@@ -89,18 +89,6 @@ Requires the following files to exist in folder above:
 The docksettings.ini will be created automatically by the compiled program when run for the
 first time. The other two will need to be copied manually. This will be fixed soon.
 
-o VBSQLite12.DLL - An SQLite Wrapper used to access sqlite3win32.dll, also included with this program
-that is used to store configuration information for each of the icons.
-
-During development you will need to register the VBSQLite12.DLL using the script provided. Double 
-click on the script, RegisterSQLWapper.vbs and registration will take place.
-
-In the VB6 IDE select the menu - project - references, then browse and select the VBSQLite12.DLL. 
-You might have to restart the IDE to make use of the TLB references.
-
-At runtime the VBSQLite12 will be referenced automatically using a RegFree method. The registration 
-above is only required during development.
-
 o OLEEXP.TLB placed in sysWoW64 - required to obtain the explorer paths only
 during development. OLEEXP.TLB placed in sysWoW64 - required to obtain the
 explorer paths.
@@ -143,7 +131,6 @@ Project References:
 	Microsoft Shell Controls and Automation  
 	Microsoft scripting runtime - for the scripting dictionary usage  
 	OLEEXP Modern Shell Interfaces for VB6, v5.1
-	VB SQLITE LIBRARY 1.2
 
 ![SDProjectReferences](https://github.com/user-attachments/assets/ca268c6f-d265-4b91-a702-13dbd89442e1)
 
@@ -240,6 +227,8 @@ Fafalone for the enumerate Explorer windows code:
 https://www.vbforums.com/showthread.php?818959-VB6-Get-extended-details-about-Explorer-windows-by-getting-their-IFolderView
 
 Dragokas systray code
+
+Krool for the SQLite12 code to allow SQL commands to be used extensively within VB6.
 
 ![steamydock](https://github.com/yereverluvinunclebert/SteamyDock/assets/2788342/6191a067-fa96-44e3-8c7b-30f009214487)
 
