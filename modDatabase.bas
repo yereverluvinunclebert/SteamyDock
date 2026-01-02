@@ -47,7 +47,7 @@ Public Function connectDatabase() As String
 
                 ' connection is good?
                 If .hDB <> NULL_PTR Then
-                    Set DBConnection = .object
+                    Set DBConnection = .Object
                 End If
             End With
             connectDatabase = "Database Connected."
@@ -154,13 +154,14 @@ End Function
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub closeDatabase()
+Public Sub CloseDatabase()
     On Error GoTo closeDatabase_Error
 
     If DBConnection Is Nothing Then
         ' do nothing if nothing
     Else
-        DBConnection.SetProgressHandler Nothing ' Unregisters the progress handler callback
+        'DBConnection.SetProgressHandler Nothing ' Unregisters the progress handler callback
+        'DBConnection.CloseDatabase
         DBConnection.CloseDB
         Set DBConnection = Nothing
     End If
@@ -627,7 +628,7 @@ Public Sub createUnpopulatedDBFromSchema(ByVal pathToFile As String)
         .OpenDB pathToFile, SQLiteReadWriteCreate
 
         If .hDB <> NULL_PTR Then
-            Set DBConnection = .object
+            Set DBConnection = .Object
         End If
 
     End With
