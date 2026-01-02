@@ -66,10 +66,10 @@ act as a repository should anyone wish to pick this project up and play with it 
 
 I will not be releasing this imminently for the following reasons:
 
-o Windows 11 (that's a damn good reason in itself)
-o I don't want to support grumpy people being grumpy when raising bugs/issues
-o I don't want the responsibility of SteamyDock mucking up your computer
-o It is NOT ready, I am playing with new technologies all the time.
+* Windows 11 (that's a damn good reason in itself)
+* I don't want to support grumpy people being grumpy when raising bugs/issues
+*   don't want the responsibility of SteamyDock mucking up your computer
+* It is NOT ready, I am playing with new technologies all the time.
 
 Having said that, if you ever do want a release, you only have to ask nicely but be aware that I will not answer support queries 
 nor fix bugs in a timely manner. This is my PET project and done for my FUN alone.
