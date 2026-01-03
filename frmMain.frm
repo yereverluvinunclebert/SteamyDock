@@ -2,13 +2,13 @@ VERSION 5.00
 Begin VB.Form dock 
    BorderStyle     =   0  'None
    Caption         =   " "
-   ClientHeight    =   10170
+   ClientHeight    =   9675
    ClientLeft      =   45
    ClientTop       =   570
    ClientWidth     =   8190
    Icon            =   "frmMain.frx":0000
    OLEDropMode     =   1  'Manual
-   ScaleHeight     =   678
+   ScaleHeight     =   645
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   546
    ShowInTaskbar   =   0   'False
@@ -198,6 +198,23 @@ Begin VB.Form dock
       Tag             =   "this is the X millisecond timer that does the animation for the dock icons"
       Top             =   105
    End
+   Begin VB.Label Label25 
+      Caption         =   "Note: there are NO OTHER in-code timers used in this program"
+      BeginProperty Font 
+         Name            =   "MS Sans Serif"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   975
+      Left            =   5190
+      TabIndex        =   32
+      Top             =   1260
+      Width           =   2400
+   End
    Begin VB.Label Label24 
       Caption         =   "tmrWriteCache"
       Height          =   255
@@ -219,10 +236,10 @@ Begin VB.Form dock
          Strikethrough   =   0   'False
       EndProperty
       Height          =   525
-      Left            =   315
+      Left            =   240
       TabIndex        =   30
       ToolTipText     =   "slides the dock in the Y axis"
-      Top             =   9435
+      Top             =   9210
       Width           =   7695
    End
    Begin VB.Label Label22 
@@ -361,7 +378,7 @@ Begin VB.Form dock
       Width           =   1410
    End
    Begin VB.Label Label12 
-      Caption         =   "Note: there are other timers on the splashform"
+      Caption         =   "Note: there are other VB6 timers on the splashform"
       BeginProperty Font 
          Name            =   "MS Sans Serif"
          Size            =   8.25
@@ -371,11 +388,11 @@ Begin VB.Form dock
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   315
-      Left            =   405
+      Height          =   1065
+      Left            =   5130
       TabIndex        =   13
-      Top             =   9135
-      Width           =   4380
+      Top             =   330
+      Width           =   2520
    End
    Begin VB.Label Label9 
       Caption         =   "nMinuteExposeTimer"
@@ -839,7 +856,7 @@ Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString"
 
 Private Declare Function Ole_CreatePic Lib "olepro32" _
                 Alias "OleCreatePictureIndirect" ( _
-                ByRef lpPictDesc As PictDesc, _
+                ByRef lpPictDesc As PICTDESC, _
                 ByVal riid As Long, _
                 ByVal fPictureOwnsHandle As Long, _
                 ByRef iPic As IPicture) As Long
@@ -992,13 +1009,13 @@ Private Declare Function SetProcessDpiAwareness Lib "shcore.dll" (ByVal Value As
 
 Private Declare Function BitBlt Lib "gdi32" ( _
     ByVal hDestDC As Long, _
-    ByVal x As Long, _
-    ByVal y As Long, _
+    ByVal X As Long, _
+    ByVal Y As Long, _
     ByVal nWidth As Long, _
     ByVal nHeight As Long, _
     ByVal hSrcDC As Long, _
-    ByVal xSrc As Long, _
-    ByVal ySrc As Long, _
+    ByVal XSrc As Long, _
+    ByVal YSrc As Long, _
     ByVal dwRop As Long _
 ) As Long
  
@@ -1008,16 +1025,16 @@ Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" ( _
 ) As Long
  
 Private Declare Function GetWindowDC Lib "user32" ( _
-    ByVal hwnd As Long _
+    ByVal hWnd As Long _
 ) As Long
  
 Private Declare Function GetWindowRect Lib "user32" ( _
-    ByVal hwnd As Long, _
+    ByVal hWnd As Long, _
     ByRef lpRect As RECT _
 ) As Long
  
 Private Declare Function ReleaseDC Lib "user32" ( _
-    ByVal hwnd As Long, _
+    ByVal hWnd As Long, _
     ByVal hDC As Long _
 ) As Long
  
@@ -1166,7 +1183,7 @@ Private Sub Form_Load()
 '
 '        ' set the device (screen) context default to primary monitor
 '        If hdcScreen = 0 Then
-            hdcScreen = Me.hDC
+            hDCScreen = Me.hDC
 '        End If
 '
 '        'CenterFormOnMonitorTwo dock
@@ -1317,7 +1334,7 @@ End Sub
 ' Purpose   : We handle the mouse events during mouseUp, we only set some states here
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseDown(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
     On Error GoTo Form_MouseDown_Error
     
@@ -1358,7 +1375,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseMove(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Dim timeDiff As Long: timeDiff = 0
     Dim tickCount As Long: tickCount = 0
     
@@ -1667,7 +1684,7 @@ End Sub
 ' Purpose   : this is the equivalent of an icon MouseUp event, a click anywhere on the form
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_MouseUp(Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
 
    On Error GoTo Form_MouseUp_Error
 
@@ -1970,7 +1987,7 @@ End Function
     'Files = 15 (vbCFFiles)
     'RTF = -16639
     '
-Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single)
+Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single)
    
     Dim suffix As String: suffix = vbNullString
     Dim FileName As String: FileName = vbNullString
@@ -1981,7 +1998,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     Dim iconArguments As String: iconArguments = vbNullString
     Dim iconWorkingDirectory As String: iconWorkingDirectory = vbNullString
     Dim answer As VbMsgBoxResult: answer = vbNo
-    Dim nname As String: nname = vbNullString
+    Dim nName As String: nName = vbNullString
     Dim npath As String: npath = vbNullString
     Dim ndesc As String: ndesc = vbNullString
     Dim nwork As String: nwork = vbNullString
@@ -1996,7 +2013,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     ' ie. don't pop it up if layered underneath everything as no-one will see the msgbox
     If rDLockIcons = 1 And (rDzOrderMode = "0" Or rDzOrderMode = "1") Then
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Sorry, the dock is currently locked, so drag and drop is disabled!", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Sorry, the dock is currently locked, so drag and drop is disabled!", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Sorry, the dock is currently locked, so drag and drop is disabled!"
         Exit Sub
     End If
@@ -2013,7 +2030,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
     ' ie. don't pop it up if layered underneath everything as no-one will see the msgbox
     If Data.Files.Count > 1 And (rDzOrderMode = "0" Or rDzOrderMode = "1") Then
        ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.Count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.Count, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         '        MsgBox "Sorry, can only accept one icon drop at a time, you have dropped " & Data.Files.count
         Exit Sub
     End If
@@ -2123,9 +2140,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                         ' .55 DAEB 19/04/2021 frmMain.frm Added call to the older function to identify an icon using the shell object
                         'if the icontitle and command are blank then this is user-created link that only provides the relative path
                         If iconTitle = vbNullString And thisShortcut.FileName = vbNullString And Not iconWorkingDirectory = vbNullString Then
-                            Call GetShellShortcutInfo(iconCommand, nname, npath, ndesc, nwork, nargs)
+                            Call GetShellShortcutInfo(iconCommand, nName, npath, ndesc, nwork, nargs)
                     
-                            iconTitle = nname
+                            iconTitle = nName
                             iconCommand = npath
                             iconArguments = nargs
                             iconWorkingDirectory = nwork
@@ -2234,7 +2251,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         
     Else
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, " unknown file Object OLE dropped onto SteamyDock.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, " unknown file Object OLE dropped onto SteamyDock.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         'MsgBox " unknown file Object OLE dropped onto SteamyDock."
     End If
     
@@ -2258,7 +2275,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, x As Single, y As Single, State As Integer)
+Private Sub Form_OLEDragOver(Data As DataObject, Effect As Long, Button As Integer, Shift As Integer, X As Single, Y As Single, State As Integer)
    On Error GoTo Form_OLEDragOver_Error
 
     If rDLockIcons = 0 Then
@@ -2440,11 +2457,11 @@ Private Sub positionZTimer_Timer()
     
     If dockZorder = "high" Then
         If rDzOrderMode = "0" Then
-            SetWindowPos dock.hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+            SetWindowPos dock.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
         ElseIf rDzOrderMode = "1" Then
-            SetWindowPos dock.hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+            SetWindowPos dock.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
         ElseIf rDzOrderMode = "2" Then
-            SetWindowPos dock.hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
+            SetWindowPos dock.hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
         End If
         dockZorder = "low"
     End If
@@ -2675,7 +2692,7 @@ Private Sub startAnimating()
         
         animateTimer.Enabled = True
        
-        SetWindowPos Me.hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_SHOWWINDOW Or SWP_NOMOVE Or SWP_NOSIZE
+        SetWindowPos Me.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOACTIVATE Or SWP_SHOWWINDOW Or SWP_NOMOVE Or SWP_NOSIZE
         
         '.nn Set the cursor to a pointer, if for some reason it has been set to anything other than a normal pointy cursor
         lngCursor = LoadCursor(0, 32512&)
@@ -2768,11 +2785,11 @@ Private Sub animateTimer_Timer()
             responseTimer.Enabled = True
 '            Exit Sub             ' if the timer that does the bouncing is running then we need to animate even if the mouse is stationary...
         'End If
-        If savApIMouseX = apiMouse.x And savApIMouseY <> apiMouse.y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
+        If savApIMouseX = apiMouse.X And savApIMouseY <> apiMouse.Y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
     End If
 
-    savApIMouseY = apiMouse.y
-    savApIMouseX = apiMouse.x
+    savApIMouseY = apiMouse.Y
+    savApIMouseX = apiMouse.X
     
     showsmall = True
     bDrawn = False
@@ -2783,11 +2800,11 @@ Private Sub animateTimer_Timer()
         'insideDock = apiMouse.X >= leftMostIconPositionPxls And apiMouse.X <= rightMostIconPositionPxls
         
         ' determines the icon index, ie. which icon is clicked upon
-        insideIcon = apiMouse.x >= iconStoreLeftPixels(useloop) And apiMouse.x <= iconStoreRightPixels(useloop)
+        insideIcon = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
         
         If insideIcon Then
             IconIndex = useloop ' this is the current icon number being hovered over
-            iconXOffset = apiMouse.x - iconStoreLeftPixels(useloop)
+            iconXOffset = apiMouse.X - iconStoreLeftPixels(useloop)
             Exit For ' as soon as we have the index we no longer have to stay in the loop
         Else
             useloop = useloop
@@ -2859,7 +2876,7 @@ Private Sub updateScreenUsingGDIPBitmap()
     ' If the current position is not changing, pptDst can be NULL. It is null. We can play with it to move the screen
     
     'Update the specified whole window using the window handle (me.hwnd) selecting a handle to the bitmap (dc) and passing all the required characteristics
-    UpdateLayeredWindow Me.hwnd, hdcScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
+    UpdateLayeredWindow Me.hWnd, hDCScreen, ByVal 0&, apiWindow, dcMemory, apiPoint, 0, funcBlend32bpp, ULW_ALPHA
     
 '    ' delete temporary objects
 '    Call SelectObject(dcMemory, hOldBmp)
@@ -2936,7 +2953,7 @@ Private Sub sequentialBubbleAnimation()
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
         
         ' this is the actual line that does the main animation
-        dynamicSizeModifierPxls = ((apiMouse.x) - iconStoreLeftPixels(IconIndex)) / (bumpFactor)
+        dynamicSizeModifierPxls = ((apiMouse.X) - iconStoreLeftPixels(IconIndex)) / (bumpFactor)
     
     Else
         usedMenuFlag = False ' the menu causes the mouse to move far away from the icon centre and so icon sizing was massive
@@ -2983,7 +3000,7 @@ Private Sub sequentialBubbleAnimation()
     ' .nn Changed or added as part of the drag and drop functionality
     ' 12/05/2021 .nn DAEB Displays a copy of the icon that is being dragged at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
-        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplayKey, (apiMouse.x - iconSizeLargePxls / 2), (apiMouse.y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
+        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75)
     End If
     
     Call updateScreenUsingGDIPBitmap
@@ -4118,7 +4135,7 @@ tryMSCFullPAth:
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
         Else
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-            MessageBox Me.hwnd, thisCommand & " - this batch file does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+            MessageBox Me.hWnd, thisCommand & " - this batch file does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
             ' MsgBox (thisCommand & " - this batch file does not exist")
         End If
         Exit Sub
@@ -4156,7 +4173,7 @@ tryMSCFullPAth:
                 Exit Sub
             ElseIf validURL = False Then
                 ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-                MessageBox Me.hwnd, thisCommand & " - That isn't valid as a target file or a folder, or it doesn't exist - so SteamyDock can't run it.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+                MessageBox Me.hWnd, thisCommand & " - That isn't valid as a target file or a folder, or it doesn't exist - so SteamyDock can't run it.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
             End If
         Next useloop
     End If
@@ -4224,7 +4241,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
 '    CloseHandle (uShell.hProcess)
    
     ' run the selected program
-    Call ShellExecute(hwnd, userLevel, sCommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
+    Call ShellExecute(hWnd, userLevel, sCommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
         
     userLevel = "open" ' return to default
     
@@ -4325,7 +4342,7 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
     ' call up a dialog box if required
     If sUseDialogAfter = "1" Then
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hwnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -4343,7 +4360,7 @@ End Sub
 ' Purpose   : draws any text onto the device with the characteristics required
 '---------------------------------------------------------------------------------------
 '
-Private Sub DrawTheText(ByVal strText As String, ByVal yTop As Single, ByVal xLeft As Single, ByVal textWidth As Integer, Optional ByVal strFont As String = "Tahoma", Optional ByVal bytFontSize As Byte, Optional ByVal bytBorderSize As Byte = 1)
+Private Sub DrawTheText(ByVal strText As String, ByVal YTop As Single, ByVal XLeft As Single, ByVal textWidth As Integer, Optional ByVal strFont As String = "Tahoma", Optional ByVal bytFontSize As Byte, Optional ByVal bytBorderSize As Byte = 1)
     Dim borderRGBColour As Long: borderRGBColour = 0
     Dim borderARGBColour As Long: borderARGBColour = 0
     Dim borderOpacity As Integer: borderOpacity = 0
@@ -4380,8 +4397,8 @@ Private Sub DrawTheText(ByVal strText As String, ByVal yTop As Single, ByVal xLe
     shadowARGBColour = Color_RGBtoARGB(shadowRGBColour, shadowOpacity) 'shadowOpacity)
 
     Call GdipCreateSolidFill(shadowARGBColour, lngBrush)
-    rctText.Left = xLeft + 3
-    rctText.Top = yTop + 3
+    rctText.Left = XLeft + 3
+    rctText.Top = YTop + 3
     rctText.Right = textWidth ' Me.ScaleWidth
     rctText.Bottom = rctTextBottom
     Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
@@ -4398,29 +4415,29 @@ Private Sub DrawTheText(ByVal strText As String, ByVal yTop As Single, ByVal xLe
     Call GdipCreateSolidFill(borderARGBColour, lngBrush)  ' This API requires ARGB format
 
     ' border to the left
-    rctText.Left = xLeft - bytBorderSize
-    rctText.Top = yTop
+    rctText.Left = XLeft - bytBorderSize
+    rctText.Top = YTop
     rctText.Right = textWidth
     rctText.Bottom = rctTextBottom
     Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
 
     ' border to the right
-    rctText.Left = xLeft + bytBorderSize
-    rctText.Top = yTop
+    rctText.Left = XLeft + bytBorderSize
+    rctText.Top = YTop
     rctText.Right = textWidth
     rctText.Bottom = rctTextBottom
     Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
 
     ' border to the top
-    rctText.Left = xLeft
-    rctText.Top = yTop - bytBorderSize
+    rctText.Left = XLeft
+    rctText.Top = YTop - bytBorderSize
     rctText.Right = textWidth
     rctText.Bottom = rctTextBottom
     Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
 
     ' border to the bottom
-    rctText.Left = xLeft
-    rctText.Top = yTop + bytBorderSize
+    rctText.Left = XLeft
+    rctText.Top = YTop + bytBorderSize
     rctText.Right = textWidth
     rctText.Bottom = rctTextBottom
     Call GdipDrawString(lngFont, StrConv(strText, vbUnicode), Len(strText), lngCurrentFont, rctText, lngFormat, lngBrush) ' Cairo.DrawText
@@ -4439,8 +4456,8 @@ Private Sub DrawTheText(ByVal strText As String, ByVal yTop As Single, ByVal xLe
         
     Call GdipCreateSolidFill(fontARGBColour, lngBrush)
     
-    rctText.Left = xLeft
-    rctText.Top = yTop
+    rctText.Left = XLeft
+    rctText.Top = YTop
     rctText.Right = textWidth
     rctText.Bottom = rctTextBottom
     
@@ -4864,7 +4881,7 @@ Public Sub shutDownGDIP()
 
     Call SelectObject(dcMemory, hOldBmp) ' releases memory for GDI handles
     Call DeleteObject(hBmpMemory)  ' the existing bitmap deleted
-    Call ReleaseDC(dock.hwnd, dcMemory)
+    Call ReleaseDC(dock.hWnd, dcMemory)
     Call DeleteDC(dcMemory)
     
     If gdipFullScreenBitmap Then
@@ -5787,8 +5804,8 @@ Private Sub resolveVB6SizeBug()
 '    Me.Width = Screen.Width ' 16200 < VB6 bug here
 
     ' pixels for Cairo and GDI
-    screenHeightPixels = GetDeviceCaps(hdcScreen, VERTRES)
-    screenWidthPixels = GetDeviceCaps(hdcScreen, HORZRES)
+    screenHeightPixels = GetDeviceCaps(hDCScreen, VERTRES)
+    screenWidthPixels = GetDeviceCaps(hDCScreen, HORZRES)
     
     'twips for VB6 forms and controls
     screenHeightTwips = screenHeightPixels * screenTwipsPerPixelY
@@ -5956,7 +5973,7 @@ Private Sub createGDIStructures()
     
     ' A handle to the Device Context (HDC) is obtained before output is written and then released after elements have been written.
     ' Get a device context compatible with the screen
-    dcMemory = CreateCompatibleDC(hdcScreen)
+    dcMemory = CreateCompatibleDC(hDCScreen)
 
     ' A device context is a generalized rendering abstraction. It serves as a proxy between your rendering code and the output device.
     ' It allows you to use the same rendering code, regardless of the destination; the low-level details are handled for you,
@@ -7743,7 +7760,7 @@ Private Sub captureWindow(ByVal thisWindowHWND As Long)
              0, _
              vbSrcCopy
  
-    ReleaseDC Me.hwnd, lhDC
+    ReleaseDC Me.hWnd, lhDC
     picture1.Refresh
 End Sub
 

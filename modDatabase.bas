@@ -16,7 +16,6 @@ Option Explicit
 
 Public DBConnection As SQLiteConnection  ' requires the SQLite project reference VBSQLite12.DLL
 
-
 '---------------------------------------------------------------------------------------
 ' Procedure : connectDatabase
 ' Author    : beededea

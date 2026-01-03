@@ -4,13 +4,10 @@
 
 Overall status - Working, a good learning platform and the dock functions.
 
-o New graphics method using classes for the main 3-5 icons retaining GDI+  just starting this.
-o Need to test SteamyDock working with iconSettings using SQLite database at the same time, testing for conflicts &c
-o Converting away from using a COM helper to access the SQLite functions within the main program, instead calling SQLite directly from VB6 with no COM, no manifests, no registration.
-o Possible RAM leak or SQL eating up the RAM slowly
-o a Few bugs overall, deletion and drag/drop can be slowish to complete. New animations required. Multi-monitor.
-o new timer code implemented for in-code timers. Not yet utilised. May be used for the new icon class animation, unsure.
-o
+o New graphics method using icon classes for the main 3-5 icons retaining GDI+ just starting this.
+o Need to test SteamyDock working with the iconSettings utility also using SQLite database at the same time, modifying the same data testing for conflicts &c
+o Possible RAM leak or SQL eating up the RAM slowly WIP
+o A Few bugs overall, deletion and drag/drop can be slowish to complete. New animations required. Multi-monitor.
 o test the TwinBasic collection as a replacement as it takes PNGS by default - would reduce some of the dependency on GDI+
 
 
@@ -18,15 +15,12 @@ o test the TwinBasic collection as a replacement as it takes PNGS by default - w
 ' =============
 
 ' remove the modification date/time test from iconSettings
-
-' test using API declarations and code from Krool's VBSQL12 project instead of the VB helper DLL
-' test using an alternative SQL dll
+' find and test using an alternative SQL dll
 ' test if the updateCounter is being updated
-
 ' test using RC sqlite.dll and compare speed
 ' add a switch to enable/disable the random access data file & toggle database access for testing speed and RAM usage.
 
-' Replace all the scripting.dictionary /CB's VBA alternative code with TB collections, faster and capable of loading PNGs without all the GDI+ stuff. Cross platform.
+' Replace all the scripting.dictionary /Cristian Buse's VBA alternative code with TB collections, faster and capable of loading PNGs without all the GDI+ stuff. Cross platform.
 
 ' remove the old text icon entries in settings.ini
 
@@ -53,6 +47,9 @@ when a dock is wider than 2000 pixels - stitch two docks together
 
 multi-monitor support
 
+64 bit SQL lite - https://www.sqlite.org/download.html
+' convert SD to 64 bit using TB - will need a 64bit version of SQL DLL.
+
 Synchronising the three applications. We can use any of these options:
 =======================================================================
 A. Memory mapped areas - https://www.vbforums.com/showthread.php?696123-VB6-MMapper-Memory-Mapped-File-Demo
@@ -64,7 +61,8 @@ C. Random access as shared, we have to resolve the locking/blocking manually.
 
 D. Named pipes, we have to resolve the locking/blocking
 
-E. Bring the three programs together - we WILL do this eventually but we have development to complete.
+E. Bring the three programs together - we MUST do this eventually but we have development to complete in ther meantime and it makes it much more simple
+   to keeps the three programs separate for the moment.
 
 
 Private Declare Function IsHungAppWindow Lib "user32" (ByVal hWnd As Long) As Long
@@ -190,6 +188,14 @@ separate the task to kill a process to an external process so that the current p
 '
 ' This implies that RD is calculating from the icon's left hand size to the middle 0-100% to determine the icon sizes and not calculating across one icon's width as SD is currently doing.
 
+
+' Timers
+' ======
+
+' We have extant in-code timers (chatGPT) for non-VB6-form timers already implemented, not yet incorporated in SD but utilised elsewhere. Specifically, in the 10/- RC5 widget. 
+' The reason for use in this widget is due to the need to replace the RC5 timers to become RC-independent. Within SD it might find limited use.  The majority of SD's timer use is UI 
+' interaction and animation and this goes well within VB6 in-form timers as we do not want interruption of the UI interaction.
+' The in-code timers could be used for the new icon class animation but at the moment I am unsure. For the moment I have emoved the in-code timer classes until we possibly need it next time.
 
 
 ' Current Bugs and Regressions
@@ -1003,3 +1009,6 @@ o within modDatabase swap writeIconSettingsIni  for putIconSettings
 
 ' Replace all the scripting.dictionary code with Cristian Buse' VBA collection alternative for planned scripting obsolescence-proofing.
 ' test regfree.bas to see if the VBSQL10.dll can be used regfree  - not without RC's directCOM helper DLL
+' Converting away from using a COM helper to access the SQLite functions within the main program, instead calling Krool's VBSQLite12 directly from VB6 with no COM, no manifests, no registration - DONE
+
+' New timer code implemented for in-code timers. Not yet utilised. May be used for the new icon class animation, unsure. Removed the code. The majority of SD's timer use is UI interaction and animation.
