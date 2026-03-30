@@ -58,7 +58,7 @@ Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 ' APIs for querying processes END
 
 'Public Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal Image As Long, ByVal filename As String, clsidEncoder As CLSID, encoderParams As Any) As GpStatus
-Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal Image As Long, ByVal x As Single, ByVal y As Single) As Long
+Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByVal Image As Long, ByVal X As Single, ByVal Y As Single) As Long
 'Public Declare Function GdipLoadImageFromFile Lib "GdiPlus.dll" (ByVal filename As Long, GpImage As Long) As Long
 'Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClassName As String, ByVal lpszWindowName As String) As Long
 
@@ -66,7 +66,7 @@ Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByV
 Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
 Private Declare Function GetSysColor Lib "user32.dll" (ByVal nIndex As Long) As Long
 Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, Src As Any, ByVal cb As Long) As Long
-Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Any, ByVal handle As Long, ByVal dw As Long) As Long
+Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Any, ByVal Handle As Long, ByVal dw As Long) As Long
 
 ' Public APIs for useful functions START
 
@@ -77,14 +77,14 @@ Public Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
 Public Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlob&, ByVal fDeleteOnRelease As Long, ppstm As stdole.IUnknown) As Long
 Public Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
 
-Public Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long) As Long
+Public Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Public Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
 Public Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
 Public Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
-Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hwnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hwnd As Long, ByVal hWndInsertAfter As Long, ByVal x As Long, ByVal y As Long, ByVal cx As Long, ByVal cy As Long, ByVal wFlags As Long) As Long
-Public Declare Function UpdateLayeredWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal hdcDst As Long, pptDst As Any, psize As Any, ByVal hdcSrc As Long, pptSrc As Any, ByVal crKey As Long, ByRef pblend As BLENDFUNCTION, ByVal dwFlags As Long) As Long
-Public Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
+Public Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Public Declare Function SetWindowPos Lib "user32.dll" (ByVal hWnd As Long, ByVal hWndInsertAfter As Long, ByVal X As Long, ByVal Y As Long, ByVal CX As Long, ByVal CY As Long, ByVal wFlags As Long) As Long
+Public Declare Function UpdateLayeredWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal hdcDst As Long, pptDst As Any, psize As Any, ByVal hdcSrc As Long, pptSrc As Any, ByVal crKey As Long, ByRef pblend As BLENDFUNCTION, ByVal dwFlags As Long) As Long
+Public Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal XLeft As Long, ByVal YTop As Long, ByVal hIcon As Long, ByVal CXWidth As Long, ByVal CYWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 ' API to obtain correct screen width (to correct VB6 bug)
 Public Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Public Declare Function DestroyIcon Lib "user32.dll" (ByVal hIcon As Long) As Long
@@ -98,14 +98,14 @@ Public Declare Function PrivateExtractIcons Lib "user32" _
                 ByRef phIcon As Long, _
                 ByRef pIconId As Long, _
                 ByVal nIcons As Long, _
-                ByVal flags As Long _
+                ByVal Flags As Long _
 ) As Long
 
 ' APIs for useful functions END
 
 'Private APIs for GDI+
 Private Declare Function GdipCreateImageAttributes Lib "gdiplus" (ByRef imageattr As Long) As Long
-Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ClrAdjType As ColorAdjustType, ByVal enableFlag As Long, colourMatrix As Any, grayMatrix As Any, ByVal flags As ColorMatrixFlags) As GpStatus
+Private Declare Function GdipSetImageAttributesColorMatrix Lib "gdiplus" (ByVal imageattr As Long, ByVal ClrAdjType As ColorAdjustType, ByVal enableFlag As Long, colourMatrix As Any, grayMatrix As Any, ByVal Flags As ColorMatrixFlags) As GpStatus
 'Private Declare Function GdipCreateHBITMAPFromBitmap Lib "gdiplus" (ByVal Image As Long, hBmp As Long, ByVal BGColor As Long) As Long
 Private Declare Function GdipCreateBitmapFromHBITMAP Lib "gdiplus" (ByVal hBmp As Long, ByVal hPal As Long, Image As Long) As Long
 Private Declare Function GdipDrawImageRectRectI Lib "gdiplus" (ByVal Context As Long, ByVal Image As Long, ByVal dstX As Long, ByVal dstY As Long, ByVal dstWidth As Long, ByVal dstHeight As Long, ByVal SrcX As Long, ByVal SrcY As Long, ByVal srcWidth As Long, ByVal srcHeight As Long, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal CallbackData As Long) As Long
@@ -116,7 +116,7 @@ Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As 
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, encoders As Any) As GpStatus
 ' APIs image cropping
 Private Declare Function GdipGetImagePixelFormat Lib "gdiplus" (ByVal Image As Long, ByRef PixelFormat As Long) As Long
-Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long, ByVal PixelFormat As Long, ByVal srcBitmap As Long, dstBitmap As Long) As GpStatus
+Private Declare Function GdipCloneBitmapAreaI Lib "gdiplus" (ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long, ByVal PixelFormat As Long, ByVal srcBitmap As Long, dstBitmap As Long) As GpStatus
 
 'Public APIs for GDI+
 
@@ -124,17 +124,17 @@ Public Declare Function GdipLoadImageFromStream Lib "gdiplus" (ByVal pStream As 
 Public Declare Function GdipCreateFont Lib "gdiplus" (ByVal fontFamily As Long, ByVal emSize As Single, ByVal style As GDIPLUS_FONTSTYLE, ByVal Unit As GDIPLUS_UNIT, createdfont As Long) As Long
 Public Declare Function GdipCreateFontFamilyFromName Lib "gdiplus" (ByVal Name As String, ByVal fontCollection As Long, fontFamily As Long) As Long
 Public Declare Function GdipCreateFromHDC Lib "GdiPlus.dll" (ByVal hDC As Long, GpGraphics As Long) As Long
-Public Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal argb As Long, brush As Long) As Long
+Public Declare Function GdipCreateSolidFill Lib "gdiplus" (ByVal argb As Long, Brush As Long) As Long
 Public Declare Function GdipCreateStringFormat Lib "gdiplus" (ByVal formatAttributes As Long, ByVal language As Integer, StringFormat As Long) As Long
-Public Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal brush As Long) As Long
+Public Declare Function GdipDeleteBrush Lib "gdiplus" (ByVal Brush As Long) As Long
 Public Declare Function GdipDeleteFont Lib "gdiplus" (ByVal curFont As Long) As Long
 Public Declare Function GdipDeleteFontFamily Lib "gdiplus" (ByVal fontFamily As Long) As Long
 Public Declare Function GdipDeleteGraphics Lib "GdiPlus.dll" (ByVal Graphics As Long) As Long
 Public Declare Function GdipDeleteStringFormat Lib "gdiplus" (ByVal StringFormat As Long) As Long
 Public Declare Function GdipDisposeImage Lib "GdiPlus.dll" (ByVal Image As Long) As Long
-Public Declare Function GdipDrawImageRectI Lib "GdiPlus.dll" (ByVal Graphics As Long, ByVal img As Long, ByVal x As Long, ByVal y As Long, ByVal Width As Long, ByVal Height As Long) As Long
+Public Declare Function GdipDrawImageRectI Lib "GdiPlus.dll" (ByVal Graphics As Long, ByVal img As Long, ByVal X As Long, ByVal Y As Long, ByVal Width As Long, ByVal Height As Long) As Long
 Public Declare Function GdipDrawImageRectRect Lib "GdiPlus.dll" (ByVal hGraphics As Long, ByVal hImage As Long, ByVal dstX As Single, ByVal dstY As Single, ByVal dstWidth As Single, ByVal dstHeight As Single, ByVal SrcX As Single, ByVal SrcY As Single, ByVal srcWidth As Single, ByVal srcHeight As Single, ByVal srcUnit As Long, ByVal imageAttributes As Long, ByVal Callback As Long, ByVal CallbackData As Long) As Long
-Public Declare Function GdipDrawString Lib "gdiplus" (ByVal Graphics As Long, ByVal Str As String, ByVal Length As Long, ByVal thefont As Long, layoutRect As RECTF, ByVal StringFormat As Long, ByVal brush As Long) As Long
+Public Declare Function GdipDrawString Lib "gdiplus" (ByVal Graphics As Long, ByVal Str As String, ByVal Length As Long, ByVal thefont As Long, layoutRect As RECTF, ByVal StringFormat As Long, ByVal Brush As Long) As Long
 Public Declare Function GdipGetImageHeight Lib "GdiPlus.dll" (ByVal Image As Long, Height As Long) As Long
 Public Declare Function GdipGetImageWidth Lib "GdiPlus.dll" (ByVal Image As Long, Width As Long) As Long
 Public Declare Function GdiplusShutdown Lib "gdiplus" (ByVal Token As Long) As Long
@@ -172,31 +172,31 @@ Public Declare Function GdipSetStringFormatLineAlign Lib "gdiplus" (ByVal String
 
 ' Private APIs and vars for enumerating running windows START
 Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
-Private Declare Function IsWindowVisible Lib "user32" (ByVal hwnd As Long) As Long
-Private Declare Function GetParent Lib "user32.dll" (ByVal hwnd As Long) As Long
-Private Declare Function GetWindow Lib "user32.dll" (ByVal hwnd As Long, ByVal wCmd As Long) As Long
-Private Declare Function GetAncestor Lib "user32" (ByVal hwnd As Long, ByVal gaFlags As Long) As Long
-Private Declare Function IsTopWIndow Lib "user32" (ByVal hwnd As Long) As Long
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function GetParent Lib "user32.dll" (ByVal hWnd As Long) As Long
+Private Declare Function GetWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function GetAncestor Lib "user32" (ByVal hWnd As Long, ByVal gaFlags As Long) As Long
+Private Declare Function IsTopWIndow Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 ' Private APIs and vars for enumerating running windows END
 
 ' Public APIs and vars for enumerating running windows START
-Public Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
-Public Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hwnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
-Public Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hwnd As Long) As Long
+Public Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
+Public Declare Function GetWindowText Lib "user32" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
+Public Declare Function SetForegroundWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
 
 ' .38 DAEB 18/03/2021 frmMain.frm utilised SetActiveWindow to give window focus without bringing it to fore
-Public Declare Function SetActiveWindow Lib "user32.dll" (ByVal hwnd As Long) As Long
-Public Declare Function IsIconic Lib "user32" (ByVal hwnd As Long) As Long
+Public Declare Function SetActiveWindow Lib "user32.dll" (ByVal hWnd As Long) As Long
+Public Declare Function IsIconic Lib "user32" (ByVal hWnd As Long) As Long
     
 ' .25 DAEB frmMain.bas 10/02/2021 added API and vars to test to see if a window is zoomed
-Public Declare Function IsZoomed Lib "user32" (ByVal hwnd As Long) As Long
-Public Declare Function ShowWindow Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Long) As Long
-Public Declare Function ShowWindowAsync Lib "user32" (ByVal hwnd As Long, ByVal nCmdShow As Integer) As Boolean
+Public Declare Function IsZoomed Lib "user32" (ByVal hWnd As Long) As Long
+Public Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
+Public Declare Function ShowWindowAsync Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Integer) As Boolean
 Public Declare Function AttachThreadInput Lib "user32" (ByVal idAttach As Long, ByVal idAttachTo As Long, ByVal fAttach As Long) As Long
 Public Declare Function GetForegroundWindow Lib "user32" () As Long
 ' .39 DAEB 18/03/2021 frmMain.frm utilised BringWindowToTop instead of SetWindowPos & HWND_TOP as that was used by a C program that worked perfectly.
-Public Declare Function BringWindowToTop Lib "user32.dll" (ByVal hwnd As Long) As Long
+Public Declare Function BringWindowToTop Lib "user32.dll" (ByVal hWnd As Long) As Long
 
 'APIs and vars for enumerating running windows ENDS
 
@@ -279,8 +279,8 @@ Public Type GDIPLUS_STARTINPUT
 End Type
 
 Public Type POINTAPI
-    x As Long
-    y As Long
+    X As Long
+    Y As Long
 End Type
 
 Public Type RECTF
@@ -302,7 +302,7 @@ Public Type BITMAPINFO
     bmpColors As RGBQUAD
 End Type
 
-Public Type clsid
+Public Type CLSID
    Data1 As Long
    Data2 As Integer
    Data3 As Integer
@@ -310,14 +310,14 @@ Public Type clsid
 End Type
 
 Public Type ImageCodecInfo
-   ClassID As clsid
-   FormatID As clsid
+   ClassID As CLSID
+   FormatID As CLSID
    CodecName As Long      ' String Pointer; const WCHAR*
    DllName As Long        ' String Pointer; const WCHAR*
    FormatDescription As Long ' String Pointer; const WCHAR*
    FilenameExtension As Long ' String Pointer; const WCHAR*
    MimeType As Long       ' String Pointer; const WCHAR*
-   flags As ImageCodecFlags   ' Should be a Long equivalent
+   Flags As ImageCodecFlags   ' Should be a Long equivalent
    Version As Long
    SigCount As Long
    SigSize As Long
@@ -338,8 +338,8 @@ Public Type Link
 End Type
 
 
-Public Type PictDesc
-    cbSizeofStruct  As Long
+Public Type PICTDESC
+    cbSizeOfStruct  As Long
     PicType         As Long
     hImage          As Long
     xExt            As Long
@@ -615,7 +615,7 @@ Public iconWidthPxls As Single
 Public bounceZone As Integer ' .16 DAEB 12/07/2021 mdlMain.bas Add the BounceZone as a configurable variable.
 Public smallDockBeenDrawn As Boolean
 
-Public hdcScreen As Long
+Public hDCScreen As Long
 
 Public lHotKey As Long
 
@@ -640,7 +640,7 @@ Public Function fTestCursorWithinDockYPosition() As Boolean
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
     If dockPosition = vbBottom Then
-        outsideDock = apiMouse.y < dockYEntrancePoint Or apiMouse.x < leftMostIconPositionPxls Or apiMouse.x > rightMostIconPositionPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > rightMostIconPositionPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > rightMostIconPositionPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '            outsideDock = True
 '        Else
@@ -648,7 +648,7 @@ Public Function fTestCursorWithinDockYPosition() As Boolean
 '        End If
     End If
     If dockPosition = vbtop Then
-        outsideDock = apiMouse.y > dockYEntrancePoint Or apiMouse.x < leftMostIconPositionPxls Or apiMouse.x > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     End If
     
     fTestCursorWithinDockYPosition = outsideDock ' return
@@ -682,7 +682,7 @@ End Function
 'the index of the ImageCodecInfo object and copies the CLSID into the variable pointed to by
 'pClsid. If the function fails, it returns –1.
 
-Public Function GetEncoderClsid(strMimeType As String, ClassID As clsid) As Long
+Public Function GetEncoderClsid(strMimeType As String, ClassID As CLSID) As Long
    Dim num As Long
    Dim Size As Long
    Dim i As Long
@@ -1162,7 +1162,7 @@ End Sub
 '
 '---------------------------------------------------------------------------------------
 '
-Private Function fEnumWindowsCallBack(ByVal hwnd As Long, ByVal lParam As Long) As Long
+Private Function fEnumWindowsCallBack(ByVal hWnd As Long, ByVal lParam As Long) As Long
 Dim lReturn     As Long
 Dim lExStyle    As Long
 Dim bNoOwner    As Boolean
@@ -1183,26 +1183,26 @@ On Error GoTo fEnumWindowsCallBack_Error
 
 pid = lParam
 
-If hwnd <> dock.hwnd Then
+If hWnd <> dock.hWnd Then
         ' check if window is visible or not
-        If IsWindowVisible(hwnd) Then
+        If IsWindowVisible(hWnd) Then
             ' This is a top-level window. See if it has the target instance handle.
             ' test_pid is the process ID returned for the window handle
             
             ' GetWindowThreadProcessId finds the process ID given for the thread which owns the window
-            Thread_ID = GetWindowThreadProcessId(hwnd, test_pid)
+            Thread_ID = GetWindowThreadProcessId(hWnd, test_pid)
                       
             If test_pid = pid Then
-                If GetParent(hwnd) = 0 Then
-                    bNoOwner = (GetWindow(hwnd, GW_OWNER) = 0)
-                    lExStyle = GetWindowLong(hwnd, GWL_EXSTYLE)
+                If GetParent(hWnd) = 0 Then
+                    bNoOwner = (GetWindow(hWnd, GW_OWNER) = 0)
+                    lExStyle = GetWindowLong(hWnd, GWL_EXSTYLE)
 
                         If (((lExStyle And WS_EX_TOOLWINDOW) = 0) And bNoOwner) Or _
                             ((lExStyle And WS_EX_APPWINDOW) And Not bNoOwner) Then
         
-                                hwnd = GetAncestor(hwnd, GA_ROOT)
+                                hWnd = GetAncestor(hWnd, GA_ROOT)
         
-                                storeWindowHwnd = hwnd ' a bit of a kludge, a global var that carries the window handle to the calling function
+                                storeWindowHwnd = hWnd ' a bit of a kludge, a global var that carries the window handle to the calling function
                                 Exit Function
                         End If
                 End If
@@ -2629,7 +2629,7 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Dictionary, ByVal
 
     Dim thiskey As String
     Dim saveStatus As Boolean
-    Dim encoderCLSID As clsid
+    Dim encoderCLSID As CLSID
     Dim bytesFromFile() As Byte
     Dim Strm As stdole.IUnknown
     Dim img As Long
@@ -2889,7 +2889,7 @@ Public Function updateDisplayFromDictionary(thisCollection As Dictionary, strFil
 
 updateDisplayFromDictionary_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure updateDisplayFromDictionary of Form dock"
+    MsgBox "Key = " & Key & " " & "Error " & Err.Number & " (" & Err.Description & ") in procedure updateDisplayFromDictionary of Form dock"
 End Function
 
 
@@ -2950,8 +2950,8 @@ Public Sub setWindowCharacteristics()
     If debugflg = 1 Then debugLog "% sub setWindowCharacteristics"
     
     'set the transparency of the underlying form with click through
-    windowLngReturn = GetWindowLong(dock.hwnd, GWL_EXSTYLE)
-    SetWindowLong dock.hwnd, GWL_EXSTYLE, windowLngReturn Or WS_EX_LAYERED
+    windowLngReturn = GetWindowLong(dock.hWnd, GWL_EXSTYLE)
+    SetWindowLong dock.hWnd, GWL_EXSTYLE, windowLngReturn Or WS_EX_LAYERED
     
     ' determine the z position of the dock with respect to other application and o/s windows.
     ' this also changes the window positioning and size:
@@ -2963,20 +2963,20 @@ Public Sub setWindowCharacteristics()
     ' we may have to set GDI to the width of the whole virtual screen
     
     If rDzOrderMode = "0" Then
-        SetWindowPos dock.hwnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+        SetWindowPos dock.hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOSIZE
     ElseIf rDzOrderMode = "1" Then
-        SetWindowPos dock.hwnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
+        SetWindowPos dock.hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOSIZE
     ElseIf rDzOrderMode = "2" Then
-        SetWindowPos dock.hwnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
+        SetWindowPos dock.hWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE
     End If
     
     ' point structure that specifies the location of the layer updated in UpdateLayeredWindow
-    apiPoint.x = 0
-    apiPoint.y = 0
+    apiPoint.X = 0
+    apiPoint.Y = 0
     
     ' point structure that specifies the size of the window in pixels
-    apiWindow.x = screenWidthPixels ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    apiWindow.y = screenHeightPixels  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    apiWindow.X = screenWidthPixels ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+    apiWindow.Y = screenHeightPixels  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     
     ' the third parameter to UpdateLayeredWindow is a pointer to a structure that specifies the new screen position of the layered window.
     ' If the current position is not changing, pptDst can be NULL. It is null.
@@ -3234,7 +3234,7 @@ End Sub
 ' Purpose   : .33 DAEB 03/03/2021 frmMain.frm New systray code from Dragokas
 '---------------------------------------------------------------------------------------
 '
-Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hwnd As Long) As Boolean
+Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hWnd As Long) As Boolean
 
     Dim Count As Long: Count = 0
     Dim hIcon() As Long: 'hIcon() = 0
@@ -3253,7 +3253,7 @@ Public Function isSysTray(hTray As Long, ByRef processID As Long, ByRef hwnd As 
         pid = GetPidByWindow(hIcon(i))
         'if the extracted pid matches the supplied processID then we have the window handle
         If pid = processID Then
-            hwnd = hIcon(i)
+            hWnd = hIcon(i)
             Exit Function
         End If
     Next
@@ -3443,7 +3443,7 @@ Public Sub restartSteamydock()
         If userLevel <> "runas" Then userLevel = "open"
         Call dock.runCommand("focus", thisCommand)
     Else
-         MessageBox dock.hwnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+         MessageBox dock.hWnd, thisCommand & " is missing", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
     End If
 
 
@@ -3518,7 +3518,7 @@ Public Sub thisFormUnload()
     
     ' close SQL
     
-    Call closeDatabase
+    Call CloseDatabase
 
     ' shutdown GDIP
     
@@ -3573,7 +3573,7 @@ End Sub
 Public Function executeSettings() As Long
    On Error GoTo executeSettings_Error
 
-    executeSettings = ShellExecute(dock.hwnd, "runas", "c:\windows\explorer.exe", vbNullString, vbNullString, 1)
+    executeSettings = ShellExecute(dock.hWnd, "runas", "c:\windows\explorer.exe", vbNullString, vbNullString, 1)
 
    On Error GoTo 0
    Exit Function

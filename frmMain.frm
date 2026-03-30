@@ -3740,7 +3740,7 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
         Call storeCurrentIconPositions(thisIconIndex - 1)
         
         ' display the icon in the dock
-        Call showLargeIconTypes(thisIconIndex - 1)
+        Call showLargeIconTypes(thisIconIndex)
     End If
 
      ' leftMostIconPositionPxls = iconPosLeftPxls
