@@ -30,6 +30,8 @@ Framework 2.2 & Rubberduck 2.4.1.
 
 In addition, changes have been made to make it compatible with TwinBasic, so it now compiles and runs using TwinBasic.
 
+External links are provided for reference only. Please verify sources before downloading any third-party software.
+
 **Links:**
 
 	MZ-TOOLS https://www.mztools.com/  
@@ -247,9 +249,13 @@ Krool for the SQLite12 code to allow SQL commands to be used extensively within 
 
 **LICENCE AGREEMENTS:**
 
-Copyright 2023 Dean Beedell
+Copyright © 2023 Dean Beedell
 
-In addition to the GNU General Public Licence please be aware that you may use
+Code: GNU GPL vX
+
+Artwork/Images: © Dean Beedell – separate license applies
+
+Please be aware that you may use
 any of my own imagery in your own creations but commercially only with my
 permission. In all other non-commercial cases I require a credit to the
 original artist using my name or one of my pseudonyms and a link to my site.
