@@ -68,12 +68,12 @@ act as a repository should anyone wish to pick this project up and play with it 
 
 I will not be releasing this imminently for the following reasons:
 
-* Windows 11 (that's a damn good reason in itself)
-* I don't want to support grumpy people being grumpy when raising bugs/issues
-*   don't want the responsibility of SteamyDock mucking up your computer
-* It is NOT ready, I am playing with new technologies all the time.
+* Windows 11 (that's a damn good reason in itself), Windows 11 hates VB6 and working with 3rd party docks.
+* I don't want to support grumpy people being grumpy when raising bugs/issues.
+* I don't want the responsibility of SteamyDock mucking up your computer.
+* It is NOT ready, I am playing with and introducing new technologies all the time.
 
-Having said that, if you ever do want a release, you only have to ask nicely but be aware that I will not answer support queries 
+Having said that, if you ever do want a release, you only have to ask nicely and I will build one for you - but be aware that I will not answer support queries 
 nor fix bugs in a timely manner. This is my PET project and done for my FUN alone.
 
 **Development:**
