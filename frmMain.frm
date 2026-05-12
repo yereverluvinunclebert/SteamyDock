@@ -196,7 +196,7 @@ Begin VB.Form dock
       Interval        =   10
       Left            =   270
       Tag             =   "this is the X millisecond timer that does the animation for the dock icons"
-      Top             =   105
+      Top             =   150
    End
    Begin VB.Label Label25 
       Caption         =   "Note: there are NO OTHER in-code timers used in this program"
@@ -3640,7 +3640,7 @@ Private Sub drawDockByCursorEntryPosition()
     Call sizeAndShowFullSizeIconByCEP(IconIndex, showsmall)
     mainIconWidthPxls = iconWidthPxls
     
-    ' what should be the group of icons to the left of the main icon, resized dynamically, currently caters only for one
+    ' what should be the very small group of icons to the left of the main icon, resized dynamically, currently caters only for one
     Call sizeAndShowSingleMainIconToLeftByCEP(IconIndex, leftmostResizedIcon, showsmall)
 
     ' what should be the group of icons to the right of the main icon, resized dynamically, currently caters only for one
@@ -3740,7 +3740,7 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
         Call storeCurrentIconPositions(thisIconIndex - 1)
         
         ' display the icon in the dock
-        Call showLargeIconTypes(thisIconIndex)
+        Call showLargeIconTypes(thisIconIndex - 1)
     End If
 
      ' leftMostIconPositionPxls = iconPosLeftPxls

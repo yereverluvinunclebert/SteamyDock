@@ -4,11 +4,13 @@
 
 Overall status - Working, a good learning platform and the dock functions.
 
-o New graphics method using icon classes for the main 3-5 icons retaining GDI+ just starting this.
-o Need to test SteamyDock working with the iconSettings utility also using SQLite database at the same time, modifying the same data testing for conflicts &c
+o New graphics method using icon classes for the main 3-5 icons retaining GDI+ - a test project exists, transparent Cairo which can be utilised directly.
+   can be used to implement ALL the icons with some modifications but the main three icons might be the best idea as an interim.
+o Need to test SteamyDock working with the iconSettings utility also using SQLite database at the same time, modifying the same data testing for conflicts &c WIP - working!
 o Possible RAM leak or SQL eating up the RAM slowly WIP
 o A Few bugs overall, deletion and drag/drop can be slowish to complete. New animations required. Multi-monitor.
-o test the TwinBasic collection as a replacement as it takes PNGS by default - would reduce some of the dependency on GDI+
+o Replace all the scripting.dictionary /Cristian Buse's VBA alternative code with TB collections, faster and capable of loading PNGs without all the GDI+ stuff. Cross platform.
+o Test the TwinBasic collection as a replacement as it takes PNGS by default - would reduce some of the dependency on GDI+
 
 
 ' Current Tasks:
