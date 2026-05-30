@@ -181,7 +181,7 @@ Begin VB.Form dock
    Begin VB.Timer bounceUpTimer 
       Enabled         =   0   'False
       Interval        =   20
-      Left            =   255
+      Left            =   270
       Tag             =   "controls the bounceUpward when the icon is clicked"
       Top             =   1605
    End
@@ -3800,6 +3800,13 @@ sizeAndShowSingleMainIconToRightByCEP_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeAndShowSingleMainIconToRightByCEP of Form dock"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : sizeAndShowSmallIconsToLeftByCEP
+' Author    : beededea
+' Date      : 19/05/2026
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByRef leftmostResizedIcon As Integer, ByRef showsmall As Boolean)
     Dim leftLoop As Integer: leftLoop = 0
     Dim thiskey As String: thiskey = vbNullString
@@ -3807,6 +3814,8 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
 
     ' all icons to the left
     '==================
+    On Error GoTo sizeAndShowSmallIconsToLeftByCEP_Error
+
     If thisIconIndex > 0 Then 'check it isn't trying to animate a non-existent icon before the first icon
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
         iconPosLeftPxls = iconStoreLeftPixels(thisIconIndex - 1)
@@ -3826,9 +3835,16 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
 
             Call storeCurrentIconPositions(leftLoop)
 
-            Call showSmallIcon(leftLoop)
+            If leftLoop <> 0 Then Call showSmallIcon(leftLoop)
         Next leftLoop
     End If
+
+    On Error GoTo 0
+    Exit Sub
+
+sizeAndShowSmallIconsToLeftByCEP_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeAndShowSmallIconsToLeftByCEP of Form dock"
 End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : sizeAndShowSmallIconsToRightByCEP
@@ -3999,7 +4015,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
         Exit Sub
     End If
     
-    ' run the selected program
+    ' if the confirmation dialog is switched on
     If sUseDialog = "1" Then
         ' .19 DAEB frmMain.frm 02/02/2021 added sArguments field to the confirmation dialog
         ' .21 DAEB frmMain.frm 07/02/2021 slight improvement to the confirmation dialog
@@ -4038,11 +4054,13 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
         Call dock.shutDownGDIP
         End
     End If
+    
     ' Rocketdock settings compatibility
     If thisCommand = "[Settings]" Then
         Call menuForm.mnuDockSettings_Click
         Exit Sub
     End If
+    
     ' Rocketdock settings compatibility
     If thisCommand = "[Icons]" Then
         Call menuForm.mnuIconSettings_Click_Event
@@ -4112,7 +4130,6 @@ tryMSCFullPAth:
 
         End If
     End If
-    
 
     ' task manager
     If thisCommand = "taskmgr" Then
@@ -4120,13 +4137,7 @@ tryMSCFullPAth:
         Exit Sub
     End If
     
-'    ' RocketdockEnhancedSettings.exe (the .NET version of this program)
-'    If getFileNameFromPath(thisCommand) = "RocketdockEnhancedSettings.exe" Then
-'        Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
-'         Exit Sub
-'    End If
-
-    ' bat files
+    ' BATch files
     If ExtractSuffixWithDot(UCase$(thisCommand)) = ".BAT" Then
         'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
         thisCommand = """" & sCommand & """" ' put the command in quotes so it handles spaces in the path
@@ -4143,7 +4154,7 @@ tryMSCFullPAth:
     
     optionalParam = "none"
             
-    'anything else remaining, all normal programs
+    'any remaining command, in general, all normal program calls.
     If fFExists(thisCommand) Then ' checks the current filename for the named target
         'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
         If sWorkingDirectory <> vbNullString Then
@@ -4153,13 +4164,15 @@ tryMSCFullPAth:
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, vbNullString, intShowCmd, optionalParam)
             Exit Sub
         End If
-    ' folders only
-    ElseIf fDirExists(thisCommand) Then ' checks if a folder of the same name exists in the current folder
+    End If
+    
+    ' file does not exist so check to see if it is a folder link instead
+    If Not fFExists(thisCommand) And fDirExists(thisCommand) Then  ' checks if a folder of the same name exists in the current folder
         Call shellExecuteWithDialog("open", thisCommand, sArguments, sWorkingDirectory, intShowCmd, "folder")
         Exit Sub
     End If
-    
-    ' items with no suffix not found in default folder - look in system32
+        
+    ' Now check whether any other single word commands such as "control" ie. those without a specified foldername and without a file suffix can be found in system32, if so, run them.
     suffix = LCase(ExtractSuffixWithDot(thisCommand))
     If suffix = "" Then
         listOfTypes = ".exe|.msc|.cpl|.lnk|.bat"
@@ -4171,13 +4184,16 @@ tryMSCFullPAth:
             If fFExists(userprof) Then ' ' checks the windows system 32 folder for the named target
                 Call shellExecuteWithDialog(userLevel, userprof, sArguments, sWorkingDirectory, intShowCmd)
                 Exit Sub
-            ElseIf validURL = False Then
-                ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-                MessageBox Me.hWnd, thisCommand & " - That isn't valid as a target file or a folder, or it doesn't exist - so SteamyDock can't run it.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
             End If
         Next useloop
     End If
     
+    ' at this point all valid commands should have been dispatched and this routine ended with an exit sub, if it has manage to drop out to here, then it is a malformed command or a missing/incorrect filename
+    If validURL = False Then
+         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
+         MessageBox Me.hWnd, thisCommand & " - That isn't valid as a target file or a folder, or it doesn't exist - so SteamyDock can't run it.", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+    End If
+        
     On Error GoTo 0
     Exit Sub
 
