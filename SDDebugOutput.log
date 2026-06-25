@@ -17977,3 +17977,119 @@
 2026-05-29 22:30:34.982 ******************************
 2026-05-29 22:30:34.982 % SteamyDock startup complete.
 2026-05-29 22:30:34.982 ******************************
+2026-06-25 20:57:06.918 % sub toggleDebugging
+2026-06-25 20:57:06.953 *****************************
+2026-06-25 20:57:06.953 % SteamyDock program started.
+2026-06-25 20:57:06.954 *****************************
+2026-06-25 20:57:06.954 % sub sDriveStrings
+2026-06-25 20:57:06.954 % sub testDockRunning
+2026-06-25 20:57:06.954 % sub checkLicenceState
+2026-06-25 20:57:06.984 % sub classicThemeCapable
+2026-06-25 20:57:06.985 % sub disableAdmin
+2026-06-25 20:57:06.985 % sub checkSteamyDockInstallation
+2026-06-25 20:57:06.985 % sub locateDockSettingsFile
+2026-06-25 20:57:07.016 % sub readDockConfiguration
+2026-06-25 20:57:07.024 % sub readDockSettingsFile
+2026-06-25 20:57:07.152 % sub setUserHotKey
+2026-06-25 20:57:07.153 % func monitorProperties
+2026-06-25 20:57:07.153 % sub resolveVB6SizeBug
+2026-06-25 20:57:07.161 % sub setLocalConfigurationVars
+2026-06-25 20:57:07.174 % sub initialiseGDIPStartup
+2026-06-25 20:57:07.175 % sub createDictionaryObjects
+2026-06-25 20:57:07.176 % sub prepareArraysAndCollections
+2026-06-25 20:57:09.948 % sub createGDIStructures
+2026-06-25 20:57:09.949 % sub showSplashScreen
+2026-06-25 20:57:10.003 % sub createNewGDIPBitmap
+2026-06-25 20:57:10.003 % sub setAutoHide
+2026-06-25 20:57:10.003 % sub setWindowCharacteristics
+2026-06-25 20:57:10.017 % sub setUpProcessTimers
+2026-06-25 20:57:10.033 ******************************
+2026-06-25 20:57:10.033 % SteamyDock startup complete.
+2026-06-25 20:57:10.033 ******************************
+2026-06-25 21:06:33.477 % sub toggleDebugging
+2026-06-25 21:06:33.497 *****************************
+2026-06-25 21:06:33.498 % SteamyDock program started.
+2026-06-25 21:06:33.498 *****************************
+2026-06-25 21:06:33.498 % sub sDriveStrings
+2026-06-25 21:06:33.498 % sub testDockRunning
+2026-06-25 21:06:33.498 % sub checkLicenceState
+2026-06-25 21:06:33.528 % sub classicThemeCapable
+2026-06-25 21:06:33.529 % sub disableAdmin
+2026-06-25 21:06:33.529 % sub checkSteamyDockInstallation
+2026-06-25 21:06:33.529 % sub locateDockSettingsFile
+2026-06-25 21:06:33.531 % sub readDockConfiguration
+2026-06-25 21:06:33.535 % sub readDockSettingsFile
+2026-06-25 21:06:33.639 % sub setUserHotKey
+2026-06-25 21:06:33.640 % func monitorProperties
+2026-06-25 21:06:33.640 % sub resolveVB6SizeBug
+2026-06-25 21:06:33.646 % sub setLocalConfigurationVars
+2026-06-25 21:06:33.647 % sub initialiseGDIPStartup
+2026-06-25 21:06:33.647 % sub createDictionaryObjects
+2026-06-25 21:06:33.648 % sub prepareArraysAndCollections
+2026-06-25 21:06:36.181 % sub createGDIStructures
+2026-06-25 21:06:36.181 % sub showSplashScreen
+2026-06-25 21:06:36.235 % sub createNewGDIPBitmap
+2026-06-25 21:06:36.235 % sub setAutoHide
+2026-06-25 21:06:36.235 % sub setWindowCharacteristics
+2026-06-25 21:06:36.249 % sub setUpProcessTimers
+2026-06-25 21:06:36.266 ******************************
+2026-06-25 21:06:36.267 % SteamyDock startup complete.
+2026-06-25 21:06:36.267 ******************************
+2026-06-25 21:31:25.281 % sub toggleDebugging
+2026-06-25 21:31:25.335 *****************************
+2026-06-25 21:31:25.335 % SteamyDock program started.
+2026-06-25 21:31:25.335 *****************************
+2026-06-25 21:31:25.336 % sub sDriveStrings
+2026-06-25 21:31:25.336 % sub testDockRunning
+2026-06-25 21:31:25.336 % sub checkLicenceState
+2026-06-25 21:31:25.382 % sub classicThemeCapable
+2026-06-25 21:31:25.382 % sub disableAdmin
+2026-06-25 21:31:25.382 % sub checkSteamyDockInstallation
+2026-06-25 21:31:25.383 % sub locateDockSettingsFile
+2026-06-25 21:31:25.386 % sub readDockConfiguration
+2026-06-25 21:31:25.389 % sub readDockSettingsFile
+2026-06-25 21:31:25.483 % sub setUserHotKey
+2026-06-25 21:31:25.484 % func monitorProperties
+2026-06-25 21:31:25.484 % sub resolveVB6SizeBug
+2026-06-25 21:31:25.499 % sub setLocalConfigurationVars
+2026-06-25 21:31:25.499 % sub initialiseGDIPStartup
+2026-06-25 21:31:25.500 % sub createDictionaryObjects
+2026-06-25 21:31:25.500 % sub prepareArraysAndCollections
+2026-06-25 21:31:28.081 % sub createGDIStructures
+2026-06-25 21:31:28.082 % sub showSplashScreen
+2026-06-25 21:31:28.142 % sub createNewGDIPBitmap
+2026-06-25 21:31:28.143 % sub setAutoHide
+2026-06-25 21:31:28.143 % sub setWindowCharacteristics
+2026-06-25 21:31:28.169 % sub setUpProcessTimers
+2026-06-25 21:31:28.184 ******************************
+2026-06-25 21:31:28.184 % SteamyDock startup complete.
+2026-06-25 21:31:28.184 ******************************
+2026-06-25 21:37:26.422 % sub toggleDebugging
+2026-06-25 21:37:26.490 *****************************
+2026-06-25 21:37:26.491 % SteamyDock program started.
+2026-06-25 21:37:26.491 *****************************
+2026-06-25 21:37:26.491 % sub sDriveStrings
+2026-06-25 21:37:26.491 % sub testDockRunning
+2026-06-25 21:37:26.491 % sub checkLicenceState
+2026-06-25 21:37:26.545 % sub classicThemeCapable
+2026-06-25 21:37:26.545 % sub disableAdmin
+2026-06-25 21:37:26.546 % sub checkSteamyDockInstallation
+2026-06-25 21:37:26.546 % sub locateDockSettingsFile
+2026-06-25 21:37:26.565 % sub readDockConfiguration
+2026-06-25 21:37:26.568 % sub readDockSettingsFile
+2026-06-25 21:37:26.679 % sub setUserHotKey
+2026-06-25 21:37:26.679 % func monitorProperties
+2026-06-25 21:37:26.680 % sub resolveVB6SizeBug
+2026-06-25 21:37:26.701 % sub setLocalConfigurationVars
+2026-06-25 21:37:26.702 % sub initialiseGDIPStartup
+2026-06-25 21:37:26.703 % sub createDictionaryObjects
+2026-06-25 21:37:26.703 % sub prepareArraysAndCollections
+2026-06-25 21:37:29.614 % sub createGDIStructures
+2026-06-25 21:37:29.614 % sub showSplashScreen
+2026-06-25 21:37:29.679 % sub createNewGDIPBitmap
+2026-06-25 21:37:29.679 % sub setAutoHide
+2026-06-25 21:37:29.679 % sub setWindowCharacteristics
+2026-06-25 21:37:29.703 % sub setUpProcessTimers
+2026-06-25 21:37:29.721 ******************************
+2026-06-25 21:37:29.721 % SteamyDock startup complete.
+2026-06-25 21:37:29.721 ******************************

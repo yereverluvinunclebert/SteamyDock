@@ -90,7 +90,7 @@ Begin VB.Form dock
    Begin VB.Timer bounceDownTimer 
       Enabled         =   0   'False
       Interval        =   20
-      Left            =   255
+      Left            =   270
       Tag             =   "controls the bounceDownward when the icon is clicked"
       Top             =   2100
    End
@@ -3940,6 +3940,8 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     On Error GoTo runCommand_Error
     
     Dim testURL As String: testURL = vbNullString
+    Dim testCMD As String: testCMD = vbNullString
+    Dim startCommand As String: startCommand = vbNullString
     Dim validURL As Boolean: validURL = False
     Dim answer As VbMsgBoxResult: answer = vbNo
     Dim folderPath As String: folderPath = vbNullString
@@ -4186,6 +4188,15 @@ tryMSCFullPAth:
                 Exit Sub
             End If
         Next useloop
+    End If
+    
+    ' contains "start" so initiate a settings command
+    testCMD = LCase$(Left$(thisCommand, 5))
+    If InStr(testCMD, "start") <> 0 Then
+        startCommand = Mid$(thisCommand, 7)
+        validURL = True
+        Call shellExecuteWithDialog(userLevel, startCommand, vbNullString, vbNullString, intShowCmd)
+        Exit Sub
     End If
     
     ' at this point all valid commands should have been dispatched and this routine ended with an exit sub, if it has manage to drop out to here, then it is a malformed command or a missing/incorrect filename
@@ -6995,6 +7006,16 @@ Private Sub checkTargetCommandValidity()
             GoTo l_next_iteration
         End If
 
+        ' check in the windows folder, this is also done in the PATH check below but this one is quicker.
+        If fDirExists(Environ$("windir") & thisCommand) Then
+            GoTo l_next_iteration
+        End If
+        
+        ' contains "start" so a settings command
+        If InStr(LCase$(Left$(thisCommand, 5)), "start") <> 0 Then
+            GoTo l_next_iteration
+        End If
+    
         ' check in the windows folder, this is also done in the PATH check below but this one is quicker.
         If fDirExists(Environ$("windir") & thisCommand) Then
             GoTo l_next_iteration
