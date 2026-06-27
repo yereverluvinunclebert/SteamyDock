@@ -106,6 +106,9 @@ Begin VB.Form menuForm
             Begin VB.Menu mnuAddTimeDate 
                Caption         =   "Add Time && Date"
             End
+            Begin VB.Menu mnuAddNetworkConnections 
+               Caption         =   "Add Network Connections"
+            End
          End
          Begin VB.Menu mnuAddMSSetting 
             Caption         =   "Add MS Setting"
@@ -963,6 +966,54 @@ mnuAddMyVideos_Click_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
+' Procedure : mnuAddNetworkConnections_Click
+' Author    : beededea
+' Date      : 27/06/2026
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub mnuAddNetworkConnections_Click()
+
+    Dim IconImage As String
+    Dim iconFilename As String
+
+    On Error GoTo mnuAddNetworkConnections_Click_Error
+    
+    ' check the icon exists
+    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
+
+    iconFilename = App.Path & "\iconSettings\my collection" & "\glass-clipboard.png"
+    If fFExists(iconFilename) Then
+        IconImage = iconFilename
+    Else
+        IconImage = App.Path & "\iconSettings\Icons\help.png"
+    End If
+    
+    '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+    If fFExists(IconImage) Then
+        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Network Connections", "ncpa.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network Connections")
+        
+        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
+    Else
+        '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
+        MessageBox Me.hWnd, "Unable to add Network Connections image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        '        MsgBox "Unable to add Administration Tools image as it does not exist"
+    End If
+
+    On Error GoTo 0
+    Exit Sub
+
+mnuAddNetworkConnections_Click_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddNetworkConnections_Click of Form menuForm"
+End Sub
+
+'---------------------------------------------------------------------------------------
 ' Procedure : mnuAddPerfMon_Click
 ' Author    : beededea
 ' Date      : 24/02/2023
@@ -1341,7 +1392,6 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddTimeDate_Click()
-
 
     Dim IconImage As String
     Dim iconFilename As String
