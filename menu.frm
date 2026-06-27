@@ -111,7 +111,7 @@ Begin VB.Form menuForm
             End
          End
          Begin VB.Menu mnuAddMSSetting 
-            Caption         =   "Add MS Setting"
+            Caption         =   "Add MS Setting (Win 8+)"
             Begin VB.Menu mnuSettingsAppsFeatures 
                Caption         =   "Add Apps && Features"
             End
@@ -503,7 +503,7 @@ Private Sub mnuAddBluetooth_Click()
     On Error GoTo mnuAddBluetooth_Click_Error
     
     ' check the icon exists
-    iconFilename = App.Path & "\iconSettings\my collection" & "\recyclebin-full.png"
+    iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKI" & "\719c57095b05d92a.ico"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
@@ -599,10 +599,7 @@ Private Sub mnuAddDisplay_Click()
 
     On Error GoTo mnuAddDisplay_Click_Error
 
-    ' check the icon exists
-    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
-
-    iconFilename = App.Path & "\iconSettings\my collection" & "\event-viewer(CEventVwr.msc).png"
+    iconFilename = App.Path & "\iconSettings\my collection" & "\console-green-screen-DUA0.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
@@ -645,9 +642,6 @@ Private Sub mnuAddEventViewer_Click()
     Dim iconFilename As String
 
     On Error GoTo mnuAddEventViewer_Click_Error
-
-    ' check the icon exists
-    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
     iconFilename = App.Path & "\iconSettings\my collection" & "\event-viewer(CEventVwr.msc).png"
     If fFExists(iconFilename) Then
@@ -703,7 +697,7 @@ Private Sub mnuAddMouse_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = App.Path & "\iconSettings\my collection" & "\glass-clipboard.png"
+    iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKI" & "\cdac67ad2f7cfe33.ico"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
@@ -978,11 +972,8 @@ Private Sub mnuAddNetworkConnections_Click()
     Dim iconFilename As String
 
     On Error GoTo mnuAddNetworkConnections_Click_Error
-    
-    ' check the icon exists
-    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = App.Path & "\iconSettings\my collection" & "\glass-clipboard.png"
+    iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKI\96d1075f6d255bec.ico"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
@@ -1025,9 +1016,6 @@ Private Sub mnuAddPerfMon_Click()
     Dim iconFilename As String
     
     On Error GoTo mnuAddPerfMon_Click_Error
-
-    ' check the icon exists
-    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
     iconFilename = App.Path & "\iconSettings\my collection" & "\perfmon.png"
     If fFExists(iconFilename) Then
@@ -1106,7 +1094,7 @@ Private Sub mnuAddProgramFeatures_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = App.Path & "\iconSettings\my collection" & "\perfmon.png"
+    iconFilename = App.Path & "\iconSettings\my collection\windows replacements" & "\windowsWoodInboxClock.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
@@ -1248,10 +1236,7 @@ Private Sub mnuAddSound_Click()
 
     On Error GoTo mnuAddSound_Click_Error
 
-    ' check the icon exists
-    'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
-
-    iconFilename = App.Path & "\iconSettings\my collection" & "\event-viewer(CEventVwr.msc).png"
+    iconFilename = App.Path & "\iconSettings\my collection" & "\ScreenToGif.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
@@ -1299,7 +1284,7 @@ Private Sub mnuAddSystemProperties_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = App.Path & "\iconSettings\my collection" & "\glass-clipboard.png"
+    iconFilename = App.Path & "\iconSettings\my collection" & "\control-panel(control).png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
@@ -1401,7 +1386,7 @@ Private Sub mnuAddTimeDate_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = App.Path & "\iconSettings\my collection" & "\glass-clipboard.png"
+    iconFilename = App.Path & "\iconSettings\my collection" & "\FreeFileSync.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
