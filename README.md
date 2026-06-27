@@ -71,7 +71,7 @@ I will not be releasing this imminently for the following reasons:
 * Windows 11 (that's a damn good reason in itself), Windows 11 hates VB6 and working with 3rd party docks.
 * I don't want to support grumpy people being grumpy when raising bugs/issues.
 * I don't want the responsibility of SteamyDock mucking up your computer.
-* It is NOT ready, I am playing with and introducing new technologies all the time.
+* It is NOT ready, I am playing with - and introducing new technologies all the time.
 
 Having said that, if you ever do want a release, you only have to ask nicely and I will build one for you - but be aware that I will not answer support queries 
 nor fix bugs in a timely manner. This is my PET project and done for my FUN alone.
@@ -95,14 +95,16 @@ no configuration is required.
 o Requires a steamydock folder in C:\Users\<user>\AppData\Roaming\
 eg: C:\Users\<user>\AppData\Roaming\steamydock
 
-Requires the following files to exist in folder above:
+The program will automatically create this.
+
+Requires the following files to exist in the folder above:
 
 * docksettings.ini
 * iconsettings.dat
 * iconsettings.db 
 
 The docksettings.ini will be created automatically by the compiled program when run for the
-first time. The other two will need to be copied manually. This will be fixed soon.
+first time. The other two will need to be created/copied manually. This will be fixed soon.
 
 o OLEEXP.TLB placed in sysWoW64 - required to obtain the explorer paths only
 during development. OLEEXP.TLB placed in sysWoW64 - required to obtain the
@@ -196,7 +198,6 @@ used a converted .js implementation but Olaf's was better.
 In-code timers developed with the help of chatGPT.
 
 Scripting dictionary replacement courtesy of Cristian Buse. This allows use of a collection that 
-does not require the project reference to the Microsoft scripting runtime. This gives the program  
 independence from the impending Microsoft VB scripting obsolescence.
 
 Spider Harper Is64bit() function.

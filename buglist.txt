@@ -16,8 +16,6 @@ o Test the TwinBasic collection as a replacement as it takes PNGS by default - w
 ' Current Tasks:
 ' =============
 
-
-
 ' remove the modification date/time test from iconSettings
 ' find and test using an alternative SQL dll
 ' test if the updateCounter is being updated
