@@ -30,40 +30,112 @@ Begin VB.Form menuForm
       Begin VB.Menu mnuBlank5 
          Caption         =   "______________________"
       End
-      Begin VB.Menu mnuCloseApp
+      Begin VB.Menu mnuCloseApp 
          Caption         =   "Close Running Instances of this App"
       End
-      Begin VB.Menu mnuFocusApp
+      Begin VB.Menu mnuFocusApp 
          Caption         =   "Bring Application to Front"
       End
-      Begin VB.Menu mnuBackApp
+      Begin VB.Menu mnuBackApp 
          Caption         =   "Send Application to Back"
       End
-      Begin VB.Menu mnuBlank2
+      Begin VB.Menu mnuBlank2 
          Caption         =   "______________________"
       End
-      Begin VB.Menu mnuIconSettings
+      Begin VB.Menu mnuIconSettings 
          Caption         =   "Edit Icon Properties"
       End
-      Begin VB.Menu mnuDeleteIcon
+      Begin VB.Menu mnuDeleteIcon 
          Caption         =   "Delete Icon"
       End
-      Begin VB.Menu mnuAddItem
+      Begin VB.Menu mnuAddItem 
          Caption         =   "Add Icon"
-         Begin VB.Menu menuAddBlank
+         Begin VB.Menu mnuAddMSSetting 
+            Caption         =   "Add MS Setting"
+            Begin VB.Menu mnuSettingsAppsFeatures 
+               Caption         =   "Add Apps & Features"
+            End
+            Begin VB.Menu mnuMSSettingsStartupApps 
+               Caption         =   "Add Startup Apps"
+            End
+            Begin VB.Menu mnuSettingsOtherusers 
+               Caption         =   "Add Other Users"
+            End
+            Begin VB.Menu mnuMSSettingsControlCenter 
+               Caption         =   "Add Control Centre"
+            End
+            Begin VB.Menu mnuMSSettingsBluetooth 
+               Caption         =   "Add Bluetooth"
+            End
+         End
+         Begin VB.Menu menuAddBlank 
             Caption         =   "Add Blank Item"
          End
-         Begin VB.Menu mnuAddProgram
+         Begin VB.Menu mnuAddProgram 
             Caption         =   "Add a Program, DLL or EXE"
          End
-         Begin VB.Menu mnuAddSeparator
+         Begin VB.Menu mnuAddSeparator 
             Caption         =   "Add a Separator"
          End
-         Begin VB.Menu mnuAddAdministrativeTools
-            Caption         =   "Add Control Panel Items"
-            Begin VB.Menu mnuAddControl 
-               Caption         =   "Add Control Panel"
-            End            
+         Begin VB.Menu mnuAddFolder 
+            Caption         =   "Add Folder"
+         End
+         Begin VB.Menu mnuAddMyComputer 
+            Caption         =   "Add My Computer"
+         End
+         Begin VB.Menu mnuAddMyDocuments 
+            Caption         =   "Add My Documents"
+         End
+         Begin VB.Menu mnuAddMyMusic 
+            Caption         =   "Add My Music"
+         End
+         Begin VB.Menu mnuAddMyPictures 
+            Caption         =   "Add My Pictures"
+         End
+         Begin VB.Menu mnuAddMyVideos 
+            Caption         =   "Add My Videos"
+         End
+         Begin VB.Menu mnuAddShutdown 
+            Caption         =   "Add Shutdown"
+         End
+         Begin VB.Menu mnuAddHibernate 
+            Caption         =   "Add Hibernate"
+         End
+         Begin VB.Menu mnuAddReboot 
+            Caption         =   "Add Reboot"
+         End
+         Begin VB.Menu mnuAddSleep 
+            Caption         =   "Add Sleep"
+         End
+         Begin VB.Menu mnuAddLogOut 
+            Caption         =   "Add Log Out"
+         End
+         Begin VB.Menu mnuAddLockWorkstation 
+            Caption         =   "Add Lock Workstation"
+         End
+         Begin VB.Menu mnuAddWorkgroup 
+            Caption         =   "Add Workgroup"
+         End
+         Begin VB.Menu mnuAddNetwork 
+            Caption         =   "Add Network"
+         End
+         Begin VB.Menu mnuAddPrinters 
+            Caption         =   "Add Printers"
+         End
+         Begin VB.Menu mnuAddTask 
+            Caption         =   "Add Task Manager"
+         End
+         Begin VB.Menu mnuAddControl 
+            Caption         =   "Add Control Panel"
+         End
+         Begin VB.Menu mnuAddProgramFiles 
+            Caption         =   "Add Program Files Folder"
+         End
+         Begin VB.Menu mnuAddPrograms 
+            Caption         =   "Add Programs / Features"
+         End
+         Begin VB.Menu mnuAddAdministrativeTools 
+            Caption         =   "Add Administrative Tools"
             Begin VB.Menu mnuAddCompMgmt 
                Caption         =   "Add Computer Management"
             End
@@ -86,158 +158,7 @@ Begin VB.Form menuForm
                Caption         =   "Add Task Scheduler"
             End
          End
-         Begin VB.Menu mnuAddMSSetting 
-            Caption         =   "Add MS Setting"
-            Begin VB.Menu mnuSettingsAppsFeatures 
-               Caption         =   "Add Apps & Features"
-            End
-            Begin VB.Menu mnuMSSettingsStartupApps 
-               Caption         =   "Add Startup Apps"
-            End
-            Begin VB.Menu mnuSettingsOtherusers 
-               Caption         =   "Add Other Users"
-            End
-            Begin VB.Menu mnuMSSettingsControlCenter 
-               Caption         =   "Add Control Centre"
-               Enabled         =   0   'False
-               Visible         =   0   'False
-            End
-            Begin VB.Menu mnuMSSettingsBluetooth 
-               Caption         =   "Add Bluetooth"
-            End
-            Begin VB.Menu mnuMSSettingsCamera 
-               Caption         =   "Add Camera"
-               Enabled         =   0   'False
-               Visible         =   0   'False
-            End
-            Begin VB.Menu mnuMSSettingsMouseTouchPad 
-               Caption         =   "Add Mouse & Touch Pad"
-            End
-            Begin VB.Menu mnuMSSettingsPrinters 
-               Caption         =   "Add Printers"
-            End
-            Begin VB.Menu mnuMSSettingsDevicesTouch 
-               Caption         =   "Add Devices Touch"
-               Enabled         =   0   'False
-               Visible         =   0   'False
-            End
-            Begin VB.Menu mnuMSSettingsUSB 
-               Caption         =   "Add USB"
-               Enabled         =   0   'False
-               Visible         =   0   'False
-            End
-            Begin VB.Menu mnuMSSettingsNetworkStatus 
-               Caption         =   "Add Network Status"
-            End
-            Begin VB.Menu mnuMSSettingsNetworkEthernet 
-               Caption         =   "Add Network Ethernet"
-            End
-            Begin VB.Menu mnuMSSettingsNetworkWifi 
-               Caption         =   "Add Network WiFi"
-            End
-            Begin VB.Menu mnuMSSettingsThemes 
-               Caption         =   "Add Themes"
-            End
-            Begin VB.Menu mnuMSSettingsDeviceUsage 
-               Caption         =   "Add Device Usage"
-               Enabled         =   0   'False
-               Visible         =   0   'False
-            End
-            Begin VB.Menu mnuMSSettingsDisplayAdvanced 
-               Caption         =   "Add Display Advanced"
-            End
-            Begin VB.Menu mnuMSSettingsAppsVolume 
-               Caption         =   "Add Apps Volume"
-            End
-            Begin VB.Menu mnuMSSettingsBatterySaverUsageDetails 
-               Caption         =   "Add Battery Saver Usage Details"
-               Enabled         =   0   'False
-               Visible         =   0   'False
-            End
-            Begin VB.Menu mnuMSSettingsDisplay 
-               Caption         =   "Add Display"
-            End
-            Begin VB.Menu mnuMSSettingsDisplayAdvancedGraphic 
-               Caption         =   "Add Display Advanced Graphic"
-               Enabled         =   0   'False
-               Visible         =   0   'False
-            End
-            Begin VB.Menu mnuMSSettingsPowersleep 
-               Caption         =   "Add Powersleep"
-            End
-            Begin VB.Menu mnuMSSettingsSound 
-               Caption         =   "Add Sound"
-            End
-            Begin VB.Menu mnuMSSettingsDisksAndVolumes 
-               Caption         =   "Add Disks and volumes"
-               Enabled         =   0   'False
-               Visible         =   0   'False
-            End
-            Begin VB.Menu mnuMSSettingsDateAndTime 
-               Caption         =   "Add Date and time"
-            End
-            Begin VB.Menu mnuMSSettingsWindowsDefender 
-               Caption         =   "Add Windows Defender"
-            End
-            Begin VB.Menu mnuMSSettingsWindowsUpdate 
-               Caption         =   "Add Windows Update"
-            End
-         End
-         Begin VB.Menu mnuAddFolder
-            Caption         =   "Add Folder"
-         End
-         Begin VB.Menu mnuAddMyComputer
-            Caption         =   "Add My Computer"
-         End
-         Begin VB.Menu mnuAddMyDocuments
-            Caption         =   "Add My Documents"
-         End
-         Begin VB.Menu mnuAddMyMusic
-            Caption         =   "Add My Music"
-         End
-         Begin VB.Menu mnuAddMyPictures
-            Caption         =   "Add My Pictures"
-         End
-         Begin VB.Menu mnuAddMyVideos
-            Caption         =   "Add My Videos"
-         End
-         Begin VB.Menu mnuAddShutdown
-            Caption         =   "Add Shutdown"
-         End
-         Begin VB.Menu mnuAddHibernate
-            Caption         =   "Add Hibernate"
-         End
-         Begin VB.Menu mnuAddReboot
-            Caption         =   "Add Reboot"
-         End
-         Begin VB.Menu mnuAddSleep
-            Caption         =   "Add Sleep"
-         End
-         Begin VB.Menu mnuAddLogOut
-            Caption         =   "Add Log Out"
-         End
-         Begin VB.Menu mnuAddLockWorkstation
-            Caption         =   "Add Lock Workstation"
-         End
-         Begin VB.Menu mnuAddWorkgroup
-            Caption         =   "Add Workgroup"
-         End
-         Begin VB.Menu mnuAddNetwork
-            Caption         =   "Add Network"
-         End
-         Begin VB.Menu mnuAddPrinters
-            Caption         =   "Add Printers"
-         End
-         Begin VB.Menu mnuAddTask
-            Caption         =   "Add Task Manager"
-         End
-         Begin VB.Menu mnuAddProgramFiles
-            Caption         =   "Add Program Files Folder"
-         End
-         Begin VB.Menu mnuAddPrograms
-            Caption         =   "Add Programs / Features"
-         End
-         Begin VB.Menu mnuAddRecycle
+         Begin VB.Menu mnuAddRecycle 
             Caption         =   "Add Recycle Bin"
          End
          Begin VB.Menu mnuAddDock 
@@ -1571,101 +1492,6 @@ mnuLockIcons_Click_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuLockIcons_Click of Form menuForm"
 End Sub
 
-
-
-'---------------------------------------------------------------------------------------
-' Procedure : mnuMSSettingsDateAndTime_Click
-' Author    : beededea
-' Date      : 27/06/2026
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Sub mnuMSSettingsDateAndTime_Click()
-
-    Dim IconImage As String
-    Dim iconFilename As String
-    
-    ' check the icon exists
-    On Error GoTo mnuMSSettingsDateAndTime_Click_Error
-
-    iconFilename = App.Path & "\iconSettings\my collection" & "\gpu-z.png"
-    If fFExists(iconFilename) Then
-        IconImage = iconFilename
-    Else
-        IconImage = App.Path & "\iconSettings\Icons\help.png"
-    End If
-           
-    If fFExists(IconImage) Then
-        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "DateAndTime", "start ms-settings:dateandtime", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DateAndTime")
-        
-        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
-        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
-            Call menuForm.mnuIconSettings_Click_Event
-        End If
-    Else
-         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add DateAndTime image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-         '        MsgBox "Unable to add shutdown image as it does not exist"
-    End If
-    
-    On Error GoTo 0
-    Exit Sub
-
-mnuMSSettingsDateAndTime_Click_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuMSSettingsDateAndTime_Click of Form menuForm"
-End Sub
-
-
-
-'
-'---------------------------------------------------------------------------------------
-' Procedure : mnuMSSettingsWindowsDefender_Click
-' Author    : beededea
-' Date      : 27/06/2026
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Sub mnuMSSettingsWindowsDefender_Click()
-
-    Dim IconImage As String
-    Dim iconFilename As String
-    
-    ' check the icon exists
-    On Error GoTo mnuMSSettingsWindowsDefender_Click_Error
-
-    iconFilename = App.Path & "\iconSettings\my collection" & "\gpu-z.png"
-    If fFExists(iconFilename) Then
-        IconImage = iconFilename
-    Else
-        IconImage = App.Path & "\iconSettings\Icons\help.png"
-    End If
-           
-    If fFExists(IconImage) Then
-        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "windowsdefender", "start ms-settings:windowsdefender", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "windowsdefender")
-        
-        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
-        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
-            Call menuForm.mnuIconSettings_Click_Event
-        End If
-    Else
-         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add windowsdefender image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-         '        MsgBox "Unable to add shutdown image as it does not exist"
-    End If
-    
-    On Error GoTo 0
-    Exit Sub
-
-mnuMSSettingsWindowsDefender_Click_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuMSSettingsWindowsDefender_Click of Form menuForm"
-End Sub
-
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuMSSettingsStartupApps_Click
 ' Author    : beededea
@@ -1733,7 +1559,7 @@ Private Sub mnuMSSettingsVideoPlayback_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "VideoPlayback", "start ms-settings:videoplayback", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "VideoPlayback", "start ms-settings:VideoPlayback", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Startup Apps")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1777,7 +1603,7 @@ Private Sub mnuMSSettingsControlCenter_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "Startup Apps", "start ms-settings:controlcenter", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Startup Apps", "start ms-settings:ControlCenter", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Control Centre")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1821,7 +1647,7 @@ Private Sub mnuMSSettingsBluetooth_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "Startup Apps", "start ms-settings:bluetooth", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Startup Apps", "start ms-settings:Bluetooth", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Bluetooth")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1865,7 +1691,7 @@ Private Sub mnuMSSettingsCamera_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "Camera", "start ms-settings:camera", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Camera", "start ms-settings:Camera", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Startup Apps")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1909,7 +1735,7 @@ Private Sub mnuMSSettingsMouseTouchpad_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "MouseTouchpad", "start ms-settings:mousetouchpad", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "MouseTouchpad", "start ms-settings:MouseTouchpad", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "MouseTouchpad")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1953,7 +1779,7 @@ Private Sub mnuMSSettingsPrinters_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "Printers", "start ms-settings:printers", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Printers", "start ms-settings:Printers", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Printers")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1975,7 +1801,7 @@ mnuMSSettingsPrinters_Click_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : mnuMSSettingsDevicesTouch_Click
+' Procedure : mnuMSSettingsDevices-Touch_Click
 ' Author    : beededea
 ' Date      : 26/06/2026
 ' Purpose   :
@@ -1997,7 +1823,7 @@ Private Sub mnuMSSettingsDevicesTouch_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "DevicesTouch", "start ms-settings:devices-touch", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "DevicesTouch", "start ms-settings:Devices-Touch", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DevicesTouch")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2041,7 +1867,7 @@ Private Sub mnuMSSettingsUSB_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "USB", "start ms-settings:usb", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "USB", "start ms-settings:USB", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "USB")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2085,7 +1911,7 @@ Private Sub mnuMSSettingsNetworkStatus_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "Network-Status", "start ms-settings:network-status", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Network-Status", "start ms-settings:Network-Status", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network-Status")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2129,7 +1955,7 @@ Private Sub mnuMSSettingsAdvancedSettings_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "AdvancedSettings", "start ms-settings:advancedsettings", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "AdvancedSettings", "start ms-settings:AdvancedSettings", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "AdvancedSettings")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2174,7 +2000,7 @@ Private Sub mnuMSSettingsNetworkEthernet_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "Network-Ethernet", "start ms-settings:network-ethernet", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Network-Ethernet", "start ms-settings:Network-Ethernet", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network-Ethernet")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2218,7 +2044,7 @@ Private Sub mnuMSSettingsNetworkWifi_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "Network-Wifi", "start ms-settings:network-wifi", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Network-Wifi", "start ms-settings:Network-Wifi", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network-Wifi")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2264,7 +2090,7 @@ Private Sub mnuMSSettingsThemes_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "Themes", "start ms-settings:themes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Themes", "start ms-settings:Themes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Themes")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2309,7 +2135,7 @@ Private Sub mnuMSSettingsDeviceUsage_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "DeviceUsage", "start ms-settings:deviceusage", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "DeviceUsage", "start ms-settings:DeviceUsage", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DeviceUsage")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2355,7 +2181,7 @@ Private Sub mnuMSSettingsDisplayAdvanced_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "DisplayAdvanced", "start ms-settings:display-advanced", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "DisplayAdvanced", "start ms-settings:Display-Advanced", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DisplayAdvanced")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2400,7 +2226,7 @@ Private Sub mnuMSSettingsAppsVolume_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "AppsVolume", "start ms-settings:apps-volume", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "AppsVolume", "start ms-settings:Apps-Volume", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "AppsVolume")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2490,7 +2316,7 @@ Private Sub mnuMSSettingsDisplay_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "Display", "start ms-settings:display", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Display", "start ms-settings:Display", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Display")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2540,7 +2366,7 @@ Private Sub mnuMSSettingsPowerSleep_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "PowerSleep", "start ms-settings:powersleep", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "PowerSleep", "start ms-settings:PowerSleep", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "PowerSleep")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and PowerSleep the properties of the new icon.
@@ -2587,7 +2413,7 @@ Private Sub mnuMSSettingsSound_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "Sound", "start ms-settings:sound", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "Sound", "start ms-settings:Sound", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Sound")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and Sound the properties of the new icon.
@@ -2635,7 +2461,7 @@ Private Sub mnuMSSettingsDisksAndVolumes_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "DisksAndVolumes", "start ms-settings:disksandvolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call insertNewIconDataIntoCurrentPosition(IconImage, "DisksAndVolumes", "start ms-settings:DisksAndVolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DisksAndVolumes")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and DisksAndVolumes the properties of the new icon.
@@ -2660,54 +2486,6 @@ End Sub
 
 
 
-
-
-'---------------------------------------------------------------------------------------
-' Procedure : mnuMSSettingsWindowsUpdate_Click
-' Author    : beededea
-' Date      : 27/06/2026
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Sub mnuMSSettingsWindowsUpdate_Click()
-
-    On Error GoTo mnuMSSettingsWindowsUpdate_Click_Error
-
-    Dim IconImage As String
-    Dim iconFilename As String
-    
-    ' check the icon exists
-    On Error GoTo mnuMSSettingsWindowsUpdate_Click_Error
-
-    iconFilename = App.Path & "\iconSettings\my collection" & "\gpu-z.png"
-    If fFExists(iconFilename) Then
-        IconImage = iconFilename
-    Else
-        IconImage = App.Path & "\iconSettings\Icons\help.png"
-    End If
-           
-    If fFExists(IconImage) Then
-        '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        Call insertNewIconDataIntoCurrentPosition(IconImage, "DisksAndVolumes", "start ms-settings:disksandvolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "disksandvolumes")
-        
-        ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and DisksAndVolumes the properties of the new icon.
-        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
-            Call menuForm.mnuIconSettings_Click_Event
-        End If
-    Else
-         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add DisksAndVolumes image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-         '        MsgBox "Unable to add shutdown image as it does not exist"
-    End If
-
-    On Error GoTo 0
-    Exit Sub
-
-mnuMSSettingsWindowsUpdate_Click_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuMSSettingsWindowsUpdate_Click of Form menuForm"
-End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuQuit_Click

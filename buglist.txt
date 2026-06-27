@@ -16,6 +16,8 @@ o Test the TwinBasic collection as a replacement as it takes PNGS by default - w
 ' Current Tasks:
 ' =============
 
+
+
 ' remove the modification date/time test from iconSettings
 ' find and test using an alternative SQL dll
 ' test if the updateCounter is being updated
@@ -1014,3 +1016,6 @@ o within modDatabase swap writeIconSettingsIni  for putIconSettings
 ' Converting away from using a COM helper to access the SQLite functions within the main program, instead calling Krool's VBSQLite12 directly from VB6 with no COM, no manifests, no registration - DONE
 
 ' New timer code implemented for in-code timers. Not yet utilised. May be used for the new icon class animation, unsure. Removed the code. The majority of SD's timer use is UI interaction and animation.
+
+' Add MS Settings as a menu sub folder
+' Move control Panel menu Items
