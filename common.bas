@@ -128,7 +128,7 @@ Public Type OPENFILENAME
     nMaxFileTitle As Long        'The length of lpstrFileTitle + 1
     lpstrInitialDir As String    'The path to the initial path :) If you pass an empty string the initial path is the current path.
     lpstrTitle As String         'The caption of the dialog.
-    flags As FileOpenConstants                'Flags. See the values in MSDN Library (you can look at the flags property of the common dialog control)
+    Flags As FileOpenConstants                'Flags. See the values in MSDN Library (you can look at the flags property of the common dialog control)
     nFileOffset As Integer       'Points to the what character in lpstrFile where the actual filename begins (zero based)
     nFileExtension As Integer    'Same as nFileOffset except that it points to the file extention.
     lpstrDefExt As String        'Can contain the extention Windows should add to a file if the user doesn't provide one (used with the GetSaveFileName API function)
@@ -159,7 +159,7 @@ End Type
 Private Declare Function SHBrowseForFolderA Lib "shell32.dll" (binfo As BROWSEINFO) As Long
 Private Declare Function SHGetPathFromIDListA Lib "shell32.dll" (ByVal pidl&, ByVal szPath$) As Long
 Private Declare Function CoTaskMemFree Lib "ole32.dll" (lp As Any) As Long
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hwnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 ' APIs and structures for opening a common dialog box to select files without OCX dependencies STARTS
 
 ' Rocketdock compatible icon global variables START
@@ -273,7 +273,7 @@ Public sAllDrives As String
 'Public Const SEE_MASK_FLAG_NO_UI As Long = &H400
 '
 'Public Declare Function ShellExecuteEx Lib "shell32.dll" Alias "ShellExecuteExA" (lpExecInfo As SHELLEXECUTEINFO) As Long
-Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hwnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 ' APIs for asynch. shell command functions END
 
 ' APIs for useful functions START
@@ -300,7 +300,7 @@ Private Declare Function GetDriveTypeA Lib "kernel32" (ByVal nDrive As String) A
 Public storeWindowHwnd As Long '.nn
 
 ' .05 DAEB 01/04/2021 common.bas Added declaration to allow replacement of some modal msgbox with the non-modal versions
-Public Declare Function MessageBox Lib "user32" Alias "MessageBoxA" (ByVal hwnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
+Public Declare Function MessageBox Lib "user32" Alias "MessageBoxA" (ByVal hWnd As Long, ByVal lpText As String, ByVal lpCaption As String, ByVal wType As Long) As Long
 
 ' Flag for debug mode '.06 DAEB 19/04/2021 common.bas moved to the common area so that it can be used by each of the utilities
 Private mbDebugMode As Boolean ' .30 DAEB 03/03/2021 frmMain.frm replaced the inIDE function that used a variant to one without
@@ -997,7 +997,7 @@ End Function
 Public Function Is64bit() As Boolean
     
     ' variables declared
-    Dim handle As Long: handle = 0
+    Dim Handle As Long: Handle = 0
     Dim bolFunc As Boolean: bolFunc = False
         
     ' Assume initially that this is not a Wow64 process
@@ -1006,10 +1006,10 @@ Public Function Is64bit() As Boolean
     bolFunc = False
 
     ' Now check to see if IsWow64Process function exists
-    handle = GetProcAddress(GetModuleHandle("kernel32"), _
+    Handle = GetProcAddress(GetModuleHandle("kernel32"), _
                    "IsWow64Process")
 
-    If handle > 0 Then ' IsWow64Process function exists
+    If Handle > 0 Then ' IsWow64Process function exists
         ' Now use the function to determine if
         ' we are running under Wow64
         IsWow64Process GetCurrentProcess(), bolFunc
@@ -1307,13 +1307,13 @@ End Function
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Function BrowseCallbackProc(ByVal hwnd&, ByVal Msg&, ByVal lp&, ByVal initDir$) As Long
+Private Function BrowseCallbackProc(ByVal hWnd&, ByVal Msg&, ByVal lp&, ByVal initDir$) As Long
    Const BFFM_INITIALIZED As Long = 1
    Const BFFM_SETSELECTION As Long = &H466
    On Error GoTo BrowseCallbackProc_Error
 
    If (Msg = BFFM_INITIALIZED) And (initDir <> vbNullString) Then
-      Call SendMessage(hwnd, BFFM_SETSELECTION, 1, ByVal initDir$)
+      Call SendMessage(hWnd, BFFM_SETSELECTION, 1, ByVal initDir$)
    End If
    BrowseCallbackProc = 0
 
@@ -2519,7 +2519,7 @@ Public Function addTargetProgram(ByVal targetText As String) As String
     'On Error GoTo l_err1
     'savLblTarget = txtTarget.Text
     
-    On Error Resume Next
+    'On Error Resume Next
     
     ' set the default folder to the existing reference
     If Not targetText = vbNullString Then
@@ -2592,3 +2592,5 @@ addTargetProgram_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addTargetProgram of Form dockSettings"
  
 End Function
+
+

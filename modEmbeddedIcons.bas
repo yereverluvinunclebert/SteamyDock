@@ -55,7 +55,7 @@ Private Declare Function PrivateExtractIcons Lib "user32" _
                 ByRef phIcon As Long, _
                 ByRef pIconId As Long, _
                 ByVal nIcons As Long, _
-                ByVal flags As Long _
+                ByVal Flags As Long _
 ) As Long
 
 Private Type GdiplusStartupInput
@@ -79,12 +79,13 @@ Private Declare Function GdipSaveImageToFile Lib "gdiplus" (ByVal hImage As Long
 Private Declare Function GdipGetImageEncodersSize Lib "gdiplus" (numEncoders As Long, Size As Long) As GpStatus
 Private Declare Function GdipGetImageEncoders Lib "gdiplus" (ByVal numEncoders As Long, ByVal Size As Long, encoders As Any) As GpStatus
 
-Private Const IID_IPicture As String = "{7BF80980-BF32-101A-8BBB-00AA00300CAB}"
+' Represents a standard OLE picture object used to manage/identify bitmaps, icons, or metafiles
+'Private Const IID_IPicture As String = "{7BF80980-BF32-101A-8BBB-00AA00300CAB}"
 Private Const DI_NORMAL = 3
 Private Const LR_LOADFROMFILE As Long = &H10
 
-Private Type PictDesc
-    cbSizeofStruct  As Long
+Private Type PICTDESC
+    cbSizeOfStruct  As Long
     PicType         As Long
     hImage          As Long
     xExt            As Long
@@ -93,22 +94,27 @@ End Type
 
 ' APIs for drawing icons START
 Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
-Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
+Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal XLeft As Long, ByVal YTop As Long, ByVal hIcon As Long, ByVal CXWidth As Long, ByVal CYWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 Private Declare Function ExtractIconEx Lib "shell32.dll" Alias "ExtractIconExA" (ByVal lpszFile As String, ByVal nIconIndex As Long, ByRef phiconLarge As Long, ByRef phiconSmall As Long, ByVal nIcons As Long) As Long
 
-Private Declare Function Ole_CreatePic Lib "olepro32" _
-                Alias "OleCreatePictureIndirect" ( _
-                ByRef lpPictDesc As PictDesc, _
-                ByVal riid As Long, _
-                ByVal fPictureOwnsHandle As Long, _
-                ByRef iPic As IPicture _
-) As Long
+'Private Declare Function Ole_CreatePic Lib "olepro32" _
+'                Alias "OleCreatePictureIndirect" ( _
+'                ByRef lpPictDesc As PICTDESC, _
+'                ByVal riid As Long, _
+'                ByVal fPictureOwnsHandle As Long, _
+'                ByRef iPic As IPicture _
+') As Long
 
-Private Declare Function CLSIDFromString Lib "ole32" ( _
-    ByVal lpsz As Long, _
-    ByRef clsid As IID) As Long
+Private Declare Function OleCreatePictureIndirect Lib "oleaut32" (ByRef pPictDesc As PICTDESC, ByRef riid As Any, ByVal fPictureOwnsHandle As Long, ByRef pIPicture As IPicture) As Long
 
-Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pclsid As Long) As Long
+#If Not TWINBASIC Then ' VB6 only, if TwinBasic then let WDL do it.
+    ' provides the CLSID ByRef meaning that it provides the address of the memory location where the IID will be written
+    Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As Long, ByRef CLSID As IID) As Long
+
+#End If
+
+' The CLSIDFromString alias/copy extracts the CLSID value copying it into a memory location in binary format
+'Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pclsid As Long) As Long
 
 Private Enum OLE_ERROR_CODES
     S_OK = 0
@@ -180,6 +186,9 @@ Public Function fExtractEmbeddedPNGFromEXE(ByVal FileName As String, ByRef targe
     Dim sJustTheFilename As String: sJustTheFilename = vbNullString
     Dim bSuccessSaveToPNG As GpStatus
     Dim encoderCLSID As IID
+    Dim Result As Long: Result = 0
+    
+    ' Represents an ImageCodecInfo object identifying as the PNG encoder
 
     On Error GoTo fExtractEmbeddedPNGFromEXe_Error
     
@@ -286,20 +295,30 @@ Public Function fExtractEmbeddedPNGFromEXE(ByVal FileName As String, ByRef targe
                     sJustTheFilename = ExtractFilenameWithoutSuffix(sJustTheFilename)
                     sOutputFilename = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\images\" & sJustTheFilename & ".png"
     
-                    ' set the encoder class identifier to handle the image bitmap as a PNG
-                    CLSIDFromString StrPtr("{557CF406-1A04-11D3-9A73-0000F81EF32E}"), ImageFormatPNG
-                        
-                    ' extract a PNG of the image bitmap and save to file
-                    bSuccessSaveToPNG = GdipSaveImageToFile(lhImage, StrPtr(sOutputFilename), ImageFormatPNG, ByVal 0&) = 0&
-                    If bSuccessSaveToPNG = False Then
-                        fExtractEmbeddedPNGFromEXE = ""
-                        ' MsgBox "Failed to save PNG."
-                    Else
-                        fExtractEmbeddedPNGFromEXE = sOutputFilename
-                    End If
+                    'CLSIDFromString StrPtr("{557CF406-1A04-11D3-9A73-0000F81EF32E}"), ImageFormatPNG
                     
+                    ' set the encoder class identifier to handle the image bitmap as a PNG
+                    ' ie. Converts the stored string text IID and pushes it into its 16-byte binary GUID representation within the second 16byte variable. predefined GUID
+                    ' a. StrPtr("{557CF406-1A04-11D3-9A73-0000F81EF32E}") Returns a pointer to a stored unicode string buffer with brackets {} that contains an image classID in string format
+                    '    returns a pointer to the first character of the Unicode string containing the IID in text form.
+                    ' b. ImageFormatPNG a predefined GUID which will receive the converted string as a binary representation of the GUID.
+                    '                               v                    v
+                    Result = CLSIDFromString(StrPtr("{557CF406-1A04-11D3-9A73-0000F81EF32E}"), ImageFormatPNG)
+                                                                
+                    ' if valid ID (no errors) then create pic
+                    If (Result = OLE_ERROR_CODES.S_OK) Then
+                  
+                        ' extract a PNG of the image bitmap and save to file using the binary representation of the GUID as the 3rd param..
+                        bSuccessSaveToPNG = GdipSaveImageToFile(lhImage, StrPtr(sOutputFilename), ImageFormatPNG, ByVal 0&) = 0&
+                        If bSuccessSaveToPNG = False Then
+                            fExtractEmbeddedPNGFromEXE = ""
+                            ' MsgBox "Failed to save PNG."
+                        Else
+                            fExtractEmbeddedPNGFromEXE = sOutputFilename
+                        End If
+                                
+                    End If
                 End If
-                
             End If
             .Refresh
         End With
@@ -526,29 +545,48 @@ End Function
 Private Function CreateIcon(ByVal hImage As Long) As IPicture
     
     Dim pic As IPicture
-    Dim dsc As PictDesc
-    Dim IID(0 To 15) As Byte
+    Dim dsc As PICTDESC
+    'Dim IID(0 To 15) As Byte ' a 16-byte buffer to hold the IID
     Dim Result As Long: Result = 0
-    
+    Dim ImageFormatBMP As IID
+        
     On Error GoTo CreateIcon_Error
 
     Set CreateIcon = Nothing
     If hImage <> 0 Then
         With dsc
-           .cbSizeofStruct = Len(dsc)
+           .cbSizeOfStruct = Len(dsc)
            .hImage = hImage
            .PicType = VBRUN.PictureTypeConstants.vbPicTypeBitmap
         End With
+        '
+        ' Converts the stored string textual IID and push it into its 16-byte binary GUID representation
+        ' a. StrPtr(IID_IPicture) Returns a pointer to a stored unicode string buffer with brackets [] that contains an image classID in string format
+        '    returns a pointer to the first character of the Unicode string containing the IID in text form.
+        ' b. VarPtr(IID(0)) Returns the memory address of the first byte of the 16-byte buffer which will receive the binary GUID.
+        '                               v                    v
+        'Result = OLE_CLSIDFromString(StrPtr(IID_IPicture), VarPtr(IID(0)))' old method
         
-        Result = OLE_CLSIDFromString(StrPtr(IID_IPicture), VarPtr(IID(0)))
+        Result = CLSIDFromString(StrPtr(IID_IPicture), ImageFormatBMP)
                                                     
+        ' if valid ID (no errors) then create pic
         If (Result = OLE_ERROR_CODES.S_OK) Then
-            Result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic)
+        
+            ' Create an IPicture object from the bitmap handle described by
+            ' the PICTDESC structure,  and the required pointer to the now valid GUID obtained above.
+            ' The Boolean parameter transfers ownership of the image handle
+            ' to the resulting picture object in pic.
             
-            ' Creates a new picture object initialized according to a PICTDESC structure.
+            'Result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic) ' old method
+            
+            ' Creates a new picture object initialised from and according to the PICTDESC structure.
+            Result = OleCreatePictureIndirect(dsc, ImageFormatBMP, 1, pic)
+                    
+            ' if valid ID (no errors) then create icon
             If (Result = OLE_ERROR_CODES.S_OK) Then
                 Set CreateIcon = pic
             End If
+
         End If
     End If
 

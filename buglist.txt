@@ -6,6 +6,8 @@ Overall status - Working, a good learning platform and the dock functions.
 
 o New graphics method using icon classes for the main 3-5 icons retaining GDI+ - a test project exists, transparent Cairo which can be utilised directly.
    can be used to implement ALL the icons with some modifications but the main three icons might be the best idea as an interim.
+o Change to WDL to prepare for 64bit compilation.
+
 o Need to test SteamyDock working with the iconSettings utility also using SQLite database at the same time, modifying the same data testing for conflicts &c WIP - working!
 o Possible RAM leak or SQL eating up the RAM slowly WIP
 o A Few bugs overall, deletion and drag/drop can be slowish to complete. New animations required. Multi-monitor.
@@ -102,8 +104,20 @@ separate the task to kill a process to an external process so that the current p
 ' VB6 MultiProcessing (StdExe-IPC via SharedMemory)
 ' https://www.vbforums.com/showthread.php?863075-VB6-MultiProcessing-(StdExe-IPC-via-SharedMemory)
 
+Cairo and SDL for 3D acceleration
+=================================
 
-' Main Tasks:  
+You can combine Cairo and SDL for GPU acceleration by drawing Cairo’s vector graphics onto an in-memory pixel buffer, streaming
+that buffer into an SDL2 2D Accelerated Rendering texture, and letting the GPU composite that texture to the screen
+
+Create a streaming SDL texture configured with SDL_PIXELFORMAT_ARGB8888.
+Lock the texture to retrieve its raw pixel pointer and pitch.
+Wrap the pixel pointer in a Cairo image surface using cairo_image_surface_create_for_data.
+Perform Cairo drawing operations on the surface context.
+Unlock the texture and use SDL_RenderCopy and SDL_RenderPresent to render it via the GPU
+
+
+' Main Tasks:
 ' ============
 
 '     1. Running on a second monitor

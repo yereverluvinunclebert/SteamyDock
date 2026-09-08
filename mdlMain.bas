@@ -176,7 +176,6 @@ Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Lo
 Private Declare Function GetParent Lib "user32.dll" (ByVal hWnd As Long) As Long
 Private Declare Function GetWindow Lib "user32.dll" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
 Private Declare Function GetAncestor Lib "user32" (ByVal hWnd As Long, ByVal gaFlags As Long) As Long
-Private Declare Function IsTopWIndow Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function EnumWindows Lib "user32" (ByVal lpEnumFunc As Long, ByVal lParam As Long) As Long
 ' Private APIs and vars for enumerating running windows END
 
@@ -206,6 +205,7 @@ Public Const SW_RESTORE = 9
 Public Const SW_SHOW = 5
 Public Const SW_MINIMIZE As Long = 6 ' .25 DAEB frmMain.bas 10/02/2021 added API and vars to test to see if a window is zoomed
 
+' Represents a standard OLE picture object used to manage/identify bitmaps, icons, or metafiles
 Public Const IID_IPicture As String = "{7BF80980-BF32-101A-8BBB-00AA00300CAB}"
 
 Private Const MAX_PATH = 260
@@ -1539,8 +1539,11 @@ Public Sub testDockRunning()
 
     AppExists = App.PrevInstance
     If AppExists = True Then
+       'MsgBox "You already have a previous instance of " & NameProcess & " running, unhide it using CTRL+F11 or kill the process and restart. "
+        
         NameProcess = "steamydock.exe"
         checkAndKillPutWindowBehind NameProcess, False, True
+        
     End If
 
    On Error GoTo 0

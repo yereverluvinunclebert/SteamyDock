@@ -851,19 +851,29 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pclsid As Long) As Long
+#If Not TWINBASIC Then ' VB6 only
 
+    ' API to determine whether the program is running with administrator rights
+    Private Declare Function IsUserAnAdmin Lib "Shell32" Alias "#680" () As Integer
 
-Private Declare Function Ole_CreatePic Lib "olepro32" _
-                Alias "OleCreatePictureIndirect" ( _
-                ByRef lpPictDesc As PICTDESC, _
-                ByVal riid As Long, _
-                ByVal fPictureOwnsHandle As Long, _
-                ByRef iPic As IPicture) As Long
-                
-                ' API to determine whether the program is running with administrator rights
-Private Declare Function IsUserAnAdmin Lib "Shell32" Alias "#680" () As Integer
+#End If
 
+    ' Change the exported name from OleCreatePictureIndirect to Ole_CreatePic for historical purposes
+    ' olepro32.dll is an older OLE Automation support DLL associated with the OLE picture functionality replaced by oleaut32.dll in WDL's OleCreatePictureIndirect
+    ' riid is a pointer/reference to a UUID/GUID, in VB6 that is a 32bit long, in TB it will be a 64bit address
+    ' fPictureOwnsHandle is a "BOOL" value represented using a 4byte/32bit long value, still the same 32bit value even in 64bit mode. NOT a 2byte VB6 boolean.
+    
+'    Private Declare Function Ole_CreatePic Lib "olepro32" _
+'                    Alias "OleCreatePictureIndirect" ( _
+'                    ByRef lpPictDesc As PICTDESC, _
+'                    ByVal riid As Long, _
+'                    ByVal fPictureOwnsHandle As Long, _
+'                    ByRef iPic As IPicture) As Long
+                    
+'Private Declare Function OleCreatePictureIndirect Lib "oleaut32" (ByRef pPictDesc As PICTDESC, ByRef riid As Any, ByVal fPictureOwnsHandle As Long, ByRef pIPicture As IPicture) As Long
+                    
+            
+    
 Private Enum OLE_ERROR_CODES
     S_OK = 0
     E_NOINTERFACE = &H80004002
@@ -872,6 +882,7 @@ Private Enum OLE_ERROR_CODES
     E_UNEXPECTED = &H8000FFFF
     E_INVALIDARG = &H80070057
 End Enum
+
 
 ' vars to obtain correct screen width (to correct VB6 bug) STARTS
 Private Const HORZRES = 8
@@ -991,70 +1002,76 @@ Private lastPositionRelativeToDock As Boolean
 '------------------------------------------------------ STARTS
 ' Private Types for determining whether the app is already DPI aware, most useful when operating within the IDE, stops "already DPI aware " messages.
 
-Private Declare Function IsProcessDPIAware Lib "user32.dll" () As Boolean
-
-Private Enum PROCESS_DPI_AWARENESS
-    Process_DPI_Unaware = 0
-    Process_System_DPI_Aware = 1
-    Process_Per_Monitor_DPI_Aware = 2
-End Enum
-#If False Then
-    Dim Process_DPI_Unaware, Process_System_DPI_Aware, Process_Per_Monitor_DPI_Aware
+#If Not TWINBASIC Then ' VB6 only
+    Private Declare Function IsProcessDPIAware Lib "user32.dll" () As Boolean
+    
+    Private Enum PROCESS_DPI_AWARENESS
+        Process_DPI_Unaware = 0
+        Process_System_DPI_Aware = 1
+        Process_Per_Monitor_DPI_Aware = 2
+    End Enum
+    #If False Then
+        Dim Process_DPI_Unaware, Process_System_DPI_Aware, Process_Per_Monitor_DPI_Aware
+    #End If
+    
+    ' this sets DPI awareness for the scope of this process, be it the binary or the IDE
+    Private Declare Function SetProcessDpiAwareness Lib "shcore.dll" (ByVal Value As PROCESS_DPI_AWARENESS) As Long
 #End If
-
-' this sets DPI awareness for the scope of this process, be it the binary or the IDE
-Private Declare Function SetProcessDpiAwareness Lib "shcore.dll" (ByVal Value As PROCESS_DPI_AWARENESS) As Long
 
 '------------------------------------------------------ ENDS
 
-Private Declare Function BitBlt Lib "gdi32" ( _
-    ByVal hDestDC As Long, _
-    ByVal X As Long, _
-    ByVal Y As Long, _
-    ByVal nWidth As Long, _
-    ByVal nHeight As Long, _
-    ByVal hSrcDC As Long, _
-    ByVal XSrc As Long, _
-    ByVal YSrc As Long, _
-    ByVal dwRop As Long _
-) As Long
- 
-Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" ( _
-    ByVal lpClassName As String, _
-    ByVal lpWindowName As String _
-) As Long
- 
-Private Declare Function GetWindowDC Lib "user32" ( _
-    ByVal hWnd As Long _
-) As Long
- 
-Private Declare Function GetWindowRect Lib "user32" ( _
-    ByVal hWnd As Long, _
-    ByRef lpRect As RECT _
-) As Long
- 
-Private Declare Function ReleaseDC Lib "user32" ( _
-    ByVal hWnd As Long, _
-    ByVal hDC As Long _
-) As Long
- 
-Private Type RECT
-    Left    As Long
-    Top     As Long
-    Right   As Long
-    Bottom  As Long
-End Type
-
+#If Not TWINBASIC Then ' VB6 only
+    Private Declare Function BitBlt Lib "gdi32" ( _
+        ByVal hDestDC As Long, _
+        ByVal X As Long, _
+        ByVal Y As Long, _
+        ByVal nWidth As Long, _
+        ByVal nHeight As Long, _
+        ByVal hSrcDC As Long, _
+        ByVal XSrc As Long, _
+        ByVal YSrc As Long, _
+        ByVal dwRop As Long _
+    ) As Long
+     
+    Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" ( _
+        ByVal lpClassName As String, _
+        ByVal lpWindowName As String _
+    ) As Long
+     
+    Private Declare Function GetWindowDC Lib "user32" ( _
+        ByVal hWnd As Long _
+    ) As Long
+     
+    Private Declare Function GetWindowRect Lib "user32" ( _
+        ByVal hWnd As Long, _
+        ByRef lpRect As RECT _
+    ) As Long
+     
+    Private Declare Function ReleaseDC Lib "user32" ( _
+        ByVal hWnd As Long, _
+        ByVal hDC As Long _
+    ) As Long
+     
+    Private Type RECT
+        Left    As Long
+        Top     As Long
+        Right   As Long
+        Bottom  As Long
+    End Type
+#End If
 '------------------------------------------------------ STARTS
-' Type defined for testing a time difference used to initiate one of the hand-coded timers
-Private Type LASTINPUTINFO
-    cbSize As Long
-    dwTime As Long
-End Type
 
-' APIs defined for testing a time difference used to initiate one of the hand-coded timers
-'Private Declare Function GetTickCount Lib "kernel32" () As Long
-Private Declare Function GetLastInputInfo Lib "user32" (plii As Any) As Long
+' Type defined for testing a time difference used to initiate one of the hand-coded timers
+#If Not TWINBASIC Then ' VB6 only
+    Private Type LASTINPUTINFO
+        cbSize As Long
+        dwTime As Long
+    End Type
+    
+    ' APIs defined for testing a time difference used to initiate one of the hand-coded timers
+    'Private Declare Function GetTickCount Lib "kernel32" () As Long
+    Private Declare Function GetLastInputInfo Lib "user32" (plii As Any) As Long
+#End If
 '------------------------------------------------------ ENDS
 
 
@@ -1105,6 +1122,9 @@ Private Sub Form_Load()
     ' comment the following function back in only when debugging
     On Error GoTo Form_Load_Error
     
+    'if the process already exists then kill it
+    Call testDockRunning
+    
     ' set the application to be DPI aware using the 'forbidden' API.
     If IsProcessDPIAware() = False Then Call setDPIAware
     
@@ -1127,10 +1147,7 @@ Private Sub Form_Load()
     
     ' extracts all the known drive names using Windows APIs to a useful global var
     Call getAllDriveNames(sAllDrives)
-        
-    'if the process already exists then kill it
-    Call testDockRunning
-    
+            
     ' check the state of the licence
     Call checkLicenceState
     
@@ -1272,6 +1289,8 @@ Form_Load_Error:
     End With
     
 End Sub
+
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : connectSQLDatabase

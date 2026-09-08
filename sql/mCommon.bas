@@ -522,7 +522,7 @@ End Function
 
 ' (VB-Overwrite)
 Public Function Command$()
-If InIDE() = False Then
+If InIde() = False Then
     SysReAllocString VarPtr(Command$), PathGetArgs(GetCommandLine())
     Command$ = LTrim$(Command$)
 Else
@@ -540,7 +540,7 @@ If (Attributes And (vbDirectory Or vbVolume)) = 0 And ErrVal = 0 Then FileExists
 End Function
 
 Public Function AppPath() As String
-If InIDE() = False Then
+If InIde() = False Then
     Const MAX_PATH_W As Long = 32767
     Dim Buffer As String, RetVal As Long
     Buffer = String$(MAX_PATH, vbNullChar)
@@ -561,7 +561,7 @@ End If
 End Function
 
 Public Function AppEXEName() As String
-If InIDE() = False Then
+If InIde() = False Then
     Const MAX_PATH_W As Long = 32767
     Dim Buffer As String, RetVal As Long
     Buffer = String$(MAX_PATH, vbNullChar)
@@ -583,7 +583,7 @@ End If
 End Function
 
 Public Function AppMajor() As Integer
-If InIDE() = False Then
+If InIde() = False Then
     With GetAppVersionInfo()
     AppMajor = .dwFileVersionMSHi
     End With
@@ -593,7 +593,7 @@ End If
 End Function
 
 Public Function AppMinor() As Integer
-If InIDE() = False Then
+If InIde() = False Then
     With GetAppVersionInfo()
     AppMinor = .dwFileVersionMSLo
     End With
@@ -603,7 +603,7 @@ End If
 End Function
 
 Public Function AppRevision() As Integer
-If InIDE() = False Then
+If InIde() = False Then
     With GetAppVersionInfo()
     AppRevision = .dwFileVersionLSLo
     End With

@@ -120,7 +120,7 @@ Public Function GetIconHandles(hTray As Long, Count As Long, hIcon() As Long) As
     Dim Extra(1)    As Long
     Dim hProc       As Long
     Dim pMem        As Long
-    Dim index       As Long
+    Dim Index       As Long
     Dim OS_64       As Boolean
     Dim si          As SYSTEM_INFO
 
@@ -141,9 +141,9 @@ Public Function GetIconHandles(hTray As Long, Count As Long, hIcon() As Long) As
 
             If pMem Then
 
-                For index = 0 To Count - 1
+                For Index = 0 To Count - 1
 
-                    If SendMessage(hTray, TB_GETBUTTON, index, ByVal pMem) Then
+                    If SendMessage(hTray, TB_GETBUTTON, Index, ByVal pMem) Then
 
                         If OS_64 Then
 
@@ -153,7 +153,7 @@ Public Function GetIconHandles(hTray As Long, Count As Long, hIcon() As Long) As
 
                                     If ReadProcessMemory64(hProc, tb_64.dwData, VarPtr(Extra(0)), 8&) Then
 
-                                        hIcon(index) = Extra(0)
+                                        hIcon(Index) = Extra(0)
                                         GetIconHandles = True
                                     End If
                                 End If
@@ -165,7 +165,7 @@ Public Function GetIconHandles(hTray As Long, Count As Long, hIcon() As Long) As
 
                                     If ReadProcessMemory(hProc, tb_32.dwData, ByVal VarPtr(Extra(0)), 8&, ByVal 0&) Then
 
-                                        hIcon(index) = Extra(0)
+                                        hIcon(Index) = Extra(0)
                                         GetIconHandles = True
                                     End If
                                 End If
