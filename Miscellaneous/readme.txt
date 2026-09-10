@@ -1,0 +1,1 @@
+These files are for TwinBasic only. Tb has the capability for importing from statically linked OBJ files. These DLLs in particular are for aceessing the SQLite3 DLL compiled for Windows.

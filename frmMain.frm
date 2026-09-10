@@ -1010,6 +1010,10 @@ Private lastPositionRelativeToDock As Boolean
         Process_System_DPI_Aware = 1
         Process_Per_Monitor_DPI_Aware = 2
     End Enum
+    
+    ' Because False is false, VB6's compiler completely excludes the following declarations. They have no effect on the compiled program.
+    ' retained for reference only.
+    
     #If False Then
         Dim Process_DPI_Unaware, Process_System_DPI_Aware, Process_Per_Monitor_DPI_Aware
     #End If
@@ -1031,16 +1035,16 @@ Private lastPositionRelativeToDock As Boolean
         ByVal XSrc As Long, _
         ByVal YSrc As Long, _
         ByVal dwRop As Long _
-    ) As Long
+    ) As Long ' longptr hSrcDC
      
     Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" ( _
         ByVal lpClassName As String, _
         ByVal lpWindowName As String _
-    ) As Long
+    ) As Long ' longptr return value
      
     Private Declare Function GetWindowDC Lib "user32" ( _
         ByVal hWnd As Long _
-    ) As Long
+    ) As Long ' longptr hWnd, return value
      
     Private Declare Function GetWindowRect Lib "user32" ( _
         ByVal hWnd As Long, _

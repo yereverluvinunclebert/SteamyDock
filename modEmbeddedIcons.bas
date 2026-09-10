@@ -97,6 +97,11 @@ Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
 Private Declare Function DrawIconEx Lib "user32" (ByVal hDC As Long, ByVal XLeft As Long, ByVal YTop As Long, ByVal hIcon As Long, ByVal CXWidth As Long, ByVal CYWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 Private Declare Function ExtractIconEx Lib "shell32.dll" Alias "ExtractIconExA" (ByVal lpszFile As String, ByVal nIconIndex As Long, ByRef phiconLarge As Long, ByRef phiconSmall As Long, ByVal nIcons As Long) As Long
 
+' The Function Ole_CreatePic API declaration changes the exported name from OleCreatePictureIndirect to Ole_CreatePic for historical purposes
+' olepro32.dll is an older OLE Automation support DLL associated with the OLE picture functionality replaced by oleaut32.dll in WDL's OleCreatePictureIndirect
+' riid is a pointer/reference to a UUID/GUID, in VB6 that is a 32bit long, in TB it will be a 64bit address
+' fPictureOwnsHandle is a "BOOL" value represented using a 4byte/32bit long value, still the same 32bit value even in 64bit mode. NOT a 2byte VB6 boolean.
+
 'Private Declare Function Ole_CreatePic Lib "olepro32" _
 '                Alias "OleCreatePictureIndirect" ( _
 '                ByRef lpPictDesc As PICTDESC, _
@@ -105,16 +110,14 @@ Private Declare Function ExtractIconEx Lib "shell32.dll" Alias "ExtractIconExA" 
 '                ByRef iPic As IPicture _
 ') As Long
 
-Private Declare Function OleCreatePictureIndirect Lib "oleaut32" (ByRef pPictDesc As PICTDESC, ByRef riid As Any, ByVal fPictureOwnsHandle As Long, ByRef pIPicture As IPicture) As Long
+' The CLSIDFromString alias/copy extracts the CLSID value copying it into a memory location in binary format
+'Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pclsid As Long) As Long
 
 #If Not TWINBASIC Then ' VB6 only, if TwinBasic then let WDL do it.
     ' provides the CLSID ByRef meaning that it provides the address of the memory location where the IID will be written
     Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As Long, ByRef CLSID As IID) As Long
-
+    Private Declare Function OleCreatePictureIndirect Lib "oleaut32" (ByRef pPictDesc As PICTDESC, ByRef riid As Any, ByVal fPictureOwnsHandle As Long, ByRef pIPicture As IPicture) As Long
 #End If
-
-' The CLSIDFromString alias/copy extracts the CLSID value copying it into a memory location in binary format
-'Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pclsid As Long) As Long
 
 Private Enum OLE_ERROR_CODES
     S_OK = 0
@@ -341,177 +344,6 @@ fExtractEmbeddedPNGFromEXe_Error:
     
 End Function
 
-''---------------------------------------------------------------------------------------
-'' Procedure : displayEmbeddedIcons
-'' Author    : beededea
-'' Date      : 05/07/2019
-'' Purpose   : The program extracts icons embedded within a DLL or an executable
-''             you pass the name of the picbox you require and the image is displayed there
-''             it should return all and not only the 16 and 32 bit icons as does extractIconEx
-''
-''             I may not have coded this particularly well - but it works.
-''---------------------------------------------------------------------------------------
-''
-''
-'Public Sub displayEmbeddedIcons(ByVal FileName As String, ByRef targetPicBox As PictureBox, ByVal IconSize As Integer, ByVal writePNGToFile As Boolean)
-'
-'    Dim lIconIndex As Long: lIconIndex = 0
-'    Dim xSize As Long: xSize = 0
-'    Dim ySize As Long: ySize = 0
-'    Dim hIcon() As Long
-'    Dim hIconID() As Long
-'    Dim nIcons As Long: nIcons = 0
-'    Dim Result As Long: Result = 0
-'    Dim flags As Long: flags = 0
-'    Dim i As Long: i = 0
-'    Dim pic As StdPicture ' interface for a Picture object
-'    Dim outputFilename As String: outputFilename = vbNullString
-'    Dim GSI As GdiplusStartupInput
-'    Dim hToken As Long: hToken = 0
-'    Dim hGraphics As Long: hGraphics = 0
-'    Dim hImage As Long: hImage = 0
-'    Dim ImageFormatPNG As IID
-'    Dim sOutputFilename As String: sOutputFilename = vbNullString
-'    Dim sJustTheFilename As String: sJustTheFilename = vbNullString
-'    Dim successSaveToPNG As Boolean: successSaveToPNG = False
-'
-'    On Error GoTo displayEmbeddedIcons_Error
-'
-'    GSI.GdiplusVersion = 1
-'    GdiplusStartup hToken, GSI
-'
-'    On Error Resume Next ' debug
-'
-'    lIconIndex = 0
-'    i = 2 ' need some experimentation here
-'
-'    'the boundaries of the icons you wish to extract packed into a 32bit LONG for an API call
-'    xSize = make32BitLong(CInt("256"), CInt("16")) ' 1048832
-'    ySize = make32BitLong(CInt("256"), CInt("16")) ' 1048832
-'
-'    ' flags
-'    '
-'    '    LR_DEFAULTCOLOR
-'    '    LR_CREATEDIBSECTION
-'    '    LR_DEFAULTSIZE
-'    '    LR_LOADFROMFILE
-'    '    LR_LfsOADMAP3DCOLORS
-'    '    LR_LOADTRANSPARENT
-'    '    LR_MONOCHROME
-'    '    LR_SHARED
-'    '    LR_VGACOLOR
-'    '
-'    flags = LR_LOADFROMFILE '16
-'
-'    ' Call PrivateExtractIcons with the 5th param set to nothing, solely to obtain the total number of Icons in the file.
-'    Result = PrivateExtractIcons(FileName, lIconIndex, xSize, ySize, ByVal 0&, ByVal 0&, 0&, 0&)
-'
-'    If Result = 0 Then
-'        MsgBox "Failed to extract icon."
-'        GoTo CleanUp
-'    End If
-'
-'    ' The Filename is the resource string/filepath.
-'    ' lIconIndex is the index.
-'    ' xSize and ySize are the desired sizes.
-'    ' 5th parameter is a pointer to the returned array of icon handles.
-'    ' piconid is an ID of each icon that best fits the current display device. The returned identifier is 0 if not obtained.
-'    ' nicons is the number of icons you wish to extract.
-'
-'    ' If you call it with nicon set to this number and niconindex=0 it will extract ALL your icons in one go.
-'    ' eg. PrivateExtractIcons(sExeName, lIconIndex, xSize, ySize,  hIcon(LBound(hIcon)), hIconID(LBound(hIconID)), nIcons * 2, LR_LOADFROMFILE)
-'
-'    nIcons = Result
-'
-'    ' Dimension the arrays to the number of icons.
-'    ReDim hIcon(lIconIndex To lIconIndex + nIcons * 2 - 1)
-'    ReDim hIconID(lIconIndex To lIconIndex + nIcons * 2 - 1)
-'
-'    ' use the undocumented PrivateExtractIcons to extract the icons we require where the 5th param is a pointer to the returned array of handles to extracted icons
-'    Result = PrivateExtractIcons(FileName, lIconIndex, xSize, _
-'                            ySize, hIcon(LBound(hIcon)), _
-'                            hIconID(LBound(hIconID)), _
-'                            nIcons * 2, flags)
-'
-'    ' create an Ipicture icon with a handle, no specific size - to check as to a valid pic before we write directly to the targetPicBox
-'    Set pic = CreateIcon(hIcon(i + lIconIndex - 1))
-'
-'    ' resize and place the target picbox according to the size of the icon
-'    ' (rather than placing the icon in the middle of the picbox as I should, I can code that later)
-'
-'    Call centrePreviewImage(targetPicBox, IconSize, 1)
-'
-'    ' Draw the icon directly onto the respective picturebox control and save as a PNG
-'    If Not (pic Is Nothing) Then
-'        With targetPicBox
-'
-'            'ensure the picbox is empty first
-'            .Picture = LoadPicture(vbNullString)
-'            .Cls
-'            .AutoRedraw = True
-'
-'            'creates a GDI+ image bitmap (hImage) using the icon handle from the icon handle array populated by PrivateExtractIcons
-'            Result = GdipCreateBitmapFromHICON(hIcon(LBound(hIcon)), hImage)
-'            If Result <> 0 Or hImage = 0 Then
-'                MsgBox "Failed to create bitmap from icon."
-'                GoTo CleanUp
-'            Else
-'                ' Creates a GDIP Graphics object (hGraphics) that is associated with the current device context, that being the target picbox
-'                GdipCreateFromHDC .hDC, hGraphics
-'
-'                ' Draws an image at a specified location using the image bitmap and graphics object, in effect writing the image to the picbox
-'                '                      hGraphics, hImage, destX, destY, destWidth, destHeight, srcX, srcY, srcWidth, srcHeight, UnitPixel, hImgAttr, 0&, 0&
-'                GdipDrawImageRectRectI hGraphics, hImage, 0, 0, IconSize, IconSize, 0, 0, 256, 256, 2&, 0, 0, 0
-'
-''               centre image using a better method
-''                        ScaleX(x, ScaleMode, vbPixels) - WidthPx \ 2, _
-''                        ScaleY(y, ScaleMode, vbPixels) - HeightPx \ 2, _
-''                        IconSize, _
-''                        IconSize, _
-'
-'                ' In iconSettings we prove that it is possible to extract the PNG from extract the PNG from the DLL and write that to a file
-'                ' this is of little use here as we write to a picbox and display our PNG image there
-'                ' In SD, we will take this routine and use it to write a PNG to the local profile area and then insert the PNG into the dictionary at runtime startup.
-'
-'                If writePNGToFile = True Then
-'
-'                    ' take the filename, extract just the filename body minus the suffix, then point it to the special folder with a PNG suffix.
-'                    sJustTheFilename = Mid(FileName, InStrRev(FileName, "\") + 1, Len(FileName))
-'                    sJustTheFilename = ExtractFilenameWithoutSuffix(sJustTheFilename)
-'                    sOutputFilename = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\images\" & sJustTheFilename & ".png"
-'
-'                    ' set the encoder class identifier to handle the image bitmap as a PNG
-'                    CLSIDFromString StrPtr("{557CF406-1A04-11D3-9A73-0000F81EF32E}"), ImageFormatPNG
-'    '
-'                    ' extract a PNG of the image bitmap and save to file
-'                    successSaveToPNG = GdipSaveImageToFile(hImage, StrPtr(sOutputFilename), ImageFormatPNG, ByVal 0&) = 0&
-'                    If successSaveToPNG = False Then
-'                        MsgBox "Failed to save PNG."
-'                    End If
-'                End If
-'
-'            End If
-'            .Refresh
-'        End With
-'    End If
-'
-'CleanUp:
-'
-'    ' get rid of the icons we created
-'    Call DestroyIcon(hIcon(i + lIconIndex - 1))
-'    Call GdipDeleteGraphics(hGraphics)
-'    Call GdipDisposeImage(hImage): hImage = 0&
-'    Call GdiplusShutdown(hToken)
-'
-'   On Error GoTo 0
-'   Exit Sub
-'
-'displayEmbeddedIcons_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure displayEmbeddedIcons of Module mdlMain"
-'
-'End Sub
-
 '---------------------------------------------------------------------------------------
 ' Procedure : make32BitLong
 ' Author    : beededea
@@ -546,7 +378,7 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
     
     Dim pic As IPicture
     Dim dsc As PICTDESC
-    'Dim IID(0 To 15) As Byte ' a 16-byte buffer to hold the IID
+    'Dim IID(0 To 15) As Byte ' a 16-byte buffer to hold the IID no longer required as we are using the IID UDT
     Dim Result As Long: Result = 0
     Dim ImageFormatBMP As IID
         
@@ -565,7 +397,7 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
         '    returns a pointer to the first character of the Unicode string containing the IID in text form.
         ' b. VarPtr(IID(0)) Returns the memory address of the first byte of the 16-byte buffer which will receive the binary GUID.
         '                               v                    v
-        'Result = OLE_CLSIDFromString(StrPtr(IID_IPicture), VarPtr(IID(0)))' old method
+        'Result = OLE_CLSIDFromString(StrPtr(IID_IPicture), VarPtr(IID(0)))' old OLE method retained for documentation purposes
         
         Result = CLSIDFromString(StrPtr(IID_IPicture), ImageFormatBMP)
                                                     
@@ -573,11 +405,11 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
         If (Result = OLE_ERROR_CODES.S_OK) Then
         
             ' Create an IPicture object from the bitmap handle described by
-            ' the PICTDESC structure,  and the required pointer to the now valid GUID obtained above.
-            ' The Boolean parameter transfers ownership of the image handle
+            ' the PICTDESC structure, then the byRef pointer to the confirmed valid GUID obtained above.
+            ' The Boolean parameter 1 transfers ownership of the image handle
             ' to the resulting picture object in pic.
             
-            'Result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic) ' old method
+            'Result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic) ' old OLE method retained for documentation purposes
             
             ' Creates a new picture object initialised from and according to the PICTDESC structure.
             Result = OleCreatePictureIndirect(dsc, ImageFormatBMP, 1, pic)

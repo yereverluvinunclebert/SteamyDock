@@ -1,4 +1,15 @@
+
+
   See Changes at END
+
+
+Conversion and testing using Steamydock 32bit.
+==============================================
+
+1. Copy all the files/folder to the tbSteamydock folder
+2. in SQLite3win32stubs.bas change the compiler statements to #if win64 then
+
+
 
 -oOo-
 
@@ -6,7 +17,7 @@ Overall status - Working, a good learning platform and the dock functions.
 
 o New graphics method using icon classes for the main 3-5 icons retaining GDI+ - a test project exists, transparent Cairo which can be utilised directly.
    can be used to implement ALL the icons with some modifications but the main three icons might be the best idea as an interim.
-o Change to WDL to prepare for 64bit compilation.
+o Changing to WDL to prepare for 64bit compilation.
 
 o Need to test SteamyDock working with the iconSettings utility also using SQLite database at the same time, modifying the same data testing for conflicts &c WIP - working!
 o Possible RAM leak or SQL eating up the RAM slowly WIP
@@ -17,6 +28,11 @@ o Test the TwinBasic collection as a replacement as it takes PNGS by default - w
 
 ' Current Tasks:
 ' =============
+
+o Change other APIs to WDL to prepare for 64bit compilation.
+
+o
+
 
 ' images to new settings menu items
 ' images to new control panel menu items
@@ -70,6 +86,9 @@ D. Named pipes, we have to resolve the locking/blocking
 
 E. Bring the three programs together - we MUST do this eventually but we have development to complete in ther meantime and it makes it much more simple
    to keeps the three programs separate for the moment.
+
+
+
 
 
 Private Declare Function IsHungAppWindow Lib "user32" (ByVal hWnd As Long) As Long
