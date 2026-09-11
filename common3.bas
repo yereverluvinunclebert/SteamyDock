@@ -104,7 +104,7 @@ Public Sub putIconSettings(ByVal thisRecordNumber As Integer)
 
 putIconSettings_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure putIconSettings of Module Common"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure putIconSettings of Module Common"
 End Sub
 
 '
@@ -161,7 +161,7 @@ Public Sub getIconSettings(ByVal thisRecordNumber As Integer)
 
 getIconSettings_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getIconSettings of Module Common"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure getIconSettings of Module Common"
 End Sub
 
 
@@ -199,7 +199,7 @@ Private Sub setFirstLastIcons(ByVal thisRecordNumber As Integer)
 
 setFirstLastIcons_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setFirstLastIcons of Module common3"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure setFirstLastIcons of Module common3"
 
 End Sub
 
@@ -289,7 +289,7 @@ Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByV
 
 writeIconSettingsIni_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconSettingsIni of Module Common"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure writeIconSettingsIni of Module Common"
     
 End Sub
 '---------------------------------------------------------------------------------------
@@ -377,7 +377,7 @@ Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer, Optional ByVal
 
 readIconSettingsIni_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconSettingsIni of Module Module2"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure readIconSettingsIni of Module Module2"
 End Sub
 
 ''---------------------------------------------------------------------------------------
@@ -582,7 +582,7 @@ Public Function identifyAppIcons(iconCommand As String) As String
 
 identifyAppIcons_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure identifyAppIcons of Form dock"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure identifyAppIcons of Form dock"
 
 End Function
 
@@ -725,7 +725,7 @@ Public Function GetShortcutInfo(Path As String, Shortcut As Link) As Boolean
 
 GetShortcutInfo_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetShortcutInfo of Module mdlMain"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure GetShortcutInfo of Module mdlMain"
     
 End Function
 
@@ -760,7 +760,7 @@ Private Function ReadSingleString(FileNo As Integer, Offset As Long) As String
 
 ReadSingleString_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ReadSingleString of Module mdlMain"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure ReadSingleString of Module mdlMain"
 
 End Function
 
@@ -792,7 +792,7 @@ Private Function ReadDoubleString(FileNo As Integer, StrLen As Integer) As Strin
 
 ReadDoubleString_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ReadDoubleString of Module mdlMain"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure ReadDoubleString of Module mdlMain"
 End Function
 
 
@@ -815,11 +815,8 @@ Public Function GetShellShortcutInfo(ByVal full_name As String, _
     Dim shortcut_folder As Shell32.folder
     Dim folder_item As Shell32.FolderItem
     Dim lnk As Shell32.ShellLinkObject
-
-    'On Error GoTo GetShellShortcutInfo_Error
-
-    ' Make a Shell object.
     
+    ' Make a Shell object.
     Set shl = New Shell32.Shell
 
     ' Get the shortcut's folder and name.
@@ -844,6 +841,12 @@ Public Function GetShellShortcutInfo(ByVal full_name As String, _
         GetShellShortcutInfo = "File '" & full_name & "' isn't a " & _
             "shortcut."
     Else
+        ' this next resume is acceptable here as this function will be very rarely ever be used.
+        ' if the dragging process is unelevated or there is a mismatch in elevation then the following
+        ' extraction of data will result in a privilege error.
+        ' the resume next suppresses this. We could test for elevation mismatch but it would mean a duplication of this function
+        
+        On Error Resume Next
         ' Display the shortcut's information.
         Set lnk = folder_item.GetLink
         Name = folder_item.Name
@@ -852,6 +855,7 @@ Public Function GetShellShortcutInfo(ByVal full_name As String, _
         working_dir = lnk.WorkingDirectory
         args = lnk.Arguments
         GetShellShortcutInfo = vbNullString
+        On Error GoTo 0
     End If
     
 
@@ -860,8 +864,11 @@ Public Function GetShellShortcutInfo(ByVal full_name As String, _
 
 GetShellShortcutInfo_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetShellShortcutInfo of Form dock"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure GetShellShortcutInfo of Form dock"
 End Function
+
+
+
 
 
 '---------------------------------------------------------------------------------------
@@ -900,7 +907,7 @@ Public Sub zeroAllIconCharacteristics()
 
 zeroAllIconCharacteristics_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure zeroAllIconCharacteristics of Module common3"
+    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure zeroAllIconCharacteristics of Module common3"
             
 End Sub
 

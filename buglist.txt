@@ -7,9 +7,6 @@ Conversion and testing using Steamydock 32bit.
 ==============================================
 
 1. Copy all the files/folder to the tbSteamydock folder
-2. in SQLite3win32stubs.bas change the compiler statements to #if win64 then
-
-
 
 -oOo-
 
@@ -30,9 +27,6 @@ o Test the TwinBasic collection as a replacement as it takes PNGS by default - w
 ' =============
 
 o Change other APIs to WDL to prepare for 64bit compilation.
-
-o
-
 
 ' images to new settings menu items
 ' images to new control panel menu items

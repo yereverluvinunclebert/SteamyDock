@@ -5,7 +5,10 @@ Option Explicit
 #If twinbasic Then
     #If Win64 Then
         Import Library "/Miscellaneous/sqlite3_64.obj" As SQLITE3 Link "stdlib", "kernel32"
-    '#Else ' commented out until we want to test TB's use of imp[orted libs in 32 bit mode
+    '#Else ' commented out until we want to test TB's SQLite's experimental package use of imported libs in 32 bit mode
+    '        for the moment we use the external SQLite32.dll
+    '        TwinBasic cannot currently reference external OBJs outside the .TWIN file, not until version 1.0 at least
+    '    Import Library app.path & "\Miscellaneous\sqlite3_32.obj" As SQLITE3 Link "stdlib", "kernel32"
     '    Import Library "/Miscellaneous/sqlite3_32.obj" As SQLITE3 Link "stdlib", "kernel32"
     #End If
 #End If

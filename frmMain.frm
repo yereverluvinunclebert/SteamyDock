@@ -851,7 +851,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-#If Not TWINBASIC Then ' VB6 only
+#If Not twinbasic Then ' VB6 only
 
     ' API to determine whether the program is running with administrator rights
     Private Declare Function IsUserAnAdmin Lib "Shell32" Alias "#680" () As Integer
@@ -1002,7 +1002,7 @@ Private lastPositionRelativeToDock As Boolean
 '------------------------------------------------------ STARTS
 ' Private Types for determining whether the app is already DPI aware, most useful when operating within the IDE, stops "already DPI aware " messages.
 
-#If Not TWINBASIC Then ' VB6 only
+#If Not twinbasic Then ' VB6 only
     Private Declare Function IsProcessDPIAware Lib "user32.dll" () As Boolean
     
     Private Enum PROCESS_DPI_AWARENESS
@@ -1024,7 +1024,7 @@ Private lastPositionRelativeToDock As Boolean
 
 '------------------------------------------------------ ENDS
 
-#If Not TWINBASIC Then ' VB6 only
+#If Not twinbasic Then ' VB6 only
     Private Declare Function BitBlt Lib "gdi32" ( _
         ByVal hDestDC As Long, _
         ByVal X As Long, _
@@ -1066,7 +1066,7 @@ Private lastPositionRelativeToDock As Boolean
 '------------------------------------------------------ STARTS
 
 ' Type defined for testing a time difference used to initiate one of the hand-coded timers
-#If Not TWINBASIC Then ' VB6 only
+#If Not twinbasic Then ' VB6 only
     Private Type LASTINPUTINFO
         cbSize As Long
         dwTime As Long
@@ -2153,7 +2153,8 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                         Call GetShortcutInfo(iconCommand, thisShortcut) ' .54 DAEB 19/04/2021 frmMain.frm Added new function to identify an icon to assign to the entry
                                        
                         iconTitle = getFileNameFromPath(thisShortcut.FileName)
-                        
+                        If iconTitle = vbNullString Then iconTitle = thisShortcut.WorkingDir
+                                                
                         If Not thisShortcut.FileName = vbNullString Then
                             iconCommand = LCase(thisShortcut.FileName)
                         End If
@@ -2162,7 +2163,8 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                         
                         ' .55 DAEB 19/04/2021 frmMain.frm Added call to the older function to identify an icon using the shell object
                         'if the icontitle and command are blank then this is user-created link that only provides the relative path
-                        If iconTitle = vbNullString And thisShortcut.FileName = vbNullString And Not iconWorkingDirectory = vbNullString Then
+                        ' we try to NEVER run this as an admin elevation mismatch between the dock and dropping process (explorer) can result in a permissions error
+                        If iconTitle = vbNullString And Not iconWorkingDirectory = vbNullString Then
                             Call GetShellShortcutInfo(iconCommand, nName, npath, ndesc, nwork, nargs)
                     
                             iconTitle = nName
