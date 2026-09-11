@@ -151,7 +151,7 @@ Public Enum NOTIFY_EVENTS
 End Enum
 
 Declare Sub SendMessageTimeout Lib "user32" Alias "SendMessageTimeoutA" ( _
-    ByVal hwnd As Long, ByVal Msg As Long, ByVal wParam As Long, _
+    ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, _
     ByVal lParam As String, ByVal fuFlags As Long, ByVal uTimeout As Long, _
     pdwResult As Long)
 
@@ -163,12 +163,12 @@ Const SMTO_ABORTIFHUNG = &H2
 Public gblRegistrySempahoreRaised As String
 Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
 
-Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
-Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
+'Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
+'Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
 Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
-Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
+Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
 
-Private Const PROCESS_ALL_ACCESS = &H1F0FFF
+'Private Const PROCESS_ALL_ACCESS = &H1F0FFF
 
 
 
@@ -989,7 +989,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
     Dim answer As VbMsgBoxResult: answer = vbNo
     Dim NameProcess As String: NameProcess = vbNullString
     Dim explorerProcessId As Long: explorerProcessId = 0
-    Dim retval As Long: retval = 0
+    Dim RetVal As Long: RetVal = 0
     Dim execStatus As Long: execStatus = 0
     Dim ExitCode As Long: ExitCode = 0
     Dim ProcessHandle As Long: ProcessHandle = 0
@@ -1063,7 +1063,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
                 ProcessHandle = OpenProcess(PROCESS_ALL_ACCESS, CLng(0), explorerProcessId)
                 
                 ' here we kill explorer.exe using the process handle
-                retval = TerminateProcess(ProcessHandle, ExitCode)
+                RetVal = TerminateProcess(ProcessHandle, ExitCode)
                 
                 ' now tidy up
                 CloseHandle ProcessHandle
@@ -1158,7 +1158,7 @@ Private Function setWindowsTaskbarPosition(ByVal taskbarPosition As Integer) As 
 
     Dim bAns As Boolean: bAns = False
     Dim keyhand As Long: keyhand = 0
-    Dim b As String: b = vbNullString
+    Dim B As String: B = vbNullString
     Dim hKey As REG_TOPLEVEL_KEYS
     Dim strPath As String: strPath = vbNullString
     Dim strvalue As String: strvalue = vbNullString
@@ -1171,7 +1171,7 @@ Private Function setWindowsTaskbarPosition(ByVal taskbarPosition As Integer) As 
     strPath = "Software\Microsoft\Windows\CurrentVersion\Explorer\StuckRects3"
     strvalue = "Settings"
 
-    b = ByteasByte(12)
+    B = ByteasByte(12)
     
 '    03 for bottom (default).
 '    01 for top.

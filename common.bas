@@ -24,7 +24,7 @@ Option Explicit
 '------------------------------------------------------------
 
 ' APIs and variables for querying processes START
-Private Type PROCESSENTRY32
+Public Type PROCESSENTRY32
     dwSize As Long
     cntUsage As Long
     th32ProcessID As Long
@@ -38,20 +38,21 @@ Private Type PROCESSENTRY32
     'szexeFile As String * 260
 End Type
 
-Private Const PROCESS_ALL_ACCESS = &H1F0FFF
-Private Const TH32CS_SNAPPROCESS As Long = 2&
-Private uProcess  As PROCESSENTRY32
-Private hSnapshot As Long
+Public Const PROCESS_ALL_ACCESS = &H1F0FFF
+Public Const TH32CS_SNAPPROCESS As Long = 2&
+Public uProcess As PROCESSENTRY32
+Public hSnapshot As Long
 
-Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long ' returns a longPtr
-Private Declare Function ProcessFirst Lib "kernel32.dll" Alias "Process32First" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long
-Private Declare Function ProcessNext Lib "kernel32.dll" Alias "Process32Next" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long
-'Private Declare Function CreateToolhelpSnapshot Lib "kernel32.dll" (ByVal lFlags As Long, ByRef lProcessID As Long) As Long ' Alias "CreateToolhelp32Snapshot"
-Private Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long
-Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
-Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
-Private Declare Function GetCurrentProcess Lib "kernel32" () As Long
-Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
+#If Not win64 Then
+    Public Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long ' returns a longPtr
+    Public Declare Function ProcessFirst Lib "kernel32.dll" Alias "Process32First" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version
+    Public Declare Function ProcessNext Lib "kernel32.dll" Alias "Process32Next" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version
+    Public Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long ' returns a longPtr
+    Public Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long ' hProcess As LongPtr, returns a BOOL
+    Public Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long 'hObject a longPtr
+    Public Declare Function GetCurrentProcess Lib "kernel32" () As Long ' returns a longPtr
+    Public Declare Function GetCurrentProcessId Lib "kernel32" () As Long ' returns a longPtr
+#End If
 ' APIs for querying processes END
 
 ' functions to determine 64bitness start
