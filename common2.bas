@@ -161,11 +161,11 @@ Const SMTO_ABORTIFHUNG = &H2
 '------------------------------------------------------ ENDS
 
 Public gblRegistrySempahoreRaised As String
-Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
+'Private Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long
 
 'Private Declare Function FindWindow Lib "user32" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
 'Private Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long
-Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
+'Private Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
 
 'Private Const PROCESS_ALL_ACCESS = &H1F0FFF
@@ -992,7 +992,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
     Dim RetVal As Long: RetVal = 0
     Dim execStatus As Long: execStatus = 0
     Dim ExitCode As Long: ExitCode = 0
-    Dim ProcessHandle As Long: ProcessHandle = 0
+    Dim ProcessHandle As Long: ProcessHandle = 0 ' needs to be a longptr
     Dim dwRes As Long: dwRes = 0
     
     On Error GoTo repositionWindowsTaskbar_Error

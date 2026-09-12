@@ -851,7 +851,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-#If Not twinbasic Then ' VB6 only
+#If Not WIN64 Then ' compiled using 32bit compiler Then ' VB6 only
 
     ' API to determine whether the program is running with administrator rights
     Private Declare Function IsUserAnAdmin Lib "Shell32" Alias "#680" () As Integer
@@ -1002,7 +1002,7 @@ Private lastPositionRelativeToDock As Boolean
 '------------------------------------------------------ STARTS
 ' Private Types for determining whether the app is already DPI aware, most useful when operating within the IDE, stops "already DPI aware " messages.
 
-#If Not twinbasic Then ' VB6 only
+#If Not WIN64 Then ' compiled using 32bit compiler Then ' VB6 only
     Private Declare Function IsProcessDPIAware Lib "user32.dll" () As Boolean
     
     Private Enum PROCESS_DPI_AWARENESS
@@ -1024,7 +1024,7 @@ Private lastPositionRelativeToDock As Boolean
 
 '------------------------------------------------------ ENDS
 
-#If Not twinbasic Then ' VB6 only
+#If Not WIN64 Then ' compiled using 32bit compiler
     Private Declare Function BitBlt Lib "gdi32" ( _
         ByVal hDestDC As Long, _
         ByVal X As Long, _
@@ -1066,7 +1066,7 @@ Private lastPositionRelativeToDock As Boolean
 '------------------------------------------------------ STARTS
 
 ' Type defined for testing a time difference used to initiate one of the hand-coded timers
-#If Not twinbasic Then ' VB6 only
+#If Not WIN64 Then ' compiled using 32bit compiler
     Private Type LASTINPUTINFO
         cbSize As Long
         dwTime As Long

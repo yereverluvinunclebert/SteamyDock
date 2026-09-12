@@ -45,12 +45,12 @@ Public Declare Function FindWindow Lib "user32" Alias "FindWindowW" (ByVal lpCla
 Public Declare Function FindWindowEx Lib "user32" Alias "FindWindowExW" (ByVal hWndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClass As Long, ByVal lpszWindow As Long) As Long
 Public Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
 'Public Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hwnd As Long, lpdwProcessId As Long) As Long
-Public Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwProcessId As Long) As Long
+'Public Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal bInheritHandle As Long, ByVal dwProcessId As Long) As Long
 Public Declare Function VirtualAllocEx Lib "kernel32" (ByVal hProcess As Long, ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flAllocationType As Long, ByVal flProtect As Long) As Long
 Public Declare Function VirtualFreeEx Lib "kernel32" (ByVal hProcess As Long, ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 Public Declare Function ReadProcessMemory Lib "kernel32" (ByVal hProcess As Long, ByVal lpBaseAddress As Long, ByRef lpBuffer As Any, ByVal nSize As Long, lpNumberOfBytesWritten As Long) As Long
 Public Declare Function NtWow64ReadVirtualMemory64 Lib "ntdll.dll" (ByVal ProcessHandle As Long, ByVal BaseAddress As Currency, ByVal Buffer As Long, ByVal Size As Currency, ByVal NumberOfBytesRead As Long) As Long
-Public Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
+'Public Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long
 Public Declare Sub GetNativeSystemInfo Lib "kernel32.dll" (ByVal lpSystemInfo As Long)
 Public Declare Function QueryFullProcessImageName Lib "kernel32.dll" Alias "QueryFullProcessImageNameW" (ByVal hProcess As Long, ByVal dwFlags As Long, ByVal lpExeName As Long, ByVal lpdwSize As Long) As Long
 Public Declare Function GetProcessImageFileName Lib "psapi.dll" Alias "GetProcessImageFileNameW" (ByVal hProcess As Long, ByVal lpImageFileName As Long, ByVal nSize As Long) As Long
@@ -118,7 +118,7 @@ Public Function GetIconHandles(hTray As Long, Count As Long, hIcon() As Long) As
     Dim tb_32       As TBBUTTON_32
     Dim tb_64       As TBBUTTON_64
     Dim Extra(1)    As Long
-    Dim hProc       As Long
+    Dim hProc       As Long ' needs to be a longptr
     Dim pMem        As Long
     Dim Index       As Long
     Dim OS_64       As Boolean
@@ -201,7 +201,7 @@ End Function
 
 Public Function GetFilePathByPid(pid As Long) As String
 
-    Dim hProc       As Long
+    Dim hProc       As Long ' needs to be a longptr
     Dim ProcPath    As String
     Dim cnt         As Long
     Dim osi         As RTL_OSVERSIONINFOEXW

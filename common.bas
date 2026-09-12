@@ -41,24 +41,26 @@ End Type
 Public Const PROCESS_ALL_ACCESS = &H1F0FFF
 Public Const TH32CS_SNAPPROCESS As Long = 2&
 Public uProcess As PROCESSENTRY32
-Public hSnapshot As Long
+Public hSnapshot As Long ' a longPtr
 
-#If Not win64 Then
-    Public Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long ' returns a longPtr
-    Public Declare Function ProcessFirst Lib "kernel32.dll" Alias "Process32First" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version
-    Public Declare Function ProcessNext Lib "kernel32.dll" Alias "Process32Next" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version
-    Public Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long ' returns a longPtr
-    Public Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long ' hProcess As LongPtr, returns a BOOL
-    Public Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long 'hObject a longPtr
+#If Not WIN64 Then  ' * = APIs checked for longPtr changes
+    Public Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long ' returns a longPtr *
+    Public Declare Function ProcessFirst Lib "kernel32.dll" Alias "Process32First" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version *
+    Public Declare Function ProcessNext Lib "kernel32.dll" Alias "Process32Next" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version *
+    Public Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long ' returns a longPtr *
+    Public Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long ' hProcess As LongPtr, returns a BOOL *
+    Public Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long 'hObject a longPtr *
     Public Declare Function GetCurrentProcess Lib "kernel32" () As Long ' returns a longPtr
     Public Declare Function GetCurrentProcessId Lib "kernel32" () As Long ' returns a longPtr
 #End If
-' APIs for querying processes END
+' APIs for querying processes END tested above APIs for longPtr
 
 ' functions to determine 64bitness start
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
-Private Declare Function IsWow64Process Lib "kernel32" (ByVal hProc As Long, bWow64Process As Boolean) As Long
+#If Not WIN64 Then
+    Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long ' hModule As LongPtr, returns a longPtr
+    Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long 'returns a longPtr
+    Private Declare Function IsWow64Process Lib "kernel32" (ByVal hProc As Long, bWow64Process As Boolean) As Long '  hProcess As LongPtr
+#End If
 ' functions to determine 64bitness END
 
 ' enumerate variables for folder values start
@@ -865,16 +867,16 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformChe
     Dim RProcessFound As Long: RProcessFound = 0
     Dim SzExename As String: SzExename = vbNullString
     Dim uProcessExeFile As String: uProcessExeFile = vbNullString
-    Dim MyProcess As Long: MyProcess = 0
+    Dim MyProcess As Long: MyProcess = 0 ' needs to be a longptr
     Dim i As Integer: i = 0
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim procId As Long: procId = 0
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
-    Dim processToKill As Long: processToKill = 0
+    Dim processToKill As Long: processToKill = 0 ' needs to be a longptr
     Dim ExitCode As Long: ExitCode = 0
     
-    Dim thisHSnapshot As Long: thisHSnapshot = 0
+    Dim thisHSnapshot As Long: thisHSnapshot = 0 ' needs to be a longptr
     Dim thisUProcess As PROCESSENTRY32
     
     
@@ -928,12 +930,12 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformChe
                             If LCase$(runningProcessFolder) = LCase$(folderName) Then
                                 ' checkAndKill = TerminateProcess(processToKill, ExitCode)
                                 ' Call CloseHandle(processToKill)
-                                checkAndKill = confirmEachKill(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode)
+                                checkAndKill = confirmEachKill(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode) ' processToKill is a longPtr
                             End If
                         Else ' just go ahead and kill whatever process I say must go
                             ' checkAndKill = TerminateProcess(processToKill, ExitCode)
                             ' Call CloseHandle(processToKill)
-                            checkAndKill = confirmEachKill(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode)
+                            checkAndKill = confirmEachKill(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode) 'processToKill is a longPtr
                         End If
                     End If
             End If
@@ -1708,7 +1710,7 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
-    Dim thisHSnapshot As Long: thisHSnapshot = 0
+    Dim thisHSnapshot As Long: thisHSnapshot = 0 ' needs to be a longptr
     Dim thisUProcess As PROCESSENTRY32
 
     On Error GoTo IsRunning_Error
@@ -1816,7 +1818,7 @@ Public Function getExePathFromPID(ByVal idProc As Long) As String
     Dim sBuf As String:  sBuf = vbNullString
     Dim sChar As Long: sChar = 0
     Dim useloop As Integer: useloop = 0
-    Dim hProcess As Long: hProcess = 0
+    Dim hProcess As Long: hProcess = 0 ' needs to be a longptr
     
     On Error GoTo getExePathFromPID_Error
 
@@ -2387,6 +2389,7 @@ End Function 'fnGetDateInUniversalFormat
 '---------------------------------------------------------------------------------------
 '
 Public Function confirmEachKill(ByVal binaryName As String, ByVal procId As Long, ByVal processToKill As String, ByVal confirmEachProcessKill As Boolean, ByRef ExitCode As Long) As Boolean
+                                                                                        'processToKill is a longPtr
     Dim goAheadAndKill As Boolean: goAheadAndKill = False
     Dim rmessage As String: rmessage = ""
     Dim answer As VbMsgBoxResult: answer = vbNo
@@ -2409,7 +2412,7 @@ Public Function confirmEachKill(ByVal binaryName As String, ByVal procId As Long
     End If
     
     If goAheadAndKill = True Then
-        confirmEachKill = TerminateProcess(processToKill, ExitCode)
+        confirmEachKill = TerminateProcess(processToKill, ExitCode) 'processToKill is a longPtr
         Call CloseHandle(processToKill)
     End If
 

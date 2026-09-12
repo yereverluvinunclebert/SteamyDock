@@ -113,7 +113,7 @@ Private Declare Function ExtractIconEx Lib "shell32.dll" Alias "ExtractIconExA" 
 ' The CLSIDFromString alias/copy extracts the CLSID value copying it into a memory location in binary format
 'Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pclsid As Long) As Long
 
-#If Not TWINBASIC Then ' VB6 only, if TwinBasic then let WDL do it.
+#If Not WIN64 Then ' compiled using 32bit compiler Then ' VB6 only, if TwinBasic then let WDL do it.
     ' provides the CLSID ByRef meaning that it provides the address of the memory location where the IID will be written
     Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As Long, ByRef CLSID As IID) As Long
     Private Declare Function OleCreatePictureIndirect Lib "oleaut32" (ByRef pPictDesc As PICTDESC, ByRef riid As Any, ByVal fPictureOwnsHandle As Long, ByRef pIPicture As IPicture) As Long

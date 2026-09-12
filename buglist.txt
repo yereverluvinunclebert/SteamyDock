@@ -26,7 +26,8 @@ o Test the TwinBasic collection as a replacement as it takes PNGS by default - w
 ' Current Tasks:
 ' =============
 
-o Change other APIs to WDL to prepare for 64bit compilation.
+o Change other APIs to WDL to prepare for eventual 64bit compilation.
+o The testing against the 64bit static linking of the winsqlite64.obj
 
 ' images to new settings menu items
 ' images to new control panel menu items
