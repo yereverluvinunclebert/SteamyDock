@@ -1,4 +1,11 @@
 Attribute VB_Name = "mCommon"
+'---------------------------------------------------------------------------------------
+' Module    : mCommon
+' Author    : Kroool
+' Date      : 13/09/2026
+' Purpose   : BAS module supporting the SQL database classes
+'---------------------------------------------------------------------------------------
+
 Option Explicit
 #If (VBA7 = 0) Then
 Private Enum LongPtr

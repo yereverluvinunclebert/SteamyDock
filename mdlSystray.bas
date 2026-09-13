@@ -118,7 +118,7 @@ Public Function GetIconHandles(hTray As Long, Count As Long, hIcon() As Long) As
     Dim tb_32       As TBBUTTON_32
     Dim tb_64       As TBBUTTON_64
     Dim Extra(1)    As Long
-    Dim hProc       As Long ' needs to be a longptr
+    Dim hProc       As Long ' required As LongPtr
     Dim pMem        As Long
     Dim Index       As Long
     Dim OS_64       As Boolean
@@ -201,7 +201,7 @@ End Function
 
 Public Function GetFilePathByPid(pid As Long) As String
 
-    Dim hProc       As Long ' needs to be a longptr
+    Dim hProc       As Long ' required As LongPtr
     Dim ProcPath    As String
     Dim cnt         As Long
     Dim osi         As RTL_OSVERSIONINFOEXW

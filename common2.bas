@@ -109,7 +109,7 @@ Public Const SPI_SETDESKWALLPAPER = 20 'Change Wallpaper
 ' Private Types for reading/writing binary data from the registry
 
 'Opens the specified registry key
-Private Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
+' Private Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
 
 'Writes all the attributes of the specified open registry key into the registry
 Private Declare Function RegFlushKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
@@ -125,13 +125,13 @@ Private Enum REG_TOPLEVEL_KEYS
 End Enum
 
 'Sets the data and type of a specified value under a registry key - do not Change this! Check as ANY
-Private Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, lpData As Any, ByVal cbData As Long) As Long
+'Private Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, lpData As Any, ByVal cbData As Long) As Long
 
 'The RegCloseKey function releases the handle of the specified key
-Private Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
+'Private Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
 
 'Creates the specified registry key
-Private Declare Function RegCreateKey Lib "advapi32.dll" Alias "RegCreateKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
+'Private Declare Function RegCreateKey Lib "advapi32.dll" Alias "RegCreateKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, phkResult As Long) As Long
 
 Private lDataSize As Long
 Private ByteasByte() As Byte
@@ -992,7 +992,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
     Dim RetVal As Long: RetVal = 0
     Dim execStatus As Long: execStatus = 0
     Dim ExitCode As Long: ExitCode = 0
-    Dim ProcessHandle As Long: ProcessHandle = 0 ' needs to be a longptr
+    Dim ProcessHandle As Long: ProcessHandle = 0 ' required As LongPtr
     Dim dwRes As Long: dwRes = 0
     
     On Error GoTo repositionWindowsTaskbar_Error
@@ -1157,7 +1157,7 @@ End Function
 Private Function setWindowsTaskbarPosition(ByVal taskbarPosition As Integer) As Boolean
 
     Dim bAns As Boolean: bAns = False
-    Dim keyhand As Long: keyhand = 0
+    Dim keyhand As Long: keyhand = 0 ' required as longPtr
     Dim B As String: B = vbNullString
     Dim hKey As REG_TOPLEVEL_KEYS
     Dim strPath As String: strPath = vbNullString
@@ -1181,9 +1181,12 @@ Private Function setWindowsTaskbarPosition(ByVal taskbarPosition As Integer) As 
     ByteasByte(12) = CByte(taskbarPosition)
       
     Dim R As Long
+    
+    ' hKey, keyhand required As LongPtr
     R = RegCreateKey(hKey, strPath, keyhand)
     If R = 0 Then
         ' commit the change to the in-memory registry hive
+        ' keyhand required as longPtr
         R = RegSetValueEx(keyhand, strvalue, 0, _
            REG_BINARY, ByteasByte(0), lDataSize + 1)
         ' flush the write from the in-memory registry hive to the disc

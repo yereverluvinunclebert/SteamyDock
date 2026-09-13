@@ -41,25 +41,25 @@ End Type
 Public Const PROCESS_ALL_ACCESS = &H1F0FFF
 Public Const TH32CS_SNAPPROCESS As Long = 2&
 Public uProcess As PROCESSENTRY32
-Public hSnapshot As Long ' a longPtr
+Public hSnapshot As Long ' a required As LongPtr
 
-#If Not WIN64 Then  ' * = APIs checked for longPtr changes
+#If Not Win64 Then  ' * = APIs checked for longPtr changes
     Public Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long ' returns a longPtr *
     Public Declare Function ProcessFirst Lib "kernel32.dll" Alias "Process32First" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version *
     Public Declare Function ProcessNext Lib "kernel32.dll" Alias "Process32Next" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version *
     Public Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long ' returns a longPtr *
     Public Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long ' hProcess As LongPtr, returns a BOOL *
     Public Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long 'hObject a longPtr *
-    Public Declare Function GetCurrentProcess Lib "kernel32" () As Long ' returns a longPtr
-    Public Declare Function GetCurrentProcessId Lib "kernel32" () As Long ' returns a longPtr
+    Public Declare Function GetCurrentProcess Lib "kernel32" () As Long ' returns a longPtr *
+    Public Declare Function GetCurrentProcessId Lib "kernel32" () As Long ' returns a longPtr *
 #End If
 ' APIs for querying processes END tested above APIs for longPtr
 
 ' functions to determine 64bitness start
-#If Not WIN64 Then
-    Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long ' hModule As LongPtr, returns a longPtr
-    Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long 'returns a longPtr
-    Private Declare Function IsWow64Process Lib "kernel32" (ByVal hProc As Long, bWow64Process As Boolean) As Long '  hProcess As LongPtr
+#If Not Win64 Then
+    Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long ' hModule As LongPtr, returns a longPtr *
+    Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long 'returns a longPtr *
+    Private Declare Function IsWow64Process Lib "kernel32" (ByVal hProc As Long, bWow64Process As Boolean) As Long '  hProc As LongPtr *
 #End If
 ' functions to determine 64bitness END
 
@@ -74,14 +74,16 @@ End Enum
 
 
 'API Function to read/write information from INI File start
+
 Private Declare Function GetPrivateProfileString Lib "kernel32" _
     Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any _
     , ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Long _
-    , ByVal lpFileName As String) As Long
+    , ByVal lpFileName As String) As Long ' ANSI version has no longPtrs, Unicode does *
 
 Private Declare Function WritePrivateProfileString Lib "kernel32" _
     Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any _
-    , ByVal lpString As Any, ByVal lpFileName As String) As Long
+    , ByVal lpString As Any, ByVal lpFileName As String) As Long ' ANSI version has no longPtrs, Unicode does *
+    
 'API Function to read/write information from INI File start
 
 ' APIs, constants defined for querying the registry STARTS
@@ -89,11 +91,11 @@ Public Const HKEY_LOCAL_MACHINE = &H80000002
 Public Const HKEY_CURRENT_USER = &H80000001
 Public Const REG_SZ = 1                          ' Unicode nul terminated string
 
-Private Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, ByRef phkResult As Long) As Long
-Public Declare Function RegQueryValueEx Lib "advapi32.dll" Alias "RegQueryValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal lpReserved As Long, ByRef lpType As Long, ByRef lpData As Any, ByRef lpcbData As Long) As Long
-Public Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long
-Private Declare Function RegCreateKey Lib "advapi32.dll" Alias "RegCreateKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, ByRef phkResult As Long) As Long
-Private Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, ByRef lpData As Any, ByVal cbData As Long) As Long
+Public Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, ByRef phkResult As Long) As Long  ' hKey LongPtr, phkResult As LongPtr *
+Public Declare Function RegQueryValueEx Lib "advapi32.dll" Alias "RegQueryValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal lpReserved As Long, ByRef lpType As Long, ByRef lpData As Any, ByRef lpcbData As Long) As Long ' hKey As LongPtr, lpReserved LongPtr *
+Public Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long ' hKey LongPtr *
+Public Declare Function RegCreateKey Lib "advapi32.dll" Alias "RegCreateKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, ByRef phkResult As Long) As Long ' hKey LongPtr, phkResult LongPtr *
+Public Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, ByRef lpData As Any, ByVal cbData As Long) As Long  ' hKey LongPtr *
 ' APIs, constants defined for querying the registry ENDS
 
 ' APIs and structures for opening a common dialog box to select files without OCX dependencies STARTS
@@ -515,16 +517,19 @@ End Function
 ' Date      : 05/07/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------
-'
+'  hKey required as longPtr
 Public Sub savestring(ByRef hKey As Long, ByRef strPath As String, ByRef strvalue As String, ByRef strData As String)
 
-    Dim keyhand As Long: keyhand = 0
+    Dim keyhand As Long: keyhand = 0 ' required as longPtr
     Dim R As Long: R = 0
     
     On Error GoTo savestring_Error
 
+    ' hKey, keyhand required As LongPtr
     R = RegCreateKey(hKey, strPath, keyhand)
+    ' keyhand required As LongPtr
     R = RegSetValueEx(keyhand, strvalue, 0, REG_SZ, ByVal strData, Len(strData))
+    ' keyhand required As LongPtr
     R = RegCloseKey(keyhand)
 
    On Error GoTo 0
@@ -541,26 +546,27 @@ End Sub
 ' Date      : 05/07/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------
-'
+' hKey required As LongPtr, phkResult required As LongPtr
 Public Function getstring(ByRef hKey As Long, ByRef strPath As String, ByRef strvalue As String) As String
 
-    Dim keyhand As Long: keyhand = 0
+    Dim keyhand As Long: keyhand = 0 ' required As LongPtr
     Dim lResult As Long: lResult = 0
     Dim strBuf As String: strBuf = vbNullString
     Dim lDataBufSize As Long: lDataBufSize = 0
     Dim intZeroPos As Integer: intZeroPos = 0
     Dim rvar As Integer: rvar = 0
-    
-    'in .NET the variant type will need to be replaced by object? This code will go altogether as .NET has native functions to read the registry
 
     Dim lValueType As Variant ' cannot initialise
 
     On Error GoTo getstring_Error
 
+    ' hKey  required As LongPtr, keyhand  required As LongPtr
     rvar = RegOpenKey(hKey, strPath, keyhand)
+    ' keyhand  required As LongPtr, 3rd value 0& phkResult required As LongPtr
     lResult = RegQueryValueEx(keyhand, strvalue, 0&, lValueType, ByVal 0&, lDataBufSize)
     If lValueType = REG_SZ Then
         strBuf = String$(lDataBufSize, " ")
+        ' keyhand  required As LongPtr, 3rd value 0& phkResult required As LongPtr
         lResult = RegQueryValueEx(keyhand, strvalue, 0&, 0&, ByVal strBuf, lDataBufSize)
         Dim ERROR_SUCCESS As Variant
         If lResult = ERROR_SUCCESS Then
@@ -867,16 +873,16 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformChe
     Dim RProcessFound As Long: RProcessFound = 0
     Dim SzExename As String: SzExename = vbNullString
     Dim uProcessExeFile As String: uProcessExeFile = vbNullString
-    Dim MyProcess As Long: MyProcess = 0 ' needs to be a longptr
+    Dim MyProcess As Long: MyProcess = 0 ' required As LongPtr
     Dim i As Integer: i = 0
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim procId As Long: procId = 0
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
-    Dim processToKill As Long: processToKill = 0 ' needs to be a longptr
+    Dim processToKill As Long: processToKill = 0 ' required As LongPtr
     Dim ExitCode As Long: ExitCode = 0
     
-    Dim thisHSnapshot As Long: thisHSnapshot = 0 ' needs to be a longptr
+    Dim thisHSnapshot As Long: thisHSnapshot = 0 ' required As LongPtr
     Dim thisUProcess As PROCESSENTRY32
     
     
@@ -930,12 +936,12 @@ Public Function checkAndKill(ByRef NameProcess As String, ByVal bypassMalformChe
                             If LCase$(runningProcessFolder) = LCase$(folderName) Then
                                 ' checkAndKill = TerminateProcess(processToKill, ExitCode)
                                 ' Call CloseHandle(processToKill)
-                                checkAndKill = confirmEachKill(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode) ' processToKill is a longPtr
+                                checkAndKill = confirmEachKill(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode) ' processToKill required As LongPtr
                             End If
                         Else ' just go ahead and kill whatever process I say must go
                             ' checkAndKill = TerminateProcess(processToKill, ExitCode)
                             ' Call CloseHandle(processToKill)
-                            checkAndKill = confirmEachKill(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode) 'processToKill is a longPtr
+                            checkAndKill = confirmEachKill(binaryName, procId, processToKill, confirmEachProcessKill, ExitCode) 'processToKill required As LongPtr
                         End If
                     End If
             End If
@@ -1000,7 +1006,7 @@ End Function
 Public Function Is64bit() As Boolean
     
     ' variables declared
-    Dim Handle As Long: Handle = 0
+    Dim Handle As Long: Handle = 0 ' needs a longpPtr
     Dim bolFunc As Boolean: bolFunc = False
         
     ' Assume initially that this is not a Wow64 process
@@ -1710,7 +1716,7 @@ Public Function IsRunning(ByVal NameProcess As String, Optional ByRef processID 
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
-    Dim thisHSnapshot As Long: thisHSnapshot = 0 ' needs to be a longptr
+    Dim thisHSnapshot As Long: thisHSnapshot = 0 ' required As LongPtr
     Dim thisUProcess As PROCESSENTRY32
 
     On Error GoTo IsRunning_Error
@@ -1818,7 +1824,7 @@ Public Function getExePathFromPID(ByVal idProc As Long) As String
     Dim sBuf As String:  sBuf = vbNullString
     Dim sChar As Long: sChar = 0
     Dim useloop As Integer: useloop = 0
-    Dim hProcess As Long: hProcess = 0 ' needs to be a longptr
+    Dim hProcess As Long: hProcess = 0 ' required As LongPtr
     
     On Error GoTo getExePathFromPID_Error
 
@@ -2389,7 +2395,7 @@ End Function 'fnGetDateInUniversalFormat
 '---------------------------------------------------------------------------------------
 '
 Public Function confirmEachKill(ByVal binaryName As String, ByVal procId As Long, ByVal processToKill As String, ByVal confirmEachProcessKill As Boolean, ByRef ExitCode As Long) As Boolean
-                                                                                        'processToKill is a longPtr
+                                                                                        'processToKill required As LongPtr
     Dim goAheadAndKill As Boolean: goAheadAndKill = False
     Dim rmessage As String: rmessage = ""
     Dim answer As VbMsgBoxResult: answer = vbNo
@@ -2412,7 +2418,7 @@ Public Function confirmEachKill(ByVal binaryName As String, ByVal procId As Long
     End If
     
     If goAheadAndKill = True Then
-        confirmEachKill = TerminateProcess(processToKill, ExitCode) 'processToKill is a longPtr
+        confirmEachKill = TerminateProcess(processToKill, ExitCode) 'processToKill required As LongPtr
         Call CloseHandle(processToKill)
     End If
 

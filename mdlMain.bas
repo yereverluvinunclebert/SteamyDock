@@ -3304,7 +3304,7 @@ Public Function confirmEachKillPutWindowBehind(ByVal binaryName As String, ByVal
     End If
     
     If goAheadAndKill = True Then
-        confirmEachKillPutWindowBehind = TerminateProcess(processToKill, ExitCode) 'processToKill is a longPtr
+        confirmEachKillPutWindowBehind = TerminateProcess(processToKill, ExitCode) 'processToKill required As LongPtr
         Call CloseHandle(processToKill)
     Else
         a = handleWindowConditionAndZorder(procId, "focus")
@@ -3341,16 +3341,16 @@ Public Function checkAndKillPutWindowBehind(ByRef NameProcess As String, ByVal c
     Dim RProcessFound As Long: RProcessFound = 0
     Dim SzExename As String: SzExename = vbNullString
     Dim uProcessExeFile As String: uProcessExeFile = vbNullString
-    Dim MyProcess As Long: MyProcess = 0 ' needs to be a longptr
+    Dim MyProcess As Long: MyProcess = 0 ' required As LongPtr
     Dim i As Integer: i = 0
     Dim binaryName As String: binaryName = vbNullString
     Dim folderName As String: folderName = vbNullString
     Dim procId As Long: procId = 0
     Dim runningProcessFolder As String: runningProcessFolder = vbNullString
-    Dim processToKill As Long: processToKill = 0 ' needs to be a longptr
+    Dim processToKill As Long: processToKill = 0 ' required As LongPtr
     Dim ExitCode As Long: ExitCode = 0
     
-    Dim thisHSnapshot As Long: thisHSnapshot = 0 ' needs to be a longptr
+    Dim thisHSnapshot As Long: thisHSnapshot = 0 ' required As LongPtr
     Dim thisUProcess As PROCESSENTRY32
     
     On Error GoTo checkAndKillPutWindowBehind_Error
