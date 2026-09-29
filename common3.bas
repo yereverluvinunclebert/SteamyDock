@@ -104,7 +104,7 @@ Public Sub putIconSettings(ByVal thisRecordNumber As Integer)
 
 putIconSettings_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure putIconSettings of Module Common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure putIconSettings of Module Common"
 End Sub
 
 '
@@ -112,7 +112,7 @@ End Sub
 ' Procedure : getIconSettings
 ' Author    : beededea
 ' Date      : 05/07/2019
-' Purpose   : Read icon values from random access data file
+' Purpose   : Read icon values from random access data file unused
 '---------------------------------------------------------------------------------------
 '
 Public Sub getIconSettings(ByVal thisRecordNumber As Integer)
@@ -161,7 +161,7 @@ Public Sub getIconSettings(ByVal thisRecordNumber As Integer)
 
 getIconSettings_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure getIconSettings of Module Common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getIconSettings of Module Common"
 End Sub
 
 
@@ -199,7 +199,7 @@ Private Sub setFirstLastIcons(ByVal thisRecordNumber As Integer)
 
 setFirstLastIcons_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure setFirstLastIcons of Module common3"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setFirstLastIcons of Module common3"
 
 End Sub
 
@@ -289,7 +289,7 @@ Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByV
 
 writeIconSettingsIni_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure writeIconSettingsIni of Module Common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconSettingsIni of Module Common"
     
 End Sub
 '---------------------------------------------------------------------------------------
@@ -301,7 +301,7 @@ End Sub
 '             Or, alternatively read it directly from an array cache.
 '---------------------------------------------------------------------------------------
 '
-Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer, Optional ByVal readArray As Boolean)
+Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer) ' , Optional ByVal readArray As Boolean
 
     Dim errCnt As Integer: errCnt = 0
     Static readDBFlag As Integer
@@ -310,7 +310,7 @@ Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer, Optional ByVal
     
    ' If readArray = False Then
     
-        ' obtain the icon data from random access data file
+        ' obtain the icon data from random access data file unused
         'Call getIconSettings(iconNumberToRead) 'retained here for testing
         
         ' check to see if there have been any prior errors reading records from the db, if so, don't read any more records
@@ -377,8 +377,44 @@ Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer, Optional ByVal
 
 readIconSettingsIni_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure readIconSettingsIni of Module Module2"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconSettingsIni of Module Module2"
 End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : createDockIcons
+' Author    : beededea
+' Date      : 21/09/2019
+' Purpose   : Reads an .INI File (SETTINGS.INI) using the icon number as a reference.
+'             Then it assigns the value to a variable and an array cache
+'             Or, alternatively read it directly from an array cache.
+'---------------------------------------------------------------------------------------
+'
+Public Sub createDockIcons(ByVal iconNumberToRead As Integer)
+
+    Dim errCnt As Integer: errCnt = 0
+    Static readDBFlag As Integer
+        
+    On Error GoTo createDockIcons_Error
+
+        
+        ' check to see if there have been any prior errors reading records from the db, if so, don't read any more records
+        If readDBFlag > 0 Then Exit Sub
+        
+         ' obtain the icon data from the SQLite database with error check returned
+        errCnt = getIconSettingsFromDatabase(iconNumberToRead, True)
+        readDBFlag = readDBFlag + errCnt
+
+
+   On Error GoTo 0
+   Exit Sub
+
+createDockIcons_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure createDockIcons of Module Module2"
+End Sub
+
+
 
 ''---------------------------------------------------------------------------------------
 '' Procedure : readIconRegistryWriteSettings
@@ -582,7 +618,7 @@ Public Function identifyAppIcons(iconCommand As String) As String
 
 identifyAppIcons_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure identifyAppIcons of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure identifyAppIcons of Form dock"
 
 End Function
 
@@ -725,7 +761,7 @@ Public Function GetShortcutInfo(Path As String, Shortcut As Link) As Boolean
 
 GetShortcutInfo_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure GetShortcutInfo of Module mdlMain"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetShortcutInfo of Module mdlMain"
     
 End Function
 
@@ -760,7 +796,7 @@ Private Function ReadSingleString(FileNo As Integer, Offset As Long) As String
 
 ReadSingleString_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure ReadSingleString of Module mdlMain"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ReadSingleString of Module mdlMain"
 
 End Function
 
@@ -792,7 +828,7 @@ Private Function ReadDoubleString(FileNo As Integer, StrLen As Integer) As Strin
 
 ReadDoubleString_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure ReadDoubleString of Module mdlMain"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure ReadDoubleString of Module mdlMain"
 End Function
 
 
@@ -864,7 +900,7 @@ Public Function GetShellShortcutInfo(ByVal full_name As String, _
 
 GetShellShortcutInfo_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure GetShellShortcutInfo of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure GetShellShortcutInfo of Form dock"
 End Function
 
 
@@ -907,7 +943,7 @@ Public Sub zeroAllIconCharacteristics()
 
 zeroAllIconCharacteristics_Error:
 
-    MsgBox "Error " & err.Number & " (" & err.Description & ") in procedure zeroAllIconCharacteristics of Module common3"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure zeroAllIconCharacteristics of Module common3"
             
 End Sub
 

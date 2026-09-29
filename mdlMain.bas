@@ -518,6 +518,7 @@ Public bmpInfo As BITMAPINFO
 
 Public collLargeIcons As Dictionary
 Public collSmallIcons As Dictionary
+Public sDockIcons As Dictionary
 
 'Public GetDataSinceUpdateCounter As Object
 
@@ -623,8 +624,10 @@ Public gblExplorerTimerRunning As Boolean
 Public gblProcessTimerRunning As Boolean
 
 
-' icon class
-Public fMainIcon As New cfMainIcon
+' class objects instantiated
+Public sIcon As New cwMainIcon
+
+
 
 '---------------------------------------------------------------------------------------
 ' Procedure : fTestCursorWithinDockYPosition
@@ -1380,21 +1383,21 @@ End Sub
 ' Date      : 25/07/2025
 ' Purpose   : read the icon properties from random access file
 '---------------------------------------------------------------------------------------
+
+'Public Sub readIconConfiguration()
+'    Dim useloop As Integer: useloop = 0
+'    Dim fromArray As Boolean: fromArray = False
 '
-Public Sub readIconConfiguration()
-    Dim useloop As Integer: useloop = 0
-    Dim fromArray As Boolean: fromArray = False
-    
-    On Error GoTo readIconConfiguration_Error
-
-    Close #3
-    Open iconDataFile For Random Shared As #3 Len = Len(iconVar)
-
+'    On Error GoTo readIconConfiguration_Error
+'
+'    Close #3
+'    Open iconDataFile For Random Shared As #3 Len = Len(iconVar)
+'
 '        fromArray = False
 '        For useloop = 0 To rdIconUpperBound
 '             readIconSettingsIni useloop, fromArray
 '        Next useloop
-
+'
 '    ' starting at the END of the steamydock map, scroll backward and increment the number
 '    ' until we reach the current position.
 '    For useloop = rdIconUpperBound To 0 Step -1
@@ -1403,15 +1406,15 @@ Public Sub readIconConfiguration()
 '         Call readIconSettingsIni(useloop, False)
 '         Call writeIconSettingsIni(useloop + 1, False)
 '    Next useloop
-
-   On Error GoTo 0
-   Exit Sub
-
-readIconConfiguration_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconConfiguration of Module mdlSdMain"
-        
-End Sub
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'readIconConfiguration_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconConfiguration of Module mdlSdMain"
+'
+'End Sub
 
 
 '---------------------------------------------------------------------------------------
@@ -1592,7 +1595,7 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     For useloop = iconArrayUpperBound To selectedIconIndex Step -1
          Call zeroAllIconCharacteristics
          
-         Call readIconSettingsIni(useloop, False)
+         Call readIconSettingsIni(useloop)
          Call writeIconSettingsIni(useloop + 1, False)
     Next useloop
     
@@ -1628,7 +1631,7 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
 
     ' then re-read the config for every icon from the top down to the selected item
     For useloop = iconArrayUpperBound To selectedIconIndex Step -1
-        Call readIconSettingsIni(useloop, False)
+        Call readIconSettingsIni(useloop)
         Call reassignArrayElements(useloop)
     Next useloop
     
@@ -2228,13 +2231,13 @@ Public Sub deleteThisIcon()
         
         ' read the steamyDock settings one item up in the list then write the new item at the current location effectively overwriting it
         For useloop = selectedIconIndex + 1 To iconArrayUpperBound
-            Call readIconSettingsIni(useloop, fromArray)   ' read from file but write to interim array cache
+            Call readIconSettingsIni(useloop)   ' read from file but write to interim array cache
             Call writeIconSettingsIni(useloop - 1, toArray)  ' write changes to array for later commit
         Next useloop
                     
         ' then re-read the config for every icon - moving the image and arrays
         For useloop = selectedIconIndex To rdIconUpperBound
-            Call readIconSettingsIni(useloop, toArray)  ' , read from array from the beginning
+            Call readIconSettingsIni(useloop)  ' , read from array from the beginning
             reassignArrayElements (useloop)
     
             ' instead of reordering the images within the dictionary, which is difficult as you can't just add and
@@ -3573,9 +3576,10 @@ End Sub
 '             The difference is the window handle name (hwnd) is specific to the calling form, in this case, the dock.
 '---------------------------------------------------------------------------------------
 '
-Public Function executeSettings() As Long
+Public Function executeSettings() As Long ' hWnd required as longPtr, execStatus required as longPtr
    On Error GoTo executeSettings_Error
 
+    ' hWnd required as longPtr, execStatus required as longPtr
     executeSettings = ShellExecute(dock.hWnd, "runas", "c:\windows\explorer.exe", vbNullString, vbNullString, 1)
 
    On Error GoTo 0

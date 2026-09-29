@@ -195,7 +195,7 @@ End Sub
 Private Sub lblPunklabsLink_Click()
    On Error GoTo lblPunklabsLink_Click_Error
    'If debugflg = 1 Then debugLog "%lblPunklabsLink_Click"
-
+        
         Call ShellExecute(Me.hWnd, "Open", "http://www.punklabs.com", vbNullString, App.Path, 1)
 
    On Error GoTo 0

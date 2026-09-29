@@ -990,7 +990,7 @@ Public Sub repositionWindowsTaskbar(ByVal newDockPosition As String, ByVal curre
     Dim NameProcess As String: NameProcess = vbNullString
     Dim explorerProcessId As Long: explorerProcessId = 0
     Dim RetVal As Long: RetVal = 0
-    Dim execStatus As Long: execStatus = 0
+    Dim execStatus As Long: execStatus = 0 '  execStatus required as longPtr
     Dim ExitCode As Long: ExitCode = 0
     Dim ProcessHandle As Long: ProcessHandle = 0 ' required As LongPtr
     Dim dwRes As Long: dwRes = 0

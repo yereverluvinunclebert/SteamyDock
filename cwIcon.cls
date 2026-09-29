@@ -6,7 +6,7 @@ BEGIN
   DataSourceBehavior  = 0  'vbNone
   MTSTransactionMode  = 0  'NotAnMTSObject
 END
-Attribute VB_Name = "cfMainIcon"
+Attribute VB_Name = "cwMainIcon"
 Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
@@ -22,24 +22,18 @@ Option Explicit
 
 ' local property holders for this class
 
-Private mIconHOffset As Long
-Private mIconVOffset As Long
-Private mIconHeight As Long
-Private mIconWidth As Long
-Private mIconIndex As Integer
-Private mIconOpacity As Integer
-Private mIconImage As String
+Private mKeyValue As String
 Private mFilename As String
 Private mFileName2 As String
 Private mTitle As String
 Private mCommand As String
 Private mArguments As String
 Private mWorkingDirectory As String
-Private mShowCmd As String
+Private mShowCmd As Boolean
 Private mOpenRunning As Boolean
 Private mIsSeparator As Boolean
 Private mUseContext As Boolean
-Private mDockletFile As Boolean
+'Private mDockletFile As Boolean
 Private mUseDialog As Boolean
 Private mUseDialogAfter As Boolean
 Private mQuickLaunch As Boolean
@@ -48,8 +42,18 @@ Private mSecondApp As String
 Private mRunElevated As Boolean
 Private mRunSecondAppBeforehand As String
 Private mAppToTerminate As String
+
 Private mDisabled As Boolean
-Private mRefresh As Boolean
+
+Private mIconHOffset As Long
+Private mIconVOffset As Long
+Private mIconHeight As Long
+Private mIconWidth As Long
+Private mIconIndex As Integer
+Private mIconOpacity As Integer
+Private mIconImage As String
+
+
 
 
 
@@ -75,141 +79,47 @@ Class_Initialize_Error:
 
      MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Class_Initialize of Class Module cwMainIcon"
 End Sub
+
+
+'
 '---------------------------------------------------------------------------------------
-' Property  : iconIndex
+' Property  : KeyValue
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get IconIndex() As Integer
-   On Error GoTo IconIndexGet_Error
+Public Property Get KeyValue() As String
+   On Error GoTo KeyValueGet_Error
 
-   IconIndex = mIconIndex
+   KeyValue = mKeyValue
 
    On Error GoTo 0
    Exit Property
 
-IconIndexGet_Error:
+KeyValueGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconIndex of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property KeyValue  of Class Module cwIcon"
 End Property
 '---------------------------------------------------------------------------------------
-' Property  : iconIndex
+' Property  : KeyValue
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let IconIndex(ByVal newValue As Integer)
-   On Error GoTo IconIndexLet_Error
+Public Property Let KeyValue(ByVal newValue As String)
+   On Error GoTo KeyValueLet_Error
 
-    If mIconIndex <> newValue Then mIconIndex = newValue Else Exit Property
-    
-    If mIconIndex = True Then
-    
-    Else
-    
-    End If
+    If mKeyValue <> newValue Then mKeyValue = newValue Else Exit Property
+
 
    On Error GoTo 0
    Exit Property
 
-IconIndexLet_Error:
+KeyValueLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconIndex of Class Module cwIcon"
-End Property
-'
-'---------------------------------------------------------------------------------------
-' Property  : iconHOffset
-' Author    : beededea
-' Date      : 20/11/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Property Get iconHOffset() As Long
-   On Error GoTo iconHOffsetGet_Error
-
-   iconHOffset = mIconHOffset
-
-   On Error GoTo 0
-   Exit Property
-
-iconHOffsetGet_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconHOffset of Class Module cwIcon"
-End Property
-'---------------------------------------------------------------------------------------
-' Property  : iconHOffset
-' Author    : beededea
-' Date      : 20/11/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Property Let iconHOffset(ByVal newValue As Long)
-   On Error GoTo iconHOffsetLet_Error
-
-    If mIconHOffset <> newValue Then mIconHOffset = newValue Else Exit Property
-    
-    If mIconHOffset = True Then
-    
-    Else
-    
-    End If
-
-   On Error GoTo 0
-   Exit Property
-
-iconHOffsetLet_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconHOffset of Class Module cwIcon"
-End Property
-
-
-'
-'---------------------------------------------------------------------------------------
-' Property  : iconVOffset
-' Author    : beededea
-' Date      : 20/11/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Property Get iconVOffset() As Long
-   On Error GoTo iconVOffsetGet_Error
-
-   iconVOffset = mIconVOffset
-
-   On Error GoTo 0
-   Exit Property
-
-iconVOffsetGet_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconVOffset of Class Module cwIcon"
-End Property
-'---------------------------------------------------------------------------------------
-' Property  : iconVOffset
-' Author    : beededea
-' Date      : 20/11/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Property Let iconVOffset(ByVal newValue As Long)
-   On Error GoTo iconVOffsetLet_Error
-
-    If mIconVOffset <> newValue Then mIconVOffset = newValue Else Exit Property
-    
-    If mIconVOffset = True Then
-    
-    Else
-    
-    End If
-
-   On Error GoTo 0
-   Exit Property
-
-iconVOffsetLet_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconVOffset of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property KeyValue of Class Module cwIcon"
 End Property
 
 '
@@ -244,11 +154,6 @@ Public Property Let FileName(ByVal newValue As String)
 
     If mFilename <> newValue Then mFilename = newValue Else Exit Property
     
-    If mFilename = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -291,11 +196,6 @@ Public Property Let FileName2(ByVal newValue As String)
 
     If mFileName2 <> newValue Then mFileName2 = newValue Else Exit Property
     
-    If mFileName2 = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -337,11 +237,6 @@ Public Property Let Title(ByVal newValue As String)
 
     If mTitle <> newValue Then mTitle = newValue Else Exit Property
     
-    If mTitle = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -383,12 +278,6 @@ Public Property Let Command(ByVal newValue As String)
 
     If mCommand <> newValue Then mCommand = newValue Else Exit Property
     
-    If mCommand = True Then
-    
-    Else
-    
-    End If
-
    On Error GoTo 0
    Exit Property
 
@@ -430,11 +319,7 @@ Public Property Let Arguments(ByVal newValue As String)
 
     If mArguments <> newValue Then mArguments = newValue Else Exit Property
     
-    If mArguments = True Then
-    
-    Else
-    
-    End If
+
 
    On Error GoTo 0
    Exit Property
@@ -476,11 +361,6 @@ Public Property Let WorkingDirectory(ByVal newValue As String)
 
     If mWorkingDirectory <> newValue Then mWorkingDirectory = newValue Else Exit Property
     
-    If mWorkingDirectory = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -680,50 +560,44 @@ End Property
 
 
 '
-'---------------------------------------------------------------------------------------
-' Property  : DockletFile
-' Author    : beededea
-' Date      : 20/11/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Property  : DockletFile
+'' Author    : beededea
+'' Date      : 20/11/2025
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Public Property Get DockletFile() As Boolean
+'   On Error GoTo DockletFileGet_Error
 '
-Public Property Get DockletFile() As Boolean
-   On Error GoTo DockletFileGet_Error
-
-   DockletFile = mDockletFile
-
-   On Error GoTo 0
-   Exit Property
-
-DockletFileGet_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property DockletFile of Class Module cwIcon"
-End Property
-'---------------------------------------------------------------------------------------
-' Property  : DockletFile
-' Author    : beededea
-' Date      : 20/11/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
+'   DockletFile = mDockletFile
 '
-Public Property Let DockletFile(ByVal newValue As Boolean)
-   On Error GoTo DockletFileLet_Error
-
-    If mDockletFile <> newValue Then mDockletFile = newValue Else Exit Property
-    
-    If mDockletFile = True Then
-    
-    Else
-    
-    End If
-
-   On Error GoTo 0
-   Exit Property
-
-DockletFileLet_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property DockletFile of Class Module cwIcon"
-End Property
+'   On Error GoTo 0
+'   Exit Property
+'
+'DockletFileGet_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property DockletFile of Class Module cwIcon"
+'End Property
+''---------------------------------------------------------------------------------------
+'' Property  : DockletFile
+'' Author    : beededea
+'' Date      : 20/11/2025
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Public Property Let DockletFile(ByVal newValue As Boolean)
+'   On Error GoTo DockletFileLet_Error
+'
+'    If mDockletFile <> newValue Then mDockletFile = newValue Else Exit Property
+'
+'   On Error GoTo 0
+'   Exit Property
+'
+'DockletFileLet_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property DockletFile of Class Module cwIcon"
+'End Property
 
 '
 '---------------------------------------------------------------------------------------
@@ -943,12 +817,6 @@ Public Property Let SecondApp(ByVal newValue As String)
 
     If mSecondApp <> newValue Then mSecondApp = newValue Else Exit Property
     
-    If mSecondApp = True Then
-    
-    Else
-    
-    End If
-
    On Error GoTo 0
    Exit Property
 
@@ -1036,11 +904,6 @@ Public Property Let RunSecondAppBeforehand(ByVal newValue As String)
 
     If mRunSecondAppBeforehand <> newValue Then mRunSecondAppBeforehand = newValue Else Exit Property
     
-    If mRunSecondAppBeforehand = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -1081,12 +944,7 @@ Public Property Let AppToTerminate(ByVal newValue As String)
    On Error GoTo AppToTerminateLet_Error
 
     If mAppToTerminate <> newValue Then mAppToTerminate = newValue Else Exit Property
-    
-    If mAppToTerminate = True Then
-    
-    Else
-    
-    End If
+
 
    On Error GoTo 0
    Exit Property
@@ -1333,46 +1191,147 @@ End Property
 
 
 '---------------------------------------------------------------------------------------
+' Property  : iconIndex
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get IconIndex() As Integer
+   On Error GoTo IconIndexGet_Error
+
+   IconIndex = mIconIndex
+
+   On Error GoTo 0
+   Exit Property
+
+IconIndexGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconIndex of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : iconIndex
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let IconIndex(ByVal newValue As Integer)
+   On Error GoTo IconIndexLet_Error
+
+    If mIconIndex <> newValue Then mIconIndex = newValue Else Exit Property
+    
+
+   On Error GoTo 0
+   Exit Property
+
+IconIndexLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconIndex of Class Module cwIcon"
+End Property
+'
+'---------------------------------------------------------------------------------------
+' Property  : iconHOffset
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get iconHOffset() As Long
+   On Error GoTo iconHOffsetGet_Error
+
+   iconHOffset = mIconHOffset
+
+   On Error GoTo 0
+   Exit Property
+
+iconHOffsetGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconHOffset of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : iconHOffset
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let iconHOffset(ByVal newValue As Long)
+   On Error GoTo iconHOffsetLet_Error
+
+    If mIconHOffset <> newValue Then mIconHOffset = newValue Else Exit Property
+
+
+   On Error GoTo 0
+   Exit Property
+
+iconHOffsetLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconHOffset of Class Module cwIcon"
+End Property
+
+
+'
+'---------------------------------------------------------------------------------------
+' Property  : iconVOffset
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get iconVOffset() As Long
+   On Error GoTo iconVOffsetGet_Error
+
+   iconVOffset = mIconVOffset
+
+   On Error GoTo 0
+   Exit Property
+
+iconVOffsetGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconVOffset of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : iconVOffset
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let iconVOffset(ByVal newValue As Long)
+   On Error GoTo iconVOffsetLet_Error
+
+    If mIconVOffset <> newValue Then mIconVOffset = newValue Else Exit Property
+    
+
+
+   On Error GoTo 0
+   Exit Property
+
+iconVOffsetLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconVOffset of Class Module cwIcon"
+End Property
+
+'---------------------------------------------------------------------------------------
 ' Property  : Refresh
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get Refresh() As String
+Public Sub Refresh()
    On Error GoTo RefreshGet_Error
 
-   Refresh = mRefresh
+
 
    On Error GoTo 0
-   Exit Property
+   Exit Sub
 
 RefreshGet_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Refresh of Class Module cwIcon"
-End Property
-'---------------------------------------------------------------------------------------
-' Property  : Refresh
-' Author    : beededea
-' Date      : 20/11/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Public Property Let Refresh(ByVal newValue As String)
-   On Error GoTo RefreshLet_Error
-
-    If mRefresh <> newValue Then mRefresh = newValue Else Exit Property
-    
-    Paint
-
-   On Error GoTo 0
-   Exit Property
-
-RefreshLet_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Refresh of Class Module cwIcon"
-End Property
-
+End Sub
 
 
 
@@ -1402,5 +1361,6 @@ W_Paint_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure W_Paint of Class Module cwOverlay"
 End Sub
  
+
 
 

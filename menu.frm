@@ -1431,7 +1431,7 @@ Private Sub mnuAdmin_Click()
     On Error GoTo mnuAdmin_Click_Error
     
     'Call readIconData(selectedIconIndex)
-    readIconSettingsIni selectedIconIndex, False
+    readIconSettingsIni selectedIconIndex
         
     Call dock.fMouseUp(1) ' performs the equivalent of a 'left' click on the dock
 
@@ -1453,13 +1453,13 @@ End Sub
 '
 Private Sub mnuAppFolder_Click()
     Dim folderPath As String: folderPath = vbNullString
-    Dim execStatus As Long: execStatus = 0
+    Dim execStatus As Long: execStatus = 0 '  execStatus required as longPtr
     
    On Error GoTo mnuAppFolder_Click_Error
 
     folderPath = App.Path
     If fDirExists(folderPath) Then ' if it is a folder already
-
+        ' hWnd required as longPtr, execStatus required as longPtr
         execStatus = ShellExecute(Me.hWnd, "open", folderPath, vbNullString, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
     Else
@@ -1478,7 +1478,7 @@ End Sub
 
 Private Sub mnuApplicationFolder_Click()
     Dim folderPath As String: folderPath = vbNullString
-    Dim execStatus As Long: execStatus = 0
+    Dim execStatus As Long: execStatus = 0 '  execStatus required as longPtr
     
     'Call readIconData(selectedIconIndex)
     readIconSettingsIni selectedIconIndex
@@ -1486,6 +1486,8 @@ Private Sub mnuApplicationFolder_Click()
     If fDirExists(sCommand) Then ' if it is a folder already
         'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
         'Call ShellExecute(hwnd, "open", sCommand, sArguments, vbNullString, 1)
+        
+        ' hWnd required as longPtr, execStatus required as longPtr
         execStatus = ShellExecute(hWnd, "open", sCommand, sArguments, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
     Else
@@ -1493,11 +1495,15 @@ Private Sub mnuApplicationFolder_Click()
         folderPath = getFolderNameFromPath(sCommand)  ' extract the default folder from the batch full path
         If fDirExists(folderPath) Then
             'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
+            
+            ' hWnd required as longPtr, execStatus required as longPtr
             execStatus = ShellExecute(hWnd, "open", folderPath, sArguments, vbNullString, 1)
             If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
         Else
             'if that fails try and obtain the folder from the Working Directory
             If fDirExists(sWorkingDirectory) Then
+            
+                ' hWnd required as longPtr, execStatus required as longPtr
                 execStatus = ShellExecute(hWnd, "open", sWorkingDirectory, sArguments, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open folder failed."
             Else
@@ -3140,7 +3146,7 @@ End Sub
 '
 Public Sub mnuIconSettings_Click() ' .14 DAEB 01/04/2021 menu.frm made public so that it can be called by another routine in the dock frmMain.frm
     Dim thisCommand As String: thisCommand = vbNullString
-    Dim execStatus As Long: execStatus = 0
+    Dim execStatus As Long: execStatus = 0 '  execStatus required as longPtr
     Dim prg As String: prg = vbNullString
    
    On Error GoTo mnuIconSettings_Click_Error
@@ -3167,9 +3173,11 @@ Public Sub mnuIconSettings_Click() ' .14 DAEB 01/04/2021 menu.frm made public so
         
             'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
             If InStr(WindowsVer, "Windows XP") <> 0 Then
+                ' hWnd required as longPtr, execStatus required as longPtr
                 execStatus = ShellExecute(Me.hWnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             Else
+                ' hWnd required as longPtr, execStatus required as longPtr
                 execStatus = ShellExecute(hWnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             End If
@@ -3198,7 +3206,7 @@ End Sub
 '
 Public Sub mnuIconSettings_Click_Event()
     Dim thisCommand As String: thisCommand = vbNullString
-    Dim execStatus As Long: execStatus = 0
+    Dim execStatus As Long: execStatus = 0 '  execStatus required as longPtr
     Dim prg As String: prg = vbNullString
       
     ' .15 DAEB 01/04/2021 menu.frm make changes for running in the IDE
@@ -3231,9 +3239,11 @@ Public Sub mnuIconSettings_Click_Event()
         
             'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
             If InStr(WindowsVer, "Windows XP") <> 0 Then
+                ' hWnd required as longPtr, execStatus required as longPtr
                 execStatus = ShellExecute(Me.hWnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             Else
+                ' hWnd required as longPtr, execStatus required as longPtr
                 execStatus = ShellExecute(hWnd, "open", thisCommand, selectedIconIndex, vbNullString, 1)
                 If execStatus <= 32 Then MsgBox "Attempt to open utility failed."
             End If
@@ -3569,6 +3579,7 @@ Private Sub mnuCoffee_Click(Index As Integer)
     answer = MsgBox(" Help support the creation of more widgets like this, send us a beer! This button opens a browser window and connects to the Paypal donate page for this widget). Will you be kind and proceed?", vbExclamation + vbYesNo)
 
     If answer = vbYes Then
+        
         Call ShellExecute(Me.hWnd, "Open", "https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=info@lightquick.co.uk&currency_code=GBP&amount=2.50&return=&item_name=Donate%20a%20Beer", vbNullString, App.Path, 1)
     End If
 
@@ -5057,7 +5068,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuEditWidget_Click()
-   Dim execStatus As Long: execStatus = 0
+   Dim execStatus As Long: execStatus = 0 '  execStatus required as longPtr
     
    On Error GoTo mnuEditWidget_Click_Error
     
@@ -5073,6 +5084,8 @@ Private Sub mnuEditWidget_Click()
     If fFExists(sDDefaultEditor) Then
       
         ' run the selected program
+        
+        ' hWnd required as longPtr, execStatus required as longPtr
         execStatus = ShellExecute(Me.hWnd, "open", sDDefaultEditor, vbNullString, vbNullString, 1)
         If execStatus <= 32 Then MsgBox "Attempt to open the IDE for this widget failed."
     Else

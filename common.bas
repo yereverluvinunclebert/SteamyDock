@@ -78,11 +78,11 @@ End Enum
 Private Declare Function GetPrivateProfileString Lib "kernel32" _
     Alias "GetPrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any _
     , ByVal lpDefault As String, ByVal lpReturnedString As String, ByVal nSize As Long _
-    , ByVal lpFileName As String) As Long ' ANSI version has no longPtrs, Unicode does *
+    , ByVal lpFileName As String) As Long ' ANSI version has no longPtrs, Unicode does, ' UNICODE cparmLen will require a longptr*
 
 Private Declare Function WritePrivateProfileString Lib "kernel32" _
     Alias "WritePrivateProfileStringA" (ByVal lpApplicationName As String, ByVal lpKeyName As Any _
-    , ByVal lpString As Any, ByVal lpFileName As String) As Long ' ANSI version has no longPtrs, Unicode does *
+    , ByVal lpString As Any, ByVal lpFileName As String) As Long ' ANSI version has no longPtrs, Unicode does ' UNICODE cparmLen will require a longptr*
     
 'API Function to read/write information from INI File start
 
@@ -91,11 +91,13 @@ Public Const HKEY_LOCAL_MACHINE = &H80000002
 Public Const HKEY_CURRENT_USER = &H80000001
 Public Const REG_SZ = 1                          ' Unicode nul terminated string
 
-Public Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, ByRef phkResult As Long) As Long  ' hKey LongPtr, phkResult As LongPtr *
-Public Declare Function RegQueryValueEx Lib "advapi32.dll" Alias "RegQueryValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal lpReserved As Long, ByRef lpType As Long, ByRef lpData As Any, ByRef lpcbData As Long) As Long ' hKey As LongPtr, lpReserved LongPtr *
-Public Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long ' hKey LongPtr *
-Public Declare Function RegCreateKey Lib "advapi32.dll" Alias "RegCreateKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, ByRef phkResult As Long) As Long ' hKey LongPtr, phkResult LongPtr *
-Public Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, ByRef lpData As Any, ByVal cbData As Long) As Long  ' hKey LongPtr *
+#If Not Win64 Then
+    Public Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, ByRef phkResult As Long) As Long  ' hKey LongPtr, phkResult As LongPtr *
+    Public Declare Function RegQueryValueEx Lib "advapi32.dll" Alias "RegQueryValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal lpReserved As Long, ByRef lpType As Long, ByRef lpData As Any, ByRef lpcbData As Long) As Long ' hKey As LongPtr, lpReserved LongPtr *
+    Public Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long ' hKey LongPtr *
+    Public Declare Function RegCreateKey Lib "advapi32.dll" Alias "RegCreateKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, ByRef phkResult As Long) As Long ' hKey LongPtr, phkResult LongPtr *
+    Public Declare Function RegSetValueEx Lib "advapi32.dll" Alias "RegSetValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal Reserved As Long, ByVal dwType As Long, ByRef lpData As Any, ByVal cbData As Long) As Long  ' hKey LongPtr *
+#End If
 ' APIs, constants defined for querying the registry ENDS
 
 ' APIs and structures for opening a common dialog box to select files without OCX dependencies STARTS
@@ -277,9 +279,14 @@ Public sAllDrives As String
 ''Public Const SEE_MASK_NOASYNC As Long = &H0&
 'Public Const SEE_MASK_FLAG_NO_UI As Long = &H400
 '
-'Public Declare Function ShellExecuteEx Lib "shell32.dll" Alias "ShellExecuteExA" (lpExecInfo As SHELLEXECUTEINFO) As Long
-Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
-' APIs for asynch. shell command functions END
+'------------------------------------------------------ STARTS
+' APIs for useful functions START
+#If Not Win64 Then ' VB6 only
+    ' hWnd required as longPtr, returns longPtr
+    Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
+#End If
+' APIs for useful functions END
+'------------------------------------------------------ ENDS
 
 ' APIs for useful functions START
 Public Declare Sub Sleep Lib "kernel32.dll" (ByVal dwMilliseconds As Long)
@@ -718,12 +725,12 @@ End Sub
 '
 Public Function GetINISetting(ByVal sHeading As String, ByVal sKey As String, ByRef sINIFileName As String) As String
    On Error GoTo GetINISetting_Error
-    Const cparmLen = 500 ' maximum no of characters allowed in the returned string
+    Const cparmLen = 500 ' maximum no of characters allowed in the returned string ' UNICODE cparmLen will require a longptr
     Dim sReturn As String * cparmLen ' not going to initialise this with a 500 char string
     Dim sDefault As String * cparmLen
     Dim lLength As Long: lLength = 0
 
-    lLength = GetPrivateProfileString(sHeading, sKey, sDefault, sReturn, cparmLen, sINIFileName)
+    lLength = GetPrivateProfileString(sHeading, sKey, sDefault, sReturn, cparmLen, sINIFileName) ' UNICODE cparmLen will require a longptr
     GetINISetting = Mid$(sReturn, 1, lLength)
 
    On Error GoTo 0
@@ -1518,7 +1525,7 @@ End Sub
 ' Procedure : readRegistryIconValues
 ' Author    : beededea
 ' Date      : 20/06/2019
-' Purpose   :
+' Purpose   : not used
 '---------------------------------------------------------------------------------------
 '
 Public Sub readRegistryIconValues(ByVal iconNumberToRead As Integer)

@@ -319,7 +319,7 @@ End Function
 '             Raises error 5 if the key is not found.
 '---------------------------------------------------------------------------------------
 '
-Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String) As Integer
+Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Optional ByVal addIcon As Boolean) As Integer
 
     Dim DataSet As SQLiteDataSet
     
@@ -353,6 +353,69 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String) As Int
     sRunSecondAppBeforehand = DataSet!fIconRunSecondAppBeforehand
     sAppToTerminate = DataSet!fIconAppToTerminate
     sDisabled = DataSet!fIconDisabled
+    
+    ' give any empty booleans a value
+    If sOpenRunning = "" Then sOpenRunning = "0"
+    If sIsSeparator = "" Then sIsSeparator = "0"
+    If sUseContext = "" Then sUseContext = "0"
+    If sDockletFile = "" Then sDockletFile = "0"
+    If sUseDialog = "" Then sUseDialog = "0"
+    If sUseDialogAfter = "" Then sUseDialogAfter = "0"
+    If sQuickLaunch = "" Then sQuickLaunch = "0"
+    If sAutoHideDock = "" Then sAutoHideDock = "0"
+
+    If sRunElevated = "" Then sRunElevated = "0"
+    If sDisabled = "" Then sDisabled = "0"
+    
+    ' if indicated, create an icon class for each of the individual icons
+    ' (will eventually replace the individual arrays)
+    
+    If addIcon = True Then
+        Set sIcon = New cwMainIcon
+    End If
+    
+    ' now write the same variables to the icon class
+    
+    sIcon.KeyValue = thisKeyValue
+    sIcon.FileName = sFilename
+    sIcon.FileName2 = sFileName2
+    sIcon.Title = sTitle
+    sIcon.Command = sCommand
+    sIcon.Arguments = sArguments
+    sIcon.WorkingDirectory = sWorkingDirectory
+    sIcon.ShowCmd = CBool(sShowCmd)
+    sIcon.OpenRunning = CBool(sOpenRunning)
+    sIcon.IsSeparator = CBool(sIsSeparator)
+    sIcon.UseContext = CBool(sUseContext)
+    'sIcon.DockletFile = CBool(sDockletFile) ' error ?
+    sIcon.UseDialog = CBool(sUseDialog)
+    sIcon.UseDialogAfter = CBool(sUseDialogAfter)
+    sIcon.QuickLaunch = CBool(sQuickLaunch)
+    sIcon.AutoHideDock = CBool(sAutoHideDock)
+    sIcon.SecondApp = sSecondApp
+    sIcon.RunElevated = CBool(sRunElevated)
+    sIcon.RunSecondAppBeforehand = sRunSecondAppBeforehand
+    sIcon.AppToTerminate = sAppToTerminate
+    sIcon.Disabled = CBool(sDisabled)
+
+'    sIcon.iconHOffset = s
+'    sIcon.iconVOffset = s
+'    sIcon.IconHeight = s
+'    sIcon.IconWidth = s
+'    sIcon.IconIndex = s
+'    sIcon.IconOpacity = s
+'    sIcon.IconImage = s
+
+    ' if indicated, add the icon to the main icon dictionary
+    ' (will eventually replace the individual arrays)
+    
+    If addIcon = True Then
+        ' add the icon to the dock icons dictionary collection
+        If sDockIcons.Exists(thisKeyValue) Then
+            sDockIcons.Remove thisKeyValue
+        End If
+        sDockIcons.Add thisKeyValue, sIcon
+    End If
     
     ' no error count
     getIconSettingsFromDatabase = 0
