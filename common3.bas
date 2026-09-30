@@ -60,52 +60,52 @@ Public iconArrayLowerBound As Integer
 ' Purpose   : Save icon values to random access data file
 '---------------------------------------------------------------------------------------
 '
-Public Sub putIconSettings(ByVal thisRecordNumber As Integer)
-
-    On Error GoTo putIconSettings_Error
-   
-    Dim recordNumberToWrite As Integer: recordNumberToWrite = 0
-   
-    ' previously, records were written to a INI file starting at record number 0
-    ' in a random access data file, record number 0 would generate an error
-    ' to prevent a record number 0 bad record we increment the supplied record number
-    recordNumberToWrite = thisRecordNumber
-    
-    ' always set the characteristsics of the first and last uneditable blank icons
-    Call setFirstLastIcons(recordNumberToWrite)
-    
-    ' set the icon values into the binary data
-    iconVar.iconRecordNumber = thisRecordNumber
-    iconVar.iconFilename = sFilename
-    iconVar.iconFileName2 = sFileName2
-    iconVar.iconTitle = sTitle
-    iconVar.iconCommand = sCommand
-    iconVar.iconArguments = sArguments
-    iconVar.iconWorkingDirectory = sWorkingDirectory
-    iconVar.iconShowCmd = Val(sShowCmd)
-    iconVar.iconOpenRunning = Val(sOpenRunning)
-    iconVar.iconIsSeparator = Val(sIsSeparator)
-    iconVar.iconUseContext = Val(sUseContext)
-    iconVar.iconDockletFile = sDockletFile
-    iconVar.iconUseDialog = Val(sUseDialog)
-    iconVar.iconUseDialogAfter = Val(sUseDialogAfter)
-    iconVar.iconQuickLaunch = Val(sQuickLaunch)
-    iconVar.iconAutoHideDock = Val(sAutoHideDock)
-    iconVar.iconSecondApp = sSecondApp
-    iconVar.iconRunElevated = Val(sRunElevated)
-    iconVar.iconRunSecondAppBeforehand = Val(sRunSecondAppBeforehand)
-    iconVar.iconAppToTerminate = sAppToTerminate
-    iconVar.iconDisabled = Val(sDisabled)
-
-    Put #3, recordNumberToWrite, iconVar
-                
-   On Error GoTo 0
-   Exit Sub
-
-putIconSettings_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure putIconSettings of Module Common"
-End Sub
+'Public Sub putIconSettings(ByVal thisRecordNumber As Integer)
+'
+'    On Error GoTo putIconSettings_Error
+'
+'    Dim recordNumberToWrite As Integer: recordNumberToWrite = 0
+'
+'    ' previously, records were written to a INI file starting at record number 0
+'    ' in a random access data file, record number 0 would generate an error
+'    ' to prevent a record number 0 bad record we increment the supplied record number
+'    recordNumberToWrite = thisRecordNumber
+'
+'    ' always set the characteristsics of the first and last uneditable blank icons
+'    Call setFirstLastIcons(recordNumberToWrite)
+'
+'    ' set the icon values into the binary data
+'    iconVar.iconRecordNumber = thisRecordNumber
+'    iconVar.iconFilename = sFilename
+'    iconVar.iconFileName2 = sFileName2
+'    iconVar.iconTitle = sTitle
+'    iconVar.iconCommand = sCommand
+'    iconVar.iconArguments = sArguments
+'    iconVar.iconWorkingDirectory = sWorkingDirectory
+'    iconVar.iconShowCmd = Val(sShowCmd)
+'    iconVar.iconOpenRunning = Val(sOpenRunning)
+'    iconVar.iconIsSeparator = Val(sIsSeparator)
+'    iconVar.iconUseContext = Val(sUseContext)
+'    iconVar.iconDockletFile = sDockletFile
+'    iconVar.iconUseDialog = Val(sUseDialog)
+'    iconVar.iconUseDialogAfter = Val(sUseDialogAfter)
+'    iconVar.iconQuickLaunch = Val(sQuickLaunch)
+'    iconVar.iconAutoHideDock = Val(sAutoHideDock)
+'    iconVar.iconSecondApp = sSecondApp
+'    iconVar.iconRunElevated = Val(sRunElevated)
+'    iconVar.iconRunSecondAppBeforehand = Val(sRunSecondAppBeforehand)
+'    iconVar.iconAppToTerminate = sAppToTerminate
+'    iconVar.iconDisabled = Val(sDisabled)
+'
+'    Put #3, recordNumberToWrite, iconVar
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'putIconSettings_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure putIconSettings of Module Common"
+'End Sub
 
 '
 '---------------------------------------------------------------------------------------
@@ -292,25 +292,25 @@ writeIconSettingsIni_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconSettingsIni of Module Common"
     
 End Sub
+
 '---------------------------------------------------------------------------------------
-' Procedure : readIconSettingsIni
+' Procedure : readIconParams
 ' Author    : beededea
 ' Date      : 21/09/2019
-' Purpose   : Reads an .INI File (SETTINGS.INI) using the icon number as a reference.
-'             Then it assigns the value to a variable and an array cache
-'             Or, alternatively read it directly from an array cache.
+' Purpose   : Reads  the icon data from the SQLite database using the icon key as a reference.
+'             Then it assigns the value to an icon class with properties
 '---------------------------------------------------------------------------------------
 '
-Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer) ' , Optional ByVal readArray As Boolean
+Public Sub readIconParams(ByVal iconNumberToRead As Integer) ' , Optional ByVal readArray As Boolean
 
     Dim errCnt As Integer: errCnt = 0
     Static readDBFlag As Integer
         
-    On Error GoTo readIconSettingsIni_Error
+    On Error GoTo readIconParams_Error
     
    ' If readArray = False Then
     
-        ' obtain the icon data from random access data file unused
+        ' obtain the icon data from random access data file now unused
         'Call getIconSettings(iconNumberToRead) 'retained here for testing
         
         ' check to see if there have been any prior errors reading records from the db, if so, don't read any more records
@@ -375,9 +375,9 @@ Public Sub readIconSettingsIni(ByVal iconNumberToRead As Integer) ' , Optional B
    On Error GoTo 0
    Exit Sub
 
-readIconSettingsIni_Error:
+readIconParams_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconSettingsIni of Module Module2"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconParams of Module Module2"
 End Sub
 
 

@@ -632,6 +632,8 @@ Attribute VB_Exposed = False
 ' https://www.vbforums.com/showthread.php?818959-VB6-Get-extended-details-about-Explorer-windows-by-getting-their-IFolderView
 
 ' Dragokas systray code
+
+' Isladogs - APIfilecopy
 '
 '
 '========================================================================================================
@@ -1115,6 +1117,8 @@ Implements ISQLiteProgressHandler ' only allowed in classes and forms (classes)
 '
 Private Sub Form_Load()
 
+     'Call initialiseGlobalVars ' we can call this routine from elsewhere whereas we can't easily call Form_Initialize during our program
+    
     ' .06 DAEB 03/03/2021 mdlMain.bas  removed the appSystrayTypes feature, no longer needed to access the systray apps
     ' .05 DAEB frmMain.frm 10/02/2021 changes to handle invisible windows that exist in the known apps systray list
     'appSystrayTypes = "GPU-Z|XWidget|Lasso|Open Hardware Monitor|CintaNotes" ' systray apps list, add to the list those apps you find that can be minimised to the systray
@@ -1126,6 +1130,8 @@ Private Sub Form_Load()
     ' comment the following function back in only when debugging
     On Error GoTo Form_Load_Error
         
+    strTimeThen = Now()
+    
     'if the process already exists then kill it
     Call testDockRunning
     
@@ -1174,6 +1180,9 @@ Private Sub Form_Load()
     
     ' get the location of the dock's new settings file
     Call locateDockSettingsFile
+    
+    
+    Call backupDatabase
     
     ' call the function to connect to or create the database
     Call connectSQLDatabase
@@ -1433,182 +1442,7 @@ End Sub
 
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : Form_Initialize
-' Author    : beededea
-' Date      : 28/03/2020
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Sub Form_Initialize()
-     Call initialiseGlobalVars ' we can call this routine from elsewhere whereas we can't easily call Form_Initialize during our program
-End Sub
-    
 
-'---------------------------------------------------------------------------------------
-' Procedure : initialiseGlobalVars
-' Author    : beededea
-' Date      : 23/04/2021
-' Purpose   : All the form variable initialisation code moved to here so we can call this routine
-'             from elsewhere whereas we can't call Form_Initialize directly
-'---------------------------------------------------------------------------------------
-'
-Public Sub initialiseGlobalVars()
-
-    On Error GoTo initialiseGlobalVars_Error
-    
-    ' theme variables
-'    rdThemeSkinFile = vbNullString
-'    rdThemeSeparatorFile = vbNullString
-'    validTheme = False
-'    dockHidden = False
-'    dockOpacity = 0
-'    rDThemeImage = vbNullString
-'    rDThemeLeftMargin = 0
-'    rDThemeTopMargin = 0
-'    rDThemeRightMargin = 0
-'    rDThemeBottomMargin = 0
-'    rDThemeOutsideLeftMargin = 0
-'    rDThemeOutsideTopMargin = 0
-'    rDThemeOutsideRightMargin = 0
-'    rDThemeOutsideBottomMargin = 0
-'    rDSeparatorImage = vbNullString
-'    rDSeparatorTopMargin = 0
-'    rDSeparatorBottomMargin = 0
-'    dockZorder = vbNullString '.nn
-    
-    ' other global variable assignments
-'    debugflg = 0
-'    screenWidthTwips = 0
-'    screenHeightTwips = 0
-'    screenWidthPixels = 0
-'    screenHeightPixels = 0
-'    inc = False
-'    fcount = 0
-'    rdIconUpperBound = 0
-'    rdIconLowerBound = 0
-'    iconArrayUpperBound = 0
-'    iconArrayLowerBound = 0
-'    debugflg = 0
-'    readEmbeddedIcons = False
-'    hideDockForNMinutes = False
-'    forceRunNewAppFlag = False
-'
-'    ' animation timers
-'    selectedIconIndex = 0 ' sets the icon to bounce index to something that will never occur
-'    bounceTimerRun = 0
-'    sDBounceStep = 0 ' we can add a slider for this in the dockSettings later
-'    sDBounceInterval = 0
-'    autoFadeOutTimerCount = 0
-'    autoFadeInTimerCount = 0 ' .01 DAEB 24/01/2021 Added new parameter autoFadeInTimerCount for the new fade in timer
-'    autoSlideOutTimerCount = 0 ' .28 DAEB frmMain.frm 16/02/2021 Seperated the autoSlide Timers to in and out versions
-'    autoSlideInTimerCount = 0 ' .28 DAEB frmMain.frm 16/02/2021 Seperated the autoSlide Timers to in and out versions
-'    autoHideRevealTimerCount = 0
-'    bounceTimerRun = 0
-'    animatedIconsRaised = False
-'    hourglassimage = vbNullString ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
-'    hourglassTimerCount = 1
-'
-'    ' bounce variables
-'    sDBounceStep = 0 ' add to configuration later
-'    sDBounceInterval = 0
-'    b1 = 0 'not all used yet
-'    b2 = 0
-'    B3 = 0
-'    b4 = 0
-'    b5 = 0
-'    b6 = 0
-'    b7 = 0
-'    b8 = 0
-'    b9 = 0
-    B0 = 0
-    
-    'animation and positioning vars
-'    animationFlg = False
-'    dragToDockOperating = False
-'    bDrawn = False
-'    savApIMouseX = 0
-'    savApIMouseY = 0
-'    bounceHeight = 0
-'    bounceCounter = 0
-'    bumpFactor = 0
-'    bounceZone = 0 ' .16 DAEB 12/07/2021 mdlMain.bas Add the BounceZone as a configurable variable.
-'    xAxisModifier = 0 ' .57 DAEB 19/04/2021 frmMain.frm modifedAmountToSlide renamed to xAxisModifier for clarity's sake
-'    yAxisModifier = 0 '.nn
-'    dynamicSizeModifierPxls = 0
-'    autoHideMode = ""
-'    autoSlideMode = vbNullString
-'    dockSlidOut = False
-'    animateStep = 0
-    
-    'animation and positioning vars
-'    iconHeightPxls = 0
-'    iconPosLeftPxls = 0
-'    iconCurrentTopPxls = 0
-'    iconCurrentBottomPxls = 0 ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
-'    screenHorizontalEdge = 0
-'    dockDrawingPositionPxls = 0
-'    leftMostIconPositionPxls = 0
-'    dockYEntrancePoint = 0
-'    differenceFromLeftMostResizedIconPxls = 0
-'    normalDockWidthPxls = 0
-'    expandedDockWidth = 0
-'    leftIconSize = 0
-'    dockJustEntered = False
-'    rdDefaultYPos = 0
-'    saveStartLeftPxls = 0 ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'
-'    ' icon selection vars
-'    IconIndex = 0
-'    prevIconIndex = 0
-    
-'    ' environment vars
-'    readEmbeddedIcons = False
-'    WindowsVer = vbNullString
-'    sixtyFourBit = False
-'    nMinuteExposeTimerCount = 0
-'    delayRunTimerCount = 0
-'    autoHideProcessName = vbNullString
-'    userLevel = vbNullString
-    strTimeThen = Now()
-'    nMinuteExposeTimerCount = 0
-'    msgBoxOut = False
-'    msgLogOut = False
-'    lHotKey = 0
-'    lPressed = 0 '.nn
-'    mouseDownTime = 0
-'    soundtoplay = vbNullString
-'
-'    lngCursor = 0
-'    lngFont = 0
-'    lngBrush = 0
-'    lngFontFamily = 0
-'    lngCurrentFont = 0
-'    lngFormat = 0
-'
-'    currentDockHeightPxls = 0
-'
-'    blankClickEvent = False
-'    lastPositionRelativeToDock = False
-'    'outsideDock = False
-'    'iconGrowthModifier = 0
-'
-'    sDDefaultEditor = "" ' "E:\vb6\rocketdock\iconsettings.vbp"
-'    sDDebugFlg = ""
-'
-'    gblRegistrySempahoreRaised = False
-'    rDTaskbarLastTimeChanged = vbNullString
-    
-    'gblFormPrimaryHeightTwips = vbNullString
-    
-    On Error GoTo 0
-    
-    Exit Sub
-
-initialiseGlobalVars_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure initialiseGlobalVars of Module mdlMain"
-End Sub
 
     
 ' .13 DAEB frmMain.frm 27/01/2021 Added system wide keypress support
@@ -1752,7 +1586,7 @@ Public Sub fMouseUp(Button As Integer)
     mouseDownTime = 0
       
     '.76 DAEB 12/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
-    Call readIconSettingsIni(selectedIconIndex)
+    Call readIconParams(selectedIconIndex)
     
     If dragToDockOperating = True Then
         hourGlassTimer.Enabled = False
@@ -5328,7 +5162,7 @@ Public Sub prepareArraysAndCollections()
     
         ' previously we extracted icondata from the random access data file,
         ' now we obtain the icon data from the SQLite database with error check returned
-        'readIconSettingsIni useloop
+        'readIconParams useloop
         Call createDockIcons(useloop)
 
         partialStringKey = CStr(useloop)
@@ -7534,7 +7368,7 @@ End Sub
 '            End If
 '        End If
 '        ' read from the arrays
-'        Call readIconSettingsIni( useloop, dockSettingsFile, fromArray)
+'        Call readIconParams( useloop, dockSettingsFile, fromArray)
 '
 '        ' very slow using writeinifile APIs, needs improvement.
 '        Call writeIconSettingsIni( useloop, dockSettingsFile, toArray)

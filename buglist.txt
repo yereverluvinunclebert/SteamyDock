@@ -1,6 +1,6 @@
 
 
-  See Changes at END
+  See Finished Changes at END
 
 
 Conversion and testing using Steamydock 32bit.
@@ -12,9 +12,14 @@ Conversion and testing using Steamydock 32bit.
 
 Overall status - Working, a good learning platform and the dock functions.
 
-o New graphics method using icon classes for the main 3-5 icons retaining GDI+ - a test project exists, transparent Cairo which can be utilised directly.
-   can be used to implement ALL the icons with some modifications but the main three icons might be the best idea as an interim.
-o Changing to WDL to prepare for 64bit compilation.
+o Backup the db on startup.
+
+o New graphics method using an icon class for the all the icons and a collection for same
+  Test project -  transparent Cairo.
+  Current state - all icons can store their properties within an icon keyed by name from a VBA scripting collection, working with the old method in duplicate whilst we migrate.
+  Second stage not yet started - to animate all the icons adn eliminate the serialised nature of the existing code.
+
+o Changing to WDL to prepare for 64bit compilation - module by module.
 
 o Need to test SteamyDock working with the iconSettings utility also using SQLite database at the same time, modifying the same data testing for conflicts &c WIP - working!
 o Possible RAM leak or SQL eating up the RAM slowly WIP

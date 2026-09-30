@@ -1395,7 +1395,7 @@ End Sub
 '
 '        fromArray = False
 '        For useloop = 0 To rdIconUpperBound
-'             readIconSettingsIni useloop, fromArray
+'             readIconParams useloop, fromArray
 '        Next useloop
 '
 '    ' starting at the END of the steamydock map, scroll backward and increment the number
@@ -1403,7 +1403,7 @@ End Sub
 '    For useloop = rdIconUpperBound To 0 Step -1
 '         Call zeroAllIconCharacteristics
 '
-'         Call readIconSettingsIni(useloop, False)
+'         Call readIconParams(useloop, False)
 '         Call writeIconSettingsIni(useloop + 1, False)
 '    Next useloop
 '
@@ -1595,7 +1595,7 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     For useloop = iconArrayUpperBound To selectedIconIndex Step -1
          Call zeroAllIconCharacteristics
          
-         Call readIconSettingsIni(useloop)
+         Call readIconParams(useloop)
          Call writeIconSettingsIni(useloop + 1, False)
     Next useloop
     
@@ -1631,7 +1631,7 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
 
     ' then re-read the config for every icon from the top down to the selected item
     For useloop = iconArrayUpperBound To selectedIconIndex Step -1
-        Call readIconSettingsIni(useloop)
+        Call readIconParams(useloop)
         Call reassignArrayElements(useloop)
     Next useloop
     
@@ -1862,7 +1862,7 @@ End Sub
 '        ' write the 3rd settings file with real data
 '        For useloop = 0 To rdIconUpperBound
 '            ' get the relevant entries from the intermediate settings file
-'            Call readIconSettingsIni( useloop, dockSettingsFile)
+'            Call readIconParams( useloop, dockSettingsFile)
 '
 '            ' write the steamydock dockSsettings.ini
 '            Call writeIconSettingsIni( useloop, dockSettingsFile) ' the settings.ini only exists when RD is set to use it
@@ -1884,9 +1884,9 @@ End Sub
 ''            ' just as for the new 3rd option, we have to transpose data from the temporary settings file to the registry, so we have to do them all in one go.
 ''            For useloop = 0 To rdIconUpperBound
 ''                 ' read the rocketdock alternative settings.ini
-''                 'readIconSettingsIni (useloop) ' the alternative settings.ini exists when RD is set to use it
-''                 'readIconSettingsIni "Software\RocketDock\Icons", useloop, rdSettingsFile
-''                 readIconSettingsIni  useloop, dockSettingsFile
+''                 'readIconParams (useloop) ' the alternative settings.ini exists when RD is set to use it
+''                 'readIconParams "Software\RocketDock\Icons", useloop, rdSettingsFile
+''                 readIconParams  useloop, dockSettingsFile
 ''
 ''                 ' write the rocketdock registry
 ''                 writeRegistryOnce (useloop)
@@ -1922,7 +1922,7 @@ Public Sub readIconData(ByVal iconCount As Integer)
 
     'If fFExists(rdSettingsFile) Then ' does the alternative settings.ini exist? '.nn removed for performance reasons
         'get the rocketdock alternative settings.ini for this icon alone
-        'readIconSettingsIni "Software\RocketDock\Icons", iconCount, rdSettingsFile
+        'readIconParams "Software\RocketDock\Icons", iconCount, rdSettingsFile
     'End If
 
    On Error GoTo 0
@@ -2118,7 +2118,7 @@ End Sub
 '        For useloop = selectedIconIndex To rdIconNumber Step -1
 '            ' read the rocketdock alternative settings.ini
 '             'readSettingsIni (useloop) ' the settings.ini only exists when RD is set to use it
-'             readIconSettingsIni "Software\RocketDock\Icons", useloop, rdSettingsFile
+'             readIconParams "Software\RocketDock\Icons", useloop, rdSettingsFile
 '
 '            ' and increment the identifier by one
 '             'writeSettingsIni (useloop + 1)
@@ -2231,13 +2231,13 @@ Public Sub deleteThisIcon()
         
         ' read the steamyDock settings one item up in the list then write the new item at the current location effectively overwriting it
         For useloop = selectedIconIndex + 1 To iconArrayUpperBound
-            Call readIconSettingsIni(useloop)   ' read from file but write to interim array cache
+            Call readIconParams(useloop)   ' read from file but write to interim array cache
             Call writeIconSettingsIni(useloop - 1, toArray)  ' write changes to array for later commit
         Next useloop
                     
         ' then re-read the config for every icon - moving the image and arrays
         For useloop = selectedIconIndex To rdIconUpperBound
-            Call readIconSettingsIni(useloop)  ' , read from array from the beginning
+            Call readIconParams(useloop)  ' , read from array from the beginning
             reassignArrayElements (useloop)
     
             ' instead of reordering the images within the dictionary, which is difficult as you can't just add and
@@ -2451,7 +2451,7 @@ End Sub
 '    ' we reload the arrays that store pertinent icon information
 '    For useloop = 0 To rdIconUpperBound
 '        'readIconData (useloop)
-'        readIconSettingsIni  useloop, dockSettingsFile
+'        readIconParams  useloop, dockSettingsFile
 '
 '        ' read the two main icon variables into arrays, one for each
 '        sFileNameArray(useloop) = sFilename
@@ -2561,7 +2561,7 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
                                 
         ' then re-read the config
         For useloop = selectedIconIndex To iconArrayUpperBound
-            Call readIconSettingsIni(useloop)
+            Call readIconParams(useloop)
             
             ' read the two main icon variables into arrays, one for each
             sFileNameArray(useloop) = sFilename

@@ -1400,15 +1400,15 @@ End Function
 
 '
 ''---------------------------------------------------------------------------------------
-'' Procedure : readIconSettingsIni
+'' Procedure : readIconParams
 '' Author    : beededea
 '' Date      : 15/06/2022
 '' Purpose   :
 ''---------------------------------------------------------------------------------------
 ''
-'Public Sub readIconSettingsIni(location As String, ByVal iconNumberToWrite As Integer, settingsFile As String)
+'Public Sub readIconParams(location As String, ByVal iconNumberToWrite As Integer, settingsFile As String)
 ''
-'    On Error GoTo readIconSettingsIni_Error
+'    On Error GoTo readIconParams_Error
 '
 '            sFilename = GetINISetting(location, iconNumberToWrite & "-FileName", settingsFile)
 '            sFileName2 = GetINISetting(location, iconNumberToWrite & "-FileName2", settingsFile)
@@ -1431,11 +1431,11 @@ End Function
 '    On Error GoTo 0
 '    Exit Sub
 '
-'readIconSettingsIni_Error:
+'readIconParams_Error:
 '
 '    With Err
 '         If .Number <> 0 Then
-'            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconSettingsIni of Module common"
+'            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconParams of Module common"
 '            Resume Next
 '          End If
 '    End With

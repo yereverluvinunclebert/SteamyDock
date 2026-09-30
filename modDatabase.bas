@@ -33,9 +33,6 @@ Public Function connectDatabase() As String
 
     If DBConnection Is Nothing Then
             
-        PathName = App.Path
-        If Not Right$(PathName, 1) = "\" Then PathName = PathName & "\"
-        PathName = "C:\Users\beededea\AppData\Roaming\steamyDock\iconSettings.db"
         PathName = gblsIconDataBase
         
         ' check database file exists on the system
@@ -71,6 +68,83 @@ connectDatabase_Error:
 End Function
 
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : backupDatabase
+' Author    : beededea
+' Date      : 30/05/2019
+' Purpose   : Creates an incrementally named backup of the icon settings database
+'---------------------------------------------------------------------------------------
+
+Public Function backupDatabase() As String
+
+    Dim bkpSettingsFile As String
+    Dim useloop As Integer: useloop = 0
+    Dim srchSettingsFile As String
+    Dim versionNumberAvailable As Integer
+    Dim bkpfileFound As Boolean: bkpfileFound = False
+    Dim dockSettingsDir As String: dockSettingsDir = vbNullString
+            
+    On Error GoTo backupDatabase_Error
+   
+    If debugflg = 1 Then debugLog "%" & "backupDatabase"
+    
+    dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" '
+
+    ' set the name of the bkp file
+    bkpSettingsFile = dockSettingsDir & "\backup\bkpSettings.db"
+            
+    'check for any version of the ini file with a matching suffix exists
+    For useloop = 1 To 32767
+        srchSettingsFile = bkpSettingsFile & "." & useloop
+      
+        If fFExists(srchSettingsFile) Then
+            ' found a file
+            bkpfileFound = True
+        Else
+            ' no file found use this entry
+            GoTo l_exit_bkp_loop
+        End If
+    Next useloop
+            
+l_exit_bkp_loop:
+        
+    If bkpfileFound = True Then
+        bkpfileFound = False
+        versionNumberAvailable = useloop
+        
+        If versionNumberAvailable >= 32767 Then
+            versionNumberAvailable = 1
+            If fFExists(bkpSettingsFile) Then
+                Kill bkpSettingsFile
+            End If
+        End If
+    Else
+         versionNumberAvailable = 1
+    End If
+    
+    bkpSettingsFile = bkpSettingsFile & "." & Trim$(Str(versionNumberAvailable))
+    If Not fFExists(bkpSettingsFile) Then
+        If fFExists(gblsIconDataBase) Then
+        
+            ' FileCopy gblsIconDataBase, bkpSettingsFile
+            
+            ' copy the database using the API file copy as the VB6 filecopy baulks when a file has any sort of lock.
+            Call apiFileCopy(gblsIconDataBase, bkpSettingsFile, True)
+
+        End If
+    End If
+    
+    backupDatabase = bkpSettingsFile
+
+   On Error GoTo 0
+   Exit Function
+
+backupDatabase_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure backupDatabase of Form rDIconConfigForm"
+        
+End Function
 
 '---------------------------------------------------------------------------------------
 ' Procedure : MaxUpdateCounter
@@ -197,6 +271,51 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
         
         ' select one record matching the supplied key pulling all fields/columns into a dataset
         Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable WHERE key= " & thisKeyValue)
+        
+        ' now write the same variables to the icon class
+        
+        ' get the relevant stored icon from the dictionary collection if it exists
+        If sDockIcons(thisKeyValue) <> 0 Then
+            sIcon = sDockIcons(thisKeyValue)
+        Else
+            Exit Function
+        End If
+    
+        'assign the temporary 's' variables from the icon properties, they will be gone soon and we can remove this interim state
+
+
+'        sFilename = sIcon.FileName
+'        sFileName2 =sIcon.FileName2
+        sTitle = sIcon.Title
+'        sCommand = sIcon.Command
+'        sArguments = sIcon.Arguments
+'        sWorkingDirectory = sIcon.WorkingDirectory
+'        sShowCmd = cstr(sIcon.ShowCmd)
+'        sOpenRunning= cstr(sIcon.OpenRunning)
+'        sIsSeparator=cstr(sIcon.IsSeparator)
+'        sUseContext =cstr(sIcon.UseContext)
+
+'        'sIcon.DockletFile sDockletFile) ' error ?
+
+'        sUseDialog =cstr(sIcon.UseDialog)
+'        sIcon.UseDialogAfter =cstr(sUseDialogAfter)
+'        sIcon.QuickLaunch =cstr(sQuickLaunch)
+'        sIcon.AutoHideDock =cstr(sAutoHideDock)
+'        sSecondApp =sIcon.SecondApp
+'        sRunElevated =cstr(sIcon.RunElevated)
+'        sRunSecondAppBeforehand = sIcon.RunSecondAppBeforehand
+'        sAppToTerminate = sIcon.AppToTerminate
+'        sDisabled =cstr(sIcon.Disabled)
+    
+        ' animation properties not yet implemented
+        
+    '    sIcon.iconHOffset = s
+    '    sIcon.iconVOffset = s
+    '    sIcon.IconHeight = s
+    '    sIcon.IconWidth = s
+    '    sIcon.IconIndex = s
+    '    sIcon.IconOpacity = s
+    '    sIcon.IconImage = s
         
         ' Matching row found
         If DataSet.RecordCount > 0 Then
@@ -398,6 +517,8 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
     sIcon.AppToTerminate = sAppToTerminate
     sIcon.Disabled = CBool(sDisabled)
 
+    ' animation properties not yet implemented
+    
 '    sIcon.iconHOffset = s
 '    sIcon.iconVOffset = s
 '    sIcon.IconHeight = s
@@ -572,35 +693,35 @@ End Function
 '             writing all the data from the iconSettings.db to the iconSettings.dat
 '---------------------------------------------------------------------------------------
 '
-Public Sub insertAllFieldsIntoRandomDataFile()
-
-    Dim DataSet As SQLiteDataSet
-    Dim useloop As Integer: useloop = 0
-    
-    On Error GoTo insertAllFieldsIntoRandomDataFile_Error
-
-    ' select all records pulling the key and all fields into the dataset
-    Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable")
-    
-    ' move to the first record in a Recordset and makes it current
-    DataSet.MoveFirst
-    
-    ' list all records in the dataset to the listbox but only show one field from the dataset
-    Do Until DataSet.EOF
-        
-        'hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
-        DataSet.MoveNext
-        
-        useloop = useloop + 1
-        Call putIconSettings(useloop)
-    Loop
-    On Error GoTo 0
-    Exit Sub
-
-insertAllFieldsIntoRandomDataFile_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertAllFieldsIntoRandomDataFile of Module modDatabase"
-End Sub
+'Public Sub insertAllFieldsIntoRandomDataFile()
+'
+'    Dim DataSet As SQLiteDataSet
+'    Dim useloop As Integer: useloop = 0
+'
+'    On Error GoTo insertAllFieldsIntoRandomDataFile_Error
+'
+'    ' select all records pulling the key and all fields into the dataset
+'    Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable")
+'
+'    ' move to the first record in a Recordset and makes it current
+'    DataSet.MoveFirst
+'
+'    ' list all records in the dataset to the listbox but only show one field from the dataset
+'    Do Until DataSet.EOF
+'
+'        'hiddenForm.List1.AddItem DataSet!key & " " & DataSet!fIconTitle
+'        DataSet.MoveNext
+'
+'        useloop = useloop + 1
+'        Call putIconSettings(useloop)
+'    Loop
+'    On Error GoTo 0
+'    Exit Sub
+'
+'insertAllFieldsIntoRandomDataFile_Error:
+'
+'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertAllFieldsIntoRandomDataFile of Module modDatabase"
+'End Sub
 
 
 

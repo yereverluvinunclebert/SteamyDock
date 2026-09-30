@@ -247,40 +247,40 @@ btnUpdateSingle_Click_Error:
      MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnUpdateSingle_Click of Form hiddenForm"
 End Sub
 
-'---------------------------------------------------------------------------------------
-' Procedure : btnWriteRandom_Click
-' Author    : beededea
-' Date      : 05/12/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : btnWriteRandom_Click
+'' Author    : beededea
+'' Date      : 05/12/2025
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Private Sub btnWriteRandom_Click()
 '
-Private Sub btnWriteRandom_Click()
-
-    Dim srcFile As String
-    Dim trgtFile As String
-
-    On Error GoTo btnWriteRandom_Click_Error
-
-    srcFile = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.dat"
-    trgtFile = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.bkp"
-    
-    'List1.Clear
-    
-    'FileCopy srcFile, trgtFile
-    
-    lblRecordNum.Caption = "Reading from Database, inserting into file."
-
-    Call insertAllFieldsIntoRandomDataFile
-
-    lblRecordNum.Caption = "Inserting into file complete."
-
-    On Error GoTo 0
-    Exit Sub
-
-btnWriteRandom_Click_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnWriteRandom_Click of Form hiddenForm"
-End Sub
+'    Dim srcFile As String
+'    Dim trgtFile As String
+'
+'    On Error GoTo btnWriteRandom_Click_Error
+'
+'    srcFile = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.dat"
+'    trgtFile = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.bkp"
+'
+'    'List1.Clear
+'
+'    'FileCopy srcFile, trgtFile
+'
+'    lblRecordNum.Caption = "Reading from Database, inserting into file."
+'
+'    Call insertAllFieldsIntoRandomDataFile
+'
+'    lblRecordNum.Caption = "Inserting into file complete."
+'
+'    On Error GoTo 0
+'    Exit Sub
+'
+'btnWriteRandom_Click_Error:
+'
+'     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure btnWriteRandom_Click of Form hiddenForm"
+'End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : Command_Click
@@ -298,7 +298,7 @@ Private Sub Command_Click()
     ans = MsgBox("This will close and then remove the database completely by deleting it, are you sure you wish to do this?")
     If ans = vbNo Then Exit Sub
 
-    Call closeDatabase
+    Call CloseDatabase
     
     Kill SpecialFolder(SpecialFolder_AppData) & "\steamyDock\iconSettings.db"
     
@@ -562,7 +562,7 @@ Private Sub CommandClose_Click()
     If DBConnection Is Nothing Then
         MsgBox "Not connected.", vbExclamation
     Else
-        Call closeDatabase
+        Call CloseDatabase
         CommandInsert.Enabled = False
 '        List1.Clear
 '        List1.Enabled = False
