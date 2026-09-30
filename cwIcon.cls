@@ -51,7 +51,8 @@ Private mIconHeight As Long
 Private mIconWidth As Long
 Private mIconIndex As Integer
 Private mIconOpacity As Integer
-Private mIconImage As String
+Private mIconImage As Long
+
 
 
 
@@ -1032,11 +1033,7 @@ Public Property Let IconHeight(ByVal newValue As Long)
 
     If mIconHeight <> newValue Then mIconHeight = newValue Else Exit Property
     
-    If mIconHeight = True Then
-    
-    Else
-    
-    End If
+
 
    On Error GoTo 0
    Exit Property
@@ -1079,10 +1076,6 @@ Public Property Let IconWidth(ByVal newValue As Long)
     If mIconWidth <> newValue Then mIconWidth = newValue Else Exit Property
     
     If mIconWidth = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -1127,11 +1120,6 @@ Public Property Let IconOpacity(ByVal newValue As Long)
 
     If mIconOpacity <> newValue Then mIconOpacity = newValue Else Exit Property
     
-    If mIconOpacity = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -1151,7 +1139,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get IconImage() As String
+Public Property Get IconImage() As Long
    On Error GoTo IconImageGet_Error
 
    IconImage = mIconImage
@@ -1170,16 +1158,11 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let IconImage(ByVal newValue As String)
+Public Property Let IconImage(ByVal newValue As Long)
    On Error GoTo IconImageLet_Error
 
     If mIconImage <> newValue Then mIconImage = newValue Else Exit Property
     
-    If mIconImage = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property

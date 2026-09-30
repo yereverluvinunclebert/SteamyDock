@@ -3,7 +3,7 @@ Attribute VB_Name = "common"
 ' .01 DAEB 23/01/2021 common.bas calls twipsperpixelsX/Y function when determining the twips for high DPI screens
 ' .02 DAEB 25/01/2021 common.bas Moved from mdlmain.bas to common to ensure the checkSteamyDockInstalled subroutine can be run from anywhere, specifically for the variable sdAppPath
 ' .03 DAEB 31/01/2021 common.bas Added new checkbox to determine if a post initiation dialog should appear
-' .04 DAEB 06/03/2021 common.bas Moved from main code form to common to ensure the locateDockSettingsFile subroutine is common to all
+' .04 DAEB 06/03/2021 common.bas Moved from main code form to common to ensure the locateDockSettingsFiles subroutine is common to all
 ' .05 DAEB 01/04/2021 common.bas Added declaration to allow replacement of some modal msgbox with the non-modal versions
 ' .06 DAEB 19/04/2021 common.bas moved to the common area so that it can be used by each of the utilities
 ' .07 DAEB 26/04/2021 common.bas changed to use pixels alone, removed all unnecessary twip conversion
@@ -47,7 +47,7 @@ Public hSnapshot As Long ' a required As LongPtr
     Public Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long ' returns a longPtr *
     Public Declare Function ProcessFirst Lib "kernel32.dll" Alias "Process32First" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version *
     Public Declare Function ProcessNext Lib "kernel32.dll" Alias "Process32Next" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version *
-    Public Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lFlags As Long, ByVal lProcessID As Long) As Long ' returns a longPtr *
+    Public Declare Function CreateToolhelp32Snapshot Lib "kernel32" (ByVal lflags As Long, ByVal lProcessID As Long) As Long ' returns a longPtr *
     Public Declare Function TerminateProcess Lib "kernel32.dll" (ByVal ApphProcess As Long, ByVal uExitCode As Long) As Long ' hProcess As LongPtr, returns a BOOL *
     Public Declare Function CloseHandle Lib "kernel32.dll" (ByVal hObject As Long) As Long 'hObject a longPtr *
     Public Declare Function GetCurrentProcess Lib "kernel32" () As Long ' returns a longPtr *
@@ -200,7 +200,7 @@ Public usedMenuFlag As Boolean
 
 
 Public dockSettingsFile As String
-Public iconDataFile As String
+'Public iconDataFile As String
 Public gblsIconDataBase As String
 Public iconTempDataFile As String
 
@@ -1939,15 +1939,15 @@ checkSteamyDockInstallation_Error:
 End Sub
 ' .02 ENDS DAEB 25/01/2021 Moved from mdlmain.bas to common to ensure the checkSteamyDockInstalled subroutine can be run from anywhere, specifically for the variable sdAppPath
 
-' .04 DAEB 06/03/2021 Moved from main code form to common to ensure the locateDockSettingsFile subroutine is common to all STARTS
+' .04 DAEB 06/03/2021 Moved from main code form to common to ensure the locateDockSettingsFiles subroutine is common to all STARTS
 '---------------------------------------------------------------------------------------
-' Procedure : locateDockSettingsFile
+' Procedure : locateDockSettingsFiles
 ' Author    : beededea
 ' Date      : 17/10/2019
-' Purpose   : get this tool's settings file
+' Purpose   : get the dock and icon settings file
 '---------------------------------------------------------------------------------------
 '
-Public Sub locateDockSettingsFile()
+Public Sub locateDockSettingsFiles()
         
     ' variables declared
     Dim dockSettingsDir As String: dockSettingsDir = vbNullString
@@ -1957,18 +1957,16 @@ Public Sub locateDockSettingsFile()
     Dim outputData As String: outputData = vbNullString
     Dim s As String: s = 0
         
-    On Error GoTo locateDockSettingsFile_Error
-    If debugflg = 1 Then debugLog "% sub locateDockSettingsFile"
+    On Error GoTo locateDockSettingsFiles_Error
+    If debugflg = 1 Then debugLog "% sub locateDockSettingsFiles"
     
     ' dock Settings main docksettings.ini
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
     dockSettingsBackupDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\backup" ' just for this user alone
-    dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
-    iconDataFile = dockSettingsDir & "\iconsettings.dat" ' the random access dat file for the icon data alone
+    dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for just the dock configuration, not the icons
+    'iconDataFile = dockSettingsDir & "\iconsettings.dat" ' the random access dat file for the icon data alone, now obsolete
     gblsIconDataBase = dockSettingsDir & "\iconSettings.db"
     
-    'iconTempDataFile = dockSettingsDir & "\icontempsettings.dat" ' the random access dat file for the icon data alone
-
     'if the folder does not exist then create the folder
     If Not fDirExists(dockSettingsDir) Then
         MkDir dockSettingsDir
@@ -1979,7 +1977,7 @@ Public Sub locateDockSettingsFile()
         MkDir dockSettingsBackupDir
     End If
     
-    'if the settings.ini does not exist then create the file by copying
+    'if the docksettings.ini does not exist then create the file by copying
     If Not fFExists(dockSettingsFile) Then
     '    if it does not exist
     '    it will read the defaultDocksettings.ini line by line and create the new one, changing any occurrence of [defaultDockLocation]
@@ -2016,12 +2014,12 @@ Public Sub locateDockSettingsFile()
    On Error GoTo 0
    Exit Sub
 
-locateDockSettingsFile_Error:
+locateDockSettingsFiles_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure locateDockSettingsFile of Form common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure locateDockSettingsFiles of Form common"
 
 End Sub
-' .04 DAEB 06/03/2021 Moved from main code form to common to ensure the locateDockSettingsFile subroutine is common to all ENDS
+' .04 DAEB 06/03/2021 Moved from main code form to common to ensure the locateDockSettingsFiles subroutine is common to all ENDS
 
 
 '---------------------------------------------------------------------------------------

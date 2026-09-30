@@ -65,7 +65,7 @@ Public Declare Function GdipDrawImage Lib "gdiplus" (ByVal Graphics As Long, ByV
 ' Private APIs for useful functions START
 Private Declare Function lstrlenW Lib "kernel32" (ByVal psString As Any) As Long
 Private Declare Function GetSysColor Lib "user32.dll" (ByVal nIndex As Long) As Long
-Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, Src As Any, ByVal cb As Long) As Long
+Private Declare Function CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (Dest As Any, src As Any, ByVal cb As Long) As Long
 Private Declare Function CreateDIBSection Lib "gdi32.dll" (ByVal hDC As Long, pBitmapInfo As BITMAPINFO, ByVal un As Long, ByRef lplpVoid As Any, ByVal Handle As Long, ByVal dw As Long) As Long
 
 ' Public APIs for useful functions START
@@ -2658,7 +2658,7 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Dictionary, ByVal
     ' Get the CLSID of the PNG encoder
     Call GetEncoderClsid("image/png", encoderCLSID)
     
-    ' uses an extracted function from Olaf Schmidt's code from gdiPlusCacheCls to read the file as a series of bytes
+    ' uses an extracted function from Olaf Schmidt's code from gdiPlusCacheCls to read the file as a series of bytes using ADODB.Stream
     bytesFromFile = ReadBytesFromFile(strFilename)  ' <consumes memory 200K -800k approx.
 
     ' creates a stream object stored in global memory using the location address of the variable where the data resides, Olaf Schmidt
@@ -2695,7 +2695,7 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Dictionary, ByVal
         Call GdipCloneBitmapAreaI(0, 0, cropWidth, dy, lngPixelFormat, img, imgCrop) '
         iconBitmap = createScaledImg(imgCrop, cropWidth, dy, cropWidth, Height, imageOpacity)
     Else
-        ' create a scaled version of the image surface
+        ' creates a Bitmap object (image surface) using objectGdipCreateBitmapFromScan0, scaled and optimised, iconBitmap is a handle to that bitmap object
         iconBitmap = createScaledImg(img, dx, dy, Width, Height, imageOpacity) ' <consumes memory 100k approx.
     End If
     
@@ -2825,12 +2825,13 @@ Public Function createScaledImg(SrcImg As Long, dxSrc As Long, dySrc As Long, dx
         SmoothingMode = SmoothingModeHighQuality
     End If
     
-    'Creates a Bitmap object (surface) based on an array of bytes along with the destination size and format information img is the pointer to that bitmap object
+    'Creates a Bitmap object (surface) 'img' based on an array of bytes along with the destination size and format information img is the pointer to that bitmap object
     Call GdipCreateBitmapFromScan0(dxDst, dyDst, dxDst * 4, PixelFormat32bppPARGB, 0, img) ' Cairo.CreateSurface & Set_Device_Offset
     
     If img Then
         createScaledImg = img ' set the return value to the bitmap object
-        'Creates a Graphics object context - ctx, that is associated with an Image bitmap object (surface) ie. the hw context of the image
+        
+        ' Creates and connects a Graphics object context 'ctx' to the img bitmap object (surface) to allow image quality & opacity modifications to the hw context of the image
         Call GdipGetImageGraphicsContext(img, Ctx)
     Else
         Err.Raise vbObjectError, , "unable to create scaled Img-Resource"
@@ -2845,13 +2846,13 @@ Public Function createScaledImg(SrcImg As Long, dxSrc As Long, dySrc As Long, dx
         ' Sets the compositing quality of this Graphics object when alpha blended. Speed vs quality. Used in conjunction with GdipSetCompositingMode
         'Call GdipSetCompositingQuality(Ctx, CompositingQualityHighQuality)  ' CompositingQualityHighSpeed
                                 
-        'Create storage for the image attributes struct used below
+        ' Create storage for the image attributes struct used below
         Call GdipCreateImageAttributes(imgAttr)
 
-        'Setup the image attributes using the transformation matrix and the enum values, ColorAdjustTypeBitmap and ColorMatrixFlagsDefault
+        'Setup the image attributes using the transformation matrix (opacity) and the enum value ColorMatrixFlagsDefault
         Call GdipSetImageAttributesColorMatrix(imgAttr, ColorAdjustTypeBitmap, 1, clrMatrix, graMatrix, ColorMatrixFlagsDefault)
 
-        ' draw the loaded source image scaled onto a generated image to the desired scale with the above image quality and opacity attributes
+        ' draw the loaded source image 'SrcImg' scaled onto a generated surface via ctx to the desired scale with the above image quality and opacity attributes
         If SrcImg <> 0 Then
             GdipDrawImageRectRectI Ctx, SrcImg, 0, 0, dxDst, dyDst, 0, 0, dxSrc, dySrc, 2, imgAttr, 0, 0 ' Cairo.Cairo_Surface /  cairo_image_surface_create_for_data (BGRA = alpha)
             ' Set CC = Cairo.CreateSurface(Me.ScaleWidth, Me.ScaleHeight).CreateContext

@@ -1179,9 +1179,9 @@ Private Sub Form_Load()
     End If
     
     ' get the location of the dock's new settings file
-    Call locateDockSettingsFile
+    Call locateDockSettingsFiles
     
-    
+    ' backup the database prior to using it.
     Call backupDatabase
     
     ' call the function to connect to or create the database
@@ -1245,7 +1245,7 @@ Private Sub Form_Load()
     Call initialiseGDIPStartup
     
     ' Create the Image and Icon dictionaries where the image bitmaps and the icon details will be stored
-    Call createIconDictionaryObjects
+    Call createIconDictionaryCollections
 
     ' Resize data arrays and load the icon images into the collections
     Call prepareArraysAndCollections
@@ -5301,17 +5301,17 @@ readToolSettings_Error:
 End Sub
 
 ''---------------------------------------------------------------------------------------
-'' Procedure : locateDockSettingsFile
+'' Procedure : locateDockSettingsFiles
 '' Author    : beededea
 '' Date      : 17/10/2019
 '' Purpose   : get this tool's settings file
 ''---------------------------------------------------------------------------------------
 ''
-'Private Sub locateDockSettingsFile()
+'Private Sub locateDockSettingsFiles()
 '    Dim dockSettingsDir As String
 '
-'    On Error GoTo locateDockSettingsFile_Error
-'    'If debugflg = 1 Then debugLog "%locateDockSettingsFile"
+'    On Error GoTo locateDockSettingsFiles_Error
+'    'If debugflg = 1 Then debugLog "%locateDockSettingsFiles"
 '
 '    dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
 '    dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for steamydock alone
@@ -5337,9 +5337,9 @@ End Sub
 '   On Error GoTo 0
 '   Exit Sub
 '
-'locateDockSettingsFile_Error:
+'locateDockSettingsFiles_Error:
 '
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure locateDockSettingsFile of Form dockSettings"
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure locateDockSettingsFiles of Form dockSettings"
 '
 'End Sub
 
@@ -5796,28 +5796,30 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : createIconDictionaryObjects
+' Procedure : createIconDictionaryCollections
 ' Author    : beededea
 ' Date      : 18/09/2020
-' Purpose   :  This initialises each VB collection object where the image bitmaps will be stored
+' Purpose   :  This initialises each VB collection object where the image bitmaps and icons will be stored
 '              This method of using the scripting dictionary as an object collection was suggested by Olaf Schmidt.
 '---------------------------------------------------------------------------------------
 '
 
-Private Sub createIconDictionaryObjects()
+Private Sub createIconDictionaryCollections()
     
-   On Error GoTo createIconDictionaryObjects_Error
+   On Error GoTo createIconDictionaryCollections_Error
    
-    If debugflg = 1 Then debugLog "% sub createIconDictionaryObjects"
+    If debugflg = 1 Then debugLog "% sub createIconDictionaryCollections"
    
     ' dictionary for the larger icons
     'Set collLargeIcons = CreateObject("Scripting.Dictionary")
+    
     Set collLargeIcons = New Dictionary
     
     collLargeIcons.CompareMode = 1 'case-insenitive Key-Comparisons
     
     'dictionary for the smaller icons
     'Set collSmallIcons = CreateObject("Scripting.Dictionary")
+    
     Set collSmallIcons = New Dictionary
     
     collSmallIcons.CompareMode = 1 'case-insenitive Key-Comparisons
@@ -5832,13 +5834,14 @@ Private Sub createIconDictionaryObjects()
     
     ' dictionary to contain the icons (will eventually replace the above image dictionaries)
     Set sDockIcons = New Dictionary
+    sDockIcons.CompareMode = 1 'case-insenitive Key-Comparisons
 
    On Error GoTo 0
    Exit Sub
 
-createIconDictionaryObjects_Error:
+createIconDictionaryCollections_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure createIconDictionaryObjects of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure createIconDictionaryCollections of Form dock"
 End Sub
 
 

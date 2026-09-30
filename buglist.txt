@@ -12,8 +12,6 @@ Conversion and testing using Steamydock 32bit.
 
 Overall status - Working, a good learning platform and the dock functions.
 
-o Backup the db on startup.
-
 o New graphics method using an icon class for the all the icons and a collection for same
   Test project -  transparent Cairo.
   Current state - all icons can store their properties within an icon keyed by name from a VBA scripting collection, working with the old method in duplicate whilst we migrate.
@@ -1053,3 +1051,5 @@ o within modDatabase swap writeIconSettingsIni  for putIconSettings
 
 ' Add MS Settings as a menu sub folder
 ' Move control Panel menu Items
+
+o Backup the db on startup.
