@@ -205,8 +205,6 @@ Public Const SW_RESTORE = 9
 Public Const SW_SHOW = 5
 Public Const SW_MINIMIZE As Long = 6 ' .25 DAEB frmMain.bas 10/02/2021 added API and vars to test to see if a window is zoomed
 
-' Represents a standard OLE picture object used to manage/identify bitmaps, icons, or metafiles
-Public Const IID_IPicture As String = "{7BF80980-BF32-101A-8BBB-00AA00300CAB}"
 
 Private Const MAX_PATH = 260
 
@@ -518,7 +516,7 @@ Public bmpInfo As BITMAPINFO
 
 Public collLargeIcons As Dictionary
 Public collSmallIcons As Dictionary
-Public sDockIcons As Dictionary
+
 
 'Public GetDataSinceUpdateCounter As Object
 
@@ -624,8 +622,7 @@ Public gblExplorerTimerRunning As Boolean
 Public gblProcessTimerRunning As Boolean
 
 
-' class objects instantiated
-Public sIcon As New cwMainIcon
+
 
 
 

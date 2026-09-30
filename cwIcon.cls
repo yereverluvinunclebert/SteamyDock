@@ -1075,7 +1075,6 @@ Public Property Let IconWidth(ByVal newValue As Long)
 
     If mIconWidth <> newValue Then mIconWidth = newValue Else Exit Property
     
-    If mIconWidth = True Then
 
    On Error GoTo 0
    Exit Property

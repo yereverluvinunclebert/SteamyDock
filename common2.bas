@@ -172,7 +172,6 @@ Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Lo
 
 
 
-
 ' Rocketdock global configuration variables END
 
 

@@ -4,6 +4,14 @@ Attribute VB_Name = "common3"
 
 Option Explicit
 
+' Represents a standard OLE picture object used to manage/identify bitmaps, icons, or metafiles
+Public Const IID_IPicture As String = "{7BF80980-BF32-101A-8BBB-00AA00300CAB}"
+
+Public sDockIcons As Dictionary
+
+' class objects instantiated
+Public sIcon As New cwMainIcon
+
 '------------------------------------------------------------
 ' common3.bas
 '
