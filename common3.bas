@@ -955,3 +955,47 @@ zeroAllIconCharacteristics_Error:
             
 End Sub
 
+
+    
+'---------------------------------------------------------------------------------------
+' Procedure : writeIconStateToDatabase
+' Author    : beededea
+' Date      : 02/07/2025
+' Purpose   : writing the in-memory cache to disc. The data relating to the icons is written to an array to avoid any user delay,
+'             the writing to disc is VERY slow resulting in 15 seconds pause. However, we still need to write the data to disc.
+'---------------------------------------------------------------------------------------
+'
+Public Sub writeIconStateToDatabase()
+
+    On Error GoTo writeIconStateToDatabase_Error
+
+    Dim useloop As Integer: useloop = 0
+    Dim startRecord As Integer: startRecord = 0
+    Dim startTime As Date
+    Dim EndTime As Date
+    Dim duration As Long: duration = 0
+
+    If startTime = "00:00:00" Then startTime = time()
+
+    startRecord = 1
+
+    'loop from the start operation value to the end
+    For useloop = startRecord To rdIconUpperBound
+
+        Call writeIconSettingsIni(useloop)
+
+    Next useloop
+
+    ' calculate the write timing variables and report
+    EndTime = time()
+    duration = DateDiff("s", startTime, EndTime)
+    debugLog "Written settings to file - Done. " & rdIconUpperBound & " records, last run taking " & duration & " seconds "
+
+   On Error GoTo 0
+   Exit Sub
+
+writeIconStateToDatabase_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconStateToDatabase of Form dock"
+
+End Sub

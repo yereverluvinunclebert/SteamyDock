@@ -468,12 +468,7 @@ Private Sub menuRestart_Click()
     
     On Error GoTo 0
    
-'    If dock.tmrWriteCache.Enabled = True Then
-'
-'        MsgBox "Try again in a few seconds, just tidying up, " & gblRecordsToCommit & " remaining records to commit"
-'
-'        Exit Sub
-'    End If
+    Call writeIconStateToDatabase
     
     Call restartSteamydock
    
@@ -1794,7 +1789,7 @@ Private Sub mnuDisableIcon_Click()
         disabledArray(selectedIconIndex) = 1
     End If
     
-    PutINISetting "Software\SteamyDock\IconSettings\Icons", selectedIconIndex & "-Disabled", sDisabled, dockSettingsFile
+    'PutINISetting "Software\SteamyDock\IconSettings\Icons", selectedIconIndex & "-Disabled", sDisabled, dockSettingsFile
     sDockIcons.Item(CStr(selectedIconIndex)).Disabled = sDisabled ' write the icon property
     
     
@@ -3127,12 +3122,10 @@ Private Sub mnuQuit_Click()
 
     On Error GoTo mnuQuit_Click_Error
     
-'    If dock.tmrWriteCache.Enabled = True Then
-'
-'        MsgBox "Try again in a few seconds, just tidying up, " & gblRecordsToCommit & " remaining records to commit"
-'
-'        Exit Sub
-'    End If
+    
+    Call writeIconStateToDatabase
+    
+    ' close the database
     
     dock.Hide
     

@@ -51,7 +51,11 @@ Private mIconHeight As Long
 Private mIconWidth As Long
 Private mIconIndex As Integer
 Private mIconOpacity As Integer
-Private mIconImage As Long
+Private mIconImage As Long ' longPtr
+Private mIconTransparentImage As Long ' longPtr
+
+Private mMarkedDirty As Boolean
+
 
 
 
@@ -1172,6 +1176,51 @@ IconImageLet_Error:
 End Property
 
 
+
+
+'---------------------------------------------------------------------------------------
+' Property  : IconTransparentImage
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get IconTransparentImage() As Long
+   On Error GoTo IconTransparentImageGet_Error
+
+   IconTransparentImage = mIconTransparentImage
+
+   On Error GoTo 0
+   Exit Property
+
+IconTransparentImageGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconTransparentImage of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : IconTransparentImage
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let IconTransparentImage(ByVal newValue As Long)
+   On Error GoTo IconTransparentImageLet_Error
+
+    If mIconTransparentImage <> newValue Then mIconTransparentImage = newValue Else Exit Property
+    
+
+   On Error GoTo 0
+   Exit Property
+
+IconTransparentImageLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconTransparentImage of Class Module cwIcon"
+End Property
+
+
+
+
 '---------------------------------------------------------------------------------------
 ' Property  : iconIndex
 ' Author    : beededea
@@ -1293,6 +1342,51 @@ Public Property Let iconVOffset(ByVal newValue As Long)
 iconVOffsetLet_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconVOffset of Class Module cwIcon"
+End Property
+
+
+
+
+'
+'---------------------------------------------------------------------------------------
+' Property  : MarkedDirty
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get MarkedDirty() As Long
+   On Error GoTo MarkedDirtyGet_Error
+
+   MarkedDirty = mMarkedDirty
+
+   On Error GoTo 0
+   Exit Property
+
+MarkedDirtyGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property MarkedDirty of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : MarkedDirty
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let MarkedDirty(ByVal newValue As Long)
+   On Error GoTo MarkedDirtyLet_Error
+
+    If mMarkedDirty <> newValue Then mMarkedDirty = newValue Else Exit Property
+    
+
+
+   On Error GoTo 0
+   Exit Property
+
+MarkedDirtyLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property MarkedDirty of Class Module cwIcon"
 End Property
 
 '---------------------------------------------------------------------------------------
