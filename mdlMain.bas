@@ -2734,7 +2734,9 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Dictionary, ByVal
         thisDictionary.Remove thiskey
     End If
     thisDictionary.Add thiskey, iconBitmap
-
+    
+    resizeAndLoadImgToDict = iconBitmap
+    
    On Error GoTo 0
    Exit Function
 

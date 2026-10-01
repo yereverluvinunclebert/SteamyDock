@@ -1769,8 +1769,6 @@ Private Sub mnuDisableIcon_Click()
     Dim imageOpacity As Integer: imageOpacity = 0
     
     dock.Refresh
-        
-    'Call readIconParams(selectedIconIndex)
     
     sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled ' read the icon property
     

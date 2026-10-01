@@ -324,7 +324,7 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
     '    sIcon.IconWidth = s
     '    sIcon.IconIndex = s
     '    sIcon.IconOpacity = s
-    '    sIcon.IconImage = s
+    '    sIcon.IconImageLarge = s
         
         ' Matching row found
         If DataSet.RecordCount > 0 Then
@@ -593,7 +593,7 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
 '    sIcon.IconWidth = s
 '    sIcon.IconIndex = s
 '    sIcon.IconOpacity = s
-'    sIcon.IconImage = s
+'    sIcon.IconImageLarge = s
 
 
     

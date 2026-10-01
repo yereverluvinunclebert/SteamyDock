@@ -5168,7 +5168,7 @@ Public Sub prepareArraysAndCollections()
     Dim overallIconOpacity As Integer: overallIconOpacity = 0
     Dim thisOpacity As Single: thisOpacity = 0
     Dim thisDisabled As String: thisDisabled = vbNullString
-    'Dim bSuccess As Boolean: bSuccess = False
+    Dim thisBitmap As Long
     
     On Error GoTo prepareArraysAndCollections_Error
     
@@ -5217,11 +5217,15 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity
+                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
                 End If
             Else ' if the image is not found display an 'x'
-                resizeAndLoadImgToDict collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity
+                thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
             End If
+                        
+           ' now add the same image handle to the icon image property
+            sDockIcons.Item(CStr(useloop)).IconTransparentImageSmall = thisBitmap
+                       
                         
             ' now cache all the images to the collection transparently at the larger size
             If fFExists(sFilename) Then
@@ -5229,11 +5233,15 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity
+                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
                 End If
             Else
-                resizeAndLoadImgToDict collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity
+                thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
             End If
+            
+            ' now add the same image handle to the icon image property
+            sDockIcons.Item(CStr(useloop)).IconTransparentImageLarge = thisBitmap
+            
         Else
     
             ' cache the images to the collection at a small size at full opacity
@@ -5243,11 +5251,16 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
+                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
                 End If
             Else ' if the image is not found display an 'x'
-                resizeAndLoadImgToDict collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity
+                thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
             End If
+            
+            ' now add the same image handle to the icon image property
+            sDockIcons.Item(CStr(useloop)).IconImageSmall = thisBitmap
+            
+            
             
             ' now cache all the images to the collection at the larger size
             If fFExists(sFilename) Then
@@ -5255,11 +5268,18 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
+                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity)
                 End If
+                
+
             Else
-                resizeAndLoadImgToDict collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity
+                thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity)
             End If
+            
+            ' now add the same image handle to the icon image property
+            sDockIcons.Item(CStr(useloop)).IconImageLarge = thisBitmap
+            
+            
         End If
         
         ' check to see if each process is running and store the result away - this is also run on a 10s timer

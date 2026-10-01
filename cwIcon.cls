@@ -51,9 +51,10 @@ Private mIconHeight As Long
 Private mIconWidth As Long
 Private mIconIndex As Integer
 Private mIconOpacity As Integer
-Private mIconImage As Long ' longPtr
-Private mIconTransparentImage As Long ' longPtr
-
+Private mIconImageLarge As Long ' longPtr
+Private mIconImageSmall As Long ' longPtr
+Private mIconTransparentImageLarge As Long ' longPtr
+Private mIconTransparentImageSmall As Long ' longPtr
 Private mMarkedDirty As Boolean
 
 
@@ -1136,86 +1137,169 @@ End Property
 
 
 '---------------------------------------------------------------------------------------
-' Property  : IconImage
+' Property  : IconImageLarge
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get IconImage() As Long
-   On Error GoTo IconImageGet_Error
+Public Property Get IconImageLarge() As Long
+   On Error GoTo IconImageLargeGet_Error
 
-   IconImage = mIconImage
+   IconImageLarge = mIconImageLarge
 
    On Error GoTo 0
    Exit Property
 
-IconImageGet_Error:
+IconImageLargeGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconImage of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconImageLarge of Class Module cwIcon"
 End Property
 '---------------------------------------------------------------------------------------
-' Property  : IconImage
+' Property  : IconImageLarge
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let IconImage(ByVal newValue As Long)
-   On Error GoTo IconImageLet_Error
+Public Property Let IconImageLarge(ByVal newValue As Long)
+   On Error GoTo IconImageLargeLet_Error
 
-    If mIconImage <> newValue Then mIconImage = newValue Else Exit Property
+    If mIconImageLarge <> newValue Then mIconImageLarge = newValue Else Exit Property
     
 
    On Error GoTo 0
    Exit Property
 
-IconImageLet_Error:
+IconImageLargeLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconImage of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconImageLarge of Class Module cwIcon"
 End Property
 
 
 
-
 '---------------------------------------------------------------------------------------
-' Property  : IconTransparentImage
+' Property  : IconImageSmall
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get IconTransparentImage() As Long
-   On Error GoTo IconTransparentImageGet_Error
+Public Property Get IconImageSmall() As Long
+   On Error GoTo IconImageSmallGet_Error
 
-   IconTransparentImage = mIconTransparentImage
+   IconImageSmall = mIconImageSmall
 
    On Error GoTo 0
    Exit Property
 
-IconTransparentImageGet_Error:
+IconImageSmallGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconTransparentImage of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconImageSmall of Class Module cwIcon"
 End Property
 '---------------------------------------------------------------------------------------
-' Property  : IconTransparentImage
+' Property  : IconImageSmall
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let IconTransparentImage(ByVal newValue As Long)
-   On Error GoTo IconTransparentImageLet_Error
+Public Property Let IconImageSmall(ByVal newValue As Long)
+   On Error GoTo IconImageSmallLet_Error
 
-    If mIconTransparentImage <> newValue Then mIconTransparentImage = newValue Else Exit Property
+    If mIconImageSmall <> newValue Then mIconImageSmall = newValue Else Exit Property
     
 
    On Error GoTo 0
    Exit Property
 
-IconTransparentImageLet_Error:
+IconImageSmallLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconTransparentImage of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconImageSmall of Class Module cwIcon"
+End Property
+
+
+
+'---------------------------------------------------------------------------------------
+' Property  : IconTransparentImageLarge
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get IconTransparentImageLarge() As Long
+   On Error GoTo IconTransparentImageLargeGet_Error
+
+   IconTransparentImageLarge = mIconTransparentImageLarge
+
+   On Error GoTo 0
+   Exit Property
+
+IconTransparentImageLargeGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconTransparentImageLarge of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : IconTransparentImageLarge
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let IconTransparentImageLarge(ByVal newValue As Long)
+   On Error GoTo IconTransparentImageLargeLet_Error
+
+    If mIconTransparentImageLarge <> newValue Then mIconTransparentImageLarge = newValue Else Exit Property
+    
+
+   On Error GoTo 0
+   Exit Property
+
+IconTransparentImageLargeLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconTransparentImageLarge of Class Module cwIcon"
+End Property
+
+
+
+'---------------------------------------------------------------------------------------
+' Property  : IconTransparentImageSmall
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get IconTransparentImageSmall() As Long
+   On Error GoTo IconTransparentImageSmallGet_Error
+
+   IconTransparentImageSmall = mIconTransparentImageSmall
+
+   On Error GoTo 0
+   Exit Property
+
+IconTransparentImageSmallGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconTransparentImageSmall of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : IconTransparentImageSmall
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let IconTransparentImageSmall(ByVal newValue As Long)
+   On Error GoTo IconTransparentImageSmallLet_Error
+
+    If mIconTransparentImageSmall <> newValue Then mIconTransparentImageSmall = newValue Else Exit Property
+    
+
+   On Error GoTo 0
+   Exit Property
+
+IconTransparentImageSmallLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconTransparentImageSmall of Class Module cwIcon"
 End Property
 
 
