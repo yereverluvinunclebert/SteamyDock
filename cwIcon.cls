@@ -29,21 +29,21 @@ Private mTitle As String
 Private mCommand As String
 Private mArguments As String
 Private mWorkingDirectory As String
-Private mShowCmd As Boolean
-Private mOpenRunning As Boolean
-Private mIsSeparator As Boolean
-Private mUseContext As Boolean
-'Private mDockletFile As Boolean
-Private mUseDialog As Boolean
-Private mUseDialogAfter As Boolean
-Private mQuickLaunch As Boolean
-Private mAutoHideDock As Boolean
+Private mShowCmd As String
+Private mOpenRunning As String
+Private mIsSeparator As String
+Private mUseContext As String
+'Private mDockletFile As string
+Private mUseDialog As String
+Private mUseDialogAfter As String
+Private mQuickLaunch As String
+Private mAutoHideDock As String
 Private mSecondApp As String
-Private mRunElevated As Boolean
+Private mRunElevated As String
 Private mRunSecondAppBeforehand As String
 Private mAppToTerminate As String
 
-Private mDisabled As Boolean
+Private mDisabled As String
 
 Private mIconHOffset As Long
 Private mIconVOffset As Long
@@ -380,7 +380,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get ShowCmd() As Boolean
+Public Property Get ShowCmd() As String
    On Error GoTo ShowCmdGet_Error
 
    ShowCmd = mShowCmd
@@ -399,7 +399,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let ShowCmd(ByVal newValue As Boolean)
+Public Property Let ShowCmd(ByVal newValue As String)
    On Error GoTo ShowCmdLet_Error
 
     If mShowCmd <> newValue Then mShowCmd = newValue Else Exit Property
@@ -427,7 +427,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get OpenRunning() As Boolean
+Public Property Get OpenRunning() As String
    On Error GoTo OpenRunningGet_Error
 
    OpenRunning = mOpenRunning
@@ -446,7 +446,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let OpenRunning(ByVal newValue As Boolean)
+Public Property Let OpenRunning(ByVal newValue As String)
    On Error GoTo OpenRunningLet_Error
 
     If mOpenRunning <> newValue Then mOpenRunning = newValue Else Exit Property
@@ -474,7 +474,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get IsSeparator() As Boolean
+Public Property Get IsSeparator() As String
    On Error GoTo IsSeparatorGet_Error
 
    IsSeparator = mIsSeparator
@@ -493,7 +493,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let IsSeparator(ByVal newValue As Boolean)
+Public Property Let IsSeparator(ByVal newValue As String)
    On Error GoTo IsSeparatorLet_Error
 
     If mIsSeparator <> newValue Then mIsSeparator = newValue Else Exit Property
@@ -521,7 +521,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get UseContext() As Boolean
+Public Property Get UseContext() As String
    On Error GoTo UseContextGet_Error
 
    UseContext = mUseContext
@@ -540,7 +540,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let UseContext(ByVal newValue As Boolean)
+Public Property Let UseContext(ByVal newValue As String)
    On Error GoTo UseContextLet_Error
 
     If mUseContext <> newValue Then mUseContext = newValue Else Exit Property
@@ -568,7 +568,7 @@ End Property
 '' Purpose   :
 ''---------------------------------------------------------------------------------------
 ''
-'Public Property Get DockletFile() As Boolean
+'Public Property Get DockletFile() As string
 '   On Error GoTo DockletFileGet_Error
 '
 '   DockletFile = mDockletFile
@@ -587,7 +587,7 @@ End Property
 '' Purpose   :
 ''---------------------------------------------------------------------------------------
 ''
-'Public Property Let DockletFile(ByVal newValue As Boolean)
+'Public Property Let DockletFile(ByVal newValue As string)
 '   On Error GoTo DockletFileLet_Error
 '
 '    If mDockletFile <> newValue Then mDockletFile = newValue Else Exit Property
@@ -608,7 +608,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get UseDialog() As Boolean
+Public Property Get UseDialog() As String
    On Error GoTo UseDialogGet_Error
 
    UseDialog = mUseDialog
@@ -627,7 +627,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let UseDialog(ByVal newValue As Boolean)
+Public Property Let UseDialog(ByVal newValue As String)
    On Error GoTo UseDialogLet_Error
 
     If mUseDialog <> newValue Then mUseDialog = newValue Else Exit Property
@@ -655,7 +655,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get UseDialogAfter() As Boolean
+Public Property Get UseDialogAfter() As String
    On Error GoTo UseDialogAfterGet_Error
 
    UseDialogAfter = mUseDialogAfter
@@ -674,7 +674,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let UseDialogAfter(ByVal newValue As Boolean)
+Public Property Let UseDialogAfter(ByVal newValue As String)
    On Error GoTo UseDialogAfterLet_Error
 
     If mUseDialogAfter <> newValue Then mUseDialogAfter = newValue Else Exit Property
@@ -701,7 +701,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get QuickLaunch() As Boolean
+Public Property Get QuickLaunch() As String
    On Error GoTo QuickLaunchGet_Error
 
    QuickLaunch = mQuickLaunch
@@ -720,7 +720,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let QuickLaunch(ByVal newValue As Boolean)
+Public Property Let QuickLaunch(ByVal newValue As String)
    On Error GoTo QuickLaunchLet_Error
 
     If mQuickLaunch <> newValue Then mQuickLaunch = newValue Else Exit Property
@@ -747,7 +747,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get AutoHideDock() As Boolean
+Public Property Get AutoHideDock() As String
    On Error GoTo AutoHideDockGet_Error
 
    AutoHideDock = mAutoHideDock
@@ -766,7 +766,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let AutoHideDock(ByVal newValue As Boolean)
+Public Property Let AutoHideDock(ByVal newValue As String)
    On Error GoTo AutoHideDockLet_Error
 
     If mAutoHideDock <> newValue Then mAutoHideDock = newValue Else Exit Property
@@ -834,7 +834,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get RunElevated() As Boolean
+Public Property Get RunElevated() As String
    On Error GoTo RunElevatedGet_Error
 
    RunElevated = mRunElevated
@@ -853,7 +853,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let RunElevated(ByVal newValue As Boolean)
+Public Property Let RunElevated(ByVal newValue As String)
    On Error GoTo RunElevatedLet_Error
 
     If mRunElevated <> newValue Then mRunElevated = newValue Else Exit Property
@@ -963,7 +963,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get Disabled() As Boolean
+Public Property Get Disabled() As String
    On Error GoTo DisabledGet_Error
 
    Disabled = mDisabled
@@ -982,7 +982,7 @@ End Property
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let Disabled(ByVal newValue As Boolean)
+Public Property Let Disabled(ByVal newValue As String)
    On Error GoTo DisabledLet_Error
 
     If mDisabled <> newValue Then mDisabled = newValue Else Exit Property

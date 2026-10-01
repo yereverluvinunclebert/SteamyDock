@@ -1586,7 +1586,30 @@ Public Sub fMouseUp(Button As Integer)
     mouseDownTime = 0
       
     '.76 DAEB 12/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
-    Call readIconParams(selectedIconIndex)
+    'Call readIconParams(selectedIconIndex) ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
+    
+    'assign the temporary 's' variables from the icon properties, they will be gone soon and we can remove this interim state
+
+    sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
+    sFileName2 = sDockIcons.Item(CStr(selectedIconIndex)).FileName2
+    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
+    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments
+    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
+    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
+    sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
+    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
+    sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
+    'sDockletFile= sDockIcons.Item(CStr(selectedIconIndex)).DockletFile   ' error ?
+    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
+    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
+    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
+    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
+    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex)).SecondApp
+    sRunElevated = sDockIcons.Item(CStr(selectedIconIndex)).RunElevated
+    sRunSecondAppBeforehand = sDockIcons.Item(CStr(selectedIconIndex)).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex)).AppToTerminate
+    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
     
     If dragToDockOperating = True Then
         hourGlassTimer.Enabled = False

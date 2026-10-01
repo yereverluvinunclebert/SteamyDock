@@ -1481,7 +1481,10 @@ Private Sub mnuApplicationFolder_Click()
     Dim execStatus As Long: execStatus = 0 '  execStatus required as longPtr
     
     'Call readIconData(selectedIconIndex)
-    readIconParams selectedIconIndex
+    readIconParams selectedIconIndex ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
+    
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command ' read the icon property
+    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments ' read the icon property
     
     If fDirExists(sCommand) Then ' if it is a folder already
         'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
@@ -1742,6 +1745,7 @@ Private Sub mnuCloneIcon_Click()
     
     readIconParams selectedIconIndex
 
+    ' the params will be removeable, they are actually removeable already.
     Call insertNewIconDataIntoCurrentPosition(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
     Call menuForm.addImageToDictionaryAndCheckForRunningProcess(sFilename, sTitle)
 
@@ -1752,6 +1756,8 @@ mnuCloneIcon_Click_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuCloneIcon_Click of Form menuForm"
 End Sub
+
+
 
 
 '---------------------------------------------------------------------------------------
@@ -1769,7 +1775,9 @@ Private Sub mnuDisableIcon_Click()
     
     dock.Refresh
         
-    Call readIconParams(selectedIconIndex)
+    'Call readIconParams(selectedIconIndex)
+    
+    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled ' read the icon property
     
     If sDisabled = "1" Then
         sDisabled = "0"
@@ -1787,6 +1795,8 @@ Private Sub mnuDisableIcon_Click()
     End If
     
     PutINISetting "Software\SteamyDock\IconSettings\Icons", selectedIconIndex & "-Disabled", sDisabled, dockSettingsFile
+    sDockIcons.Item(CStr(selectedIconIndex)).Disabled = sDisabled ' write the icon property
+    
     
     ' triggers for telling the iconSettings tool that it needs to refresh
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile

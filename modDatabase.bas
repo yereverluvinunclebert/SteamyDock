@@ -290,30 +290,27 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
     
         'assign the temporary 's' variables from the icon properties, they will be gone soon and we can remove this interim state
 
-
-'        sFilename = sIcon.FileName
-'        sFileName2 =sIcon.FileName2
-        sTitle = sIcon.Title
-'        sCommand = sIcon.Command
-'        sArguments = sIcon.Arguments
-'        sWorkingDirectory = sIcon.WorkingDirectory
-'        sShowCmd = cstr(sIcon.ShowCmd)
-'        sOpenRunning= cstr(sIcon.OpenRunning)
-'        sIsSeparator=cstr(sIcon.IsSeparator)
-'        sUseContext =cstr(sIcon.UseContext)
-
-'        'sIcon.DockletFile sDockletFile) ' error ?
-
-'        sUseDialog =cstr(sIcon.UseDialog)
-'        sIcon.UseDialogAfter =cstr(sUseDialogAfter)
-'        sIcon.QuickLaunch =cstr(sQuickLaunch)
-'        sIcon.AutoHideDock =cstr(sAutoHideDock)
-'        sSecondApp =sIcon.SecondApp
-'        sRunElevated =cstr(sIcon.RunElevated)
-'        sRunSecondAppBeforehand = sIcon.RunSecondAppBeforehand
-'        sAppToTerminate = sIcon.AppToTerminate
-'        sDisabled =cstr(sIcon.Disabled)
-    
+        sFilename = sDockIcons.Item(thisKeyValue).FileName
+        sFileName2 = sDockIcons.Item(thisKeyValue).FileName2
+        sTitle = sDockIcons.Item(thisKeyValue).Title
+        sCommand = sDockIcons.Item(thisKeyValue).Command
+        sArguments = sDockIcons.Item(thisKeyValue).Arguments
+        sWorkingDirectory = sDockIcons.Item(thisKeyValue).WorkingDirectory
+        sShowCmd = sDockIcons.Item(thisKeyValue).ShowCmd
+        sOpenRunning = sDockIcons.Item(thisKeyValue).OpenRunning
+        sIsSeparator = sDockIcons.Item(thisKeyValue).IsSeparator
+        sUseContext = sDockIcons.Item(thisKeyValue).UseContext
+        'sDockletFile= sDockIcons.Item(thisKeyValue).DockletFile   ' error ?
+        sUseDialog = sDockIcons.Item(thisKeyValue).UseDialog
+        sUseDialogAfter = sDockIcons.Item(thisKeyValue).UseDialogAfter
+        sQuickLaunch = sDockIcons.Item(thisKeyValue).QuickLaunch
+        sAutoHideDock = sDockIcons.Item(thisKeyValue).AutoHideDock
+        sSecondApp = sDockIcons.Item(thisKeyValue).SecondApp
+        sRunElevated = sDockIcons.Item(thisKeyValue).RunElevated
+        sRunSecondAppBeforehand = sDockIcons.Item(thisKeyValue).RunSecondAppBeforehand
+        sAppToTerminate = sDockIcons.Item(thisKeyValue).AppToTerminate
+        sDisabled = sDockIcons.Item(thisKeyValue).Disabled
+'
         ' animation properties not yet implemented
         
     '    sIcon.iconHOffset = s
@@ -459,6 +456,7 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
        GoTo getIconSettingsFromDatabase_Error
     End If
     
+    ' eventually we will write the icon properties directly and do without the sParams here
     sFilename = DataSet!fIconFilename
     sFileName2 = DataSet!fIconFileName2
     sTitle = DataSet!fIconTitle
@@ -495,34 +493,92 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
     
     ' if indicated, create an icon class for each of the individual icons
     ' (will eventually replace the individual arrays)
+    ' and add the icon to the main icon dictionary
+    
     
     If addIcon = True Then
         Set sIcon = New cwMainIcon
+        ' now write the same variables to the icon class
+        
+        sIcon.KeyValue = thisKeyValue
+        sIcon.FileName = sFilename
+        sIcon.FileName2 = sFileName2
+        sIcon.Title = sTitle
+        sIcon.Command = sCommand
+        sIcon.Arguments = sArguments
+        sIcon.WorkingDirectory = sWorkingDirectory
+        sIcon.ShowCmd = sShowCmd
+        sIcon.OpenRunning = sOpenRunning
+        sIcon.IsSeparator = sIsSeparator
+        sIcon.UseContext = sUseContext
+        'sIcon.DockletFile = sDockletFile ' error ?
+        sIcon.UseDialog = sUseDialog
+        sIcon.UseDialogAfter = sUseDialogAfter
+        sIcon.QuickLaunch = sQuickLaunch
+        sIcon.AutoHideDock = sAutoHideDock
+        sIcon.SecondApp = sSecondApp
+        sIcon.RunElevated = sRunElevated
+        sIcon.RunSecondAppBeforehand = sRunSecondAppBeforehand
+        sIcon.AppToTerminate = sAppToTerminate
+        sIcon.Disabled = sDisabled
+        
+        ' add the icon to the dock icons dictionary collection
+        If sDockIcons.Exists(thisKeyValue) Then
+            sDockIcons.Remove thisKeyValue
+        End If
+        sDockIcons.Add thisKeyValue, sIcon
+    Else
+    
+        'otherwise we just write the existing items in the dictonary
+    
+        sDockIcons.Item(thisKeyValue).KeyValue = thisKeyValue
+        
+        sDockIcons.Item(thisKeyValue).FileName = sFilename
+        sDockIcons.Item(thisKeyValue).FileName2 = sFileName2
+        sDockIcons.Item(thisKeyValue).Title = sTitle
+        sDockIcons.Item(thisKeyValue).Command = sCommand
+        sDockIcons.Item(thisKeyValue).Arguments = sArguments
+        sDockIcons.Item(thisKeyValue).WorkingDirectory = sWorkingDirectory
+        sDockIcons.Item(thisKeyValue).ShowCmd = (sShowCmd)
+        sDockIcons.Item(thisKeyValue).OpenRunning = (sOpenRunning)
+        sDockIcons.Item(thisKeyValue).IsSeparator = (sIsSeparator)
+        sDockIcons.Item(thisKeyValue).UseContext = (sUseContext)
+        'sDockIcons.Item(thisKeyValue).DockletFile = (sDockletFile) ' error ?
+        sDockIcons.Item(thisKeyValue).UseDialog = (sUseDialog)
+        sDockIcons.Item(thisKeyValue).UseDialogAfter = (sUseDialogAfter)
+        sDockIcons.Item(thisKeyValue).QuickLaunch = (sQuickLaunch)
+        sDockIcons.Item(thisKeyValue).AutoHideDock = (sAutoHideDock)
+        sDockIcons.Item(thisKeyValue).SecondApp = sSecondApp
+        sDockIcons.Item(thisKeyValue).RunElevated = (sRunElevated)
+        sDockIcons.Item(thisKeyValue).RunSecondAppBeforehand = sRunSecondAppBeforehand
+        sDockIcons.Item(thisKeyValue).AppToTerminate = sAppToTerminate
+        sDockIcons.Item(thisKeyValue).Disabled = (sDisabled)
+        
+
+'        sIcon.KeyValue = thisKeyValue
+'        sIcon.FileName = sFilename
+'        sIcon.FileName2 = sFileName2
+'        sIcon.Title = sTitle
+'        sIcon.Command = sCommand
+'        sIcon.Arguments = sArguments
+'        sIcon.WorkingDirectory = sWorkingDirectory
+'        sIcon.ShowCmd = (sShowCmd)
+'        sIcon.OpenRunning = (sOpenRunning)
+'        sIcon.IsSeparator = (sIsSeparator)
+'        sIcon.UseContext = (sUseContext)
+'        'sIcon.DockletFile = (sDockletFile) ' error ?
+'        sIcon.UseDialog = (sUseDialog)
+'        sIcon.UseDialogAfter = (sUseDialogAfter)
+'        sIcon.QuickLaunch = (sQuickLaunch)
+'        sIcon.AutoHideDock = (sAutoHideDock)
+'        sIcon.SecondApp = sSecondApp
+'        sIcon.RunElevated = (sRunElevated)
+'        sIcon.RunSecondAppBeforehand = sRunSecondAppBeforehand
+'        sIcon.AppToTerminate = sAppToTerminate
+'        sIcon.Disabled = (sDisabled)
     End If
     
-    ' now write the same variables to the icon class
-    
-    sIcon.KeyValue = thisKeyValue
-    sIcon.FileName = sFilename
-    sIcon.FileName2 = sFileName2
-    sIcon.Title = sTitle
-    sIcon.Command = sCommand
-    sIcon.Arguments = sArguments
-    sIcon.WorkingDirectory = sWorkingDirectory
-    sIcon.ShowCmd = CBool(sShowCmd)
-    sIcon.OpenRunning = CBool(sOpenRunning)
-    sIcon.IsSeparator = CBool(sIsSeparator)
-    sIcon.UseContext = CBool(sUseContext)
-    'sIcon.DockletFile = CBool(sDockletFile) ' error ?
-    sIcon.UseDialog = CBool(sUseDialog)
-    sIcon.UseDialogAfter = CBool(sUseDialogAfter)
-    sIcon.QuickLaunch = CBool(sQuickLaunch)
-    sIcon.AutoHideDock = CBool(sAutoHideDock)
-    sIcon.SecondApp = sSecondApp
-    sIcon.RunElevated = CBool(sRunElevated)
-    sIcon.RunSecondAppBeforehand = sRunSecondAppBeforehand
-    sIcon.AppToTerminate = sAppToTerminate
-    sIcon.Disabled = CBool(sDisabled)
+
 
     ' animation properties not yet implemented
     
@@ -534,16 +590,9 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
 '    sIcon.IconOpacity = s
 '    sIcon.IconImage = s
 
-    ' if indicated, add the icon to the main icon dictionary
-    ' (will eventually replace the individual arrays)
+
     
-    If addIcon = True Then
-        ' add the icon to the dock icons dictionary collection
-        If sDockIcons.Exists(thisKeyValue) Then
-            sDockIcons.Remove thisKeyValue
-        End If
-        sDockIcons.Add thisKeyValue, sIcon
-    End If
+
     
     ' no error count
     getIconSettingsFromDatabase = 0

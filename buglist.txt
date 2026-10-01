@@ -26,6 +26,17 @@ o Replace all the scripting.dictionary /Cristian Buse's VBA alternative code wit
 o Test the TwinBasic collection as a replacement as it takes PNGS by default - would reduce some of the dependency on GDI+
 
 
+' convert these arrays to icon properties
+           ' read the two main icon variables into arrays, one for each
+            sFileNameArray(useloop) = sFilename
+            sTitleArray(useloop) = sTitle
+            sCommandArray(useloop) = sCommand
+            targetExistsArray(useloop) = 0
+
+            ' check to see if each process is running and store the result away
+            explorerCheckArray(useloop) = isExplorerRunning(sCommand)
+            processCheckArray(useloop) = IsRunning(sCommand)
+
 ' Current Tasks:
 ' =============
 

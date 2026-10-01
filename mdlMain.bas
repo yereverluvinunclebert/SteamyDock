@@ -1608,6 +1608,25 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     Call redimPreserveCacheArrays
     'Call zeroAllIconCharacteristics
     
+     ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
+    
+    sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
+    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command ' read the icon property
+    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments ' read the icon property
+    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
+    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).Separator
+    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
+    sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
+    sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
+    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
+    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
+    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
+    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
+    
+    ' this will be removeable when we replace the sParams with references to the sdockIcons Collection above
+    
     'when we arrive at the original position then set the current valid icon characteristics passed as params into this routine
     sFilename = thisFilename
     sTitle = thisTitle
@@ -2493,6 +2512,7 @@ End Sub
 '    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addNewImageToDictionary of module mdlMain.bas"
 '
 'End Sub
+    
 '---------------------------------------------------------------------------------------
 ' Procedure : addNewImageFromDictionary
 ' Author    : beededea
@@ -2559,7 +2579,7 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
         ' then re-read the config
         For useloop = selectedIconIndex To iconArrayUpperBound
             Call readIconParams(useloop)
-            
+                        
             ' read the two main icon variables into arrays, one for each
             sFileNameArray(useloop) = sFilename
             sTitleArray(useloop) = sTitle
