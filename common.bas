@@ -1520,53 +1520,53 @@ checkRocketdockInstallation_Error:
 End Sub
 
 
-
-'---------------------------------------------------------------------------------------
-' Procedure : readRegistryIconValues
-' Author    : beededea
-' Date      : 20/06/2019
-' Purpose   : not used
-'---------------------------------------------------------------------------------------
 '
-Public Sub readRegistryIconValues(ByVal iconNumberToRead As Integer)
-    ' read the settings from the registry
-    On Error GoTo readRegistryOnce_Error
-    'If debugFlg = 1 Then debugLog "%" & "readRegistryOnce"
-
-    sFilename = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-FileName")
-    sFileName2 = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-FileName2")
-    sTitle = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Title")
-    sCommand = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Command")
-    sArguments = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Arguments")
-    sWorkingDirectory = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-WorkingDirectory")
-    sShowCmd = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-ShowCmd")
-    sOpenRunning = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-OpenRunning")
-    sRunElevated = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-RunElevated")
-    
-    sIsSeparator = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-IsSeparator")
-    sUseContext = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-UseContext")
-    sDockletFile = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-DockletFile")
-
-    'If defaultDock = 1 Then
-    sUseDialog = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-UseDialog")
-    sUseDialogAfter = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-UseDialogAfter")
-    sQuickLaunch = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-QuickLaunch") ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
-    sAutoHideDock = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-AutoHideDock")   ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
-    sSecondApp = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-SecondApp")   ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-    
-    sRunSecondAppBeforehand = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-RunSecondAppBeforehand")
-    sAppToTerminate = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-AppToTerminate")
-
-    sDisabled = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Disabled")
-    
-   On Error GoTo 0
-   Exit Sub
-
-readRegistryOnce_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readRegistryOnce of Module Common"
-
-End Sub
+''---------------------------------------------------------------------------------------
+'' Procedure : readRegistryIconValues
+'' Author    : beededea
+'' Date      : 20/06/2019
+'' Purpose   : not used
+''---------------------------------------------------------------------------------------
+''
+'Public Sub readRegistryIconValues(ByVal iconNumberToRead As Integer)
+'    ' read the settings from the registry
+'    On Error GoTo readRegistryOnce_Error
+'    'If debugFlg = 1 Then debugLog "%" & "readRegistryOnce"
+'
+'    sFilename = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-FileName")
+'    sFileName2 = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-FileName2")
+'    sTitle = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Title")
+'    sCommand = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Command")
+'    sArguments = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Arguments")
+'    sWorkingDirectory = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-WorkingDirectory")
+'    sShowCmd = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-ShowCmd")
+'    sOpenRunning = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-OpenRunning")
+'    sRunElevated = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-RunElevated")
+'
+'    sIsSeparator = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-IsSeparator")
+'    sUseContext = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-UseContext")
+'    sDockletFile = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-DockletFile")
+'
+'    'If defaultDock = 1 Then
+'    sUseDialog = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-UseDialog")
+'    sUseDialogAfter = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-UseDialogAfter")
+'    sQuickLaunch = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-QuickLaunch") ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
+'    sAutoHideDock = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-AutoHideDock")   ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
+'    sSecondApp = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-SecondApp")   ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+'
+'    sRunSecondAppBeforehand = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-RunSecondAppBeforehand")
+'    sAppToTerminate = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-AppToTerminate")
+'
+'    sDisabled = getstring(HKEY_CURRENT_USER, "Software\RocketDock\Icons", iconNumberToRead & "-Disabled")
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'readRegistryOnce_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readRegistryOnce of Module Common"
+'
+'End Sub
 
 
 

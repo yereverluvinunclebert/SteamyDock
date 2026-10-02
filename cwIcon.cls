@@ -42,8 +42,12 @@ Private mSecondApp As String
 Private mRunElevated As String
 Private mRunSecondAppBeforehand As String
 Private mAppToTerminate As String
-
 Private mDisabled As String
+Private mTargetExists      As String
+Private mProcessRunning    As String
+Private mExplorerRunning   As String   ' contains true/false according to the running state of the associated process
+Private mInitiatedProcess  As String   ' containing the binary name of any process initiated by the dock
+Private mInitiatedExplorer As String   ' containing the binary name of any explorer process initiated by the dock
 
 Private mIconHOffset As Long
 Private mIconVOffset As Long
@@ -56,7 +60,6 @@ Private mIconImageSmall As Long ' longPtr
 Private mIconTransparentImageLarge As Long ' longPtr
 Private mIconTransparentImageSmall As Long ' longPtr
 Private mMarkedDirty As Boolean
-
 
 
 
@@ -408,12 +411,7 @@ Public Property Let ShowCmd(ByVal newValue As String)
    On Error GoTo ShowCmdLet_Error
 
     If mShowCmd <> newValue Then mShowCmd = newValue Else Exit Property
-    
-    If mShowCmd = True Then
-    
-    Else
-    
-    End If
+
 
    On Error GoTo 0
    Exit Property
@@ -456,11 +454,6 @@ Public Property Let OpenRunning(ByVal newValue As String)
 
     If mOpenRunning <> newValue Then mOpenRunning = newValue Else Exit Property
     
-    If mOpenRunning = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -503,11 +496,7 @@ Public Property Let IsSeparator(ByVal newValue As String)
 
     If mIsSeparator <> newValue Then mIsSeparator = newValue Else Exit Property
     
-    If mIsSeparator = True Then
-    
-    Else
-    
-    End If
+
 
    On Error GoTo 0
    Exit Property
@@ -550,11 +539,6 @@ Public Property Let UseContext(ByVal newValue As String)
 
     If mUseContext <> newValue Then mUseContext = newValue Else Exit Property
     
-    If mUseContext = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -637,11 +621,6 @@ Public Property Let UseDialog(ByVal newValue As String)
 
     If mUseDialog <> newValue Then mUseDialog = newValue Else Exit Property
     
-    If mUseDialog = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -684,11 +663,6 @@ Public Property Let UseDialogAfter(ByVal newValue As String)
 
     If mUseDialogAfter <> newValue Then mUseDialogAfter = newValue Else Exit Property
     
-    If mUseDialogAfter = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -730,11 +704,6 @@ Public Property Let QuickLaunch(ByVal newValue As String)
 
     If mQuickLaunch <> newValue Then mQuickLaunch = newValue Else Exit Property
     
-    If mQuickLaunch = True Then
-    
-    Else
-    
-    End If
 
    On Error GoTo 0
    Exit Property
@@ -776,11 +745,7 @@ Public Property Let AutoHideDock(ByVal newValue As String)
 
     If mAutoHideDock <> newValue Then mAutoHideDock = newValue Else Exit Property
     
-    If mAutoHideDock = True Then
-    
-    Else
-    
-    End If
+
 
    On Error GoTo 0
    Exit Property
@@ -862,12 +827,7 @@ Public Property Let RunElevated(ByVal newValue As String)
    On Error GoTo RunElevatedLet_Error
 
     If mRunElevated <> newValue Then mRunElevated = newValue Else Exit Property
-    
-    If mRunElevated = True Then
-    
-    Else
-    
-    End If
+
 
    On Error GoTo 0
    Exit Property
@@ -992,11 +952,7 @@ Public Property Let Disabled(ByVal newValue As String)
 
     If mDisabled <> newValue Then mDisabled = newValue Else Exit Property
     
-    If mDisabled = True Then
-    
-    Else
-    
-    End If
+
 
    On Error GoTo 0
    Exit Property
@@ -1005,6 +961,226 @@ DisabledLet_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Disabled of Class Module cwIcon"
 End Property
+
+
+
+'
+'---------------------------------------------------------------------------------------
+' Property  : TargetExists
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get TargetExists() As String
+   On Error GoTo TargetExistsGet_Error
+
+   TargetExists = mTargetExists
+
+   On Error GoTo 0
+   Exit Property
+
+TargetExistsGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property TargetExists  of Class Module cwIcon"
+End Property
+
+'---------------------------------------------------------------------------------------
+' Property  : TargetExists
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let TargetExists(ByVal newValue As String)
+   On Error GoTo TargetExistsLet_Error
+
+    If mTargetExists <> newValue Then mTargetExists = newValue Else Exit Property
+
+
+   On Error GoTo 0
+   Exit Property
+
+TargetExistsLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property TargetExists  of Class Module cwIcon"
+End Property
+
+
+'
+'---------------------------------------------------------------------------------------
+' Property  : ProcessRunning
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get ProcessRunning() As String
+   On Error GoTo ProcessRunningGet_Error
+
+   ProcessRunning = mProcessRunning
+
+   On Error GoTo 0
+   Exit Property
+
+ProcessRunningGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property ProcessRunning of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : ProcessRunning
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let ProcessRunning(ByVal newValue As String)
+   On Error GoTo ProcessRunningLet_Error
+
+    If mProcessRunning <> newValue Then mProcessRunning = newValue Else Exit Property
+    
+
+
+   On Error GoTo 0
+   Exit Property
+
+ProcessRunningLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property ProcessRunning of Class Module cwIcon"
+End Property
+
+
+'
+'---------------------------------------------------------------------------------------
+' Property  : ExplorerRunning
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get ExplorerRunning() As String
+   On Error GoTo ExplorerRunningGet_Error
+
+   ExplorerRunning = mExplorerRunning
+
+   On Error GoTo 0
+   Exit Property
+
+ExplorerRunningGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property ExplorerRunning of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : ExplorerRunning
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let ExplorerRunning(ByVal newValue As String)
+   On Error GoTo ExplorerRunningLet_Error
+
+    If mExplorerRunning <> newValue Then mExplorerRunning = newValue Else Exit Property
+    
+
+
+   On Error GoTo 0
+   Exit Property
+
+ExplorerRunningLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property ExplorerRunning of Class Module cwIcon"
+End Property
+
+
+
+'
+'---------------------------------------------------------------------------------------
+' Property  : InitiatedProcess
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get InitiatedProcess() As String
+   On Error GoTo InitiatedProcessGet_Error
+
+   InitiatedProcess = mInitiatedProcess
+
+   On Error GoTo 0
+   Exit Property
+
+InitiatedProcessGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property InitiatedProcess of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : InitiatedProcess
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let InitiatedProcess(ByVal newValue As String)
+   On Error GoTo InitiatedProcessLet_Error
+
+    If mInitiatedProcess <> newValue Then mInitiatedProcess = newValue Else Exit Property
+    
+
+
+   On Error GoTo 0
+   Exit Property
+
+InitiatedProcessLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property InitiatedProcess of Class Module cwIcon"
+End Property
+
+
+'
+'---------------------------------------------------------------------------------------
+' Property  : InitiatedExplorer
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Get InitiatedExplorer() As String
+   On Error GoTo InitiatedExplorerGet_Error
+
+   InitiatedExplorer = mInitiatedExplorer
+
+   On Error GoTo 0
+   Exit Property
+
+InitiatedExplorerGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property InitiatedExplorer of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : InitiatedExplorer
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Property Let InitiatedExplorer(ByVal newValue As String)
+   On Error GoTo InitiatedExplorerLet_Error
+
+    If mInitiatedExplorer <> newValue Then mInitiatedExplorer = newValue Else Exit Property
+    
+
+
+   On Error GoTo 0
+   Exit Property
+
+InitiatedExplorerLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property InitiatedExplorer of Class Module cwIcon"
+End Property
+
+
+
 
 '
 '---------------------------------------------------------------------------------------

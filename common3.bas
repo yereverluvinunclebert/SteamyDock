@@ -28,31 +28,31 @@ Public dockYEntrancePoint As Integer
 'Public glbStartRecord As Integer
 'Public gblRecordsToCommit As Integer
 
-Public Type iconRecordTYPE
-       iconRecordNumber As Integer
-       iconFilename As String * 255
-       iconFileName2 As String * 255
-       iconTitle As String * 255
-       iconCommand As String * 255
-       iconArguments As String * 40
-       iconWorkingDirectory As String * 255
-       iconShowCmd As String * 1
-       iconOpenRunning As String * 1
-       iconIsSeparator As String * 1
-       iconUseContext As String * 1
-       iconDockletFile As String * 255
-       iconUseDialog As String * 1
-       iconUseDialogAfter As String * 1
-       iconQuickLaunch As String * 1
-       iconAutoHideDock As String * 1
-       iconSecondApp As String * 255
-       iconRunElevated As String * 1
-       iconRunSecondAppBeforehand As String * 1
-       iconAppToTerminate As String * 255
-       iconDisabled As String * 1
-End Type
+'Public Type iconRecordTYPE
+'       iconRecordNumber As Integer
+'       iconFilename As String * 255
+'       iconFileName2 As String * 255
+'       iconTitle As String * 255
+'       iconCommand As String * 255
+'       iconArguments As String * 40
+'       iconWorkingDirectory As String * 255
+'       iconShowCmd As String * 1
+'       iconOpenRunning As String * 1
+'       iconIsSeparator As String * 1
+'       iconUseContext As String * 1
+'       iconDockletFile As String * 255
+'       iconUseDialog As String * 1
+'       iconUseDialogAfter As String * 1
+'       iconQuickLaunch As String * 1
+'       iconAutoHideDock As String * 1
+'       iconSecondApp As String * 255
+'       iconRunElevated As String * 1
+'       iconRunSecondAppBeforehand As String * 1
+'       iconAppToTerminate As String * 255
+'       iconDisabled As String * 1
+'End Type
  
-Public iconVar As iconRecordTYPE
+'Public iconVar As iconRecordTYPE
 Public iconData As String
 
 Public rdIconUpperBound As Integer
@@ -116,61 +116,61 @@ Public iconArrayLowerBound As Integer
 'End Sub
 
 '
-'---------------------------------------------------------------------------------------
-' Procedure : getIconSettings
-' Author    : beededea
-' Date      : 05/07/2019
-' Purpose   : Read icon values from random access data file unused
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : getIconSettings
+'' Author    : beededea
+'' Date      : 05/07/2019
+'' Purpose   : Read icon values from random access data file unused
+''---------------------------------------------------------------------------------------
+''
+'Public Sub getIconSettings(ByVal thisRecordNumber As Integer)
 '
-Public Sub getIconSettings(ByVal thisRecordNumber As Integer)
-
-    On Error GoTo getIconSettings_Error
-   
-    Dim recordNumberToRead As Integer: recordNumberToRead = 0
-    
-    ' previously, records were written to a INI file starting at record number 0
-    ' in a random access data file, record number 0 would generate an error
-    ' to prevent a record number 0 bad record we increment the supplied record number
-    
-    recordNumberToRead = thisRecordNumber
-    '
-    Get #3, recordNumberToRead, iconVar
-
-    ' read the icon values from the binary data into the icon variables
-    thisRecordNumber = iconVar.iconRecordNumber
-    If thisRecordNumber = 0 Then thisRecordNumber = recordNumberToRead
-    sFilename = RTrim$(iconVar.iconFilename)
-    sFileName2 = RTrim$(iconVar.iconFileName2)
-    sTitle = RTrim$(iconVar.iconTitle)
-    sCommand = RTrim$(iconVar.iconCommand)
-    sArguments = RTrim$(iconVar.iconArguments)
-    sWorkingDirectory = RTrim$(iconVar.iconWorkingDirectory)
-    sShowCmd = CStr(iconVar.iconShowCmd)
-    sOpenRunning = CStr(iconVar.iconOpenRunning)
-    sIsSeparator = CStr(iconVar.iconIsSeparator)
-    sUseContext = CStr(iconVar.iconUseContext)
-    sDockletFile = RTrim$(iconVar.iconDockletFile)
-    sUseDialog = CStr(iconVar.iconUseDialog)
-    sUseDialogAfter = CStr(iconVar.iconUseDialogAfter)
-    sQuickLaunch = CStr(iconVar.iconQuickLaunch)
-    sAutoHideDock = CStr(iconVar.iconAutoHideDock)
-    sSecondApp = RTrim$(iconVar.iconSecondApp)
-    sRunElevated = CStr(iconVar.iconRunElevated)
-    sRunSecondAppBeforehand = CStr(iconVar.iconRunSecondAppBeforehand)
-    sAppToTerminate = RTrim$(iconVar.iconAppToTerminate)
-    sDisabled = CStr(iconVar.iconDisabled)
-    
-    ' always set the characteristsics of the first and last uneditable blank icons
-    Call setFirstLastIcons(recordNumberToRead)
-    
-    On Error GoTo 0
-   Exit Sub
-
-getIconSettings_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getIconSettings of Module Common"
-End Sub
+'    On Error GoTo getIconSettings_Error
+'
+'    Dim recordNumberToRead As Integer: recordNumberToRead = 0
+'
+'    ' previously, records were written to a INI file starting at record number 0
+'    ' in a random access data file, record number 0 would generate an error
+'    ' to prevent a record number 0 bad record we increment the supplied record number
+'
+'    recordNumberToRead = thisRecordNumber
+'    '
+'    Get #3, recordNumberToRead, iconVar
+'
+'    ' read the icon values from the binary data into the icon variables
+'    thisRecordNumber = iconVar.iconRecordNumber
+'    If thisRecordNumber = 0 Then thisRecordNumber = recordNumberToRead
+'    sFilename = RTrim$(iconVar.iconFilename)
+'    sFileName2 = RTrim$(iconVar.iconFileName2)
+'    sTitle = RTrim$(iconVar.iconTitle)
+'    sCommand = RTrim$(iconVar.iconCommand)
+'    sArguments = RTrim$(iconVar.iconArguments)
+'    sWorkingDirectory = RTrim$(iconVar.iconWorkingDirectory)
+'    sShowCmd = CStr(iconVar.iconShowCmd)
+'    sOpenRunning = CStr(iconVar.iconOpenRunning)
+'    sIsSeparator = CStr(iconVar.iconIsSeparator)
+'    sUseContext = CStr(iconVar.iconUseContext)
+'    sDockletFile = RTrim$(iconVar.iconDockletFile)
+'    sUseDialog = CStr(iconVar.iconUseDialog)
+'    sUseDialogAfter = CStr(iconVar.iconUseDialogAfter)
+'    sQuickLaunch = CStr(iconVar.iconQuickLaunch)
+'    sAutoHideDock = CStr(iconVar.iconAutoHideDock)
+'    sSecondApp = RTrim$(iconVar.iconSecondApp)
+'    sRunElevated = CStr(iconVar.iconRunElevated)
+'    sRunSecondAppBeforehand = CStr(iconVar.iconRunSecondAppBeforehand)
+'    sAppToTerminate = RTrim$(iconVar.iconAppToTerminate)
+'    sDisabled = CStr(iconVar.iconDisabled)
+'
+'    ' always set the characteristsics of the first and last uneditable blank icons
+'    Call setFirstLastIcons(recordNumberToRead)
+'
+'    On Error GoTo 0
+'   Exit Sub
+'
+'getIconSettings_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure getIconSettings of Module Common"
+'End Sub
 
 
 '---------------------------------------------------------------------------------------

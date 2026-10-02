@@ -1652,7 +1652,7 @@ Public Sub fMouseUp(Button As Integer)
         ' check the current process is running by looking into the array that contains a list of running processes using selectedIconIndex
         
         ' the item is NOT running
-        If processCheckArray(selectedIconIndex) = False And explorerCheckArray(selectedIconIndex) = False Then
+        If sDockIcons.Item(CStr(selectedIconIndex)).ProcessRunning = "False" And sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "False" Then
             
             forceRunNewAppFlag = False
 
@@ -1694,14 +1694,14 @@ Public Sub fMouseUp(Button As Integer)
             menuForm.mnuRunNewApp.Visible = True
             
             'running elevated so allow more menu options, note: explorer windows cannot run elevated
-            If sRunElevated = "1" And allowElevated = True And explorerCheckArray(selectedIconIndex) = False Then
+            If sRunElevated = "1" And allowElevated = True And sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "False" Then
                 menuForm.mnuAdmin.Visible = False
                 menuForm.mnuRunNewApp.Visible = True
                 menuForm.mnuRunNewAppAsAdmin.Visible = True
             End If
             
             ' if the item is an explorer window then remove the option to run another, windows always opens the existing explorer window
-            If explorerCheckArray(selectedIconIndex) = True Then
+            If sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "True" Then 'this will be a boolean later
                 menuForm.mnuBlank5.Visible = False
                 menuForm.mnuFocusApp.Visible = False
                 menuForm.mnuBackApp.Visible = False
@@ -1780,7 +1780,7 @@ Public Sub fMouseUp(Button As Integer)
         End If
 
         ' check the current process is running by looking into the array that contains a list of running processes using selectedIconIndex
-        If processCheckArray(selectedIconIndex) = False Then
+        If sDockIcons.Item(CStr(selectedIconIndex)).ProcessRunning = "False" Then
             ' it would be nice to lock the x axis during the bounce animation
             If userLevel <> "runas" Then userLevel = "open"
                         
@@ -2208,7 +2208,7 @@ End Sub
 ' when a full explorer check occurs.
 '
 ' If the result of the search is false then the program has completed and the cog can be removed.
-' explorerCheckArray(useloop) - is the array that determines whether a cog is placed on an explorer icon.
+' sDockIcons.Item(CStr(useloop)).ExplorerRunning - is the array that determines whether a cog is placed on an explorer icon.
 '---------------------------------------------------------------------------------------
 
 Private Sub initiatedExplorerTimer_Timer()
@@ -2226,14 +2226,14 @@ Private Sub initiatedExplorerTimer_Timer()
     initiatedExplorerTimer.Enabled = False
 
     For useloop = 1 To rdIconUpperBound
-        If Not initiatedExplorerArray(useloop) = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
-            itIsRunning = isExplorerRunning(initiatedExplorerArray(useloop))
+        If Not sDockIcons.Item(CStr(useloop)).InitiatedExplorer = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
+            itIsRunning = isExplorerRunning(sDockIcons.Item(CStr(useloop)).InitiatedExplorer)
             If itIsRunning = False Then
-                explorerCheckArray(useloop) = False ' the cog array for explorer processes
-                initiatedExplorerArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
+                sDockIcons.Item(CStr(useloop)).ExplorerRunning = "False" ' the cog array for explorer processes
+                sDockIcons.Item(CStr(useloop)).InitiatedExplorer = vbNullString ' removes the entry from the test array so it isn't caught again
             Else
                 itIsRunning = itIsRunning ' it just is
-                'explorerCheckArray(useloop) = True
+                'sDockIcons.Item(CStr(useloop)).ExplorerRunning  ="True"
             End If
             bDrawn = False
             If smallDockBeenDrawn = True Then
@@ -2270,7 +2270,7 @@ End Sub
 ' when a full process check occurs.
 '
 ' If the result of the search is false then the program has completed and the cog can be removed.
-' processCheckArray(useloop) - is the array that determines whether a cog is placed on an application icon.
+' sDockIcons.Item(CStr(useloop)).ProcessRunning - is the array that determines whether a cog is placed on an application icon.
 '
 '---------------------------------------------------------------------------------------
 
@@ -2290,13 +2290,13 @@ Private Sub initiatedProcessTimer_Timer()
 
     For useloop = 1 To rdIconUpperBound
 
-        If Not initiatedProcessArray(useloop) = vbNullString Then
-            itIsRunning = IsRunning(initiatedProcessArray(useloop))
+        If Not sDockIcons.Item(CStr(useloop)).InitiatedProcess = vbNullString Then
+            itIsRunning = CBool(IsRunning(sDockIcons.Item(CStr(useloop)).InitiatedProcess))
             If itIsRunning = False Then
-                processCheckArray(useloop) = False ' remove it from the cog array
-                initiatedProcessArray(useloop) = vbNullString ' removes the entry from the quick test array so it isn't caught again on the next run
+                sDockIcons.Item(CStr(useloop)).ProcessRunning = "False" ' remove it from the cog array
+                sDockIcons.Item(CStr(useloop)).InitiatedProcess = vbNullString ' removes the entry from the quick test array so it isn't caught again on the next run
             Else
-                'processCheckArray(useloop) = True
+                'sDockIcons.Item(CStr(useloop)).ProcessRunning = "True"
                 itIsRunning = itIsRunning ' it just is, so do nothing
             End If
             bDrawn = False
@@ -3338,7 +3338,7 @@ Private Sub showSmallIcon(ByVal useloop As Integer)
     On Error GoTo showSmallIcon_Error
 
     ' check the recently disabled flag and display the transparent version instead
-    If disabledArray(useloop) = 1 Then
+    If sDockIcons.Item(CStr(useloop)).Disabled = 1 Then
         thiskey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
     Else
         thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
@@ -3354,14 +3354,14 @@ Private Sub showSmallIcon(ByVal useloop As Integer)
     
     'show cogs above running processes
     If rDShowRunning = "1" Then
-        If (processCheckArray(useloop) = True Or explorerCheckArray(useloop) = True) Then
+        If (sDockIcons.Item(CStr(useloop)).ProcessRunning = "True" Or sDockIcons.Item(CStr(useloop)).ExplorerRunning = "True") Then
             thiskey = "tinycircleResizedImg128"
             If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
             If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)
          End If
     End If
     ' target command validity test flag places a red X on the icon
-    If targetExistsArray(useloop) = 1 Then
+    If sDockIcons.Item(CStr(useloop)).TargetExists = "1" Then
         thiskey = "redxResizedImg64"
         If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
         If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2)
@@ -3390,7 +3390,7 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
     If thisIconXOffset <> 0 Then iconPosLeftPxls = iconPosLeftPxls - (thisIconXOffset / 5)
     
     '   check the recently disabled flag and display the transparent version instead
-    If disabledArray(useloop) = 1 Then
+    If sDockIcons.Item(CStr(useloop)).Disabled = 1 Then
         thiskey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeLargePxls))
     Else
         thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
@@ -3419,14 +3419,14 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
     
     ' add the small white cog to indicate a running process
     If rDShowRunning = "1" Then
-        If (processCheckArray(useloop) = True Or explorerCheckArray(useloop) = True) Then
+        If (sDockIcons.Item(CStr(useloop)).ProcessRunning = "True" Or sDockIcons.Item(CStr(useloop)).ExplorerRunning = "True") Then
             If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls), (iconHeightPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
             If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 2)), (iconWidthPxls), (iconHeightPxls)
         End If
     End If
     
     ' add a red X for invalid command ' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
-    If targetExistsArray(useloop) = 1 Then ' redxResizedImg64
+    If sDockIcons.Item(CStr(useloop)).TargetExists = "1" Then ' redxResizedImg64
             If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
             If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2)
     End If
@@ -3454,13 +3454,14 @@ Private Sub drawTextAboveIcon(ByVal useloop As Integer, ByVal textWidth As Integ
             'now draw the icon text above the selected icon
             If rDHideLabels = "0" Then
                 
-                If Not sTitleArray(IconIndex) = "Separator" Then
+                
+                If Not sDockIcons.Item(CStr(IconIndex)).Title = "Separator" Then
                     textWidth = iconSizeLargePxls
                     If dockPosition = vbtop Then
-                        DrawTheText sTitleArray(IconIndex), iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                        DrawTheText sDockIcons.Item(CStr(IconIndex)).Title, iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                     ElseIf dockPosition = vbBottom Then
                         ' puts the text 10% +10 px above the icon
-                        DrawTheText sTitleArray(IconIndex), dockDrawingPositionPxls - ((iconSizeLargePxls / 10) + 40), iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                        DrawTheText sDockIcons.Item(CStr(IconIndex)).Title, dockDrawingPositionPxls - ((iconSizeLargePxls / 10) + 40), iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                         'DrawTheText sTitleArray(iconIndex), (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                         'DrawTheText textToDisplay, (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                     End If
@@ -3787,15 +3788,16 @@ Private Sub drawTheLabel(ByVal iconIndexToShow As Single)
     If rDHideLabels = "0" Then
         Dim textToDisplay As String
         textToDisplay = iconCurrentTopPxls
-        If Not sTitleArray(iconIndexToShow) = "Separator" Then
+        
+        If Not sDockIcons.Item(CStr(iconIndexToShow)).Title = "Separator" Then
             textWidth = iconSizeLargePxls
             If dockPosition = vbtop Then
                 'DrawTheText textToDisplay, iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
-                DrawTheText sTitleArray(iconIndexToShow), iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                DrawTheText sDockIcons.Item(CStr(iconIndexToShow)).Title, iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
             ElseIf dockPosition = vbBottom Then
                 ' puts the text 10% +10 px above the icon
                 ' .73 DAEB 11/05/2021 frmMain.frm  sngBottom renamed to screenHorizontalEdge
-                DrawTheText sTitleArray(iconIndexToShow), (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                DrawTheText sDockIcons.Item(CStr(iconIndexToShow)).Title, (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
             End If
         End If
     End If
@@ -4161,8 +4163,8 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
             initiatedProcessTimer.Enabled = False
             processTimer.Enabled = False
             
-            processCheckArray(selectedIconIndex) = True
-            initiatedProcessArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
+            sDockIcons.Item(CStr(selectedIconIndex)).ProcessRunning = "True" 'this will be a boolean later 'this will be a boolean later
+            sDockIcons.Item(CStr(selectedIconIndex)).InitiatedProcess = sDockIcons.Item(CStr(selectedIconIndex)).Command
             Call checkDockProcessesRunning ' trigger a test of all running processes
             
             Call enableInitiatedProcessTimer
@@ -4172,8 +4174,8 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
             initiatedExplorerTimer.Enabled = False
             explorerTimer.Enabled = False
             
-            initiatedExplorerArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
-            explorerCheckArray(selectedIconIndex) = True
+            sDockIcons.Item(CStr(selectedIconIndex)).InitiatedExplorer = sDockIcons.Item(CStr(selectedIconIndex)).Command
+            sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "True" 'this will be a boolean later
             Call checkExplorerRunning
             
             ' turn the two timers that auto populate the arrays back on again
@@ -4231,7 +4233,7 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
         initiatedProcessTimer.Enabled = False
         processTimer.Enabled = False
         
-        initiatedProcessArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
+        sDockIcons.Item(CStr(selectedIconIndex)).InitiatedProcess = sDockIcons.Item(CStr(selectedIconIndex)).Command
         Call checkDockProcessesRunning ' trigger a test of all running processes
         
         Call enableInitiatedProcessTimer
@@ -4241,8 +4243,8 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
         initiatedExplorerTimer.Enabled = False
         explorerTimer.Enabled = False
         
-        initiatedExplorerArray(selectedIconIndex) = sCommandArray(selectedIconIndex)
-        explorerCheckArray(selectedIconIndex) = True
+        sDockIcons.Item(CStr(selectedIconIndex)).InitiatedExplorer = sDockIcons.Item(CStr(selectedIconIndex)).Command
+        sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "True" 'this will be a boolean later
         Call checkExplorerRunning
         
         ' turn the two timers that auto populate the arrays back on again
@@ -5191,10 +5193,10 @@ Public Sub prepareArraysAndCollections()
         partialStringKey = CStr(useloop)
         
         ' read the main icon variables into arrays
-        sFileNameArray(useloop) = sFilename
+        'sFileNameArray(useloop) = sFilename
         dictionaryLocationArray(useloop) = useloop
-        sTitleArray(useloop) = sTitle
-        sCommandArray(useloop) = sCommand
+        'sTitleArray(useloop) = sTitle
+        sDockIcons.Item(CStr(useloop)).Command = sCommand
         
         overallIconOpacity = Val(rDIconOpacity) ' overall icon opacity of all icons
 
@@ -5205,7 +5207,7 @@ Public Sub prepareArraysAndCollections()
             ' reduce the opacity
             thisOpacity = overallIconOpacity * 0.6
             
-            disabledArray(useloop) = 1
+            sDockIcons.Item(CStr(useloop)).Disabled = 1
             
             ' create keys for transparent images in the collLargeIcons/collSmallIcons collections
             largeKey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeLargePxls))
@@ -5217,7 +5219,7 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sDockIcons.Item(CStr(useloop)).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
                 End If
             Else ' if the image is not found display an 'x'
                 thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
@@ -5233,7 +5235,7 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sDockIcons.Item(CStr(useloop)).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
                 End If
             Else
                 thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
@@ -5251,7 +5253,7 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sDockIcons.Item(CStr(useloop)).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
                 End If
             Else ' if the image is not found display an 'x'
                 thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
@@ -5268,7 +5270,7 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFileNameArray(useloop), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sDockIcons.Item(CStr(useloop)).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity)
                 End If
                 
 
@@ -5283,8 +5285,8 @@ Public Sub prepareArraysAndCollections()
         End If
         
         ' check to see if each process is running and store the result away - this is also run on a 10s timer
-        explorerCheckArray(useloop) = isExplorerRunning(sCommand)
-        processCheckArray(useloop) = IsRunning(sCommand)
+        sDockIcons.Item(CStr(useloop)).ExplorerRunning = isExplorerRunning(sCommand)
+        sDockIcons.Item(CStr(useloop)).ProcessRunning = CStr(IsRunning(sCommand))
 
     Next useloop
 
@@ -6854,14 +6856,14 @@ Private Sub checkTargetCommandValidity()
     pathString = Environ$("path")
     
     For useloop = 1 To rdIconUpperBound
-        targetExistsArray(useloop) = 0
+        sDockIcons.Item(CStr(useloop)).TargetExists = "0"
 
         ' instead of looping through all the command stored in the docksettings.ini file, we now store all the current commands in an array
         ' we loop through the array much quicker than looping through the temporary settings file and extracting the commands from each
 
         ' if the array location is empty then use GOTO to jump to the next iteration, ' sorry! VB6 has no continue.
-        If sCommandArray(useloop) = vbNullString Then GoTo l_next_iteration
-        thisCommand = sCommandArray(useloop)
+        If sDockIcons.Item(CStr(useloop)).Command = vbNullString Then GoTo l_next_iteration
+        thisCommand = sDockIcons.Item(CStr(useloop)).Command
 
         If fFExists(thisCommand) Then
             GoTo l_next_iteration ' when we match a condition we loop over the subsequent conditions to iterate over the next item.
@@ -6967,7 +6969,7 @@ Private Sub checkTargetCommandValidity()
 
 l_set_flag:
         ' set a flag to enable a small 'x' on this icon
-        targetExistsArray(useloop) = 1
+        sDockIcons.Item(CStr(useloop)).TargetExists = "1"
 
 l_next_iteration:
     Next useloop

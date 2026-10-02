@@ -1476,10 +1476,11 @@ Private Sub mnuApplicationFolder_Click()
     Dim execStatus As Long: execStatus = 0 '  execStatus required as longPtr
     
     'Call readIconData(selectedIconIndex)
-    readIconParams selectedIconIndex ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
+    'readIconParams selectedIconIndex ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
     
     sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command ' read the icon property
     sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments ' read the icon property
+    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory ' read the icon property
     
     If fDirExists(sCommand) Then ' if it is a folder already
         'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
@@ -1678,21 +1679,21 @@ Private Sub mnuCloseApp_Click()
     Dim NameProcess As String: NameProcess = vbNullString
     
     ' this returns the name of the process if it is a non-explorer window, if it is an explorer window it will contain the path
-    NameProcess = sCommandArray(selectedIconIndex)
+    NameProcess = sDockIcons.Item(CStr(selectedIconIndex)).Command
     
     ' if the open application is an Explorer window then kill it this way
-    If explorerCheckArray(selectedIconIndex) = True Then
+    If sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "True" Then
         Call CloseExplorerWindowByPath(NameProcess)
-        explorerCheckArray(selectedIconIndex) = False
-        initiatedExplorerArray(selectedIconIndex) = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
+        sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "False"
+        sDockIcons.Item(CStr(selectedIconIndex)).InitiatedExplorer = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
         Exit Sub
     Else
         ' if the open application is a standard binary then kill it this way
         If checkAndKillPutWindowBehind(NameProcess, True, True) = True Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
             Sleep 200 ' this ESSENTIAL small delay is required as it may take a moment or two for the system list to be updated.
             If IsRunning(NameProcess) = False Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
-                processCheckArray(selectedIconIndex) = False ' remove the entry from the cog array
-                initiatedProcessArray(selectedIconIndex) = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
+                sDockIcons.Item(CStr(selectedIconIndex)).ProcessRunning = "False" ' remove the entry from the cog array
+                sDockIcons.Item(CStr(selectedIconIndex)).InitiatedProcess = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
             Else
                 ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
                 ' sometimes the target process does not die in time and this message can be generated, I could drop this whole wait into a timer but it still would not handle
@@ -1777,14 +1778,14 @@ Private Sub mnuDisableIcon_Click()
         menuForm.mnuDisableIcon.Caption = "Disable This Icon"
         menuForm.mnuDisableIcon.Checked = False
         
-        disabledArray(selectedIconIndex) = 0
+        sDockIcons.Item(CStr(selectedIconIndex)).Disabled = "0"
     Else
         sDisabled = "1"
         menuForm.mnuDisableIcon.Caption = "Enable This Icon"
         menuForm.mnuDisableIcon.Checked = True
         
         ' tell SD that this icon has recently been disabled (during the lifetime of this program run)
-        disabledArray(selectedIconIndex) = 1
+        sDockIcons.Item(CStr(selectedIconIndex)).Disabled = "1"
     End If
     
     'PutINISetting "Software\SteamyDock\IconSettings\Icons", selectedIconIndex & "-Disabled", sDisabled, dockSettingsFile
@@ -1812,8 +1813,8 @@ Private Sub mnuDisableIcon_Click()
     ' load and cache transparent versions of the current images to the associated collections
     ' at small and large sizes.
     If fFExists(sFilename) Then
-        resizeAndLoadImgToDict collLargeIcons, partialStringKey, sFileNameArray(selectedIconIndex), sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity
-        resizeAndLoadImgToDict collSmallIcons, partialStringKey, sFileNameArray(selectedIconIndex), sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, partialStringKey, sDockIcons.Item(CStr(selectedIconIndex)).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity
+        resizeAndLoadImgToDict collSmallIcons, partialStringKey, sDockIcons.Item(CStr(selectedIconIndex)).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity
     End If
 
    On Error GoTo 0

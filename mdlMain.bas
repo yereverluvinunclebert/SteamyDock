@@ -542,16 +542,16 @@ Public inc As Boolean
 Public bounceTimerRun As Integer
 Public fcount As Integer
 
-Public sFileNameArray() As String
-Public sTitleArray() As String
-Public sCommandArray() As String
-Public processCheckArray() As Boolean
-Public explorerCheckArray() As Boolean
-Public initiatedProcessArray() As String
-Public initiatedExplorerArray() As String
+'Public sFileNameArray() As String
+'Public sTitleArray() As String
+'Public sCommandArray() As String
+'Public processCheckArray() As Boolean
+'Public explorerCheckArray() As Boolean
+'Public initiatedProcessArray() As String
+'Public initiatedExplorerArray() As String
 Public dictionaryLocationArray() As String ' array to store the location (index) for the images in the dictionary collection
-Public disabledArray() As Integer
-Public targetExistsArray() As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+'Public disabledArray() As Integer
+'Public targetExistsArray() As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
 
 
 Public WindowsVer As String
@@ -881,12 +881,12 @@ Public Sub checkDockProcessesRunning()
     dock.processTimer.Enabled = False
         
     For useloop = 1 To rdIconUpperBound
-        If sCommandArray(useloop) <> "" Then
-            processCheckArray(useloop) = IsRunning(sCommandArray(useloop))
+        If sDockIcons.Item(CStr(useloop)).Command <> "" Then
+            sDockIcons.Item(CStr(useloop)).ProcessRunning = CStr(IsRunning(sDockIcons.Item(CStr(useloop)).Command))
             ' if the matching process has been found it is then dropped into the initiatedProcessArray, as this array is checked more frequently
             ' and cogs are added or taken away during the loop that analyses this array.
-            If processCheckArray(useloop) = True Then
-                initiatedProcessArray(useloop) = sCommandArray(useloop)
+            If sDockIcons.Item(CStr(useloop)).ProcessRunning = "True" Then 'this will be a boolean later
+                sDockIcons.Item(CStr(useloop)).InitiatedProcess = sDockIcons.Item(CStr(useloop)).Command
             End If
         End If
     Next useloop
@@ -1055,12 +1055,12 @@ Public Sub checkExplorerRunning()
     
     For windowLoop = 0 To windowCount - 1
         For sCommandLoop = 1 To rdIconUpperBound
-            If sCommandArray(sCommandLoop) <> vbNullString Then
-                If LCase$(sCommandArray(sCommandLoop)) = LCase$(openExplorerPathArray(windowLoop)) Then
-                    explorerCheckArray(sCommandLoop) = True
+            If sDockIcons.Item(CStr(sCommandLoop)).Command <> vbNullString Then
+                If LCase$(sDockIcons.Item(CStr(sCommandLoop)).Command) = LCase$(openExplorerPathArray(windowLoop)) Then
+                    sDockIcons.Item(CStr(sCommandLoop)).ExplorerRunning = "True"
                     ' if the matching explorer process has been found it is then dropped into the initiatedExplorerArray, as this array is checked more frequently
                     ' and cogs are added or taken away during the loop that analyses this array.
-                    initiatedExplorerArray(sCommandLoop) = sCommandArray(sCommandLoop)
+                    sDockIcons.Item(CStr(sCommandLoop)).InitiatedExplorer = sDockIcons.Item(CStr(sCommandLoop)).Command
                 End If
             End If
         Next sCommandLoop
@@ -1609,13 +1609,14 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     'Call zeroAllIconCharacteristics
     
      ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
-    
+     
+
     sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
     sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
     sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command ' read the icon property
     sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments ' read the icon property
     sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
-    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
+    'sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
     sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).Separator
     sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
     sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
@@ -1681,26 +1682,26 @@ Public Sub reassignArrayElements(ByVal thisArrayElement As Integer)
    On Error GoTo reassignArrayElements_Error
 
     ' re-assign the array elements for each icon
-    sFileNameArray(thisArrayElement) = sFilename
-    sTitleArray(thisArrayElement) = sTitle
-    sCommandArray(thisArrayElement) = sCommand
-    targetExistsArray(thisArrayElement) = 0
+    'sFileNameArray(thisArrayElement) = sFilename
+    'sTitleArray(thisArrayElement) = sTitle
+    'sCommandArray(thisArrayElement) = sCommand
+    sDockIcons.Item(CStr(thisArrayElement)).TargetExists = "0"
 
     ' check to see if each process is running and store the result away
     If isExplorerRunning(sCommand) = True Then
-        explorerCheckArray(thisArrayElement) = True
-        initiatedExplorerArray(thisArrayElement) = sCommand
+        sDockIcons.Item(CStr(thisArrayElement)).ExplorerRunning = "True"
+        sDockIcons.Item(CStr(thisArrayElement)).InitiatedExplorer = sCommand
     End If
     
     If IsRunning(sCommand) = True Then
-        processCheckArray(thisArrayElement) = True
-        initiatedProcessArray(thisArrayElement) = sCommand
+        sDockIcons.Item(CStr(thisArrayElement)).ProcessRunning = "True"
+        sDockIcons.Item(CStr(thisArrayElement)).InitiatedProcess = sCommand
     End If
     
     If sDisabled = "1" Then
-        disabledArray(thisArrayElement) = 1
+        sDockIcons.Item(CStr(thisArrayElement)).Disabled = "1"
     Else
-        disabledArray(thisArrayElement) = 0
+        sDockIcons.Item(CStr(thisArrayElement)).Disabled = "0"
     End If
 
    On Error GoTo 0
@@ -1724,9 +1725,9 @@ Public Sub clearInitiatedExplorerArray()
     On Error GoTo clearInitiatedExplorerArray_Error
 
     For useloop = 1 To rdIconUpperBound
-        If Not initiatedExplorerArray(useloop) = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
-                explorerCheckArray(useloop) = False ' the cog array for explorer processes
-                initiatedExplorerArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
+        If Not sDockIcons.Item(CStr(useloop)).InitiatedExplorer = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
+                sDockIcons.Item(CStr(useloop)).ExplorerRunning = "False" ' the cog array for explorer processes
+                sDockIcons.Item(CStr(useloop)).InitiatedExplorer = vbNullString ' removes the entry from the test array so it isn't caught again
         End If
     Next useloop
 
@@ -1753,9 +1754,9 @@ Public Sub clearInitiatedProcessArray()
     On Error GoTo clearInitiatedProcessArray_Error
 
     For useloop = 1 To rdIconUpperBound
-        If Not initiatedProcessArray(useloop) = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
-                processCheckArray(useloop) = False ' the cog array for explorer processes
-                initiatedProcessArray(useloop) = vbNullString ' removes the entry from the test array so it isn't caught again
+        If Not sDockIcons.Item(CStr(useloop)).InitiatedProcess = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
+                sDockIcons.Item(CStr(useloop)).ProcessRunning = "False" ' the cog array for explorer processes
+                sDockIcons.Item(CStr(useloop)).InitiatedProcess = vbNullString ' removes the entry from the test array so it isn't caught again
         End If
     Next useloop
 
@@ -1802,17 +1803,16 @@ Public Sub redimPreserveCacheArrays()
     
 
         ReDim Preserve dictionaryLocationArray(iconArrayUpperBound) As String ' the file location of the original icons
-        ReDim Preserve sFileNameArray(iconArrayUpperBound) As String ' the file location of the original icons
-        ReDim Preserve sTitleArray(iconArrayUpperBound) As String ' the name assigned to each icon
-        ReDim Preserve sCommandArray(iconArrayUpperBound) As String ' the Windows command or exe assigned to each icon
+        'ReDim Preserve sFileNameArray(iconArrayUpperBound) As String ' the file location of the original icons
+        'ReDim Preserve sTitleArray(iconArrayUpperBound) As String ' the name assigned to each icon
+        'ReDim Preserve sCommandArray(iconArrayUpperBound) As String ' the Windows command or exe assigned to each icon
         
-        ReDim Preserve targetExistsArray(iconArrayUpperBound) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-        ReDim Preserve processCheckArray(iconArrayUpperBound) As Boolean ' the array that contains true/false according to the running state of the associated process
-        ReDim Preserve explorerCheckArray(iconArrayUpperBound) As Boolean ' the array that contains true/false according to the running state of the associated process
-        ReDim Preserve initiatedProcessArray(iconArrayUpperBound) As String ' the array containing the binary name of any process initiated by the dock
-        ReDim Preserve initiatedExplorerArray(iconArrayUpperBound) As String ' the array containing the binary name of any process initiated by the dock
-        ReDim Preserve disabledArray(iconArrayUpperBound) As Integer ' the array
-        ReDim Preserve targetExistsArray(iconArrayUpperBound) As Integer
+        'ReDim Preserve targetExistsArray(iconArrayUpperBound) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+        'ReDim Preserve processCheckArray(iconArrayUpperBound) As Boolean ' the array that contains true/false according to the running state of the associated process
+       'ReDim Preserve explorerCheckArray(iconArrayUpperBound) As Boolean ' the array that contains true/false according to the running state of the associated process
+        'ReDim Preserve initiatedProcessArray(iconArrayUpperBound) As String ' the array containing the binary name of any process initiated by the dock
+        'ReDim Preserve initiatedExplorerArray(iconArrayUpperBound) As String ' the array containing the binary name of any process initiated by the dock
+        'ReDim Preserve disabledArray(iconArrayUpperBound) As Integer ' the array
                
         ReDim Preserve iconStoreLeftPixels(iconArrayUpperBound) As Double
         ReDim Preserve iconStoreRightPixels(iconArrayUpperBound) As Double
@@ -2204,7 +2204,8 @@ Public Sub deleteThisIcon()
     If selectedIconIndex = 0 Then Exit Sub
     If selectedIconIndex = iconArrayUpperBound Then Exit Sub
 
-    itemName = sTitleArray(selectedIconIndex)
+    'itemName = sTitleArray(selectedIconIndex)
+    itemName = sDockIcons.Item(CStr(selectedIconIndex)).Title
     
     'If chkConfirmSaves.Value = 1 Then
     
@@ -2581,14 +2582,14 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
             Call readIconParams(useloop)
                         
             ' read the two main icon variables into arrays, one for each
-            sFileNameArray(useloop) = sFilename
-            sTitleArray(useloop) = sTitle
-            sCommandArray(useloop) = sCommand
-            targetExistsArray(useloop) = 0
+            'sFileNameArray(useloop) = sFilename
+            'sTitleArray(useloop) = sTitle
+            sDockIcons.Item(CStr(useloop)).Command = sCommand
+            sDockIcons.Item(CStr(useloop)).TargetExists = "0"
             
             ' check to see if each process is running and store the result away
-            explorerCheckArray(useloop) = isExplorerRunning(sCommand)
-            processCheckArray(useloop) = IsRunning(sCommand)
+            sDockIcons.Item(CStr(useloop)).ExplorerRunning = isExplorerRunning(sCommand)
+            sDockIcons.Item(CStr(useloop)).ProcessRunning = CStr(IsRunning(sCommand))
         Next useloop
         
         dictionaryLocationArray(selectedIconIndex) = dictionaryLocationArrayUpperBound
@@ -3050,13 +3051,13 @@ Public Function checkWindowIconisationZorder(ByVal thisCommand As String, ByVal 
     Dim lMyThread As Long: lMyThread = 0
 
     ' if the open application is an Explorer window then handle it this way
-    If explorerCheckArray(selectedIconIndex) = True Then
+    If sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "True" Then 'this will be a boolean later
         lMyThread = findExplorerHwndByPath(thisCommand)
         lngRetVal = handleWindowConditionAndZorder(processID, runAction, lMyThread)
         checkWindowIconisationZorder = True ' return
     Else
             
-        If processCheckArray(selectedIconIndex) = True Or commandOverride <> vbNullString Then
+        If sDockIcons.Item(CStr(selectedIconIndex)).ProcessRunning = "True" Or commandOverride <> vbNullString Then
             'the array check above is the quick way to check process is already running
             'but if it is running we need to run IsRunning again to get the process PID
             If IsRunning(thisCommand, processID) Then  ' it checks again that the process is still running, returning the processID, as the check process timer that populates the processCheckArray is too infrequent to be relied upon

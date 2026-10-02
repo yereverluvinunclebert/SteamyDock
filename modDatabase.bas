@@ -256,7 +256,19 @@ closeDatabase_Error:
 End Sub
 
 
-
+'Private Function IconExists(ByVal Icons As Collection, _
+'                            ByVal Key As String) As Boolean
+'    Dim Icon As cIcon
+'
+'    On Error GoTo NotFound
+'
+'    Set Icon = Icons(Key)
+'    IconExists = True
+'    Exit Function
+'
+'NotFound:
+'    IconExists = False
+'End Function
 
 '
 '---------------------------------------------------------------------------------------
@@ -295,26 +307,32 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
     
         'assign the temporary 's' variables from the icon properties, they will be gone soon and we can remove this interim state
 
-        sFilename = sDockIcons.Item(CStr(thisKeyValue)).FileName
-        sFileName2 = sDockIcons.Item(CStr(thisKeyValue)).FileName2
-        sTitle = sDockIcons.Item(CStr(thisKeyValue)).Title
-        sCommand = sDockIcons.Item(CStr(thisKeyValue)).Command
-        sArguments = sDockIcons.Item(CStr(thisKeyValue)).Arguments
-        sWorkingDirectory = sDockIcons.Item(CStr(thisKeyValue)).WorkingDirectory
-        sShowCmd = sDockIcons.Item(CStr(thisKeyValue)).ShowCmd
-        sOpenRunning = sDockIcons.Item(CStr(thisKeyValue)).OpenRunning
-        sIsSeparator = sDockIcons.Item(CStr(thisKeyValue)).IsSeparator
-        sUseContext = sDockIcons.Item(CStr(thisKeyValue)).UseContext
-        'sDockletFile= sDockIcons.Item(CStr(thisKeyValue)).DockletFile   ' error ?
-        sUseDialog = sDockIcons.Item(CStr(thisKeyValue)).UseDialog
-        sUseDialogAfter = sDockIcons.Item(CStr(thisKeyValue)).UseDialogAfter
-        sQuickLaunch = sDockIcons.Item(CStr(thisKeyValue)).QuickLaunch
-        sAutoHideDock = sDockIcons.Item(CStr(thisKeyValue)).AutoHideDock
-        sSecondApp = sDockIcons.Item(CStr(thisKeyValue)).SecondApp
-        sRunElevated = sDockIcons.Item(CStr(thisKeyValue)).RunElevated
-        sRunSecondAppBeforehand = sDockIcons.Item(CStr(thisKeyValue)).RunSecondAppBeforehand
-        sAppToTerminate = sDockIcons.Item(CStr(thisKeyValue)).AppToTerminate
-        sDisabled = sDockIcons.Item(CStr(thisKeyValue)).Disabled
+        If sDockIcons.Exists(CStr(thisKeyValue)) = False Then
+            Set sIcon = New cwMainIcon
+            sDockIcons.Add thisKeyValue, sIcon
+        Else
+
+            sFilename = sDockIcons.Item(CStr(thisKeyValue)).FileName
+            sFileName2 = sDockIcons.Item(CStr(thisKeyValue)).FileName2
+            sTitle = sDockIcons.Item(CStr(thisKeyValue)).Title
+            sCommand = sDockIcons.Item(CStr(thisKeyValue)).Command
+            sArguments = sDockIcons.Item(CStr(thisKeyValue)).Arguments
+            sWorkingDirectory = sDockIcons.Item(CStr(thisKeyValue)).WorkingDirectory
+            sShowCmd = sDockIcons.Item(CStr(thisKeyValue)).ShowCmd
+            sOpenRunning = sDockIcons.Item(CStr(thisKeyValue)).OpenRunning
+            sIsSeparator = sDockIcons.Item(CStr(thisKeyValue)).IsSeparator
+            sUseContext = sDockIcons.Item(CStr(thisKeyValue)).UseContext
+            'sDockletFile= sDockIcons.Item(CStr(thisKeyValue)).DockletFile   ' error ?
+            sUseDialog = sDockIcons.Item(CStr(thisKeyValue)).UseDialog
+            sUseDialogAfter = sDockIcons.Item(CStr(thisKeyValue)).UseDialogAfter
+            sQuickLaunch = sDockIcons.Item(CStr(thisKeyValue)).QuickLaunch
+            sAutoHideDock = sDockIcons.Item(CStr(thisKeyValue)).AutoHideDock
+            sSecondApp = sDockIcons.Item(CStr(thisKeyValue)).SecondApp
+            sRunElevated = sDockIcons.Item(CStr(thisKeyValue)).RunElevated
+            sRunSecondAppBeforehand = sDockIcons.Item(CStr(thisKeyValue)).RunSecondAppBeforehand
+            sAppToTerminate = sDockIcons.Item(CStr(thisKeyValue)).AppToTerminate
+            sDisabled = sDockIcons.Item(CStr(thisKeyValue)).Disabled
+        End If
 '
         ' animation properties not yet implemented
         
@@ -931,7 +949,7 @@ Public Sub insertRecordsFromRandomDataFileIntoDatabase()
     For useloop = iconArrayLowerBound To iconArrayUpperBound
     
         ' extract filenames from the random access data file
-        Call getIconSettings(useloop)
+        'Call getIconSettings(useloop)
         
         thisKeyValue = useloop
         With DBConnection
