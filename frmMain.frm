@@ -1556,6 +1556,8 @@ Form_MouseUp_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure Form_MouseUp of Form dock"
 End Sub
 
+
+
 '---------------------------------------------------------------------------------------
 ' Procedure : fMouseUp
 ' Author    : beededea
@@ -1579,6 +1581,27 @@ Public Sub fMouseUp(Button As Integer)
     Dim allowElevated As Boolean: allowElevated = False
     Dim suffix As String: suffix = vbNullString
     
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+'    Dim sWorkingDirectory  As String
+'    Dim sShowCmd  As String
+'    Dim sOpenRunning  As String
+'    Dim sRunElevated  As String
+'    Dim sIsSeparator  As String
+'    Dim sUseContext  As String
+'    Dim sDockletFile  As String
+'    Dim sUseDialog  As String
+'    Dim sUseDialogAfter  As String
+'    Dim sQuickLaunch  As String
+'    Dim sAutoHideDock  As String
+'    Dim sSecondApp  As String
+'    Dim sRunSecondAppBeforehand  As String
+'    Dim sAppToTerminate As String
+'    Dim sDisabled  As String
+    
     'clicking on the 'blank' icons at the beginning and the end
     If selectedIconIndex = 0 Then Exit Sub
     If selectedIconIndex = iconArrayUpperBound Then Exit Sub
@@ -1586,10 +1609,10 @@ Public Sub fMouseUp(Button As Integer)
     mouseDownTime = 0
       
     '.76 DAEB 12/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
-    'Call readIconParams(selectedIconIndex) ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
+    'Call readIconParamsFromDb(selectedIconIndex) ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
     
-    'assign the temporary 's' variables from the icon properties, they will be gone soon and we can remove this interim state
-
+    ' retain the sVariables as local - useful
+    
     sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
     sFileName2 = sDockIcons.Item(CStr(selectedIconIndex)).FileName2
     sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
@@ -1600,7 +1623,7 @@ Public Sub fMouseUp(Button As Integer)
     sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
     sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
     sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
-    'sDockletFile= sDockIcons.Item(CStr(selectedIconIndex)).DockletFile   ' error ?
+    sDockletFile = "" ' sDockIcons.Item(CStr(selectedIconIndex)).DockletFile   ' error ?
     sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
     sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
     sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
@@ -1814,7 +1837,7 @@ End Sub
 ' Purpose   : test for an explorer item in the dock, does not check whether running
 '---------------------------------------------------------------------------------------
 '
-Private Function isExplorerItem(ByVal sCommand As String) As Boolean
+Private Function isExplorerItem(ByVal thisCommand As String) As Boolean
 
     ' take the target
     ' test it is an existing file, if it is a file then it is not a folder
@@ -1823,12 +1846,12 @@ Private Function isExplorerItem(ByVal sCommand As String) As Boolean
     
    On Error GoTo isExplorerItem_Error
    
-    If fFExists(sCommand) Then
+    If fFExists(thisCommand) Then
         isExplorerItem = False
         Exit Function
     End If
    
-    If fDirExists(sCommand) Then
+    If fDirExists(thisCommand) Then
         isExplorerItem = True
     End If
     
@@ -3842,8 +3865,12 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     Dim listOfTypes As String: listOfTypes = vbNullString
     Dim useloop As Integer: useloop = 0
     Dim optionalParam As String: optionalParam = vbNullString
+    
+    Dim sArguments As String
 
     'If debugflg = 1 Then debugLog "%runCommand"
+    
+    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments
     
     If sRunElevated = "1" Then
         userLevel = "runas"
@@ -3854,7 +3881,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     'by default read the selected icon's data and set the command to execute
     If commandOverride = vbNullString Then
         'Call readIconData(selectedIconIndex) '.nn DAEB 12/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
-        thisCommand = sCommand
+        thisCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
     Else
         ' .68 DAEB 05/05/2021 frmMain.frm cause the docksettings utility to reopen if it has already been initiated
         
@@ -3907,7 +3934,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     If sUseDialog = "1" Then
         ' .19 DAEB frmMain.frm 02/02/2021 added sArguments field to the confirmation dialog
         ' .21 DAEB frmMain.frm 07/02/2021 slight improvement to the confirmation dialog
-        rmessage = "Are you sure you wish to run the following command - " & sTitle & "?" & vbCr & thisCommand
+        rmessage = "Are you sure you wish to run the following command - " & sDockIcons.Item(CStr(selectedIconIndex)).Title & "?" & vbCr & thisCommand
         If sArguments <> vbNullString Then rmessage = rmessage & " " & sArguments
         ' must be a modal pop up
         'answer = MsgBox(rmessage, vbYesNo)
@@ -4028,9 +4055,9 @@ tryMSCFullPAth:
     ' BATch files
     If ExtractSuffixWithDot(UCase$(thisCommand)) = ".BAT" Then
         'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
-        thisCommand = """" & sCommand & """" ' put the command in quotes so it handles spaces in the path
+        thisCommand = """" & sDockIcons.Item(CStr(selectedIconIndex)).Command & """" ' put the command in quotes so it handles spaces in the path
         'folderPath = getFolderNameFromPath(thisCommand)  ' extract the default folder from the batch full path
-        If fFExists(sCommand) Then
+        If fFExists(sDockIcons.Item(CStr(selectedIconIndex)).Command) Then
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
         Else
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
@@ -4108,7 +4135,7 @@ End Sub
 ' Purpose   : handler for shellexecute allowing a subsequent dialog to be inititated
 '---------------------------------------------------------------------------------------
 '
-Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As String, ByVal sArguments As String, ByVal sWorkingDirectory As String, ByVal windowState As Integer, Optional ByRef targetType As String = "none")
+Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal thisCommand As String, ByVal thisArguments As String, ByVal sWorkingDirectory As String, ByVal windowState As Integer, Optional ByRef targetType As String = "none")
 
     Dim ans As VbMsgBoxResult: ans = vbNo
     Dim uShell As SHELLEXECUTEINFO
@@ -4121,7 +4148,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
     If sAutoHideDock = "1" Then
         'MessageBox Me.hwnd, sTitle & " Hiding the dock ", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
         ' store the process name that caused the dock to auto hide
-        autoHideProcessName = sCommand ' .84 DAEB 20/07/2021 frmMain.frm Added prevention of the dock returning until the hiding application is no longer running.
+        autoHideProcessName = thisCommand ' .84 DAEB 20/07/2021 frmMain.frm Added prevention of the dock returning until the hiding application is no longer running.
         Call HideDockNow
         
         '.85 Added new timer to allow auto-reveal of the dock once the chosen app has closed within 1.5 secs
@@ -4154,7 +4181,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
 '    CloseHandle (uShell.hProcess)
    
     ' run the selected program ' hWnd required as longPtr
-    Call ShellExecute(hWnd, userLevel, sCommand, sArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
+    Call ShellExecute(hWnd, userLevel, thisCommand, thisArguments, sWorkingDirectory, windowState) ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
         
     userLevel = "open" ' return to default
     
@@ -4190,7 +4217,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal sCommand As 
         'MsgBox sTitle & " Command Issued - " & sCommand, vbSystemModal + vbExclamation, "SteamyDock Confirmation Message"
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
         'MessageBox Me.hwnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-        ans = msgBoxA(sTitle & " Command Issued - " & sCommand, vbOKOnly, "SteamyDock Confirmation Message", False)
+        ans = msgBoxA(sDockIcons.Item(CStr(selectedIconIndex)).Title & " Command Issued - " & thisCommand, vbOKOnly, "SteamyDock Confirmation Message", False)
     End If
     
     
@@ -4255,7 +4282,7 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
     ' call up a dialog box if required
     If sUseDialogAfter = "1" Then
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, sDockIcons.Item(CStr(selectedIconIndex)).Title & " Command Issued - " & sDockIcons.Item(CStr(selectedIconIndex)).Command, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -4422,7 +4449,7 @@ End Sub
     ' run the second app
      If sSecondApp <> vbNullString And sRunSecondAppBeforehand = "1" Then
         If sUseDialog = "1" Then
-            rmessage = "Are you sure you wish to run the associated second application? - " & sTitle & "?" & vbCr & sSecondApp
+            rmessage = "Are you sure you wish to run the associated second application? - " & sDockIcons.Item(CStr(selectedIconIndex)).Title & "?" & vbCr & sSecondApp
             answer = MsgBox(rmessage, vbYesNo)
             'answer = msgBoxA(rmessage, vbYesNo, "SteamyDock Confirmation Message", False)
             
@@ -4442,7 +4469,7 @@ End Sub
     ' run the selected program
     If sSecondApp <> vbNullString And sRunSecondAppBeforehand <> "" Then
         If sUseDialog = "1" Then
-            rmessage = "Are you sure you wish to run the associated second application? - " & sTitle & "?" & vbCr & sSecondApp
+            rmessage = "Are you sure you wish to run the associated second application? - " & sDockIcons.Item(CStr(selectedIconIndex)).Title & "?" & vbCr & sSecondApp
             answer = MsgBox(rmessage, vbYesNo)
             'answer = msgBoxA(rmessage, vbYesNo, "SteamyDock Confirmation Message", False)
             If answer = vbNo Then
@@ -5172,6 +5199,8 @@ Public Sub prepareArraysAndCollections()
     Dim thisDisabled As String: thisDisabled = vbNullString
     Dim thisBitmap As Long
     
+    Dim sFilename As String
+    
     On Error GoTo prepareArraysAndCollections_Error
     
     If debugflg = 1 Then debugLog "% sub prepareArraysAndCollections"
@@ -5187,8 +5216,10 @@ Public Sub prepareArraysAndCollections()
     
         ' previously we extracted icondata from the random access data file,
         ' now we obtain the icon data from the SQLite database with error check returned
-        'readIconParams useloop
+        'readIconParamsFromDb useloop
         Call createDockIcons(useloop)
+
+        sFilename = sDockIcons.Item(CStr(useloop)).FileName
 
         partialStringKey = CStr(useloop)
         
@@ -5196,7 +5227,7 @@ Public Sub prepareArraysAndCollections()
         'sFileNameArray(useloop) = sFilename
         dictionaryLocationArray(useloop) = useloop
         'sTitleArray(useloop) = sTitle
-        sDockIcons.Item(CStr(useloop)).Command = sCommand
+        'sDockIcons.Item(CStr(useloop)).Command = sCommand
         
         overallIconOpacity = Val(rDIconOpacity) ' overall icon opacity of all icons
 
@@ -5219,7 +5250,7 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sDockIcons.Item(CStr(useloop)).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
                 End If
             Else ' if the image is not found display an 'x'
                 thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
@@ -5235,7 +5266,7 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sDockIcons.Item(CStr(useloop)).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
                 End If
             Else
                 thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
@@ -5253,7 +5284,7 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sDockIcons.Item(CStr(useloop)).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
                 End If
             Else ' if the image is not found display an 'x'
                 thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
@@ -5270,7 +5301,7 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sDockIcons.Item(CStr(useloop)).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity)
                 End If
                 
 
@@ -5285,8 +5316,8 @@ Public Sub prepareArraysAndCollections()
         End If
         
         ' check to see if each process is running and store the result away - this is also run on a 10s timer
-        sDockIcons.Item(CStr(useloop)).ExplorerRunning = isExplorerRunning(sCommand)
-        sDockIcons.Item(CStr(useloop)).ProcessRunning = CStr(IsRunning(sCommand))
+        sDockIcons.Item(CStr(useloop)).ExplorerRunning = isExplorerRunning(sDockIcons.Item(CStr(useloop)).Command)
+        sDockIcons.Item(CStr(useloop)).ProcessRunning = CStr(IsRunning(sDockIcons.Item(CStr(useloop)).Command))
 
     Next useloop
 
@@ -7416,7 +7447,7 @@ End Sub
 '            End If
 '        End If
 '        ' read from the arrays
-'        Call readIconParams( useloop, dockSettingsFile, fromArray)
+'        Call readIconParamsFromDb( useloop, dockSettingsFile, fromArray)
 '
 '        ' very slow using writeinifile APIs, needs improvement.
 '        Call writeIconSettingsIni( useloop, dockSettingsFile, toArray)

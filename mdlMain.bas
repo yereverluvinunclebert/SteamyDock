@@ -1392,7 +1392,7 @@ End Sub
 '
 '        fromArray = False
 '        For useloop = 0 To rdIconUpperBound
-'             readIconParams useloop, fromArray
+'             readIconParamsFromDb useloop, fromArray
 '        Next useloop
 '
 '    ' starting at the END of the steamydock map, scroll backward and increment the number
@@ -1400,7 +1400,7 @@ End Sub
 '    For useloop = rdIconUpperBound To 0 Step -1
 '         Call zeroAllIconCharacteristics
 '
-'         Call readIconParams(useloop, False)
+'         Call readIconParamsFromDb(useloop, False)
 '         Call writeIconSettingsIni(useloop + 1, False)
 '    Next useloop
 '
@@ -1578,8 +1578,30 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     ByVal thisSeparator As String, ByVal thisDockletFile As String, _
     ByVal thisUseContext As String, ByVal thisUseDialog As String, _
     ByVal thisUseDialogAfter As String, ByVal thisQuickLaunch As String, ByVal thisDisabled As String)
+    
     Dim useloop As Integer: useloop = 0
     Dim thisIcon As Integer: thisIcon = 0
+    
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+'    Dim sWorkingDirectory  As String
+'    Dim sShowCmd  As String
+'    Dim sOpenRunning  As String
+'    Dim sRunElevated  As String
+'    Dim sIsSeparator  As String
+'    Dim sUseContext  As String
+'    Dim sDockletFile  As String
+'    Dim sUseDialog  As String
+'    Dim sUseDialogAfter  As String
+'    Dim sQuickLaunch  As String
+'    Dim sAutoHideDock  As String
+'    Dim sSecondApp  As String
+'    Dim sRunSecondAppBeforehand  As String
+'    Dim sAppToTerminate As String
+'    Dim sDisabled  As String
 
     On Error GoTo insertNewIconDataIntoCurrentPosition_Error
     'If debugflg = 1 Then debugLog "%" & "insertNewIconDataIntoCurrentPosition"
@@ -1589,11 +1611,14 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     
     ' starting at the END of the steamydock map, scroll backward and increment the number
     ' until we reach the current position.
+    
+    'this will be replaced by a add /before for a VB6 collection
+    
     For useloop = iconArrayUpperBound To selectedIconIndex Step -1
          Call zeroAllIconCharacteristics
          
-         Call readIconParams(useloop)
-         Call writeIconSettingsIni(useloop + 1, False)
+         Call readIconParamsFromDb(useloop)
+         Call writeIconSettingsDb(useloop + 1, False)
     Next useloop
     
    ' dynamically extend the number of picture boxes by one
@@ -1606,28 +1631,8 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     
     'resize all arrays used for storing icon information
     Call redimPreserveCacheArrays
-    'Call zeroAllIconCharacteristics
     
-     ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
-     
-
-    sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
-    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
-    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command ' read the icon property
-    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments ' read the icon property
-    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
-    'sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
-    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).Separator
-    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
-    sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
-    sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
-    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
-    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
-    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
-    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
-    
-    ' this will be removeable when we replace the sParams with references to the sdockIcons Collection above
-    
+    ' retain sVariables here - useful as local vars
     'when we arrive at the original position then set the current valid icon characteristics passed as params into this routine
     sFilename = thisFilename
     sTitle = thisTitle
@@ -1644,11 +1649,11 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     sQuickLaunch = thisQuickLaunch
     sDisabled = thisDisabled
 
-    Call writeIconSettingsIni(thisIcon, False)
+    Call writeIconSettingsDb(thisIcon, False)
 
     ' then re-read the config for every icon from the top down to the selected item
     For useloop = iconArrayUpperBound To selectedIconIndex Step -1
-        Call readIconParams(useloop)
+        Call readIconParamsFromDb(useloop)
         Call reassignArrayElements(useloop)
     Next useloop
     
@@ -1679,12 +1684,11 @@ End Sub
 '
 Public Sub reassignArrayElements(ByVal thisArrayElement As Integer)
 
-   On Error GoTo reassignArrayElements_Error
+    Dim sCommand As String
+    
+    On Error GoTo reassignArrayElements_Error
 
-    ' re-assign the array elements for each icon
-    'sFileNameArray(thisArrayElement) = sFilename
-    'sTitleArray(thisArrayElement) = sTitle
-    'sCommandArray(thisArrayElement) = sCommand
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
     sDockIcons.Item(CStr(thisArrayElement)).TargetExists = "0"
 
     ' check to see if each process is running and store the result away
@@ -1878,7 +1882,7 @@ End Sub
 '        ' write the 3rd settings file with real data
 '        For useloop = 0 To rdIconUpperBound
 '            ' get the relevant entries from the intermediate settings file
-'            Call readIconParams( useloop, dockSettingsFile)
+'            Call readIconParamsFromDb( useloop, dockSettingsFile)
 '
 '            ' write the steamydock dockSsettings.ini
 '            Call writeIconSettingsIni( useloop, dockSettingsFile) ' the settings.ini only exists when RD is set to use it
@@ -1900,9 +1904,9 @@ End Sub
 ''            ' just as for the new 3rd option, we have to transpose data from the temporary settings file to the registry, so we have to do them all in one go.
 ''            For useloop = 0 To rdIconUpperBound
 ''                 ' read the rocketdock alternative settings.ini
-''                 'readIconParams (useloop) ' the alternative settings.ini exists when RD is set to use it
-''                 'readIconParams "Software\RocketDock\Icons", useloop, rdSettingsFile
-''                 readIconParams  useloop, dockSettingsFile
+''                 'readIconParamsFromDb (useloop) ' the alternative settings.ini exists when RD is set to use it
+''                 'readIconParamsFromDb "Software\RocketDock\Icons", useloop, rdSettingsFile
+''                 readIconParamsFromDb  useloop, dockSettingsFile
 ''
 ''                 ' write the rocketdock registry
 ''                 writeRegistryOnce (useloop)
@@ -1938,7 +1942,7 @@ Public Sub readIconData(ByVal iconCount As Integer)
 
     'If fFExists(rdSettingsFile) Then ' does the alternative settings.ini exist? '.nn removed for performance reasons
         'get the rocketdock alternative settings.ini for this icon alone
-        'readIconParams "Software\RocketDock\Icons", iconCount, rdSettingsFile
+        'readIconParamsFromDb "Software\RocketDock\Icons", iconCount, rdSettingsFile
     'End If
 
    On Error GoTo 0
@@ -2030,17 +2034,17 @@ Public Sub addProgramDLLorEXE()
     ' test as to whether it is an .EXE '
     If InStr(1, ".exe", LCase(suffix)) And readEmbeddedIcons = True Then
         ' does the string contain a ? if so it probably has an embedded .ICO
-        qPos = InStr(1, sFilename, "?")
+        qPos = InStr(1, sDockIcons.Item(CStr(selectedIconIndex)).FileName, "?")
         If qPos <> 0 Then
             ' extract the string before the ? (qPos)
-            filestring = Mid$(sFilename, 1, qPos - 1)
+            filestring = Mid$(sDockIcons.Item(CStr(selectedIconIndex)).FileName, 1, qPos - 1)
         End If
         
     ' test the resulting filestring exists
     If fFExists(filestring) Then
             If rDRetainIcons = "1" Then
                 'FileName = txtCurrentIcon.Text ' revert to the relative path which is what is expected
-                iconFilename = fExtractEmbeddedPNGFromEXE(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+                iconFilename = fExtractEmbeddedPNGFromEXE(sDockIcons.Item(CStr(selectedIconIndex)).FileName, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
             End If
 
         Else ' the file doesn't exist in any form with ? or otherwise as a valid path
@@ -2134,7 +2138,7 @@ End Sub
 '        For useloop = selectedIconIndex To rdIconNumber Step -1
 '            ' read the rocketdock alternative settings.ini
 '             'readSettingsIni (useloop) ' the settings.ini only exists when RD is set to use it
-'             readIconParams "Software\RocketDock\Icons", useloop, rdSettingsFile
+'             readIconParamsFromDb "Software\RocketDock\Icons", useloop, rdSettingsFile
 '
 '            ' and increment the identifier by one
 '             'writeSettingsIni (useloop + 1)
@@ -2248,13 +2252,13 @@ Public Sub deleteThisIcon()
         
         ' read the steamyDock settings one item up in the list then write the new item at the current location effectively overwriting it
         For useloop = selectedIconIndex + 1 To iconArrayUpperBound
-            Call readIconParams(useloop)   ' read from file but write to interim array cache
-            Call writeIconSettingsIni(useloop - 1, toArray)  ' write changes to array for later commit
+            Call readIconParamsFromDb(useloop)   ' read from file but write to interim array cache
+            Call writeIconSettingsDb(useloop - 1, toArray)  ' write changes to array for later commit
         Next useloop
                     
         ' then re-read the config for every icon - moving the image and arrays
         For useloop = selectedIconIndex To rdIconUpperBound
-            Call readIconParams(useloop)  ' , read from array from the beginning
+            Call readIconParamsFromDb(useloop)  ' , read from array from the beginning
             reassignArrayElements (useloop)
     
             ' instead of reordering the images within the dictionary, which is difficult as you can't just add and
@@ -2468,7 +2472,7 @@ End Sub
 '    ' we reload the arrays that store pertinent icon information
 '    For useloop = 0 To rdIconUpperBound
 '        'readIconData (useloop)
-'        readIconParams  useloop, dockSettingsFile
+'        readIconParamsFromDb  useloop, dockSettingsFile
 '
 '        ' read the two main icon variables into arrays, one for each
 '        sFileNameArray(useloop) = sFilename
@@ -2547,8 +2551,11 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
     Dim NewKey As String
     Dim partialStringKey As String: partialStringKey = ""
     Dim imageOpacity As Integer: imageOpacity = 0
+    
+    Dim sCommand As String
 
     On Error GoTo addNewImageToDictionary_Error
+    
     
     dictionaryLocationArrayUpperBound = iconArrayUpperBound + 1
 
@@ -2579,12 +2586,14 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
                                 
         ' then re-read the config
         For useloop = selectedIconIndex To iconArrayUpperBound
-            Call readIconParams(useloop)
+            'Call readIconParamsFromDb(useloop)
                         
+             sCommand = sDockIcons.Item(CStr(useloop)).Command
+             
             ' read the two main icon variables into arrays, one for each
             'sFileNameArray(useloop) = sFilename
             'sTitleArray(useloop) = sTitle
-            sDockIcons.Item(CStr(useloop)).Command = sCommand
+            'sDockIcons.Item(CStr(useloop)).Command = sCommand
             sDockIcons.Item(CStr(useloop)).TargetExists = "0"
             
             ' check to see if each process is running and store the result away

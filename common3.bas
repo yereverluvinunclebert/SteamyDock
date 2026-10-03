@@ -180,58 +180,50 @@ Public iconArrayLowerBound As Integer
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub setFirstLastIcons(ByVal thisRecordNumber As Integer)
-    
-    On Error GoTo setFirstLastIcons_Error
-
-    ' first icon is always blank and non-editable
-    If thisRecordNumber = 1 Then
-        Call zeroAllIconCharacteristics
-        If fFExists(App.Path & "\gog.png") Then
-            sFilename = App.Path & "\gog.png"
-        End If
-        
-        sTitle = "dockMinimum"
-    End If
-    
-    ' the very last icon is always blank and non-editable
-    ' we add 2 to the recordNumberToWrite, 1 for the conversion from settings.ini to a random access data and then another position above the maximum for a blank icon
-    If thisRecordNumber = iconArrayUpperBound Then
-        Call zeroAllIconCharacteristics
-        sFilename = App.Path & "\blank.png"
-        sTitle = "dockMaximum"
-    End If
-
-   On Error GoTo 0
-   Exit Sub
-
-setFirstLastIcons_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setFirstLastIcons of Module common3"
-
-End Sub
+'Private Sub setFirstLastIcons(ByVal thisRecordNumber As Integer)
+'
+'    On Error GoTo setFirstLastIcons_Error
+'
+'    ' first icon is always blank and non-editable
+'    If thisRecordNumber = 1 Then
+'        Call zeroAllIconCharacteristics
+'
+'        sTitle = "dockMinimum"
+'    End If
+'
+'    ' the very last icon is always blank and non-editable
+'    ' we add 2 to the recordNumberToWrite, 1 for the conversion from settings.ini to a random access data and then another position above the maximum for a blank icon
+'    If thisRecordNumber = iconArrayUpperBound Then
+'        Call zeroAllIconCharacteristics
+'        sFilename = App.Path & "\blank.png"
+'        sTitle = "dockMaximum"
+'    End If
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'setFirstLastIcons_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setFirstLastIcons of Module common3"
+'
+'End Sub
 
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : writeIconSettingsIni
+' Procedure : writeIconSettingsDb
 ' Author    : beededea
 ' Date      : 21/09/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByVal writeArray As Boolean)
+Public Sub writeIconSettingsDb(ByVal iconNumberToWrite As Integer, Optional ByVal writeArray As Boolean)
     
     Dim errCnt As Integer: errCnt = 0
     Static writeDBErrorCount As Integer
         
-    On Error GoTo writeIconSettingsIni_Error
-   'If debugFlg = 1 Then debugLog "%writeIconSettingsIni"
-
-'   If writeArray = False Then
-   
-        ' write the icon data to random access data file
-        'Call putIconSettings(iconNumberToWrite)
+    On Error GoTo writeIconSettingsDb_Error
+   'If debugFlg = 1 Then debugLog "%writeIconSettingsDb"
         
         ' check to see if there have been any prior errors reading records from the db, if so, don't read any more records
         If writeDBErrorCount > 0 Then Exit Sub
@@ -240,83 +232,29 @@ Public Sub writeIconSettingsIni(ByVal iconNumberToWrite As Integer, Optional ByV
         errCnt = putIconSettingsIntoDatabase(iconNumberToWrite)
         writeDBErrorCount = writeDBErrorCount + errCnt
         
-        ' the array cache was used for all the variables to speed up access when reading/writing the settings file
-        ' this was due to using a settings.ini file using Windows APIs to read/write (very slow indeed)
-        ' then the random access data file was implemented and the speed increased dramatically.
-        
-'        PutINISetting location, iconNumberToWrite & "-FileName", sFilename, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-FileName2", sFileName2, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-Title", sTitle, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-Command", sCommand, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-Arguments", sArguments, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-WorkingDirectory", sWorkingDirectory, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-ShowCmd", sShowCmd, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-OpenRunning", sOpenRunning, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-RunElevated", sRunElevated, settingsFile
-'
-'        PutINISetting location, iconNumberToWrite & "-IsSeparator", sIsSeparator, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-UseContext", sUseContext, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-DockletFile", sDockletFile, settingsFile
-'
-'        'If defaultDock = 1 Then
-'        PutINISetting location, iconNumberToWrite & "-UseDialog", sUseDialog, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-UseDialogAfter", sUseDialogAfter, settingsFile ' .03 DAEB 31/01/2021 common.bas Added new checkbox to determine if a post initiation dialog should appear
-'        PutINISetting location, iconNumberToWrite & "-QuickLaunch", sQuickLaunch, settingsFile ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
-'        PutINISetting location, iconNumberToWrite & "-AutoHideDock", sAutoHideDock, settingsFile  ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
-'        PutINISetting location, iconNumberToWrite & "-SecondApp", sSecondApp, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-'
-'        PutINISetting location, iconNumberToWrite & "-RunSecondAppBeforehand", sRunSecondAppBeforehand, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-AppToTerminate", sAppToTerminate, settingsFile
-'        PutINISetting location, iconNumberToWrite & "-Disabled", sDisabled, settingsFile  ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-        
-'    Else
-'        sFileNameArray(iconNumberToWrite) = sFilename
-'        sFileName2Array(iconNumberToWrite) = sFileName2
-'        sTitleArray(iconNumberToWrite) = sTitle
-'        sCommandArray(iconNumberToWrite) = sCommand
-'        sArgumentsArray(iconNumberToWrite) = sArguments
-'        sWorkingDirectoryArray(iconNumberToWrite) = sWorkingDirectory
-'        sShowCmdArray(iconNumberToWrite) = sShowCmd
-'        sOpenRunningArray(iconNumberToWrite) = sOpenRunning
-'        sIsSeparatorArray(iconNumberToWrite) = sIsSeparator
-'        sUseContextArray(iconNumberToWrite) = sUseContext
-'        sDockletFileArray(iconNumberToWrite) = sDockletFile
-'        sUseDialogArray(iconNumberToWrite) = sUseDialog
-'        sUseDialogAfterArray(iconNumberToWrite) = sUseDialogAfter
-'        sQuickLaunchArray(iconNumberToWrite) = sQuickLaunch
-'        sAutoHideDockArray(iconNumberToWrite) = sAutoHideDock
-'        sSecondAppArray(iconNumberToWrite) = sSecondApp
-'        sRunElevatedArray(iconNumberToWrite) = sRunElevated
-'        sRunSecondAppBeforehandArray(iconNumberToWrite) = sRunSecondAppBeforehand
-'        sAppToTerminateArray(iconNumberToWrite) = sAppToTerminate
-'        sDisabledArray(iconNumberToWrite) = sDisabled
-'    End If
-            
     On Error GoTo 0
    Exit Sub
 
-writeIconSettingsIni_Error:
+writeIconSettingsDb_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconSettingsIni of Module Common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconSettingsDb of Module Common"
     
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : readIconParams
+' Procedure : readIconParamsFromDb
 ' Author    : beededea
 ' Date      : 21/09/2019
 ' Purpose   : Reads  the icon data from the SQLite database using the icon key as a reference.
 '             Then it assigns the value to an icon class with properties
 '---------------------------------------------------------------------------------------
 '
-Public Sub readIconParams(ByVal iconNumberToRead As Integer) ' , Optional ByVal readArray As Boolean
+Public Sub readIconParamsFromDb(ByVal iconNumberToRead As Integer) ' , Optional ByVal readArray As Boolean
 
     Dim errCnt As Integer: errCnt = 0
     Static readDBFlag As Integer
         
-    On Error GoTo readIconParams_Error
-    
-   ' If readArray = False Then
+    On Error GoTo readIconParamsFromDb_Error
     
         ' obtain the icon data from random access data file now unused
         'Call getIconSettings(iconNumberToRead) 'retained here for testing
@@ -328,64 +266,13 @@ Public Sub readIconParams(ByVal iconNumberToRead As Integer) ' , Optional ByVal 
         errCnt = getIconSettingsFromDatabase(iconNumberToRead)
         readDBFlag = readDBFlag + errCnt
 
-        ' the array cache was used for all the variables to speed up access when reading/writing the settings file
-        ' this was due to using a settings.ini file using Windows APIs to read/write (very slow indeed)
-        ' then the random access data file was implemented and the speed increased dramatically.
-    
-        
-        ' now write it straight away into the array cache
-        
-'        sFileNameArray(iconNumberToRead) = sFilename
-'        sFileName2Array(iconNumberToRead) = sFileName2
-'        sTitleArray(iconNumberToRead) = sTitle
-'        sCommandArray(iconNumberToRead) = sCommand
-'        sArgumentsArray(iconNumberToRead) = sArguments
-'        sWorkingDirectoryArray(iconNumberToRead) = sWorkingDirectory
-'        sShowCmdArray(iconNumberToRead) = sShowCmd
-'        sOpenRunningArray(iconNumberToRead) = sOpenRunning
-'        sIsSeparatorArray(iconNumberToRead) = sIsSeparator
-'        sUseContextArray(iconNumberToRead) = sUseContext
-'        sDockletFileArray(iconNumberToRead) = sDockletFile
-'        sUseDialogArray(iconNumberToRead) = sUseDialog
-'        sUseDialogAfterArray(iconNumberToRead) = sUseDialogAfter
-'        sQuickLaunchArray(iconNumberToRead) = sQuickLaunch
-'        sAutoHideDockArray(iconNumberToRead) = sAutoHideDock
-'        sSecondAppArray(iconNumberToRead) = sSecondApp
-'        sRunElevatedArray(iconNumberToRead) = sRunElevated
-'        sRunSecondAppBeforehandArray(iconNumberToRead) = sRunSecondAppBeforehand
-'        sAppToTerminateArray(iconNumberToRead) = sAppToTerminate
-'        sDisabledArray(iconNumberToRead) = sDisabled
-'
-'    Else ' alternatively read data from the array cache as it is much faster to read
-'
-'        sFilename = sFileNameArray(iconNumberToRead)
-'        sFileName2 = sFileName2Array(iconNumberToRead)
-'        sTitle = sTitleArray(iconNumberToRead)
-'        sCommand = sCommandArray(iconNumberToRead)
-'        sArguments = sArgumentsArray(iconNumberToRead)
-'        sWorkingDirectory = sWorkingDirectoryArray(iconNumberToRead)
-'        sShowCmd = sShowCmdArray(iconNumberToRead)
-'        sOpenRunning = sOpenRunningArray(iconNumberToRead)
-'        sIsSeparator = sIsSeparatorArray(iconNumberToRead)
-'        sUseContext = sUseContextArray(iconNumberToRead)
-'        sDockletFile = sDockletFileArray(iconNumberToRead)
-'        sUseDialog = sUseDialogArray(iconNumberToRead)
-'        sUseDialogAfter = sUseDialogAfterArray(iconNumberToRead)
-'        sQuickLaunch = sQuickLaunchArray(iconNumberToRead)
-'        sAutoHideDock = sAutoHideDockArray(iconNumberToRead)
-'        sSecondApp = sSecondAppArray(iconNumberToRead)
-'        sRunElevated = sRunElevatedArray(iconNumberToRead)
-'        sRunSecondAppBeforehand = sRunSecondAppBeforehandArray(iconNumberToRead)
-'        sAppToTerminate = sAppToTerminateArray(iconNumberToRead)
-'        sDisabled = sDisabledArray(iconNumberToRead)
-'    End If
         
    On Error GoTo 0
    Exit Sub
 
-readIconParams_Error:
+readIconParamsFromDb_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconParams of Module Module2"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconParamsFromDb of Module Module2"
 End Sub
 
 
@@ -926,11 +813,11 @@ Public Sub zeroAllIconCharacteristics()
 
    On Error GoTo zeroAllIconCharacteristics_Error
 
-    sFilename = vbNullString
-    sFileName2 = vbNullString
-    sTitle = vbNullString
-    sCommand = vbNullString
-    sArguments = vbNullString
+    'sFilename = vbNullString
+    'sFileName2 = vbNullString
+    'sTitle = vbNullString
+'    sCommand = vbNullString
+'    sArguments = vbNullString
     sWorkingDirectory = vbNullString
     sOpenRunning = "0"
     sIsSeparator = "0"
@@ -982,7 +869,7 @@ Public Sub writeIconStateToDatabase()
     'loop from the start operation value to the end
     For useloop = startRecord To rdIconUpperBound
 
-        Call writeIconSettingsIni(useloop)
+        Call writeIconSettingsDb(useloop)
 
     Next useloop
 

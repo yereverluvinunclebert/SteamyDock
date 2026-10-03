@@ -279,7 +279,29 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As Integer
-    Dim a As Integer
+
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+'    Dim sWorkingDirectory  As String
+'    Dim sShowCmd  As String
+'    Dim sOpenRunning  As String
+'    Dim sRunElevated  As String
+'    Dim sIsSeparator  As String
+'    Dim sUseContext  As String
+'    Dim sDockletFile  As String
+'    Dim sUseDialog  As String
+'    Dim sUseDialogAfter  As String
+'    Dim sQuickLaunch  As String
+'    Dim sAutoHideDock  As String
+'    Dim sSecondApp  As String
+'    Dim sRunSecondAppBeforehand  As String
+'    Dim sAppToTerminate As String
+'    Dim sDisabled  As String
+
+    'Dim a As Integer
 
     On Error GoTo putIconSettingsIntoDatabase_Error
     
@@ -287,9 +309,9 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
     
     With DBConnection
     
-    If thisKeyValue = 100 Then
-        a = 1
-    End If
+'    If thisKeyValue = 100 Then
+'        a = 1
+'    End If
     
         ' We don't have an UPSERT with this SQLite DLL so we have to test first whether the record exists or not.
         
@@ -306,7 +328,7 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
 '        End If
     
         'assign the temporary 's' variables from the icon properties, they will be gone soon and we can remove this interim state
-
+        ' retain the svariables as local vars - useful here
         If sDockIcons.Exists(CStr(thisKeyValue)) = False Then
             Set sIcon = New cwMainIcon
             sDockIcons.Add thisKeyValue, sIcon
@@ -466,7 +488,27 @@ End Function
 '---------------------------------------------------------------------------------------
 '
 Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Optional ByVal addIcon As Boolean) As Integer
-
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+'    Dim sWorkingDirectory  As String
+'    Dim sShowCmd  As String
+'    Dim sOpenRunning  As String
+'    Dim sRunElevated  As String
+'    Dim sIsSeparator  As String
+'    Dim sUseContext  As String
+'    Dim sDockletFile  As String
+'    Dim sUseDialog  As String
+'    Dim sUseDialogAfter  As String
+'    Dim sQuickLaunch  As String
+'    Dim sAutoHideDock  As String
+'    Dim sSecondApp  As String
+'    Dim sRunSecondAppBeforehand  As String
+'    Dim sAppToTerminate As String
+'    Dim sDisabled  As String
+'
     Dim DataSet As SQLiteDataSet
     
     On Error GoTo getIconSettingsFromDatabase_Error
@@ -479,7 +521,7 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
        GoTo getIconSettingsFromDatabase_Error
     End If
     
-    ' eventually we will write the icon properties directly and do without the sParams here
+    ' retain the sVariables as local vars - useful
     sFilename = DataSet!fIconFilename
     sFileName2 = DataSet!fIconFileName2
     sTitle = DataSet!fIconTitle
@@ -964,11 +1006,11 @@ Public Sub insertRecordsFromRandomDataFileIntoDatabase()
             'retained for example
             '.Execute "INSERT INTO iconDataTable (Key, fIconDisabled) VALUES ('" & thisKeyValue & "','" & sDisabled & "') ON CONFLICT (Key) DO UPDATE SET fIconDisabled=excluded.fIconDisabled"
             
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconFilename", sFilename)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconFilename2", sFileName2)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconTitle", sTitle)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconCommand", sCommand)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconArguments", sArguments)
+            'Call INSERTFieldToSingleRecord(thisKeyValue, "fIconFilename", sFilename)
+            'Call INSERTFieldToSingleRecord(thisKeyValue, "fIconFilename2", sFileName2)
+            'Call INSERTFieldToSingleRecord(thisKeyValue, "fIconTitle", sTitle)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconCommand", sCommand)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconArguments", sArguments)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconWorkingDirectory", sWorkingDirectory)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconShowCmd", sShowCmd)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconOpenRunning", sOpenRunning)

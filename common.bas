@@ -170,11 +170,11 @@ Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hW
 ' APIs and structures for opening a common dialog box to select files without OCX dependencies STARTS
 
 ' Rocketdock compatible icon global variables START
-Public sFilename As String
-Public sFileName2 As String
-Public sTitle  As String
-Public sCommand  As String
-Public sArguments  As String
+'Public sFilename As String
+'Public sFileName2 As String
+'Public sTitle  As String
+'Public sCommand  As String
+'Public sArguments  As String
 Public sWorkingDirectory  As String
 Public sShowCmd  As String
 Public sOpenRunning  As String
@@ -1400,15 +1400,15 @@ End Function
 
 '
 ''---------------------------------------------------------------------------------------
-'' Procedure : readIconParams
+'' Procedure : readIconParamsFromDb
 '' Author    : beededea
 '' Date      : 15/06/2022
 '' Purpose   :
 ''---------------------------------------------------------------------------------------
 ''
-'Public Sub readIconParams(location As String, ByVal iconNumberToWrite As Integer, settingsFile As String)
+'Public Sub readIconParamsFromDb(location As String, ByVal iconNumberToWrite As Integer, settingsFile As String)
 ''
-'    On Error GoTo readIconParams_Error
+'    On Error GoTo readIconParamsFromDb_Error
 '
 '            sFilename = GetINISetting(location, iconNumberToWrite & "-FileName", settingsFile)
 '            sFileName2 = GetINISetting(location, iconNumberToWrite & "-FileName2", settingsFile)
@@ -1431,11 +1431,11 @@ End Function
 '    On Error GoTo 0
 '    Exit Sub
 '
-'readIconParams_Error:
+'readIconParamsFromDb_Error:
 '
 '    With Err
 '         If .Number <> 0 Then
-'            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconParams of Module common"
+'            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readIconParamsFromDb of Module common"
 '            Resume Next
 '          End If
 '    End With

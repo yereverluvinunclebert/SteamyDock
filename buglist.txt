@@ -2,7 +2,8 @@
 
   See Finished Changes at END
 
-  sDockIcons.Item(CStr(useloop)).disabled
+  initiatedExplorerArray
+  sDockIcons.Item(CStr(selectedIconIndex)).filename
 
 Conversion and testing using Steamydock 32bit.
 ==============================================

@@ -1426,7 +1426,7 @@ Private Sub mnuAdmin_Click()
     On Error GoTo mnuAdmin_Click_Error
     
     'Call readIconData(selectedIconIndex)
-    readIconParams selectedIconIndex
+    'readIconParamsFromDb selectedIconIndex
         
     Call dock.fMouseUp(1) ' performs the equivalent of a 'left' click on the dock
 
@@ -1471,13 +1471,25 @@ mnuAppFolder_Click_Error:
 
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : mnuApplicationFolder_Click
+' Author    : beededea
+' Date      : 03/10/2026
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
 Private Sub mnuApplicationFolder_Click()
     Dim folderPath As String: folderPath = vbNullString
     Dim execStatus As Long: execStatus = 0 '  execStatus required as longPtr
     
-    'Call readIconData(selectedIconIndex)
-    'readIconParams selectedIconIndex ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
+    Dim sCommand As String
+    Dim sArguments As String
     
+    'Call readIconData(selectedIconIndex)
+    'readIconParamsFromDb selectedIconIndex ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
+    
+    On Error GoTo mnuApplicationFolder_Click_Error
+
     sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command ' read the icon property
     sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments ' read the icon property
     sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory ' read the icon property
@@ -1513,6 +1525,13 @@ Private Sub mnuApplicationFolder_Click()
             End If
         End If
     End If
+
+    On Error GoTo 0
+    Exit Sub
+
+mnuApplicationFolder_Click_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuApplicationFolder_Click of Form menuForm"
 
 End Sub
 
@@ -1737,9 +1756,49 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuCloneIcon_Click()
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+'    Dim sWorkingDirectory  As String
+'    Dim sShowCmd  As String
+'    Dim sOpenRunning  As String
+'    Dim sRunElevated  As String
+'    Dim sIsSeparator  As String
+'    Dim sUseContext  As String
+'    Dim sDockletFile  As String
+'    Dim sUseDialog  As String
+'    Dim sUseDialogAfter  As String
+'    Dim sQuickLaunch  As String
+'    Dim sAutoHideDock  As String
+'    Dim sSecondApp  As String
+'    Dim sRunSecondAppBeforehand  As String
+'    Dim sAppToTerminate As String
+'    Dim sDisabled  As String
+
     dock.Refresh
     
-    readIconParams selectedIconIndex
+    sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
+    sFileName2 = sDockIcons.Item(CStr(selectedIconIndex)).FileName2
+    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
+    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
+    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments
+    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
+    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
+    sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
+    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
+    sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
+    sDockletFile = "" ' sDockIcons.Item(CStr(selectedIconIndex)).DockletFile   ' error ?
+    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
+    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
+    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
+    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
+    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex)).SecondApp
+    sRunElevated = sDockIcons.Item(CStr(selectedIconIndex)).RunElevated
+    sRunSecondAppBeforehand = sDockIcons.Item(CStr(selectedIconIndex)).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex)).AppToTerminate
+    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
 
     ' the params will be removeable, they are actually removeable already.
     Call insertNewIconDataIntoCurrentPosition(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
@@ -1812,7 +1871,7 @@ Private Sub mnuDisableIcon_Click()
     
     ' load and cache transparent versions of the current images to the associated collections
     ' at small and large sizes.
-    If fFExists(sFilename) Then
+    If fFExists(sDockIcons.Item(CStr(selectedIconIndex)).FileName) Then
         resizeAndLoadImgToDict collLargeIcons, partialStringKey, sDockIcons.Item(CStr(selectedIconIndex)).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity
         resizeAndLoadImgToDict collSmallIcons, partialStringKey, sDockIcons.Item(CStr(selectedIconIndex)).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity
     End If
