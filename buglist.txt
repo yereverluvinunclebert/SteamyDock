@@ -4,6 +4,22 @@
 
   initiatedExplorerArray
 
+
+
+Private mIconHOffset As Long
+Private mIconVOffset As Long
+Private mIconHeight As Long
+Private mIconWidth As Long
+Private mIconIndex As Integer
+Private mIconOpacity As Integer
+Private mIconImageLarge As Long ' longPtr
+Private mIconImageSmall As Long ' longPtr
+Private mIconTransparentImageLarge As Long ' longPtr
+Private mIconTransparentImageSmall As Long ' longPtr
+Private mMarkedDirty As Boolean
+
+
+
 Conversion and testing using Steamydock 32bit.
 ==============================================
 
@@ -1090,3 +1106,9 @@ o Converted all public sVariables to icon class properties, eg.
  sRunSecondAppBeforehand
  sAppToTerminate
  sDisabled
+ 
+o Added the following new fields to the database:
+fIconProcessRunning
+fIconExplorerRunning
+fIconInitiatedProcess
+fIconInitiatedExplorer
