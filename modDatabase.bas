@@ -300,6 +300,11 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
     Dim sRunSecondAppBeforehand  As String
     Dim sAppToTerminate As String
     Dim sDisabled  As String
+    Dim sTargetExists As String
+    Dim sProcessRunning As String
+    Dim sExplorerRunning As String
+    Dim sInitiatedProcess As String
+    Dim sInitiatedExplorer As String
 
     'Dim a As Integer
 
@@ -354,6 +359,11 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
             sRunSecondAppBeforehand = sDockIcons.Item(CStr(thisKeyValue)).RunSecondAppBeforehand
             sAppToTerminate = sDockIcons.Item(CStr(thisKeyValue)).AppToTerminate
             sDisabled = sDockIcons.Item(CStr(thisKeyValue)).Disabled
+            sTargetExists = sDockIcons.Item(CStr(thisKeyValue)).TargetExists
+            sProcessRunning = sDockIcons.Item(CStr(thisKeyValue)).ProcessRunning
+            sExplorerRunning = sDockIcons.Item(CStr(thisKeyValue)).ExplorerRunning
+            sInitiatedProcess = sDockIcons.Item(CStr(thisKeyValue)).InitiatedProcess
+            sInitiatedExplorer = sDockIcons.Item(CStr(thisKeyValue)).InitiatedExplorer
         End If
 '
         ' animation properties not yet implemented
@@ -391,7 +401,12 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
             Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconRunSecondAppBeforehand", sRunSecondAppBeforehand)
             Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
             Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconDisabled", sDisabled)
-        
+            Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconTargetExists ", sTargetExists)
+            Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconProcessRunning", sProcessRunning)
+            Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconExplorerRunning", sExplorerRunning)
+            Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconInitiatedProcess", sInitiatedProcess)
+            Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconInitiatedExplorer", sInitiatedExplorer)
+
             ' no error count
             putIconSettingsIntoDatabase = 0
             
@@ -420,6 +435,11 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunSecondAppBeforehand", sRunSecondAppBeforehand)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconDisabled", sDisabled)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconTargetExists", sTargetExists)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconProcessRunning", sProcessRunning)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconExplorerRunning", sExplorerRunning)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconInitiatedProcess", sInitiatedProcess)
+            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconInitiatedExplorer", sInitiatedExplorer)
             
             ' no error count
             putIconSettingsIntoDatabase = 0
@@ -506,7 +526,7 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
     Dim sRunSecondAppBeforehand  As String
     Dim sAppToTerminate As String
     Dim sDisabled  As String
-'
+
     Dim DataSet As SQLiteDataSet
     
     On Error GoTo getIconSettingsFromDatabase_Error
@@ -1024,6 +1044,12 @@ Public Sub insertRecordsFromRandomDataFileIntoDatabase()
 '            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunSecondAppBeforehand", sRunSecondAppBeforehand)
 '            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
 '            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconDisabled", sDisabled)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconTargetExists", sTargetExists)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconTargetExists", sTargetExists)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconProcessRunning", sProcessRunning)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconExplorerRunning", sExplorerRunning)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconInitiatedProcess", sInitiatedProcess)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconInitiatedExplorer", sInitiatedExplorer)
             
         End With
         
@@ -1127,6 +1153,11 @@ Public Function getSingleFieldFromSingleRecord(ByVal fieldName As String, ByVal 
     If fieldName = "fIconRunSecondAppBeforehand" Then returnedValue = DataSet!fIconRunSecondAppBeforehand
     If fieldName = "fIconAppToTerminate" Then returnedValue = DataSet!fIconAppToTerminate
     If fieldName = "fIconDisabled" Then returnedValue = DataSet!fIconDisabled
+    If fieldName = "fIconTargetExists" Then returnedValue = DataSet!fIconTargetExists
+    If fieldName = "fIconProcessRunning" Then returnedValue = DataSet!fIconProcessRunning
+    If fieldName = "fIconExplorerRunning" Then returnedValue = DataSet!fIconExplorerRunning
+    If fieldName = "fIconInitiatedProcess" Then returnedValue = DataSet!fIconInitiatedProcess
+    If fieldName = "fIconInitiatedExplorer" Then returnedValue = DataSet!fIconInitiatedExplorer
     
     getSingleFieldFromSingleRecord = returnedValue
 

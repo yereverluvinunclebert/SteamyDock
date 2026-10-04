@@ -43,6 +43,7 @@ Private mRunElevated As String
 Private mRunSecondAppBeforehand As String
 Private mAppToTerminate As String
 Private mDisabled As String
+
 Private mTargetExists      As String
 Private mProcessRunning    As String
 Private mExplorerRunning   As String   ' contains true/false according to the running state of the associated process
