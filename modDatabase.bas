@@ -285,17 +285,17 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
     Dim sTitle  As String
     Dim sCommand  As String
     Dim sArguments  As String
-'    Dim sWorkingDirectory  As String
-'    Dim sShowCmd  As String
-'    Dim sOpenRunning  As String
-'    Dim sRunElevated  As String
-'    Dim sIsSeparator  As String
-'    Dim sUseContext  As String
-'    Dim sDockletFile  As String
-'    Dim sUseDialog  As String
-'    Dim sUseDialogAfter  As String
-'    Dim sQuickLaunch  As String
-'    Dim sAutoHideDock  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
 '    Dim sSecondApp  As String
 '    Dim sRunSecondAppBeforehand  As String
 '    Dim sAppToTerminate As String
@@ -388,7 +388,6 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
             Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconAutoHideDock", sAutoHideDock)
             Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
             Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconRunElevated", sRunElevated)
-            Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconRunElevated", sRunElevated)
             Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconRunSecondAppBeforehand", sRunSecondAppBeforehand)
             Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
             Call UPDATEFieldInSingleRecord(thisKeyValue, "fIconDisabled", sDisabled)
@@ -417,7 +416,6 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconQuickLaunch", sQuickLaunch)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAutoHideDock", sAutoHideDock)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunElevated", sRunElevated)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunElevated", sRunElevated)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunSecondAppBeforehand", sRunSecondAppBeforehand)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
@@ -493,17 +491,17 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
     Dim sTitle  As String
     Dim sCommand  As String
     Dim sArguments  As String
-'    Dim sWorkingDirectory  As String
-'    Dim sShowCmd  As String
-'    Dim sOpenRunning  As String
-'    Dim sRunElevated  As String
-'    Dim sIsSeparator  As String
-'    Dim sUseContext  As String
-'    Dim sDockletFile  As String
-'    Dim sUseDialog  As String
-'    Dim sUseDialogAfter  As String
-'    Dim sQuickLaunch  As String
-'    Dim sAutoHideDock  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
 '    Dim sSecondApp  As String
 '    Dim sRunSecondAppBeforehand  As String
 '    Dim sAppToTerminate As String
@@ -1011,19 +1009,18 @@ Public Sub insertRecordsFromRandomDataFileIntoDatabase()
             'Call INSERTFieldToSingleRecord(thisKeyValue, "fIconTitle", sTitle)
 '            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconCommand", sCommand)
 '            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconArguments", sArguments)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconWorkingDirectory", sWorkingDirectory)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconShowCmd", sShowCmd)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconOpenRunning", sOpenRunning)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconIsSeparator", sIsSeparator)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconUseContext", sUseContext)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconDockletFile", sDockletFile)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconUseDialog", sUseDialog)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconUseDialogAfter", sUseDialogAfter)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconQuickLaunch", sQuickLaunch)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAutoHideDock", sAutoHideDock)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconWorkingDirectory", sWorkingDirectory)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconShowCmd", sShowCmd)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconOpenRunning", sOpenRunning)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconIsSeparator", sIsSeparator)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconUseContext", sUseContext)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconDockletFile", sDockletFile)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconUseDialog", sUseDialog)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconUseDialogAfter", sUseDialogAfter)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconQuickLaunch", sQuickLaunch)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAutoHideDock", sAutoHideDock)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunElevated", sRunElevated)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunElevated", sRunElevated)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunElevated", sRunElevated)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunSecondAppBeforehand", sRunSecondAppBeforehand)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
             Call INSERTFieldToSingleRecord(thisKeyValue, "fIconDisabled", sDisabled)

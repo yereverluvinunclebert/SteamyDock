@@ -818,20 +818,20 @@ Public Sub zeroAllIconCharacteristics()
     'sTitle = vbNullString
 '    sCommand = vbNullString
 '    sArguments = vbNullString
-    sWorkingDirectory = vbNullString
-    sOpenRunning = "0"
-    sIsSeparator = "0"
-    sUseContext = "0"
-    sDockletFile = "0"
-    sUseDialog = "0"
-    sUseDialogAfter = "0"
-    sQuickLaunch = "0"
+'    sWorkingDirectory = vbNullString
+'    sOpenRunning = "0"
+'    sIsSeparator = "0"
+'    sUseContext = "0"
+'    sDockletFile = "0"
+'    sUseDialog = "0"
+'    sUseDialogAfter = "0"
+'    sQuickLaunch = "0"
     sDisabled = "0"
-    sAutoHideDock = "0"
+'    sAutoHideDock = "0"
     sSecondApp = vbNullString
     sRunSecondAppBeforehand = "0"
     sAppToTerminate = vbNullString
-    sRunElevated = "0"
+'    sRunElevated = "0"
 
    On Error GoTo 0
    Exit Sub

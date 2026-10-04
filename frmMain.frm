@@ -1586,17 +1586,17 @@ Public Sub fMouseUp(Button As Integer)
     Dim sTitle  As String
     Dim sCommand  As String
     Dim sArguments  As String
-'    Dim sWorkingDirectory  As String
-'    Dim sShowCmd  As String
-'    Dim sOpenRunning  As String
-'    Dim sRunElevated  As String
-'    Dim sIsSeparator  As String
-'    Dim sUseContext  As String
-'    Dim sDockletFile  As String
-'    Dim sUseDialog  As String
-'    Dim sUseDialogAfter  As String
-'    Dim sQuickLaunch  As String
-'    Dim sAutoHideDock  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
 '    Dim sSecondApp  As String
 '    Dim sRunSecondAppBeforehand  As String
 '    Dim sAppToTerminate As String
@@ -3867,10 +3867,22 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     Dim optionalParam As String: optionalParam = vbNullString
     
     Dim sArguments As String
-
+    Dim sWorkingDirectory As String
+    Dim sShowCmd As String
+    Dim sOpenRunning As String
+    Dim sRunElevated As String
+    Dim sIsSeparator As String
+    Dim sUseDialog As String
+    Dim sUseDialogAfter As String
+  
     'If debugflg = 1 Then debugLog "%runCommand"
     
     sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments
+    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
+    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
+    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
+    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
+    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
     
     If sRunElevated = "1" Then
         userLevel = "runas"
@@ -4139,8 +4151,13 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal thisCommand 
 
     Dim ans As VbMsgBoxResult: ans = vbNo
     Dim uShell As SHELLEXECUTEINFO
+    Dim sUseDialogAfter As String
+    Dim sAutoHideDock As String
     
     On Error GoTo shellExecuteWithDialog_Error
+   
+    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
+    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
    
     If windowState = 0 Then windowState = 1 ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
    
@@ -4239,8 +4256,14 @@ End Sub
 '
 Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState As Integer = 1, Optional targetType As String = "none")
 
-   On Error GoTo shellCommand_Error
+    Dim sUseDialogAfter As String
+    Dim sAutoHideDock As String
+    
+    On Error GoTo shellCommand_Error
         
+    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
+    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
+    
     '.nn Added new check box to allow autohide of the dock prior to launch of the chosen app
     If sAutoHideDock = "1" Then
         'MessageBox Me.hwnd, sTitle & " Hiding the dock ", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
@@ -4434,8 +4457,11 @@ End Sub
  Public Sub startRunTimer()
     Dim answer As VbMsgBoxResult: answer = vbNo
     Dim rmessage As String: rmessage = vbNullString
-    
+    Dim sUseDialog As String
+  
     On Error GoTo startRunTimer_Error
+  
+    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
     
     ' if the process to kill is named then kill it before running the main process associated with the icon
     
@@ -4562,8 +4588,11 @@ End Sub
 '
 Private Sub bounceDownTimer_Timer()
     Dim bvalue As Double: bvalue = 0
+    Dim sQuickLaunch As String
 
     On Error GoTo bounceDownTimer_Timer_Error
+    
+    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
     
     ' first type of animation using a tall double bounce
     If rDIconActivationFX = "1" Then
@@ -4629,9 +4658,13 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub bounceUpTimer_Timer()
-   On Error GoTo bounceUpTimer_Error
    
+    Dim sQuickLaunch As String
     Dim bvalue As Double: bvalue = 0
+  
+    On Error GoTo bounceUpTimer_Error
+   
+    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
     
     If rDIconActivationFX = "0" Then ' no icon animation at all
         bounceUpTimer.Enabled = False

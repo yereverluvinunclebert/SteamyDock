@@ -3,7 +3,30 @@
   See Finished Changes at END
 
   initiatedExplorerArray
-  sDockIcons.Item(CStr(selectedIconIndex)).filename
+
+  dim sAutoHideDock as string
+  sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
+
+  sarguments
+  sWorkingDirectory
+Public sShowCmd  As String
+Public sOpenRunning  As String
+Public sRunElevated  As String
+Public sIsSeparator  As String
+Public sUseContext  As String
+Public sDockletFile  As String
+Public sUseDialog  As String
+Public sUseDialogAfter  As String
+
+Public sQuickLaunch  As String
+
+
+Public sAutoHideDock  As String ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
+Public sSecondApp  As String ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+Public sRunSecondAppBeforehand  As String
+
+Public sAppToTerminate As String
+Public sDisabled  As String
 
 Conversion and testing using Steamydock 32bit.
 ==============================================

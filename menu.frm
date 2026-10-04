@@ -1484,6 +1484,7 @@ Private Sub mnuApplicationFolder_Click()
     
     Dim sCommand As String
     Dim sArguments As String
+    Dim sWorkingDirectory As String
     
     'Call readIconData(selectedIconIndex)
     'readIconParamsFromDb selectedIconIndex ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
@@ -1761,17 +1762,17 @@ Private Sub mnuCloneIcon_Click()
     Dim sTitle  As String
     Dim sCommand  As String
     Dim sArguments  As String
-'    Dim sWorkingDirectory  As String
-'    Dim sShowCmd  As String
-'    Dim sOpenRunning  As String
-'    Dim sRunElevated  As String
-'    Dim sIsSeparator  As String
-'    Dim sUseContext  As String
-'    Dim sDockletFile  As String
-'    Dim sUseDialog  As String
-'    Dim sUseDialogAfter  As String
-'    Dim sQuickLaunch  As String
-'    Dim sAutoHideDock  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
 '    Dim sSecondApp  As String
 '    Dim sRunSecondAppBeforehand  As String
 '    Dim sAppToTerminate As String
@@ -4797,6 +4798,7 @@ End Sub
 Private Sub mnuAddSeparator_click()
     Dim IconImage As String
     Dim iconFilename As String
+    Dim sIsSeparator As String
 
     On Error GoTo mnuAddSeparator_click_Error
     'If debugflg = 1 Then debugLog "mnuAddSeparator_click"
@@ -5174,6 +5176,8 @@ Private Function addTargetProgram(ByVal targetText As String) As String
     Dim retFileName As String: retFileName = vbNullString
     Dim retfileTitle As String: retfileTitle = vbNullString
     
+    Dim sDockletFile As String
+    
     Const x_MaxBuffer = 256
     
     'On Error GoTo addTargetProgram_Error
@@ -5183,6 +5187,8 @@ Private Function addTargetProgram(ByVal targetText As String) As String
     'savLblTarget = txtTarget.Text
     
     On Error Resume Next
+    
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).dockletfile
     
     ' set the default folder to the existing reference
     If Not targetText = vbNullString Then

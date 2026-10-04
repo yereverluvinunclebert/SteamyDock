@@ -1587,17 +1587,17 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     Dim sTitle  As String
     Dim sCommand  As String
     Dim sArguments  As String
-'    Dim sWorkingDirectory  As String
-'    Dim sShowCmd  As String
-'    Dim sOpenRunning  As String
-'    Dim sRunElevated  As String
-'    Dim sIsSeparator  As String
-'    Dim sUseContext  As String
-'    Dim sDockletFile  As String
-'    Dim sUseDialog  As String
-'    Dim sUseDialogAfter  As String
-'    Dim sQuickLaunch  As String
-'    Dim sAutoHideDock  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
 '    Dim sSecondApp  As String
 '    Dim sRunSecondAppBeforehand  As String
 '    Dim sAppToTerminate As String

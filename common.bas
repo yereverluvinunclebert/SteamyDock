@@ -175,18 +175,18 @@ Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hW
 'Public sTitle  As String
 'Public sCommand  As String
 'Public sArguments  As String
-Public sWorkingDirectory  As String
-Public sShowCmd  As String
-Public sOpenRunning  As String
-Public sRunElevated  As String
+'Public sWorkingDirectory  As String
+'Public sShowCmd  As String
+'Public sOpenRunning  As String
+'Public sRunElevated  As String
 
-Public sIsSeparator  As String
-Public sUseContext  As String
-Public sDockletFile  As String
-Public sUseDialog  As String
-Public sUseDialogAfter  As String ' .03 DAEB 31/01/2021 common.bas Added new checkbox to determine if a post initiation dialog should appear
-Public sQuickLaunch  As String ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
-Public sAutoHideDock  As String ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
+'Public sIsSeparator  As String
+'Public sUseContext  As String
+'Public sDockletFile  As String
+'Public sUseDialog  As String
+'Public sUseDialogAfter  As String ' .03 DAEB 31/01/2021 common.bas Added new checkbox to determine if a post initiation dialog should appear
+'Public sQuickLaunch  As String ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
+'Public sAutoHideDock  As String ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
 Public sSecondApp  As String ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
 Public sRunSecondAppBeforehand  As String
 
@@ -2525,6 +2525,7 @@ Public Function addTargetProgram(ByVal targetText As String) As String
     Dim dialogInitDir As String: dialogInitDir = vbNullString
     Dim retFileName As String: retFileName = vbNullString
     Dim retfileTitle As String: retfileTitle = vbNullString
+    Dim sDockletFile As String
     
     Const x_MaxBuffer = 256
     
@@ -2535,6 +2536,8 @@ Public Function addTargetProgram(ByVal targetText As String) As String
     'savLblTarget = txtTarget.Text
     
     'On Error Resume Next
+    
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).dockletfile
     
     ' set the default folder to the existing reference
     If Not targetText = vbNullString Then
