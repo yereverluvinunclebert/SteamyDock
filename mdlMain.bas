@@ -1598,10 +1598,10 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     Dim sUseDialogAfter  As String
     Dim sQuickLaunch  As String
     Dim sAutoHideDock  As String
-'    Dim sSecondApp  As String
-'    Dim sRunSecondAppBeforehand  As String
-'    Dim sAppToTerminate As String
-'    Dim sDisabled  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
 
     On Error GoTo insertNewIconDataIntoCurrentPosition_Error
     'If debugflg = 1 Then debugLog "%" & "insertNewIconDataIntoCurrentPosition"
@@ -1685,11 +1685,13 @@ End Sub
 Public Sub reassignArrayElements(ByVal thisArrayElement As Integer)
 
     Dim sCommand As String
+    Dim sDisabled As String
     
     On Error GoTo reassignArrayElements_Error
 
-    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
+    sCommand = sDockIcons.Item(CStr(thisArrayElement)).Command
     sDockIcons.Item(CStr(thisArrayElement)).TargetExists = "0"
+    sDisabled = sDockIcons.Item(CStr(thisArrayElement)).Disabled
 
     ' check to see if each process is running and store the result away
     If isExplorerRunning(sCommand) = True Then
@@ -2320,10 +2322,13 @@ Public Sub loadAdditionalImagestoDictionary()
 
     Dim themeName As String
     Dim imageOpacity As Integer: imageOpacity = 0
+    Dim sDisabled As String
     
     On Error GoTo loadAdditionalImagestoDictionary_Error
     
 '    If debugflg = 1 Then debugLog "%" & "loadAdditionalImagestoDictionary"
+    
+    sDisabled = "0" 'none of these images will be disabled
     
     themeName = vbNullString
             
@@ -2553,9 +2558,11 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
     Dim imageOpacity As Integer: imageOpacity = 0
     
     Dim sCommand As String
+    Dim sDisabled As String
 
     On Error GoTo addNewImageToDictionary_Error
     
+    'sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
     
     dictionaryLocationArrayUpperBound = iconArrayUpperBound + 1
 

@@ -1597,10 +1597,10 @@ Public Sub fMouseUp(Button As Integer)
     Dim sUseDialogAfter  As String
     Dim sQuickLaunch  As String
     Dim sAutoHideDock  As String
-'    Dim sSecondApp  As String
-'    Dim sRunSecondAppBeforehand  As String
-'    Dim sAppToTerminate As String
-'    Dim sDisabled  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
     
     'clicking on the 'blank' icons at the beginning and the end
     If selectedIconIndex = 0 Then Exit Sub
@@ -3874,6 +3874,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     Dim sIsSeparator As String
     Dim sUseDialog As String
     Dim sUseDialogAfter As String
+    Dim sDisabled As String
   
     'If debugflg = 1 Then debugLog "%runCommand"
     
@@ -3883,6 +3884,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
     sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
     sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
+    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
     
     If sRunElevated = "1" Then
         userLevel = "runas"
@@ -4458,10 +4460,16 @@ End Sub
     Dim answer As VbMsgBoxResult: answer = vbNo
     Dim rmessage As String: rmessage = vbNullString
     Dim sUseDialog As String
+    Dim sSecondApp As String
+    Dim sRunSecondAppBeforehand As String
+    Dim sAppToTerminate As String
   
     On Error GoTo startRunTimer_Error
   
     sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
+    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex)).SecondApp
+    sRunSecondAppBeforehand = sDockIcons.Item(CStr(selectedIconIndex)).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex)).AppToTerminate
     
     ' if the process to kill is named then kill it before running the main process associated with the icon
     
@@ -4556,8 +4564,13 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub delayRunTimer_Timer()
+
+    Dim sSecondApp As String
+    
     On Error GoTo delayRunTimer_Timer_Error
 
+    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex)).SecondApp
+    
     delayRunTimerCount = delayRunTimerCount + 1
     If delayRunTimerCount >= 1 Then
         delayRunTimer.Enabled = False
@@ -5233,6 +5246,7 @@ Public Sub prepareArraysAndCollections()
     Dim thisBitmap As Long
     
     Dim sFilename As String
+    Dim sDisabled As String
     
     On Error GoTo prepareArraysAndCollections_Error
     
@@ -5261,6 +5275,8 @@ Public Sub prepareArraysAndCollections()
         dictionaryLocationArray(useloop) = useloop
         'sTitleArray(useloop) = sTitle
         'sDockIcons.Item(CStr(useloop)).Command = sCommand
+        
+        sDisabled = sDockIcons.Item(CStr(useloop)).Disabled
         
         overallIconOpacity = Val(rDIconOpacity) ' overall icon opacity of all icons
 

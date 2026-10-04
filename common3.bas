@@ -826,11 +826,11 @@ Public Sub zeroAllIconCharacteristics()
 '    sUseDialog = "0"
 '    sUseDialogAfter = "0"
 '    sQuickLaunch = "0"
-    sDisabled = "0"
+'    sDisabled = "0"
 '    sAutoHideDock = "0"
-    sSecondApp = vbNullString
-    sRunSecondAppBeforehand = "0"
-    sAppToTerminate = vbNullString
+'    sSecondApp = vbNullString
+'    sRunSecondAppBeforehand = "0"
+'    sAppToTerminate = vbNullString
 '    sRunElevated = "0"
 
    On Error GoTo 0

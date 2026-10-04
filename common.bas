@@ -187,11 +187,11 @@ Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hW
 'Public sUseDialogAfter  As String ' .03 DAEB 31/01/2021 common.bas Added new checkbox to determine if a post initiation dialog should appear
 'Public sQuickLaunch  As String ' .10 DAEB 20/05/2021 common.bas Added new check box to allow a quick launch of the chosen app
 'Public sAutoHideDock  As String ' .12 DAEB 20/05/2021 common.bas Added new check box to allow autohide of the dock after launch of the chosen app
-Public sSecondApp  As String ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
-Public sRunSecondAppBeforehand  As String
+'Public sSecondApp  As String ' .11 DAEB 21/05/2021 common.bas Added new field for second program to be run
+'Public sRunSecondAppBeforehand  As String
 
-Public sAppToTerminate As String
-Public sDisabled  As String
+'Public sAppToTerminate As String
+'Public sDisabled  As String ' could be the issue
 
 ' Rocketdock icon global variables END
 

@@ -4,8 +4,8 @@
 
   initiatedExplorerArray
 
-  dim sAutoHideDock as string
-  sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
+  dim sAppToTerminate as string
+  sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex)).AppToTerminate
 
   sarguments
   sWorkingDirectory

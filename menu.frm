@@ -1773,10 +1773,10 @@ Private Sub mnuCloneIcon_Click()
     Dim sUseDialogAfter  As String
     Dim sQuickLaunch  As String
     Dim sAutoHideDock  As String
-'    Dim sSecondApp  As String
-'    Dim sRunSecondAppBeforehand  As String
-'    Dim sAppToTerminate As String
-'    Dim sDisabled  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
 
     dock.Refresh
     
@@ -1828,6 +1828,7 @@ Private Sub mnuDisableIcon_Click()
     Dim smallKey As String: smallKey = vbNullString
     Dim partialStringKey As String: partialStringKey = vbNullString
     Dim imageOpacity As Integer: imageOpacity = 0
+    Dim sDisabled As String
     
     dock.Refresh
     
@@ -5092,7 +5093,7 @@ End Sub
 ' Procedure : addImageToDictionaryAndCheckForRunningProcess
 ' Author    : beededeaand
 ' Date      : 02/05/2020
-' Purpose   :
+' Purpose   : used by all the right click menu options to add a new icon
 '---------------------------------------------------------------------------------------
 '
 Public Sub addImageToDictionaryAndCheckForRunningProcess(newFileName As String, newName As String)

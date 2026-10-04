@@ -296,10 +296,10 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
     Dim sUseDialogAfter  As String
     Dim sQuickLaunch  As String
     Dim sAutoHideDock  As String
-'    Dim sSecondApp  As String
-'    Dim sRunSecondAppBeforehand  As String
-'    Dim sAppToTerminate As String
-'    Dim sDisabled  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
 
     'Dim a As Integer
 
@@ -502,10 +502,10 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
     Dim sUseDialogAfter  As String
     Dim sQuickLaunch  As String
     Dim sAutoHideDock  As String
-'    Dim sSecondApp  As String
-'    Dim sRunSecondAppBeforehand  As String
-'    Dim sAppToTerminate As String
-'    Dim sDisabled  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
 '
     Dim DataSet As SQLiteDataSet
     
@@ -1019,11 +1019,11 @@ Public Sub insertRecordsFromRandomDataFileIntoDatabase()
 '            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconUseDialogAfter", sUseDialogAfter)
 '            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconQuickLaunch", sQuickLaunch)
 '            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAutoHideDock", sAutoHideDock)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconSecondApp", sSecondApp)
 '            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunElevated", sRunElevated)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunSecondAppBeforehand", sRunSecondAppBeforehand)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
-            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconDisabled", sDisabled)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconRunSecondAppBeforehand", sRunSecondAppBeforehand)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconAppToTerminate", sAppToTerminate)
+'            Call INSERTFieldToSingleRecord(thisKeyValue, "fIconDisabled", sDisabled)
             
         End With
         
