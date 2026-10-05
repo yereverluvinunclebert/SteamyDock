@@ -5958,8 +5958,8 @@ Private Sub createIconDictionaryCollections()
 '    collSmallTransparentIcons.CompareMode = 1 'case-insenitive Key-Comparisons
     
     ' dictionary to contain the icons (will eventually replace the above image dictionaries)
-    Set sDockIcons = New Dictionary
-    sDockIcons.CompareMode = 1 'case-insenitive Key-Comparisons
+    Set sDockIcons = New Collection
+    'sDockIcons.CompareMode = 1 'case-insenitive Key-Comparisons
 
    On Error GoTo 0
    Exit Sub

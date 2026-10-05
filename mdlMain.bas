@@ -2919,7 +2919,9 @@ Public Function updateDisplayFromDictionary(thisCollection As Dictionary, strFil
    On Error GoTo updateDisplayFromDictionary_Error
 
     ' get the stored image from the collection if it exists
-    If thisCollection(Key) <> 0 Then
+    'If IconExists(thisCollection, Key) = True Then
+    
+    If thisCollection(Key) <> 0 Then ' scripting.dictionary
         iconBitmap = thisCollection(Key)
     Else
         Exit Function

@@ -256,19 +256,35 @@ closeDatabase_Error:
 End Sub
 
 
-'Private Function IconExists(ByVal Icons As Collection, _
-'                            ByVal Key As String) As Boolean
-'    Dim Icon As cIcon
+'---------------------------------------------------------------------------------------
+' Procedure : IconExists
+' Author    : chatGPT and the world
+' Date      : 05/10/2026
+' Purpose   : implements a
+'---------------------------------------------------------------------------------------
 '
-'    On Error GoTo NotFound
-'
-'    Set Icon = Icons(Key)
-'    IconExists = True
-'    Exit Function
-'
-'NotFound:
-'    IconExists = False
-'End Function
+Public Function IconExists(ByVal iCons As Collection, _
+                            ByVal Key As String) As Boolean
+    
+    ' class object instantiated
+    Dim thisIcon As cwMainIcon
+    
+    On Error GoTo NotFound
+
+    Set thisIcon = iCons(Key)
+    IconExists = True
+    Exit Function
+
+NotFound:
+    IconExists = False
+
+    On Error GoTo 0
+    Exit Function
+
+IconExists_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure IconExists of Module modDatabase"
+End Function
 
 '
 '---------------------------------------------------------------------------------------
@@ -327,11 +343,16 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
 '            Exit Function
 '        End If
     
-        'assign the temporary 's' variables from the icon properties, they will be gone soon and we can remove this interim state
+        'assign the temporary 's' variables from the icon properties.
         ' retain the svariables as local vars - useful here
-        If sDockIcons.Exists(CStr(thisKeyValue)) = False Then
+        
+        If IconExists(sDockIcons, thisKeyValue) = False Then ' using a VB6 collection
+        ' If sDockIcons.Exists(thisKeyValue) = false Then ' a scripting.dictionary
+        
             Set sIcon = New cwMainIcon
-            sDockIcons.Add thisKeyValue, sIcon
+            
+            'sDockIcons.Add thisKeyValue, sIcon ' Cristian Buse or scripting.dictionary
+            sDockIcons.Add sIcon, thisKeyValue ' using a VB6 collection
         Else
 
             sFilename = sDockIcons.Item(CStr(thisKeyValue)).FileName
@@ -584,37 +605,65 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
         sIcon.AppToTerminate = sAppToTerminate
         sIcon.Disabled = sDisabled
         
-        ' add the icon to the dock icons dictionary collection
-        If sDockIcons.Exists(thisKeyValue) Then
+        If IconExists(sDockIcons, thisKeyValue) = True Then ' using a VB6 collection
+        ' If sDockIcons.Exists(thisKeyValue) Then ' a scripting.dictionary
             sDockIcons.Remove thisKeyValue
         End If
-        sDockIcons.Add thisKeyValue, sIcon
+        
+        ' add the icon to the dock icons dictionary collection
+        'sDockIcons.Add thisKeyValue, sIcon ' Cristian Buse or scripting collection
+        sDockIcons.Add sIcon, thisKeyValue ' using a VB6 collection
     Else
     
         'otherwise we just write the existing items in the dictonary
     
-        sDockIcons.Item(thisKeyValue).KeyValue = thisKeyValue
+'        ' using a scripting.dictionary
+
+'        sDockIcons.Item(thisKeyValue).KeyValue = thisKeyValue
+'        sDockIcons.Item(thisKeyValue).FileName = sFilename
+'        sDockIcons.Item(thisKeyValue).FileName2 = sFileName2
+'        sDockIcons.Item(thisKeyValue).Title = sTitle
+'        sDockIcons.Item(thisKeyValue).Command = sCommand
+'        sDockIcons.Item(thisKeyValue).Arguments = sArguments
+'        sDockIcons.Item(thisKeyValue).WorkingDirectory = sWorkingDirectory
+'        sDockIcons.Item(thisKeyValue).ShowCmd = (sShowCmd)
+'        sDockIcons.Item(thisKeyValue).OpenRunning = (sOpenRunning)
+'        sDockIcons.Item(thisKeyValue).IsSeparator = (sIsSeparator)
+'        sDockIcons.Item(thisKeyValue).UseContext = (sUseContext)
+'        sDockIcons.Item(thisKeyValue).DockletFile = (sDockletFile) ' error ?
+'        sDockIcons.Item(thisKeyValue).UseDialog = (sUseDialog)
+'        sDockIcons.Item(thisKeyValue).UseDialogAfter = (sUseDialogAfter)
+'        sDockIcons.Item(thisKeyValue).QuickLaunch = (sQuickLaunch)
+'        sDockIcons.Item(thisKeyValue).AutoHideDock = (sAutoHideDock)
+'        sDockIcons.Item(thisKeyValue).SecondApp = sSecondApp
+'        sDockIcons.Item(thisKeyValue).RunElevated = (sRunElevated)
+'        sDockIcons.Item(thisKeyValue).RunSecondAppBeforehand = sRunSecondAppBeforehand
+'        sDockIcons.Item(thisKeyValue).AppToTerminate = sAppToTerminate
+'        sDockIcons.Item(thisKeyValue).Disabled = (sDisabled)
         
-        sDockIcons.Item(thisKeyValue).FileName = sFilename
-        sDockIcons.Item(thisKeyValue).FileName2 = sFileName2
-        sDockIcons.Item(thisKeyValue).Title = sTitle
-        sDockIcons.Item(thisKeyValue).Command = sCommand
-        sDockIcons.Item(thisKeyValue).Arguments = sArguments
-        sDockIcons.Item(thisKeyValue).WorkingDirectory = sWorkingDirectory
-        sDockIcons.Item(thisKeyValue).ShowCmd = (sShowCmd)
-        sDockIcons.Item(thisKeyValue).OpenRunning = (sOpenRunning)
-        sDockIcons.Item(thisKeyValue).IsSeparator = (sIsSeparator)
-        sDockIcons.Item(thisKeyValue).UseContext = (sUseContext)
-        sDockIcons.Item(thisKeyValue).DockletFile = (sDockletFile) ' error ?
-        sDockIcons.Item(thisKeyValue).UseDialog = (sUseDialog)
-        sDockIcons.Item(thisKeyValue).UseDialogAfter = (sUseDialogAfter)
-        sDockIcons.Item(thisKeyValue).QuickLaunch = (sQuickLaunch)
-        sDockIcons.Item(thisKeyValue).AutoHideDock = (sAutoHideDock)
-        sDockIcons.Item(thisKeyValue).SecondApp = sSecondApp
-        sDockIcons.Item(thisKeyValue).RunElevated = (sRunElevated)
-        sDockIcons.Item(thisKeyValue).RunSecondAppBeforehand = sRunSecondAppBeforehand
-        sDockIcons.Item(thisKeyValue).AppToTerminate = sAppToTerminate
-        sDockIcons.Item(thisKeyValue).Disabled = (sDisabled)
+        ' using a VB6 collection
+        
+        sDockIcons(thisKeyValue).KeyValue = thisKeyValue
+        sDockIcons(thisKeyValue).FileName = sFilename
+        sDockIcons(thisKeyValue).FileName2 = sFileName2
+        sDockIcons(thisKeyValue).Title = sTitle
+        sDockIcons(thisKeyValue).Command = sCommand
+        sDockIcons(thisKeyValue).Arguments = sArguments
+        sDockIcons(thisKeyValue).WorkingDirectory = sWorkingDirectory
+        sDockIcons(thisKeyValue).ShowCmd = (sShowCmd)
+        sDockIcons(thisKeyValue).OpenRunning = (sOpenRunning)
+        sDockIcons(thisKeyValue).IsSeparator = (sIsSeparator)
+        sDockIcons(thisKeyValue).UseContext = (sUseContext)
+        sDockIcons(thisKeyValue).DockletFile = (sDockletFile) ' error ?
+        sDockIcons(thisKeyValue).UseDialog = (sUseDialog)
+        sDockIcons(thisKeyValue).UseDialogAfter = (sUseDialogAfter)
+        sDockIcons(thisKeyValue).QuickLaunch = (sQuickLaunch)
+        sDockIcons(thisKeyValue).AutoHideDock = (sAutoHideDock)
+        sDockIcons(thisKeyValue).SecondApp = sSecondApp
+        sDockIcons(thisKeyValue).RunElevated = (sRunElevated)
+        sDockIcons(thisKeyValue).RunSecondAppBeforehand = sRunSecondAppBeforehand
+        sDockIcons(thisKeyValue).AppToTerminate = sAppToTerminate
+        sDockIcons(thisKeyValue).Disabled = (sDisabled)
         
 
 '        sIcon.KeyValue = thisKeyValue

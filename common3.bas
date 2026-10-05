@@ -7,7 +7,7 @@ Option Explicit
 ' Represents a standard OLE picture object used to manage/identify bitmaps, icons, or metafiles
 Public Const IID_IPicture As String = "{7BF80980-BF32-101A-8BBB-00AA00300CAB}"
 
-Public sDockIcons As Dictionary
+Public sDockIcons As Collection
 
 ' class objects instantiated
 Public sIcon As New cwMainIcon
@@ -862,7 +862,7 @@ Public Sub writeIconStateToDatabase()
     Dim EndTime As Date
     Dim duration As Long: duration = 0
 
-    If startTime = "00:00:00" Then startTime = Time()
+    If startTime = "00:00:00" Then startTime = time()
 
     startRecord = 1
 
@@ -874,7 +874,7 @@ Public Sub writeIconStateToDatabase()
     Next useloop
 
     ' calculate the write timing variables and report
-    EndTime = Time()
+    EndTime = time()
     duration = DateDiff("s", startTime, EndTime)
     debugLog "Written settings to file - Done. " & rdIconUpperBound & " records, last run taking " & duration & " seconds "
 
