@@ -332,7 +332,7 @@ End Sub
 '         ' get the relevant entries from the registry
 '         readRegistryIconValues (useloop)
 '         ' write the rocketdock alternative settings.ini
-'         Call writeIconSettingsIni(useloop, settingsFile)
+'         Call writeIconSettingsDb(useloop, settingsFile)
 '     Next useloop
 '
 '
@@ -532,7 +532,7 @@ Public Function GetShortcutInfo(Path As String, Shortcut As Link) As Boolean
     Dim IntValue As Integer: IntValue = 0
     Dim LinkFlags As Long: LinkFlags = 0
     Dim NextPtr As Long: NextPtr = 0
-    Dim Ptr(6) As Long ': Text = 0
+    Dim ptr(6) As Long ': Text = 0
     Dim Idx As Integer: Idx = 0
     Dim PtrBasePath As Long: PtrBasePath = 0
     Dim PtrNetworkVolumeInfo As Long: PtrNetworkVolumeInfo = 0
@@ -551,7 +551,7 @@ Public Function GetShortcutInfo(Path As String, Shortcut As Link) As Boolean
         .CustomIcon = vbNullString
     End With
     For Idx = 0 To 6
-        Ptr(Idx) = 0
+        ptr(Idx) = 0
     Next
     
     ' Open file with .lnk extension
@@ -862,7 +862,7 @@ Public Sub writeIconStateToDatabase()
     Dim EndTime As Date
     Dim duration As Long: duration = 0
 
-    If startTime = "00:00:00" Then startTime = time()
+    If startTime = "00:00:00" Then startTime = Time()
 
     startRecord = 1
 
@@ -874,7 +874,7 @@ Public Sub writeIconStateToDatabase()
     Next useloop
 
     ' calculate the write timing variables and report
-    EndTime = time()
+    EndTime = Time()
     duration = DateDiff("s", startTime, EndTime)
     debugLog "Written settings to file - Done. " & rdIconUpperBound & " records, last run taking " & duration & " seconds "
 

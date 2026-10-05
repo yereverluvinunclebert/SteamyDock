@@ -1759,7 +1759,7 @@ End Sub
 Private Sub mnuCloneIcon_Click()
     Dim sFilename As String
     Dim sFileName2 As String
-    Dim sTitle  As String
+    Dim sTitle As String
     Dim sCommand  As String
     Dim sArguments  As String
     Dim sWorkingDirectory  As String
@@ -1790,7 +1790,7 @@ Private Sub mnuCloneIcon_Click()
     sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
     sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
     sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
-    sDockletFile = "" ' sDockIcons.Item(CStr(selectedIconIndex)).DockletFile   ' error ?
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
     sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
     sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
     sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
@@ -5189,7 +5189,7 @@ Private Function addTargetProgram(ByVal targetText As String) As String
     
     On Error Resume Next
     
-    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).dockletfile
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
     
     ' set the default folder to the existing reference
     If Not targetText = vbNullString Then

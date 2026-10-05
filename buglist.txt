@@ -2,23 +2,6 @@
 
   See Finished Changes at END
 
-  initiatedExplorerArray
-
-
-
-Private mIconHOffset As Long
-Private mIconVOffset As Long
-Private mIconHeight As Long
-Private mIconWidth As Long
-Private mIconIndex As Integer
-Private mIconOpacity As Integer
-Private mIconImageLarge As Long ' longPtr
-Private mIconImageSmall As Long ' longPtr
-Private mIconTransparentImageLarge As Long ' longPtr
-Private mIconTransparentImageSmall As Long ' longPtr
-Private mMarkedDirty As Boolean
-
-
 
 Conversion and testing using Steamydock 32bit.
 ==============================================
@@ -29,21 +12,24 @@ Conversion and testing using Steamydock 32bit.
 
 Overall status - Working, a good learning platform and the dock functions.
 
-o New graphics method using an icon class for the all the icons and a collection for same
+o New graphics method to be devised using an icon class for the all the icons and a collection for same
   Test project -  transparent Cairo.
-  Current state - all icons can store their properties within an icon keyed by name from a VBA scripting collection, working with the old method in duplicate whilst we migrate.
-  Second stage not yet started - to animate all the icons adn eliminate the serialised nature of the existing code.
+  Current state - all icons can store their properties within an icon keyed by name from a VBA scripting collection
+  Second stage not yet started - to animate all the icons and eliminate the serialised nature of the existing code.
 
 o Changing to WDL to prepare for 64bit compilation - module by module.
 
 o Need to test SteamyDock working with the iconSettings utility also using SQLite database at the same time, modifying the same data testing for conflicts &c WIP - working!
 o Possible RAM leak or SQL eating up the RAM slowly WIP
-o A Few bugs overall, deletion and drag/drop can be slowish to complete. New animations required. Multi-monitor.
+o A Few bugs overall, 
+  Deletion and drag/drop can be slowish to complete - will be resolved by a VBA collection
+  New animations required - starting to resolve using the icon properties class
+  Multi-monitor
 
 o cwMainIcon shared across SD and iconSettings
 
 o Replace all the scripting.dictionary /Cristian Buse's VBA alternative code with TB collections, faster and capable of loading PNGs without all the GDI+ stuff. Cross platform.
-o Replace the scripting.dictionary with a collection
+o replace the insert, delete reassembly of scripting collections with VB6 collection /before /after allowing insertion of records
 
 Dim employees As New Collection
 
@@ -53,23 +39,7 @@ employees.Add Item:="Jane Smith", Key:="Emp3"
 ' Insert Bob before Jane Smith using her key
 employees.Add Item:="Bob Jones", Key:="Emp1", Before:="Emp3"
 
-o replace the insetr, delete reassembly of scripting collections with VB6 collection /before /after allowing insertion of records
 o Test the TwinBasic collection as a replacement as it takes PNGS by default - would reduce some of the dependency on GDI+
-
-' convert these arrays to icon properties
-
-           ' read the two main icon variables into arrays, one for each
-            sFileNameArray(useloop) = sFilename
-            sTitleArray(useloop) = sTitle
-            sCommandArray(useloop) = sCommand
-
-            replace these arrays above with the sIcon collection lookup
-
-            targetExistsArray(useloop) = 0
-            explorerCheckArray(useloop) = isExplorerRunning(sCommand)
-            processCheckArray(useloop) = IsRunning(sCommand)
-
-            ' the above might be optimised using the sIcon collection lookups
 
 ' Current Tasks:
 ' =============
@@ -115,6 +85,12 @@ multi-monitor support
 
 64 bit SQL lite - https://www.sqlite.org/download.html
 ' convert SD to 64 bit using TB - will need a 64bit version of SQL DLL.
+
+Adding fields to the database
+=============================
+
+A manual task achieved either by modifying the SQL or using the DB SQL Browser to modify the fIcon table and adding new text fields
+Then changes to the VB6 database routines and thwe corresponding addition of properties within the icon class
 
 Synchronising the three applications. We can use any of these options:
 =======================================================================
@@ -1106,9 +1082,3 @@ o Converted all public sVariables to icon class properties, eg.
  sRunSecondAppBeforehand
  sAppToTerminate
  sDisabled
- 
-o Added the following new fields to the database:
-fIconProcessRunning
-fIconExplorerRunning
-fIconInitiatedProcess
-fIconInitiatedExplorer

@@ -33,7 +33,7 @@ Private mShowCmd As String
 Private mOpenRunning As String
 Private mIsSeparator As String
 Private mUseContext As String
-'Private mDockletFile As string
+Private mDockletFile As String
 Private mUseDialog As String
 Private mUseDialogAfter As String
 Private mQuickLaunch As String
@@ -551,44 +551,44 @@ End Property
 
 
 '
-''---------------------------------------------------------------------------------------
-'' Property  : DockletFile
-'' Author    : beededea
-'' Date      : 20/11/2025
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Public Property Get DockletFile() As string
-'   On Error GoTo DockletFileGet_Error
+'---------------------------------------------------------------------------------------
+' Property  : DockletFile
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
 '
-'   DockletFile = mDockletFile
+Public Property Get DockletFile() As String
+   On Error GoTo DockletFileGet_Error
+
+   DockletFile = mDockletFile
+
+   On Error GoTo 0
+   Exit Property
+
+DockletFileGet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property DockletFile of Class Module cwIcon"
+End Property
+'---------------------------------------------------------------------------------------
+' Property  : DockletFile
+' Author    : beededea
+' Date      : 20/11/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
 '
-'   On Error GoTo 0
-'   Exit Property
-'
-'DockletFileGet_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property DockletFile of Class Module cwIcon"
-'End Property
-''---------------------------------------------------------------------------------------
-'' Property  : DockletFile
-'' Author    : beededea
-'' Date      : 20/11/2025
-'' Purpose   :
-''---------------------------------------------------------------------------------------
-''
-'Public Property Let DockletFile(ByVal newValue As string)
-'   On Error GoTo DockletFileLet_Error
-'
-'    If mDockletFile <> newValue Then mDockletFile = newValue Else Exit Property
-'
-'   On Error GoTo 0
-'   Exit Property
-'
-'DockletFileLet_Error:
-'
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property DockletFile of Class Module cwIcon"
-'End Property
+Public Property Let DockletFile(ByVal newValue As String)
+   On Error GoTo DockletFileLet_Error
+
+    If mDockletFile <> newValue Then mDockletFile = newValue Else Exit Property
+
+   On Error GoTo 0
+   Exit Property
+
+DockletFileLet_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property DockletFile of Class Module cwIcon"
+End Property
 
 '
 '---------------------------------------------------------------------------------------

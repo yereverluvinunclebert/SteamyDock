@@ -1623,7 +1623,7 @@ Public Sub fMouseUp(Button As Integer)
     sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
     sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
     sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
-    sDockletFile = "" ' sDockIcons.Item(CStr(selectedIconIndex)).DockletFile   ' error ?
+    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile   ' error ?"
     sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
     sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
     sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch

@@ -573,7 +573,7 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
         sIcon.OpenRunning = sOpenRunning
         sIcon.IsSeparator = sIsSeparator
         sIcon.UseContext = sUseContext
-        'sIcon.DockletFile = sDockletFile ' error ?
+        sIcon.DockletFile = sDockletFile ' error ?
         sIcon.UseDialog = sUseDialog
         sIcon.UseDialogAfter = sUseDialogAfter
         sIcon.QuickLaunch = sQuickLaunch
@@ -605,7 +605,7 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
         sDockIcons.Item(thisKeyValue).OpenRunning = (sOpenRunning)
         sDockIcons.Item(thisKeyValue).IsSeparator = (sIsSeparator)
         sDockIcons.Item(thisKeyValue).UseContext = (sUseContext)
-        'sDockIcons.Item(thisKeyValue).DockletFile = (sDockletFile) ' error ?
+        sDockIcons.Item(thisKeyValue).DockletFile = (sDockletFile) ' error ?
         sDockIcons.Item(thisKeyValue).UseDialog = (sUseDialog)
         sDockIcons.Item(thisKeyValue).UseDialogAfter = (sUseDialogAfter)
         sDockIcons.Item(thisKeyValue).QuickLaunch = (sQuickLaunch)
