@@ -10,25 +10,30 @@ Conversion and testing using Steamydock 32bit.
 
 -oOo-
 
-Overall status - Working, a good learning platform and the dock functions.
+Overall status 
+==============
+  
+  Working, a good learning platform and the dock functions.
 
-o New graphics method to be devised using an icon class for the all the icons and a collection for same
-  Test project -  transparent Cairo.
-  Current state - all icons can store their properties within an icon keyed by name from a VBA scripting collection
-  Second stage not yet started - to animate all the icons and eliminate the serialised nature of the existing code.
+  All icons can store their properties within an icon keyed by name stored within a VB6 collection
+
+  All icon dictionaries have been converted to collections to allow eventual fast insertion and re-ordering
+
+  Re-ordering and insertion of icons is yet to be achieved
+
+  Third stage not yet started - to animate all the icons and eliminate the serialised nature of the existing code.
 
 o Changing to WDL to prepare for 64bit compilation - module by module.
 
 o Need to test SteamyDock working with the iconSettings utility also using SQLite database at the same time, modifying the same data testing for conflicts &c WIP - working!
 o Possible RAM leak or SQL eating up the RAM slowly WIP
-o A Few bugs overall, 
+o A Few bugs overall,
   Deletion and drag/drop can be slowish to complete - will be resolved by a VBA collection
   New animations required - starting to resolve using the icon properties class
   Multi-monitor
 
-o cwMainIcon shared across SD and iconSettings
+o cwMainIcon shared across SD and iconSettings WIP
 
-o Replace all the scripting.dictionary /Cristian Buse's VBA alternative code with TB collections, faster and capable of loading PNGs without all the GDI+ stuff. Cross platform.
 o replace the insert, delete reassembly of scripting collections with VB6 collection /before /after allowing insertion of records
 
 Dim employees As New Collection
@@ -39,7 +44,15 @@ employees.Add Item:="Jane Smith", Key:="Emp3"
 ' Insert Bob before Jane Smith using her key
 employees.Add Item:="Bob Jones", Key:="Emp1", Before:="Emp3"
 
-o Test the TwinBasic collection as a replacement as it takes PNGS by default - would reduce some of the dependency on GDI+
+o Test the disable the Icon menu option.
+
+o Test all the VB6 collections with TB's own implementation of collections, faster.
+
+o Test TB's loading of PNGs without all the GDI+ stuff. So, this will be cross platform.
+
+o New graphics method to be devised using an icon class for the all the icons and a collection for same
+  Test project - transparent Cairo.
+
 
 ' Current Tasks:
 ' =============
@@ -1082,3 +1095,5 @@ o Converted all public sVariables to icon class properties, eg.
  sRunSecondAppBeforehand
  sAppToTerminate
  sDisabled
+
+ o replace all the scripting collections with VB6 collections

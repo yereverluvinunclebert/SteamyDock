@@ -260,17 +260,24 @@ End Sub
 ' Procedure : iconExists
 ' Author    : chatGPT and the world
 ' Date      : 05/10/2026
-' Purpose   : tests for existence of an icon object using the key
+' Purpose   : Tests for existence of an icon object within a VB6 collection using the key.
+'             Note: A Collection doesn't have a in-built exists method because the fundamental identity
+'             of a collection element is its position in the collection. The key is merely an optional property.
+'             Whereas, a dictionary has a key, and associated with that key is merely a series of values so it provides
+'             an .exists method on the key 'naturally'.
+'
 '---------------------------------------------------------------------------------------
 '
 Public Function iconExists(ByVal thiscollection As Collection, ByVal Key As String) As Boolean
 
-    ' icon class object instantiated
+    ' icon class object instantiated for the test
     Dim thisIcon As cwMainIcon
 
     On Error GoTo NotFound
 
-    ' tests for existence of an icon object using the key
+    ' tests for existence of an 'icon' object using the key, if it errors then the key is not found
+    ' (old-school COM/VB design)
+    
     Set thisIcon = thiscollection.Item(Key)
     iconExists = True
     Exit Function
@@ -291,7 +298,7 @@ End Function
 ' Procedure : itemExists
 ' Author    : beededea
 ' Date      : 06/10/2026
-' Purpose   : tests for existence of an collection object using the key
+' Purpose   : tests for existence of an collection object using the key, see iconExists above
 '---------------------------------------------------------------------------------------
 '
 Public Function itemExists(ByRef thiscollection As Collection, ByVal Key As String) As Boolean
@@ -367,6 +374,9 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
         ' If sDockIcons.Exists(thisKeyValue) = false Then ' a scripting.dictionary
         
             Set sIcon = New cwMainIcon
+            
+            ' In the .ADD method the parameters are transposed due to the differences in approach for a scripting.dictionary vs a collection
+            ' in a dictionary the key is key! In a collection it is the position, the key is merely a property.
             
             'sDockIcons.Add thisKeyValue, sIcon ' Cristian Buse VBA dictionary or scripting.dictionary
             sDockIcons.Add sIcon, thisKeyValue ' using a VB6 collection
@@ -618,6 +628,9 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
         ' If sDockIcons.Exists(thisKeyValue) Then ' a scripting.dictionary
             sDockIcons.Remove thisKeyValue
         End If
+    
+        ' In the .ADD method the parameters are transposed due to the differences in approach for a scripting.dictionary vs a collection
+        ' in a dictionary the key is key! In a collection it is the position, the key is merely a property.
         
         ' add the icon to the dock icons dictionary collection
         'sDockIcons.Add thisKeyValue, sIcon ' Cristian Buse or scripting collection

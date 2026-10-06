@@ -2669,7 +2669,7 @@ End Sub
 
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-Public Function resizeAndLoadImgToDict(ByRef thisCollection As Collection, ByVal Key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, Optional ByVal fullStringKey As String = "", Optional ByVal imageOpacity As Integer) As Long
+Public Function resizeAndLoadImgToDict(ByRef thiscollection As Collection, ByVal Key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, Optional ByVal fullStringKey As String = "", Optional ByVal imageOpacity As Integer) As Long
 
     Dim thiskey As String
     Dim saveStatus As Boolean
@@ -2757,10 +2757,10 @@ Public Function resizeAndLoadImgToDict(ByRef thisCollection As Collection, ByVal
 '    thisDictionary.Add thiskey, iconBitmap
     
     ' add the bitmap to the native VB6 collection
-    If itemExists(thisCollection, thiskey) = True Then ' using a VB6 collection that doesn't have an .Exists method
-        thisCollection.Remove thiskey
+    If itemExists(thiscollection, thiskey) = True Then ' using a VB6 collection that doesn't have an .Exists method as
+        thiscollection.Remove thiskey
     End If
-    thisCollection.Add iconBitmap, thiskey ' using a VB6 collection
+    thiscollection.Add iconBitmap, thiskey ' using a VB6 collection
     
     resizeAndLoadImgToDict = iconBitmap
     
@@ -2924,13 +2924,13 @@ End Function
 ' Purpose   : This utility displays using GDI+, one of several icon images stored in a dictionary collection by key.
 '---------------------------------------------------------------------------------------
 '
-Public Function updateDisplayFromDictionary(thisCollection As Collection, strFilename As String, ByVal Key As String, Optional Left As Long = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1) As Boolean
+Public Function updateDisplayFromDictionary(thiscollection As Collection, strFilename As String, ByVal Key As String, Optional Left As Long = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1) As Boolean
 
    On Error GoTo updateDisplayFromDictionary_Error
 
     ' get the stored image from the collection if it exists
-    If itemExists(thisCollection, Key) = True Then
-        iconBitmap = thisCollection(Key)
+    If itemExists(thiscollection, Key) = True Then
+        iconBitmap = thiscollection(Key)
     Else
         Exit Function
     End If
