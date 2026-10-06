@@ -5937,17 +5937,18 @@ Private Sub createIconDictionaryCollections()
    
     ' dictionary for the larger icons
     'Set collLargeIcons = CreateObject("Scripting.Dictionary")
+    ' Set collLargeIcons = New Dictionary
     
-    Set collLargeIcons = New Dictionary
+    Set collLargeIcons = New Collection
     
-    collLargeIcons.CompareMode = 1 'case-insenitive Key-Comparisons
+    'collLargeIcons.CompareMode = 1 'case-insenitive Key-Comparisons only for scripting dictionary
     
     'dictionary for the smaller icons
     'Set collSmallIcons = CreateObject("Scripting.Dictionary")
     
-    Set collSmallIcons = New Dictionary
+    Set collSmallIcons = New Collection
     
-    collSmallIcons.CompareMode = 1 'case-insenitive Key-Comparisons
+    'collSmallIcons.CompareMode = 1 'case-insenitive Key-Comparisons
         
 '    'third temporary dictionary that is used for temporary storage whilst generating large sized, transparent disabled images on the fly
 '    Set collLargeTransparentIcons = CreateObject("Scripting.Dictionary")
@@ -5959,7 +5960,7 @@ Private Sub createIconDictionaryCollections()
     
     ' dictionary to contain the icons (will eventually replace the above image dictionaries)
     Set sDockIcons = New Collection
-    'sDockIcons.CompareMode = 1 'case-insenitive Key-Comparisons
+    'sDockIcons.CompareMode = 1 'case-insenitive Key-Comparisons only for scripting dictionary
 
    On Error GoTo 0
    Exit Sub

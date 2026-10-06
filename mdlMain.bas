@@ -514,8 +514,12 @@ Public bmpInfo As BITMAPINFO
 'Public collLargeIcons As Object
 'Public collSmallIcons As Object
 
-Public collLargeIcons As Dictionary
-Public collSmallIcons As Dictionary
+'Public collLargeIcons As Dictionary
+'Public collSmallIcons As Dictionary
+
+Public collLargeIcons As Collection
+Public collSmallIcons As Collection
+
 
 
 'Public GetDataSinceUpdateCounter As Object
@@ -2665,7 +2669,7 @@ End Sub
 
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Dictionary, ByVal Key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, Optional ByVal fullStringKey As String = "", Optional ByVal imageOpacity As Integer) As Long
+Public Function resizeAndLoadImgToDict(ByRef thisCollection As Collection, ByVal Key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, Optional ByVal fullStringKey As String = "", Optional ByVal imageOpacity As Integer) As Long
 
     Dim thiskey As String
     Dim saveStatus As Boolean
@@ -2747,10 +2751,16 @@ Public Function resizeAndLoadImgToDict(ByRef thisDictionary As Dictionary, ByVal
     End If
     
     ' add the bitmap to the dictionary collection
-    If thisDictionary.Exists(thiskey) Then
-        thisDictionary.Remove thiskey
+'    If thisDictionary.Exists(thiskey) Then
+'        thisDictionary.Remove thiskey
+'    End If
+'    thisDictionary.Add thiskey, iconBitmap
+    
+    ' add the bitmap to the native VB6 collection
+    If itemExists(thisCollection, thiskey) = True Then ' using a VB6 collection that doesn't have an .Exists method
+        thisCollection.Remove thiskey
     End If
-    thisDictionary.Add thiskey, iconBitmap
+    thisCollection.Add iconBitmap, thiskey ' using a VB6 collection
     
     resizeAndLoadImgToDict = iconBitmap
     
@@ -2914,18 +2924,22 @@ End Function
 ' Purpose   : This utility displays using GDI+, one of several icon images stored in a dictionary collection by key.
 '---------------------------------------------------------------------------------------
 '
-Public Function updateDisplayFromDictionary(thisCollection As Dictionary, strFilename As String, ByVal Key As String, Optional Left As Long = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1) As Boolean
+Public Function updateDisplayFromDictionary(thisCollection As Collection, strFilename As String, ByVal Key As String, Optional Left As Long = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1) As Boolean
 
    On Error GoTo updateDisplayFromDictionary_Error
 
     ' get the stored image from the collection if it exists
-    'If IconExists(thisCollection, Key) = True Then
-    
-    If thisCollection(Key) <> 0 Then ' scripting.dictionary
+    If itemExists(thisCollection, Key) = True Then
         iconBitmap = thisCollection(Key)
     Else
         Exit Function
     End If
+    
+'    If thisCollection(Key) <> 0 Then ' scripting.dictionary
+'        iconBitmap = thisCollection(Key)
+'    Else
+'        Exit Function
+'    End If
     
     'draws a GDIP image onto the icon bitmap
     Call GdipDrawImageRectI(gdipFullScreenBitmap, iconBitmap, Left, Top, Width, Height)  ' shrinks the bitmap into the image object

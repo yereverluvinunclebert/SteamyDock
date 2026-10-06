@@ -257,36 +257,63 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : IconExists
+' Procedure : iconExists
 ' Author    : chatGPT and the world
 ' Date      : 05/10/2026
-' Purpose   : implements a
+' Purpose   : tests for existence of an icon object using the key
 '---------------------------------------------------------------------------------------
 '
-Public Function IconExists(ByVal iCons As Collection, _
-                            ByVal Key As String) As Boolean
-    
-    ' class object instantiated
+Public Function iconExists(ByVal thiscollection As Collection, ByVal Key As String) As Boolean
+
+    ' icon class object instantiated
     Dim thisIcon As cwMainIcon
-    
+
     On Error GoTo NotFound
 
-    Set thisIcon = iCons(Key)
-    IconExists = True
+    ' tests for existence of an icon object using the key
+    Set thisIcon = thiscollection.Item(Key)
+    iconExists = True
     Exit Function
 
 NotFound:
-    IconExists = False
+    iconExists = False
 
     On Error GoTo 0
     Exit Function
 
-IconExists_Error:
+iconExists_Error:
 
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure IconExists of Module modDatabase"
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure iconExists of Module modDatabase"
 End Function
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : itemExists
+' Author    : beededea
+' Date      : 06/10/2026
+' Purpose   : tests for existence of an collection object using the key
+'---------------------------------------------------------------------------------------
 '
+Public Function itemExists(ByRef thiscollection As Collection, ByVal Key As String) As Boolean
+
+    On Error Resume Next
+    
+    ' Attempt to access the item. IsObject handles both objects and basic types.
+    IsObject (thiscollection.Item(Key))
+    
+    ' If the error number is 0, the key exists
+    itemExists = (Err.Number = 0)
+    
+    On Error GoTo 0
+
+    Exit Function
+
+itemExists_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure itemExists of Module modDatabase"
+End Function
+
+
 '---------------------------------------------------------------------------------------
 ' Procedure : putIconSettingsIntoDatabase
 ' Author    : beededea
@@ -334,27 +361,17 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
         ' select one record matching the supplied key pulling all fields/columns into a dataset
         Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable WHERE key= " & thisKeyValue)
         
-        ' now write the same variables to the icon class
-        
         ' get the relevant stored icon from the dictionary collection if it exists
-'        If sDockIcons(CStr(thisKeyValue)) <> 0 Then
-'            sIcon = sDockIcons(CStr(thisKeyValue))
-'        Else
-'            Exit Function
-'        End If
-    
-        'assign the temporary 's' variables from the icon properties.
-        ' retain the svariables as local vars - useful here
-        
-        If IconExists(sDockIcons, thisKeyValue) = False Then ' using a VB6 collection
+            
+        If iconExists(sDockIcons, thisKeyValue) = False Then ' using a VB6 collection that doesn't have an .Exists method
         ' If sDockIcons.Exists(thisKeyValue) = false Then ' a scripting.dictionary
         
             Set sIcon = New cwMainIcon
             
-            'sDockIcons.Add thisKeyValue, sIcon ' Cristian Buse or scripting.dictionary
+            'sDockIcons.Add thisKeyValue, sIcon ' Cristian Buse VBA dictionary or scripting.dictionary
             sDockIcons.Add sIcon, thisKeyValue ' using a VB6 collection
         Else
-
+            'assign the temporary 's' variables from the icon properties.
             sFilename = sDockIcons.Item(CStr(thisKeyValue)).FileName
             sFileName2 = sDockIcons.Item(CStr(thisKeyValue)).FileName2
             sTitle = sDockIcons.Item(CStr(thisKeyValue)).Title
@@ -376,16 +393,8 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
             sAppToTerminate = sDockIcons.Item(CStr(thisKeyValue)).AppToTerminate
             sDisabled = sDockIcons.Item(CStr(thisKeyValue)).Disabled
         End If
-'
-        ' animation properties not yet implemented
-        
-    '    sIcon.iconHOffset = s
-    '    sIcon.iconVOffset = s
-    '    sIcon.IconHeight = s
-    '    sIcon.IconWidth = s
-    '    sIcon.IconIndex = s
-    '    sIcon.IconOpacity = s
-    '    sIcon.IconImageLarge = s
+                
+        ' now write the variables from the icon class
         
         ' Matching row found
         If DataSet.RecordCount > 0 Then
@@ -605,7 +614,7 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
         sIcon.AppToTerminate = sAppToTerminate
         sIcon.Disabled = sDisabled
         
-        If IconExists(sDockIcons, thisKeyValue) = True Then ' using a VB6 collection
+        If iconExists(sDockIcons, thisKeyValue) = True Then ' using a VB6 collection that doesn't have an .Exists method
         ' If sDockIcons.Exists(thisKeyValue) Then ' a scripting.dictionary
             sDockIcons.Remove thisKeyValue
         End If
