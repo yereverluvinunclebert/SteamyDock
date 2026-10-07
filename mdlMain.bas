@@ -877,6 +877,7 @@ End Function
 Public Sub checkDockProcessesRunning()
         
     Dim useloop As Integer: useloop = 0
+    ' Dim stringKeyValue As String
     
     On Error GoTo checkDockProcessesRunning_Error
 
@@ -885,12 +886,13 @@ Public Sub checkDockProcessesRunning()
     dock.processTimer.Enabled = False
         
     For useloop = 1 To rdIconUpperBound
-        If sDockIcons.Item(CStr(useloop)).Command <> "" Then
-            sDockIcons.Item(CStr(useloop)).ProcessRunning = CStr(IsRunning(sDockIcons.Item(CStr(useloop)).Command))
+        ' stringKeyValue =  CStr(useloop)
+        If sDockIcons(useloop).Command <> "" Then
+            sDockIcons(useloop).ProcessRunning = CStr(IsRunning(sDockIcons(useloop).Command))
             ' if the matching process has been found it is then dropped into the initiatedProcessArray, as this array is checked more frequently
             ' and cogs are added or taken away during the loop that analyses this array.
-            If sDockIcons.Item(CStr(useloop)).ProcessRunning = "True" Then 'this will be a boolean later
-                sDockIcons.Item(CStr(useloop)).InitiatedProcess = sDockIcons.Item(CStr(useloop)).Command
+            If sDockIcons(useloop).ProcessRunning = "True" Then 'this will be a boolean later
+                sDockIcons(useloop).InitiatedProcess = sDockIcons(useloop).Command
             End If
         End If
     Next useloop
@@ -1041,8 +1043,9 @@ Public Sub checkExplorerRunning()
     Dim windowCount As Integer: windowCount = 0
     Dim openExplorerPathArray() As String
     Dim windowLoop As Integer: windowLoop = 0
-    Dim sCommandLoop As Integer: sCommandLoop = 0
+    Dim useloop As Integer: useloop = 0
     Dim NameProcess As String: NameProcess = vbNullString
+    ' Dim stringKeyValue As String
     
     ' stop this timer during the run
     dock.explorerTimer.Enabled = False
@@ -1058,16 +1061,17 @@ Public Sub checkExplorerRunning()
     ' we loop through the array much quicker than looping through the temporary settings file and extracting the commands from each.
     
     For windowLoop = 0 To windowCount - 1
-        For sCommandLoop = 1 To rdIconUpperBound
-            If sDockIcons.Item(CStr(sCommandLoop)).Command <> vbNullString Then
-                If LCase$(sDockIcons.Item(CStr(sCommandLoop)).Command) = LCase$(openExplorerPathArray(windowLoop)) Then
-                    sDockIcons.Item(CStr(sCommandLoop)).ExplorerRunning = "True"
+        For useloop = 1 To rdIconUpperBound
+            ' stringKeyValue =  CStr(useloop)
+            If sDockIcons(useloop).Command <> vbNullString Then
+                If LCase$(sDockIcons(useloop).Command) = LCase$(openExplorerPathArray(windowLoop)) Then
+                    sDockIcons(useloop).ExplorerRunning = "True"
                     ' if the matching explorer process has been found it is then dropped into the initiatedExplorerArray, as this array is checked more frequently
                     ' and cogs are added or taken away during the loop that analyses this array.
-                    sDockIcons.Item(CStr(sCommandLoop)).InitiatedExplorer = sDockIcons.Item(CStr(sCommandLoop)).Command
+                    sDockIcons(useloop).InitiatedExplorer = sDockIcons(useloop).Command
                 End If
             End If
-        Next sCommandLoop
+        Next useloop
     Next windowLoop
     
     ' restart this timer when complete
@@ -1567,7 +1571,7 @@ End Sub
 
     ' instead of reordering the images within the dictionary (which is difficult as you can't just add and
     ' replace objects into an existing collection, also, it does not release memory) instead we simply
-    ' add a new icon reference to the settings file, add a new image to the end of the collection and then we
+    ' add a new icon reference to the settings db, add a new image to the end of the collection and then we
     ' manipulate an array of index numbers indicating which image in the collection to use. This persists until the
     ' dock is restarted. Then the images are loaded and numbered sequentially.
     
@@ -1606,6 +1610,9 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     Dim sRunSecondAppBeforehand  As String
     Dim sAppToTerminate As String
     Dim sDisabled  As String
+    
+    Dim stringKeyValue As String
+    Dim nextKeyValue As String
 
     On Error GoTo insertNewIconDataIntoCurrentPosition_Error
     'If debugflg = 1 Then debugLog "%" & "insertNewIconDataIntoCurrentPosition"
@@ -1618,13 +1625,56 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     
     'this will be replaced by a add /before for a VB6 collection
     
-    For useloop = iconArrayUpperBound To selectedIconIndex Step -1
-         Call zeroAllIconCharacteristics
-         
-         Call readIconParamsFromDb(useloop)
-         Call writeIconSettingsDb(useloop + 1, False)
-    Next useloop
+    Set sIcon = New cwMainIcon
     
+    stringKeyValue = CStr(selectedIconIndex)
+    nextKeyValue = CStr(selectedIconIndex + 1)
+    
+    ' In the .ADD method the parameters are transposed due to the differences in approach for a scripting.dictionary vs a collection
+    ' in a dictionary the key is key! In a collection it is the position, the key is merely a property we only use when ADDing
+    
+    ' If Before is a numeric expression, it must be a number from 1 through the value of the collection's Count property.
+    ' If Before is a String expression, it must correspond to the key string specified when the element being referred to was added to the collection.
+    
+    'sDockIcons.Add selectedIconIndex, sIcon ' Cristian Buse VBA dictionary or scripting.dictionary
+    
+    ' inquire the icon position above the current
+    ' extract the keyname of the icon
+   
+    If iconExists(sDockIcons, stringKeyValue) = False Then  ' using a VB6 collection that doesn't have an .Exists method
+        ' insert at position selectedIconIndex
+        sDockIcons.Add sIcon, CStr(selectedIconIndex), Before:=stringKeyValue  ' using a VB6 collection
+
+        sDockIcons(selectedIconIndex).FileName = sFilename
+        sDockIcons(selectedIconIndex).FileName2 = sFileName2
+        sDockIcons(selectedIconIndex).Title = sTitle
+        sDockIcons(selectedIconIndex).Command = sCommand
+        sDockIcons(selectedIconIndex).Arguments = sArguments
+        sDockIcons(selectedIconIndex).WorkingDirectory = sWorkingDirectory
+        sDockIcons(selectedIconIndex).ShowCmd = (sShowCmd)
+        sDockIcons(selectedIconIndex).OpenRunning = (sOpenRunning)
+        sDockIcons(selectedIconIndex).IsSeparator = (sIsSeparator)
+        sDockIcons(selectedIconIndex).UseContext = (sUseContext)
+        sDockIcons(selectedIconIndex).DockletFile = (sDockletFile) ' error ?
+        sDockIcons(selectedIconIndex).UseDialog = (sUseDialog)
+        sDockIcons(selectedIconIndex).UseDialogAfter = (sUseDialogAfter)
+        sDockIcons(selectedIconIndex).QuickLaunch = (sQuickLaunch)
+        sDockIcons(selectedIconIndex).AutoHideDock = (sAutoHideDock)
+        sDockIcons(selectedIconIndex).SecondApp = sSecondApp
+        sDockIcons(selectedIconIndex).RunElevated = (sRunElevated)
+        sDockIcons(selectedIconIndex).RunSecondAppBeforehand = sRunSecondAppBeforehand
+        sDockIcons(selectedIconIndex).AppToTerminate = sAppToTerminate
+        sDockIcons(selectedIconIndex).Disabled = (sDisabled)
+
+    End If
+    
+'    For useloop = iconArrayUpperBound To selectedIconIndex Step -1
+'         Call zeroAllIconCharacteristics
+'
+'         Call readIconParamsFromDb(useloop)
+'         Call writeIconSettingsDb(useloop + 1, False)
+'    Next useloop
+'
    ' dynamically extend the number of picture boxes by one
     thisIcon = useloop + 1
     rdIconUpperBound = rdIconUpperBound + 1
@@ -1634,32 +1684,32 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     'PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
     
     'resize all arrays used for storing icon information
-    Call redimPreserveCacheArrays
-    
-    ' retain sVariables here - useful as local vars
-    'when we arrive at the original position then set the current valid icon characteristics passed as params into this routine
-    sFilename = thisFilename
-    sTitle = thisTitle
-    sCommand = thisCommand
-    sArguments = thisArguments
-    sWorkingDirectory = thisWorkingDirectory
-    sDockletFile = thisDockletFile
-    sIsSeparator = thisSeparator
-    sShowCmd = thisShowCmd
-    sOpenRunning = thisOpenRunning
-    sUseContext = thisUseContext
-    sUseDialog = thisUseDialog
-    sUseDialogAfter = thisUseDialogAfter
-    sQuickLaunch = thisQuickLaunch
-    sDisabled = thisDisabled
-
-    Call writeIconSettingsDb(thisIcon, False)
-
-    ' then re-read the config for every icon from the top down to the selected item
-    For useloop = iconArrayUpperBound To selectedIconIndex Step -1
-        Call readIconParamsFromDb(useloop)
-        Call reassignArrayElements(useloop)
-    Next useloop
+'    Call redimPreserveCacheArrays
+'
+'    ' retain sVariables here - useful as local vars
+'    'when we arrive at the original position then set the current valid icon characteristics passed as params into this routine
+'    sFilename = thisFilename
+'    sTitle = thisTitle
+'    sCommand = thisCommand
+'    sArguments = thisArguments
+'    sWorkingDirectory = thisWorkingDirectory
+'    sDockletFile = thisDockletFile
+'    sIsSeparator = thisSeparator
+'    sShowCmd = thisShowCmd
+'    sOpenRunning = thisOpenRunning
+'    sUseContext = thisUseContext
+'    sUseDialog = thisUseDialog
+'    sUseDialogAfter = thisUseDialogAfter
+'    sQuickLaunch = thisQuickLaunch
+'    sDisabled = thisDisabled
+'
+'    Call writeIconSettingsDb(thisIcon, False)
+'
+'    ' then re-read the config for every icon from the top down to the selected item
+'    For useloop = iconArrayUpperBound To selectedIconIndex Step -1
+'        Call readIconParamsFromDb(useloop)
+'        Call reassignArrayElements(useloop)
+'    Next useloop
     
 '    Call clearInitiatedExplorerArray
 '    Call clearInitiatedProcessArray
@@ -1690,28 +1740,31 @@ Public Sub reassignArrayElements(ByVal thisArrayElement As Integer)
 
     Dim sCommand As String
     Dim sDisabled As String
-    
-    On Error GoTo reassignArrayElements_Error
+    ' Dim stringKeyValue As String
 
-    sCommand = sDockIcons.Item(CStr(thisArrayElement)).Command
-    sDockIcons.Item(CStr(thisArrayElement)).TargetExists = "0"
-    sDisabled = sDockIcons.Item(CStr(thisArrayElement)).Disabled
+    On Error GoTo reassignArrayElements_Error
+    
+    ' stringKeyValue =  CStr(thisArrayElement)
+
+    sCommand = sDockIcons(thisArrayElement).Command
+    sDockIcons(thisArrayElement).TargetExists = "0"
+    sDisabled = sDockIcons(thisArrayElement).Disabled
 
     ' check to see if each process is running and store the result away
     If isExplorerRunning(sCommand) = True Then
-        sDockIcons.Item(CStr(thisArrayElement)).ExplorerRunning = "True"
-        sDockIcons.Item(CStr(thisArrayElement)).InitiatedExplorer = sCommand
+        sDockIcons(thisArrayElement).ExplorerRunning = "True"
+        sDockIcons(thisArrayElement).InitiatedExplorer = sCommand
     End If
     
     If IsRunning(sCommand) = True Then
-        sDockIcons.Item(CStr(thisArrayElement)).ProcessRunning = "True"
-        sDockIcons.Item(CStr(thisArrayElement)).InitiatedProcess = sCommand
+        sDockIcons(thisArrayElement).ProcessRunning = "True"
+        sDockIcons(thisArrayElement).InitiatedProcess = sCommand
     End If
     
     If sDisabled = "1" Then
-        sDockIcons.Item(CStr(thisArrayElement)).Disabled = "1"
+        sDockIcons(thisArrayElement).Disabled = "1"
     Else
-        sDockIcons.Item(CStr(thisArrayElement)).Disabled = "0"
+        sDockIcons(thisArrayElement).Disabled = "0"
     End If
 
    On Error GoTo 0
@@ -1731,13 +1784,15 @@ End Sub
 '
 Public Sub clearInitiatedExplorerArray()
     Dim useloop As Long: useloop = 0
-
+    ' Dim stringKeyValue As String
+    
     On Error GoTo clearInitiatedExplorerArray_Error
 
     For useloop = 1 To rdIconUpperBound
-        If Not sDockIcons.Item(CStr(useloop)).InitiatedExplorer = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
-                sDockIcons.Item(CStr(useloop)).ExplorerRunning = "False" ' the cog array for explorer processes
-                sDockIcons.Item(CStr(useloop)).InitiatedExplorer = vbNullString ' removes the entry from the test array so it isn't caught again
+        ' stringKeyValue =  CStr(useloop)
+        If Not sDockIcons(useloop).InitiatedExplorer = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
+                sDockIcons(useloop).ExplorerRunning = "False" ' the cog array for explorer processes
+                sDockIcons(useloop).InitiatedExplorer = vbNullString ' removes the entry from the test array so it isn't caught again
         End If
     Next useloop
 
@@ -1760,13 +1815,15 @@ End Sub
 '
 Public Sub clearInitiatedProcessArray()
     Dim useloop As Long: useloop = 0
-
+    ' Dim stringKeyValue As String
+    
     On Error GoTo clearInitiatedProcessArray_Error
 
     For useloop = 1 To rdIconUpperBound
-        If Not sDockIcons.Item(CStr(useloop)).InitiatedProcess = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
-                sDockIcons.Item(CStr(useloop)).ProcessRunning = "False" ' the cog array for explorer processes
-                sDockIcons.Item(CStr(useloop)).InitiatedProcess = vbNullString ' removes the entry from the test array so it isn't caught again
+        ' stringKeyValue =  CStr(useloop)
+        If Not sDockIcons(useloop).InitiatedProcess = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
+                sDockIcons(useloop).ProcessRunning = "False" ' the cog array for explorer processes
+                sDockIcons(useloop).InitiatedProcess = vbNullString ' removes the entry from the test array so it isn't caught again
         End If
     Next useloop
 
@@ -1989,7 +2046,11 @@ Public Sub addProgramDLLorEXE()
      Dim suffix As String: suffix = vbNullString
      Dim thisTitle As String: thisTitle = vbNullString
      'Dim bSuccess As Boolean: bSuccess = False
-     
+    
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
+         
      Const x_MaxBuffer = 256
     
     On Error GoTo addProgramDLLorEXE_Error
@@ -2040,17 +2101,17 @@ Public Sub addProgramDLLorEXE()
     ' test as to whether it is an .EXE '
     If InStr(1, ".exe", LCase(suffix)) And readEmbeddedIcons = True Then
         ' does the string contain a ? if so it probably has an embedded .ICO
-        qPos = InStr(1, sDockIcons.Item(CStr(selectedIconIndex)).FileName, "?")
+        qPos = InStr(1, sDockIcons(selectedIconIndex).FileName, "?")
         If qPos <> 0 Then
             ' extract the string before the ? (qPos)
-            filestring = Mid$(sDockIcons.Item(CStr(selectedIconIndex)).FileName, 1, qPos - 1)
+            filestring = mID$(sDockIcons(selectedIconIndex).FileName, 1, qPos - 1)
         End If
         
     ' test the resulting filestring exists
     If fFExists(filestring) Then
             If rDRetainIcons = "1" Then
                 'FileName = txtCurrentIcon.Text ' revert to the relative path which is what is expected
-                iconFilename = fExtractEmbeddedPNGFromEXE(sDockIcons.Item(CStr(selectedIconIndex)).FileName, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+                iconFilename = fExtractEmbeddedPNGFromEXE(sDockIcons(selectedIconIndex).FileName, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
             End If
 
         Else ' the file doesn't exist in any form with ? or otherwise as a valid path
@@ -2206,7 +2267,10 @@ Public Sub deleteThisIcon()
     Dim useCacheMemory As Boolean: useCacheMemory = False
     Dim fromArray As Boolean: fromArray = False
     Dim toArray As Boolean: toArray = False
+    ' Dim stringKeyValue As String
     
+    ' stringKeyValue =  CStr(selectedIconIndex)
+        
     On Error GoTo deleteThisIcon_Error
     
 '    If debugflg = 1 Then debugLog "%" & "deleteThisIcon"
@@ -2215,7 +2279,7 @@ Public Sub deleteThisIcon()
     If selectedIconIndex = iconArrayUpperBound Then Exit Sub
 
     'itemName = sTitleArray(selectedIconIndex)
-    itemName = sDockIcons.Item(CStr(selectedIconIndex)).Title
+    itemName = sDockIcons(selectedIconIndex).Title
     
     'If chkConfirmSaves.Value = 1 Then
     
@@ -2563,10 +2627,13 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
     
     Dim sCommand As String
     Dim sDisabled As String
-
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
+    
     On Error GoTo addNewImageToDictionary_Error
     
-    'sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
+    'sDisabled = sDockIcons(selectedIconIndex).Disabled
     
     dictionaryLocationArrayUpperBound = iconArrayUpperBound + 1
 
@@ -2599,17 +2666,17 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
         For useloop = selectedIconIndex To iconArrayUpperBound
             'Call readIconParamsFromDb(useloop)
                         
-             sCommand = sDockIcons.Item(CStr(useloop)).Command
+             sCommand = sDockIcons.Item(useloop).Command
              
             ' read the two main icon variables into arrays, one for each
             'sFileNameArray(useloop) = sFilename
             'sTitleArray(useloop) = sTitle
-            'sDockIcons.Item(CStr(useloop)).Command = sCommand
-            sDockIcons.Item(CStr(useloop)).TargetExists = "0"
+            'sDockIcons.Item(useloop).Command = sCommand
+            sDockIcons.Item(useloop).TargetExists = "0"
             
             ' check to see if each process is running and store the result away
-            sDockIcons.Item(CStr(useloop)).ExplorerRunning = isExplorerRunning(sCommand)
-            sDockIcons.Item(CStr(useloop)).ProcessRunning = CStr(IsRunning(sCommand))
+            sDockIcons.Item(useloop).ExplorerRunning = isExplorerRunning(sCommand)
+            sDockIcons.Item(useloop).ProcessRunning = CStr(IsRunning(sCommand))
         Next useloop
         
         dictionaryLocationArray(selectedIconIndex) = dictionaryLocationArrayUpperBound
@@ -3081,15 +3148,18 @@ Public Function checkWindowIconisationZorder(ByVal thisCommand As String, ByVal 
     Dim processID As Long:  processID = 0
     Dim lngRetVal As Long: lngRetVal = 0
     Dim lMyThread As Long: lMyThread = 0
-
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
+    
     ' if the open application is an Explorer window then handle it this way
-    If sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "True" Then 'this will be a boolean later
+    If sDockIcons(selectedIconIndex).ExplorerRunning = "True" Then 'this will be a boolean later
         lMyThread = findExplorerHwndByPath(thisCommand)
         lngRetVal = handleWindowConditionAndZorder(processID, runAction, lMyThread)
         checkWindowIconisationZorder = True ' return
     Else
             
-        If sDockIcons.Item(CStr(selectedIconIndex)).ProcessRunning = "True" Or commandOverride <> vbNullString Then
+        If sDockIcons(selectedIconIndex).ProcessRunning = "True" Or commandOverride <> vbNullString Then
             'the array check above is the quick way to check process is already running
             'but if it is running we need to run IsRunning again to get the process PID
             If IsRunning(thisCommand, processID) Then  ' it checks again that the process is still running, returning the processID, as the check process timer that populates the processCheckArray is too infrequent to be relied upon

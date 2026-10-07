@@ -731,7 +731,7 @@ Public Function GetINISetting(ByVal sHeading As String, ByVal sKey As String, By
     Dim lLength As Long: lLength = 0
 
     lLength = GetPrivateProfileString(sHeading, sKey, sDefault, sReturn, cparmLen, sINIFileName) ' UNICODE cparmLen will require a longptr
-    GetINISetting = Mid$(sReturn, 1, lLength)
+    GetINISetting = mID$(sReturn, 1, lLength)
 
    On Error GoTo 0
    Exit Function
@@ -1139,7 +1139,7 @@ Private Function pvReplaceDevice(sPath As String) As String
             sDevice = Left$(sDevice, InStr(sDevice, Chr$(0)) - 1)
 '            Debug.Print sDrive; "="; sDevice
             If LCase$(Left$(sPath, Len(sDevice))) = LCase$(sDevice) Then
-                pvReplaceDevice = sDrive & Mid$(sPath, Len(sDevice) + 1)
+                pvReplaceDevice = sDrive & mID$(sPath, Len(sDevice) + 1)
                 Exit Function
             End If
         End If
@@ -1594,7 +1594,7 @@ Public Sub getAllDriveNames(sDriveStrings As String)
         sDeviceName = GetNtDeviceNameForDrive(vDrive) ' \Device\HarddiskVolume1 are the default naming conventions for Windows drives
         driveCount = driveCount + 1
 
-        lstDevices(0, driveCount) = Asc(Mid$(vDrive, 1, 1))
+        lstDevices(0, driveCount) = Asc(mID$(vDrive, 1, 1))
         lstDevices(1, driveCount) = sDeviceName
         
     Next
@@ -1635,10 +1635,10 @@ Public Function GetDrives(ByRef sDriveStrings As String) As Collection
    Do
       iPos = InStr(iLastPos, sDriveStrings, vbNullChar)
       If Not (iPos = 0) Then
-         sDrive = Mid$(sDriveStrings, iLastPos, iPos - iLastPos)
+         sDrive = mID$(sDriveStrings, iLastPos, iPos - iLastPos)
          iLastPos = iPos + 1
       Else
-         sDrive = Mid$(sDriveStrings, iLastPos)
+         sDrive = mID$(sDriveStrings, iLastPos)
       End If
       If Len(sDrive) > 0 Then
          colDrives.Add sDrive
@@ -2526,7 +2526,10 @@ Public Function addTargetProgram(ByVal targetText As String) As String
     Dim retFileName As String: retFileName = vbNullString
     Dim retfileTitle As String: retfileTitle = vbNullString
     Dim sDockletFile As String
+    ' Dim stringKeyValue As String
     
+    ' stringKeyValue =  CStr(selectedIconIndex)
+        
     Const x_MaxBuffer = 256
     
     'On Error GoTo addTargetProgram_Error
@@ -2537,7 +2540,7 @@ Public Function addTargetProgram(ByVal targetText As String) As String
     
     'On Error Resume Next
     
-    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).dockletfile
+    sDockletFile = sDockIcons(selectedIconIndex).DockletFile
     
     ' set the default folder to the existing reference
     If Not targetText = vbNullString Then

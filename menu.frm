@@ -1485,15 +1485,18 @@ Private Sub mnuApplicationFolder_Click()
     Dim sCommand As String
     Dim sArguments As String
     Dim sWorkingDirectory As String
+    ' Dim stringKeyValue As String
     
+    ' stringKeyValue =  CStr(selectedIconIndex)
+        
     'Call readIconData(selectedIconIndex)
     'readIconParamsFromDb selectedIconIndex ' this will be removeable when we replace the sParams with references to the sdockIcons Collection
     
     On Error GoTo mnuApplicationFolder_Click_Error
 
-    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command ' read the icon property
-    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments ' read the icon property
-    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory ' read the icon property
+    sCommand = sDockIcons(selectedIconIndex).Command ' read the icon property
+    sArguments = sDockIcons(selectedIconIndex).Arguments ' read the icon property
+    sWorkingDirectory = sDockIcons(selectedIconIndex).WorkingDirectory ' read the icon property
     
     If fDirExists(sCommand) Then ' if it is a folder already
         'If debugflg = 1 Then debugLog "ShellExecute " & sCommand
@@ -1697,23 +1700,26 @@ Private Sub mnuCloseApp_Click()
     On Error GoTo mnuCloseApp_Click_Error
     
     Dim NameProcess As String: NameProcess = vbNullString
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
     
     ' this returns the name of the process if it is a non-explorer window, if it is an explorer window it will contain the path
-    NameProcess = sDockIcons.Item(CStr(selectedIconIndex)).Command
+    NameProcess = sDockIcons(selectedIconIndex).Command
     
     ' if the open application is an Explorer window then kill it this way
-    If sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "True" Then
+    If sDockIcons(selectedIconIndex).ExplorerRunning = "True" Then
         Call CloseExplorerWindowByPath(NameProcess)
-        sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "False"
-        sDockIcons.Item(CStr(selectedIconIndex)).InitiatedExplorer = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
+        sDockIcons(selectedIconIndex).ExplorerRunning = "False"
+        sDockIcons(selectedIconIndex).InitiatedExplorer = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
         Exit Sub
     Else
         ' if the open application is a standard binary then kill it this way
         If checkAndKillPutWindowBehind(NameProcess, True, True) = True Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
             Sleep 200 ' this ESSENTIAL small delay is required as it may take a moment or two for the system list to be updated.
             If IsRunning(NameProcess) = False Then ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
-                sDockIcons.Item(CStr(selectedIconIndex)).ProcessRunning = "False" ' remove the entry from the cog array
-                sDockIcons.Item(CStr(selectedIconIndex)).InitiatedProcess = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
+                sDockIcons(selectedIconIndex).ProcessRunning = "False" ' remove the entry from the cog array
+                sDockIcons(selectedIconIndex).InitiatedProcess = vbNullString ' removes the entry from the array that we test regularly so it isn't caught again
             Else
                 ' .06 DAEB 05/03/2021 menu.frm Simplified the boolean checks and removed the cannot kill message
                 ' sometimes the target process does not die in time and this message can be generated, I could drop this whole wait into a timer but it still would not handle
@@ -1777,29 +1783,33 @@ Private Sub mnuCloneIcon_Click()
     Dim sRunSecondAppBeforehand  As String
     Dim sAppToTerminate As String
     Dim sDisabled  As String
-
+    
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
+    
     dock.Refresh
     
-    sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
-    sFileName2 = sDockIcons.Item(CStr(selectedIconIndex)).FileName2
-    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
-    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
-    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments
-    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
-    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
-    sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
-    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
-    sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
-    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
-    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
-    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
-    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
-    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
-    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex)).SecondApp
-    sRunElevated = sDockIcons.Item(CStr(selectedIconIndex)).RunElevated
-    sRunSecondAppBeforehand = sDockIcons.Item(CStr(selectedIconIndex)).RunSecondAppBeforehand
-    sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex)).AppToTerminate
-    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
+    sFilename = sDockIcons(selectedIconIndex).FileName
+    sFileName2 = sDockIcons(selectedIconIndex).FileName2
+    sTitle = sDockIcons(selectedIconIndex).Title
+    sCommand = sDockIcons(selectedIconIndex).Command
+    sArguments = sDockIcons(selectedIconIndex).Arguments
+    sWorkingDirectory = sDockIcons(selectedIconIndex).WorkingDirectory
+    sShowCmd = sDockIcons(selectedIconIndex).ShowCmd
+    sOpenRunning = sDockIcons(selectedIconIndex).OpenRunning
+    sIsSeparator = sDockIcons(selectedIconIndex).IsSeparator
+    sUseContext = sDockIcons(selectedIconIndex).UseContext
+    sDockletFile = sDockIcons(selectedIconIndex).DockletFile
+    sUseDialog = sDockIcons(selectedIconIndex).UseDialog
+    sUseDialogAfter = sDockIcons(selectedIconIndex).UseDialogAfter
+    sQuickLaunch = sDockIcons(selectedIconIndex).QuickLaunch
+    sAutoHideDock = sDockIcons(selectedIconIndex).AutoHideDock
+    sSecondApp = sDockIcons(selectedIconIndex).SecondApp
+    sRunElevated = sDockIcons(selectedIconIndex).RunElevated
+    sRunSecondAppBeforehand = sDockIcons(selectedIconIndex).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons(selectedIconIndex).AppToTerminate
+    sDisabled = sDockIcons(selectedIconIndex).Disabled
 
     ' the params will be removeable, they are actually removeable already.
     Call insertNewIconDataIntoCurrentPosition(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
@@ -1832,26 +1842,26 @@ Private Sub mnuDisableIcon_Click()
     
     dock.Refresh
     
-    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled ' read the icon property
+    sDisabled = sDockIcons(selectedIconIndex).Disabled ' read the icon property at the selectedIconIndex position (not using the key)
     
     If sDisabled = "1" Then
         sDisabled = "0"
         menuForm.mnuDisableIcon.Caption = "Disable This Icon"
         menuForm.mnuDisableIcon.Checked = False
         
-        sDockIcons.Item(CStr(selectedIconIndex)).Disabled = "0"
+        sDockIcons(selectedIconIndex).Disabled = "0"
     Else
         sDisabled = "1"
         menuForm.mnuDisableIcon.Caption = "Enable This Icon"
         menuForm.mnuDisableIcon.Checked = True
         
         ' tell SD that this icon has recently been disabled (during the lifetime of this program run)
-        sDockIcons.Item(CStr(selectedIconIndex)).Disabled = "1"
+        sDockIcons(selectedIconIndex).Disabled = "1"
     End If
     
     'PutINISetting "Software\SteamyDock\IconSettings\Icons", selectedIconIndex & "-Disabled", sDisabled, dockSettingsFile
-    sDockIcons.Item(CStr(selectedIconIndex)).Disabled = sDisabled ' write the icon property
-    
+    'sDockIcons(selectedIconIndex).Disabled = sDisabled ' write the icon property using the stringified index
+    sDockIcons(selectedIconIndex).Disabled = sDisabled ' write the icon property using the positional index, not the key value
     
     ' triggers for telling the iconSettings tool that it needs to refresh
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
@@ -1873,9 +1883,9 @@ Private Sub mnuDisableIcon_Click()
     
     ' load and cache transparent versions of the current images to the associated collections
     ' at small and large sizes.
-    If fFExists(sDockIcons.Item(CStr(selectedIconIndex)).FileName) Then
-        resizeAndLoadImgToDict collLargeIcons, partialStringKey, sDockIcons.Item(CStr(selectedIconIndex)).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity
-        resizeAndLoadImgToDict collSmallIcons, partialStringKey, sDockIcons.Item(CStr(selectedIconIndex)).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity
+    If fFExists(sDockIcons(selectedIconIndex).FileName) Then
+        resizeAndLoadImgToDict collLargeIcons, partialStringKey, sDockIcons(selectedIconIndex).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity
+        resizeAndLoadImgToDict collSmallIcons, partialStringKey, sDockIcons(selectedIconIndex).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity
     End If
 
    On Error GoTo 0
@@ -5178,7 +5188,10 @@ Private Function addTargetProgram(ByVal targetText As String) As String
     Dim retfileTitle As String: retfileTitle = vbNullString
     
     Dim sDockletFile As String
+    ' Dim stringKeyValue As String
     
+    ' stringKeyValue =  CStr(selectedIconIndex)
+        
     Const x_MaxBuffer = 256
     
     'On Error GoTo addTargetProgram_Error
@@ -5189,7 +5202,7 @@ Private Function addTargetProgram(ByVal targetText As String) As String
     
     On Error Resume Next
     
-    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile
+    sDockletFile = sDockIcons(selectedIconIndex).DockletFile
     
     ' set the default folder to the existing reference
     If Not targetText = vbNullString Then

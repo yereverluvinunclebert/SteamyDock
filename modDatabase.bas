@@ -275,8 +275,8 @@ Public Function iconExists(ByVal thiscollection As Collection, ByVal Key As Stri
 
     On Error GoTo NotFound
 
-    ' tests for existence of an 'icon' object using the key, if it errors then the key is not found
-    ' (old-school COM/VB design)
+    ' tests for existence of an 'icon' object using its key, if it errors then the key is not found
+    ' (old-school COM/VB design using error to determine logic)
     
     Set thisIcon = thiscollection.Item(Key)
     iconExists = True
@@ -288,9 +288,6 @@ NotFound:
     On Error GoTo 0
     Exit Function
 
-iconExists_Error:
-
-     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure iconExists of Module modDatabase"
 End Function
 
 
@@ -350,6 +347,8 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
     Dim sRunSecondAppBeforehand  As String
     Dim sAppToTerminate As String
     Dim sDisabled  As String
+    
+    Dim stringKeyValue As String
 
     'Dim a As Integer
 
@@ -369,8 +368,12 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
         Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable WHERE key= " & thisKeyValue)
         
         ' get the relevant stored icon from the dictionary collection if it exists
+        
+        ' stringify key provided as an integer
+        stringKeyValue = CStr(thisKeyValue)
             
-        If iconExists(sDockIcons, thisKeyValue) = False Then ' using a VB6 collection that doesn't have an .Exists method
+        ' we have to be careful in regard to the key value, as thisKeyValue is the positional location whereas using stringKeyValue is searching for the key
+        If iconExists(sDockIcons, stringKeyValue) = False Then  ' using a VB6 collection that doesn't have an .Exists method
         ' If sDockIcons.Exists(thisKeyValue) = false Then ' a scripting.dictionary
         
             Set sIcon = New cwMainIcon
@@ -379,29 +382,29 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
             ' in a dictionary the key is key! In a collection it is the position, the key is merely a property.
             
             'sDockIcons.Add thisKeyValue, sIcon ' Cristian Buse VBA dictionary or scripting.dictionary
-            sDockIcons.Add sIcon, thisKeyValue ' using a VB6 collection
+            sDockIcons.Add sIcon, stringKeyValue ' using a VB6 collection
         Else
             'assign the temporary 's' variables from the icon properties.
-            sFilename = sDockIcons.Item(CStr(thisKeyValue)).FileName
-            sFileName2 = sDockIcons.Item(CStr(thisKeyValue)).FileName2
-            sTitle = sDockIcons.Item(CStr(thisKeyValue)).Title
-            sCommand = sDockIcons.Item(CStr(thisKeyValue)).Command
-            sArguments = sDockIcons.Item(CStr(thisKeyValue)).Arguments
-            sWorkingDirectory = sDockIcons.Item(CStr(thisKeyValue)).WorkingDirectory
-            sShowCmd = sDockIcons.Item(CStr(thisKeyValue)).ShowCmd
-            sOpenRunning = sDockIcons.Item(CStr(thisKeyValue)).OpenRunning
-            sIsSeparator = sDockIcons.Item(CStr(thisKeyValue)).IsSeparator
-            sUseContext = sDockIcons.Item(CStr(thisKeyValue)).UseContext
-            'sDockletFile= sDockIcons.Item(CStr(thisKeyValue)).DockletFile   ' error ?
-            sUseDialog = sDockIcons.Item(CStr(thisKeyValue)).UseDialog
-            sUseDialogAfter = sDockIcons.Item(CStr(thisKeyValue)).UseDialogAfter
-            sQuickLaunch = sDockIcons.Item(CStr(thisKeyValue)).QuickLaunch
-            sAutoHideDock = sDockIcons.Item(CStr(thisKeyValue)).AutoHideDock
-            sSecondApp = sDockIcons.Item(CStr(thisKeyValue)).SecondApp
-            sRunElevated = sDockIcons.Item(CStr(thisKeyValue)).RunElevated
-            sRunSecondAppBeforehand = sDockIcons.Item(CStr(thisKeyValue)).RunSecondAppBeforehand
-            sAppToTerminate = sDockIcons.Item(CStr(thisKeyValue)).AppToTerminate
-            sDisabled = sDockIcons.Item(CStr(thisKeyValue)).Disabled
+            sFilename = sDockIcons(thisKeyValue).FileName
+            sFileName2 = sDockIcons(thisKeyValue).FileName2
+            sTitle = sDockIcons(thisKeyValue).Title
+            sCommand = sDockIcons(thisKeyValue).Command
+            sArguments = sDockIcons(thisKeyValue).Arguments
+            sWorkingDirectory = sDockIcons(thisKeyValue).WorkingDirectory
+            sShowCmd = sDockIcons(thisKeyValue).ShowCmd
+            sOpenRunning = sDockIcons(thisKeyValue).OpenRunning
+            sIsSeparator = sDockIcons(thisKeyValue).IsSeparator
+            sUseContext = sDockIcons(thisKeyValue).UseContext
+            'sDockletFile= sDockIcons(thisKeyValue).DockletFile   ' error ?
+            sUseDialog = sDockIcons(thisKeyValue).UseDialog
+            sUseDialogAfter = sDockIcons(thisKeyValue).UseDialogAfter
+            sQuickLaunch = sDockIcons(thisKeyValue).QuickLaunch
+            sAutoHideDock = sDockIcons(thisKeyValue).AutoHideDock
+            sSecondApp = sDockIcons(thisKeyValue).SecondApp
+            sRunElevated = sDockIcons(thisKeyValue).RunElevated
+            sRunSecondAppBeforehand = sDockIcons(thisKeyValue).RunSecondAppBeforehand
+            sAppToTerminate = sDockIcons(thisKeyValue).AppToTerminate
+            sDisabled = sDockIcons(thisKeyValue).Disabled
         End If
                 
         ' now write the variables from the icon class
@@ -524,7 +527,7 @@ End Function
 '             Raises error 5 if the key is not found.
 '---------------------------------------------------------------------------------------
 '
-Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Optional ByVal addIcon As Boolean) As Integer
+Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As Integer, Optional ByVal addIcon As Boolean) As Integer
     Dim sFilename As String
     Dim sFileName2 As String
     Dim sTitle  As String
@@ -545,6 +548,8 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
     Dim sRunSecondAppBeforehand  As String
     Dim sAppToTerminate As String
     Dim sDisabled  As String
+    
+    Dim stringKeyValue As String
 
     Dim DataSet As SQLiteDataSet
     
@@ -600,9 +605,13 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
     
     If addIcon = True Then
         Set sIcon = New cwMainIcon
-        ' now write the same variables to the icon class
         
-        sIcon.KeyValue = thisKeyValue
+        ' stringify key provided as an integer
+        stringKeyValue = CStr(thisKeyValue)
+        
+        ' now write the sVariables to the icon class
+        
+        sIcon.ID = stringKeyValue
         sIcon.FileName = sFilename
         sIcon.FileName2 = sFileName2
         sIcon.Title = sTitle
@@ -624,7 +633,8 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
         sIcon.AppToTerminate = sAppToTerminate
         sIcon.Disabled = sDisabled
         
-        If iconExists(sDockIcons, thisKeyValue) = True Then ' using a VB6 collection that doesn't have an .Exists method
+        ' we have to be careful in regard to the key value, as thisKeyValue is the positional location whereas using stringKeyValue is searching for the key
+        If iconExists(sDockIcons, stringKeyValue) = True Then ' using a VB6 collection that doesn't have an .Exists method
         ' If sDockIcons.Exists(thisKeyValue) Then ' a scripting.dictionary
             sDockIcons.Remove thisKeyValue
         End If
@@ -634,14 +644,14 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
         
         ' add the icon to the dock icons dictionary collection
         'sDockIcons.Add thisKeyValue, sIcon ' Cristian Buse or scripting collection
-        sDockIcons.Add sIcon, thisKeyValue ' using a VB6 collection
+        sDockIcons.Add sIcon, stringKeyValue ' using a VB6 collection
     Else
     
         'otherwise we just write the existing items in the dictonary
     
 '        ' using a scripting.dictionary
 
-'        sDockIcons.Item(thisKeyValue).KeyValue = thisKeyValue
+'        sDockIcons.Item(thisKeyValue).ID = thisKeyValue
 '        sDockIcons.Item(thisKeyValue).FileName = sFilename
 '        sDockIcons.Item(thisKeyValue).FileName2 = sFileName2
 '        sDockIcons.Item(thisKeyValue).Title = sTitle
@@ -665,30 +675,30 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
         
         ' using a VB6 collection
         
-        sDockIcons(thisKeyValue).KeyValue = thisKeyValue
-        sDockIcons(thisKeyValue).FileName = sFilename
-        sDockIcons(thisKeyValue).FileName2 = sFileName2
-        sDockIcons(thisKeyValue).Title = sTitle
-        sDockIcons(thisKeyValue).Command = sCommand
-        sDockIcons(thisKeyValue).Arguments = sArguments
-        sDockIcons(thisKeyValue).WorkingDirectory = sWorkingDirectory
-        sDockIcons(thisKeyValue).ShowCmd = (sShowCmd)
-        sDockIcons(thisKeyValue).OpenRunning = (sOpenRunning)
-        sDockIcons(thisKeyValue).IsSeparator = (sIsSeparator)
-        sDockIcons(thisKeyValue).UseContext = (sUseContext)
-        sDockIcons(thisKeyValue).DockletFile = (sDockletFile) ' error ?
-        sDockIcons(thisKeyValue).UseDialog = (sUseDialog)
-        sDockIcons(thisKeyValue).UseDialogAfter = (sUseDialogAfter)
-        sDockIcons(thisKeyValue).QuickLaunch = (sQuickLaunch)
-        sDockIcons(thisKeyValue).AutoHideDock = (sAutoHideDock)
-        sDockIcons(thisKeyValue).SecondApp = sSecondApp
-        sDockIcons(thisKeyValue).RunElevated = (sRunElevated)
-        sDockIcons(thisKeyValue).RunSecondAppBeforehand = sRunSecondAppBeforehand
-        sDockIcons(thisKeyValue).AppToTerminate = sAppToTerminate
-        sDockIcons(thisKeyValue).Disabled = (sDisabled)
+        sDockIcons(stringKeyValue).ID = stringKeyValue
+        sDockIcons(stringKeyValue).FileName = sFilename
+        sDockIcons(stringKeyValue).FileName2 = sFileName2
+        sDockIcons(stringKeyValue).Title = sTitle
+        sDockIcons(stringKeyValue).Command = sCommand
+        sDockIcons(stringKeyValue).Arguments = sArguments
+        sDockIcons(stringKeyValue).WorkingDirectory = sWorkingDirectory
+        sDockIcons(stringKeyValue).ShowCmd = (sShowCmd)
+        sDockIcons(stringKeyValue).OpenRunning = (sOpenRunning)
+        sDockIcons(stringKeyValue).IsSeparator = (sIsSeparator)
+        sDockIcons(stringKeyValue).UseContext = (sUseContext)
+        sDockIcons(stringKeyValue).DockletFile = (sDockletFile) ' error ?
+        sDockIcons(stringKeyValue).UseDialog = (sUseDialog)
+        sDockIcons(stringKeyValue).UseDialogAfter = (sUseDialogAfter)
+        sDockIcons(stringKeyValue).QuickLaunch = (sQuickLaunch)
+        sDockIcons(stringKeyValue).AutoHideDock = (sAutoHideDock)
+        sDockIcons(stringKeyValue).SecondApp = sSecondApp
+        sDockIcons(stringKeyValue).RunElevated = (sRunElevated)
+        sDockIcons(stringKeyValue).RunSecondAppBeforehand = sRunSecondAppBeforehand
+        sDockIcons(stringKeyValue).AppToTerminate = sAppToTerminate
+        sDockIcons(stringKeyValue).Disabled = (sDisabled)
         
 
-'        sIcon.KeyValue = thisKeyValue
+'        sIcon.ID = thisKeyValue
 '        sIcon.FileName = sFilename
 '        sIcon.FileName2 = sFileName2
 '        sIcon.Title = sTitle
@@ -715,8 +725,8 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As String, Option
 
     ' animation properties not yet implemented
     
-'    sIcon.iconHOffset = s
-'    sIcon.iconVOffset = s
+'    sIcon.X = s
+'    sIcon.Y = s
 '    sIcon.IconHeight = s
 '    sIcon.IconWidth = s
 '    sIcon.IconIndex = s

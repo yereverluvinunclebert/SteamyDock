@@ -187,7 +187,7 @@ Begin VB.Form dock
    End
    Begin VB.Timer responseTimer 
       Interval        =   200
-      Left            =   255
+      Left            =   270
       Tag             =   "Determines whetherto turn on the animate timer"
       Top             =   600
    End
@@ -1602,6 +1602,10 @@ Public Sub fMouseUp(Button As Integer)
     Dim sAppToTerminate As String
     Dim sDisabled  As String
     
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
+       
     'clicking on the 'blank' icons at the beginning and the end
     If selectedIconIndex = 0 Then Exit Sub
     If selectedIconIndex = iconArrayUpperBound Then Exit Sub
@@ -1613,26 +1617,26 @@ Public Sub fMouseUp(Button As Integer)
     
     ' retain the sVariables as local - useful
     
-    sFilename = sDockIcons.Item(CStr(selectedIconIndex)).FileName
-    sFileName2 = sDockIcons.Item(CStr(selectedIconIndex)).FileName2
-    sTitle = sDockIcons.Item(CStr(selectedIconIndex)).Title
-    sCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
-    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments
-    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
-    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
-    sOpenRunning = sDockIcons.Item(CStr(selectedIconIndex)).OpenRunning
-    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
-    sUseContext = sDockIcons.Item(CStr(selectedIconIndex)).UseContext
-    sDockletFile = sDockIcons.Item(CStr(selectedIconIndex)).DockletFile   ' error ?"
-    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
-    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
-    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
-    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
-    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex)).SecondApp
-    sRunElevated = sDockIcons.Item(CStr(selectedIconIndex)).RunElevated
-    sRunSecondAppBeforehand = sDockIcons.Item(CStr(selectedIconIndex)).RunSecondAppBeforehand
-    sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex)).AppToTerminate
-    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
+    sFilename = sDockIcons(selectedIconIndex).FileName
+    sFileName2 = sDockIcons(selectedIconIndex).FileName2
+    sTitle = sDockIcons(selectedIconIndex).Title
+    sCommand = sDockIcons(selectedIconIndex).Command
+    sArguments = sDockIcons(selectedIconIndex).Arguments
+    sWorkingDirectory = sDockIcons(selectedIconIndex).WorkingDirectory
+    sShowCmd = sDockIcons(selectedIconIndex).ShowCmd
+    sOpenRunning = sDockIcons(selectedIconIndex).OpenRunning
+    sIsSeparator = sDockIcons(selectedIconIndex).IsSeparator
+    sUseContext = sDockIcons(selectedIconIndex).UseContext
+    sDockletFile = sDockIcons(selectedIconIndex).DockletFile   ' error ?"
+    sUseDialog = sDockIcons(selectedIconIndex).UseDialog
+    sUseDialogAfter = sDockIcons(selectedIconIndex).UseDialogAfter
+    sQuickLaunch = sDockIcons(selectedIconIndex).QuickLaunch
+    sAutoHideDock = sDockIcons(selectedIconIndex).AutoHideDock
+    sSecondApp = sDockIcons(selectedIconIndex).SecondApp
+    sRunElevated = sDockIcons(selectedIconIndex).RunElevated
+    sRunSecondAppBeforehand = sDockIcons(selectedIconIndex).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons(selectedIconIndex).AppToTerminate
+    sDisabled = sDockIcons(selectedIconIndex).Disabled
     
     If dragToDockOperating = True Then
         hourGlassTimer.Enabled = False
@@ -1675,7 +1679,7 @@ Public Sub fMouseUp(Button As Integer)
         ' check the current process is running by looking into the array that contains a list of running processes using selectedIconIndex
         
         ' the item is NOT running
-        If sDockIcons.Item(CStr(selectedIconIndex)).ProcessRunning = "False" And sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "False" Then
+        If sDockIcons(selectedIconIndex).ProcessRunning = "False" And sDockIcons(selectedIconIndex).ExplorerRunning = "False" Then
             
             forceRunNewAppFlag = False
 
@@ -1717,14 +1721,14 @@ Public Sub fMouseUp(Button As Integer)
             menuForm.mnuRunNewApp.Visible = True
             
             'running elevated so allow more menu options, note: explorer windows cannot run elevated
-            If sRunElevated = "1" And allowElevated = True And sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "False" Then
+            If sRunElevated = "1" And allowElevated = True And sDockIcons(selectedIconIndex).ExplorerRunning = "False" Then
                 menuForm.mnuAdmin.Visible = False
                 menuForm.mnuRunNewApp.Visible = True
                 menuForm.mnuRunNewAppAsAdmin.Visible = True
             End If
             
             ' if the item is an explorer window then remove the option to run another, windows always opens the existing explorer window
-            If sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "True" Then 'this will be a boolean later
+            If sDockIcons(selectedIconIndex).ExplorerRunning = "True" Then 'this will be a boolean later
                 menuForm.mnuBlank5.Visible = False
                 menuForm.mnuFocusApp.Visible = False
                 menuForm.mnuBackApp.Visible = False
@@ -1803,7 +1807,7 @@ Public Sub fMouseUp(Button As Integer)
         End If
 
         ' check the current process is running by looking into the array that contains a list of running processes using selectedIconIndex
-        If sDockIcons.Item(CStr(selectedIconIndex)).ProcessRunning = "False" Then
+        If sDockIcons(selectedIconIndex).ProcessRunning = "False" Then
             ' it would be nice to lock the x axis during the bounce animation
             If userLevel <> "runas" Then userLevel = "open"
                         
@@ -1962,7 +1966,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                     Effect = vbDropEffectCopy
                   
                     ' take the filename, extract just the filename body minus the suffix
-                    sJustTheFilename = Mid(iconTitle, InStrRev(iconTitle, "\") + 1, Len(iconTitle))
+                    sJustTheFilename = mID(iconTitle, InStrRev(iconTitle, "\") + 1, Len(iconTitle))
                     sJustTheFilename = ExtractFilenameWithoutSuffix(sJustTheFilename)
                     iconTitle = sJustTheFilename
                  
@@ -2238,7 +2242,8 @@ Private Sub initiatedExplorerTimer_Timer()
 
     Dim useloop As Long: useloop = 0
     Dim itIsRunning As Boolean: itIsRunning = False
-     
+    ' Dim stringKeyValue As String
+    
     On Error GoTo initiatedExplorerTimer_Error
         
     ' if the higher priority ExplorerTimer is running then exit now, the other explorerTimer should run at a less frequent interval but its job is more important as it is
@@ -2249,14 +2254,15 @@ Private Sub initiatedExplorerTimer_Timer()
     initiatedExplorerTimer.Enabled = False
 
     For useloop = 1 To rdIconUpperBound
-        If Not sDockIcons.Item(CStr(useloop)).InitiatedExplorer = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
-            itIsRunning = isExplorerRunning(sDockIcons.Item(CStr(useloop)).InitiatedExplorer)
+        ' stringKeyValue =  CStr(useloop)
+        If Not sDockIcons(useloop).InitiatedExplorer = vbNullString Then ' only test populated elements in the array - this makes it potentially quicker than the full explorer loop
+            itIsRunning = isExplorerRunning(sDockIcons(useloop).InitiatedExplorer)
             If itIsRunning = False Then
-                sDockIcons.Item(CStr(useloop)).ExplorerRunning = "False" ' the cog array for explorer processes
-                sDockIcons.Item(CStr(useloop)).InitiatedExplorer = vbNullString ' removes the entry from the test array so it isn't caught again
+                sDockIcons(useloop).ExplorerRunning = "False" ' the cog array for explorer processes
+                sDockIcons(useloop).InitiatedExplorer = vbNullString ' removes the entry from the test array so it isn't caught again
             Else
                 itIsRunning = itIsRunning ' it just is
-                'sDockIcons.Item(CStr(useloop)).ExplorerRunning  ="True"
+                'sDockIcons(useloop).ExplorerRunning  ="True"
             End If
             bDrawn = False
             If smallDockBeenDrawn = True Then
@@ -2293,7 +2299,7 @@ End Sub
 ' when a full process check occurs.
 '
 ' If the result of the search is false then the program has completed and the cog can be removed.
-' sDockIcons.Item(CStr(useloop)).ProcessRunning - is the array that determines whether a cog is placed on an application icon.
+' sDockIcons.Item(stringKeyValue).ProcessRunning - is the array that determines whether a cog is placed on an application icon.
 '
 '---------------------------------------------------------------------------------------
 
@@ -2301,7 +2307,8 @@ Private Sub initiatedProcessTimer_Timer()
 
     Dim useloop As Long: useloop = 0
     Dim itIsRunning As Boolean: itIsRunning = False
-     
+    ' Dim stringKeyValue As String
+
     On Error GoTo initiatedProcessTimer_Error
 
     ' if the higher priority processTimer is running then exit now, the other processTimer should run at a less frequent interval (5-60secs) but its job is more important as it is
@@ -2312,14 +2319,14 @@ Private Sub initiatedProcessTimer_Timer()
     initiatedProcessTimer.Enabled = False
 
     For useloop = 1 To rdIconUpperBound
-
-        If Not sDockIcons.Item(CStr(useloop)).InitiatedProcess = vbNullString Then
-            itIsRunning = CBool(IsRunning(sDockIcons.Item(CStr(useloop)).InitiatedProcess))
+        ' stringKeyValue =  CStr(useloop)
+        If Not sDockIcons(useloop).InitiatedProcess = vbNullString Then
+            itIsRunning = CBool(IsRunning(sDockIcons(useloop).InitiatedProcess))
             If itIsRunning = False Then
-                sDockIcons.Item(CStr(useloop)).ProcessRunning = "False" ' remove it from the cog array
-                sDockIcons.Item(CStr(useloop)).InitiatedProcess = vbNullString ' removes the entry from the quick test array so it isn't caught again on the next run
+                sDockIcons(useloop).ProcessRunning = "False" ' remove it from the cog array
+                sDockIcons(useloop).InitiatedProcess = vbNullString ' removes the entry from the quick test array so it isn't caught again on the next run
             Else
-                'sDockIcons.Item(CStr(useloop)).ProcessRunning = "True"
+                'sDockIcons(useloop).ProcessRunning = "True"
                 itIsRunning = itIsRunning ' it just is, so do nothing
             End If
             bDrawn = False
@@ -2391,8 +2398,9 @@ End Sub
 '
 Private Sub responseTimer_Timer()
 
+    Dim HitIcon As cwMainIcon
+    
     Dim lngReturn As Long: lngReturn = 0
-'    Dim gblOutsideDock As Boolean: gblOutsideDock = False
     
     On Error GoTo responseTimer_Error
     
@@ -2423,6 +2431,15 @@ Private Sub responseTimer_Timer()
     
     ' the mouse is now within the icon area or being dragged so start animating and using cpu...
     If insideDockFlg = True Or dragFromDockOperating = True Or dragToDockOperating = True Then
+    
+        Set HitIcon = IconUnderCursor(apiMouse.X, apiMouse.Y)
+        
+        If Not HitIcon Is Nothing Then
+            'We have an icon.
+            'HitIcon.Key identifies it.
+        End If
+    
+    
         If lastPositionRelativeToDock = True Then ' we have just entered the dock so start the growth timer
             ' we cannot cause the main icon to grow on first entry to the dock as it must appear the full icon width in order
             ' for the animation to operate, a new animation method will be required, a complete rewrite
@@ -2446,6 +2463,42 @@ responseTimer_Error:
     'MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure responseTimer of Form dock"
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : IconUnderCursor
+' Author    : beededea
+' Date      : 06/10/2026
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Function IconUnderCursor(ByVal MouseX As Long, _
+                                 ByVal MouseY As Long) As cwMainIcon
+
+    Dim Icon As cwMainIcon
+
+    On Error GoTo IconUnderCursor_Error
+
+    For Each Icon In sDockIcons
+
+        If MouseX >= Icon.X _
+        And MouseX < Icon.X + Icon.Width _
+        And MouseY >= Icon.Y _
+        And MouseY < Icon.Y + Icon.Height Then
+
+            Set IconUnderCursor = Icon
+            Exit Function
+
+        End If
+
+    Next Icon
+
+    On Error GoTo 0
+    Exit Function
+
+IconUnderCursor_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure IconUnderCursor of Form dock"
+
+End Function
 
 '---------------------------------------------------------------------------------------
 ' Procedure : fSetDockUpperHeightLimit
@@ -3222,10 +3275,10 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
             
     
             ' pass the values to the icon properties
-            sIcon.IconIndex = useloop
-            sIcon.IconHeight = iconSizeLargePxls
-            sIcon.IconWidth = iconSizeLargePxls
-            sIcon.iconVOffset = iconCurrentTopPxls
+            'sIcon.IconIndex = useloop
+'            sIcon.Height = iconSizeLargePxls
+'            sIcon.Width = iconSizeLargePxls
+'            sIcon.Y = iconCurrentTopPxls
 
             expandedDockWidth = expandedDockWidth + (iconWidthPxls)
     End If
@@ -3357,11 +3410,14 @@ End Sub
 Private Sub showSmallIcon(ByVal useloop As Integer)
     Dim thiskey As String: thiskey = ""
     Dim thisDisabled As String: thisDisabled = ""
+    ' Dim stringKeyValue As String
     
     On Error GoTo showSmallIcon_Error
-
+    
+    ' stringKeyValue =  CStr(useloop)
+    
     ' check the recently disabled flag and display the transparent version instead
-    If sDockIcons.Item(CStr(useloop)).Disabled = 1 Then
+    If sDockIcons(useloop).Disabled = 1 Then
         thiskey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
     Else
         thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
@@ -3377,14 +3433,14 @@ Private Sub showSmallIcon(ByVal useloop As Integer)
     
     'show cogs above running processes
     If rDShowRunning = "1" Then
-        If (sDockIcons.Item(CStr(useloop)).ProcessRunning = "True" Or sDockIcons.Item(CStr(useloop)).ExplorerRunning = "True") Then
+        If (sDockIcons(useloop).ProcessRunning = "True" Or sDockIcons(useloop).ExplorerRunning = "True") Then
             thiskey = "tinycircleResizedImg128"
             If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
             If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls)
          End If
     End If
     ' target command validity test flag places a red X on the icon
-    If sDockIcons.Item(CStr(useloop)).TargetExists = "1" Then
+    If sDockIcons(useloop).TargetExists = "1" Then
         thiskey = "redxResizedImg64"
         If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
         If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2)
@@ -3407,13 +3463,16 @@ End Sub
 '
 Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIconXOffset As Integer)
     Dim thiskey As String: thiskey = ""
+    ' Dim stringKeyValue As String
     
    On Error GoTo showLargeIconTypes_Error
+   
+    ' stringKeyValue =  CStr(useloop)
 
     If thisIconXOffset <> 0 Then iconPosLeftPxls = iconPosLeftPxls - (thisIconXOffset / 5)
     
     '   check the recently disabled flag and display the transparent version instead
-    If sDockIcons.Item(CStr(useloop)).Disabled = 1 Then
+    If sDockIcons(useloop).Disabled = 1 Then
         thiskey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeLargePxls))
     Else
         thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
@@ -3442,14 +3501,14 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
     
     ' add the small white cog to indicate a running process
     If rDShowRunning = "1" Then
-        If (sDockIcons.Item(CStr(useloop)).ProcessRunning = "True" Or sDockIcons.Item(CStr(useloop)).ExplorerRunning = "True") Then
+        If (sDockIcons(useloop).ProcessRunning = "True" Or sDockIcons(useloop).ExplorerRunning = "True") Then
             If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls), (iconHeightPxls) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
             If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 2)), (iconWidthPxls), (iconHeightPxls)
         End If
     End If
     
     ' add a red X for invalid command ' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
-    If sDockIcons.Item(CStr(useloop)).TargetExists = "1" Then ' redxResizedImg64
+    If sDockIcons(useloop).TargetExists = "1" Then ' redxResizedImg64
             If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2) '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
             If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2)
     End If
@@ -3471,20 +3530,21 @@ End Sub
 '
 Private Sub drawTextAboveIcon(ByVal useloop As Integer, ByVal textWidth As Integer)
         
+   ' Dim stringKeyValue As String
+   
    On Error GoTo drawTextAboveIcon_Error
 
         If useloop = IconIndex Then ' this section is located here to ensure the text is above the icon image
             'now draw the icon text above the selected icon
             If rDHideLabels = "0" Then
-                
-                
-                If Not sDockIcons.Item(CStr(IconIndex)).Title = "Separator" Then
+                ' stringKeyValue =  CStr(IconIndex)
+                If Not sDockIcons(useloop).Title = "Separator" Then
                     textWidth = iconSizeLargePxls
                     If dockPosition = vbtop Then
-                        DrawTheText sDockIcons.Item(CStr(IconIndex)).Title, iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                        DrawTheText sDockIcons(useloop).Title, iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                     ElseIf dockPosition = vbBottom Then
                         ' puts the text 10% +10 px above the icon
-                        DrawTheText sDockIcons.Item(CStr(IconIndex)).Title, dockDrawingPositionPxls - ((iconSizeLargePxls / 10) + 40), iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                        DrawTheText sDockIcons(useloop).Title, dockDrawingPositionPxls - ((iconSizeLargePxls / 10) + 40), iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                         'DrawTheText sTitleArray(iconIndex), (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                         'DrawTheText textToDisplay, (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                     End If
@@ -3875,16 +3935,20 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     Dim sUseDialog As String
     Dim sUseDialogAfter As String
     Dim sDisabled As String
-  
-    'If debugflg = 1 Then debugLog "%runCommand"
     
-    sArguments = sDockIcons.Item(CStr(selectedIconIndex)).Arguments
-    sWorkingDirectory = sDockIcons.Item(CStr(selectedIconIndex)).WorkingDirectory
-    sShowCmd = sDockIcons.Item(CStr(selectedIconIndex)).ShowCmd
-    sIsSeparator = sDockIcons.Item(CStr(selectedIconIndex)).IsSeparator
-    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
-    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
-    sDisabled = sDockIcons.Item(CStr(selectedIconIndex)).Disabled
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
+        
+        'If debugflg = 1 Then debugLog "%runCommand"
+    
+    sArguments = sDockIcons(selectedIconIndex).Arguments
+    sWorkingDirectory = sDockIcons(selectedIconIndex).WorkingDirectory
+    sShowCmd = sDockIcons(selectedIconIndex).ShowCmd
+    sIsSeparator = sDockIcons(selectedIconIndex).IsSeparator
+    sUseDialog = sDockIcons(selectedIconIndex).UseDialog
+    sUseDialogAfter = sDockIcons(selectedIconIndex).UseDialogAfter
+    sDisabled = sDockIcons(selectedIconIndex).Disabled
     
     If sRunElevated = "1" Then
         userLevel = "runas"
@@ -3895,7 +3959,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     'by default read the selected icon's data and set the command to execute
     If commandOverride = vbNullString Then
         'Call readIconData(selectedIconIndex) '.nn DAEB 12/05/2021 frmMain.frm Moved from the runtimer as some of the data is required before the run begins
-        thisCommand = sDockIcons.Item(CStr(selectedIconIndex)).Command
+        thisCommand = sDockIcons(selectedIconIndex).Command
     Else
         ' .68 DAEB 05/05/2021 frmMain.frm cause the docksettings utility to reopen if it has already been initiated
         
@@ -3948,7 +4012,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     If sUseDialog = "1" Then
         ' .19 DAEB frmMain.frm 02/02/2021 added sArguments field to the confirmation dialog
         ' .21 DAEB frmMain.frm 07/02/2021 slight improvement to the confirmation dialog
-        rmessage = "Are you sure you wish to run the following command - " & sDockIcons.Item(CStr(selectedIconIndex)).Title & "?" & vbCr & thisCommand
+        rmessage = "Are you sure you wish to run the following command - " & sDockIcons(selectedIconIndex).Title & "?" & vbCr & thisCommand
         If sArguments <> vbNullString Then rmessage = rmessage & " " & sArguments
         ' must be a modal pop up
         'answer = MsgBox(rmessage, vbYesNo)
@@ -4069,9 +4133,9 @@ tryMSCFullPAth:
     ' BATch files
     If ExtractSuffixWithDot(UCase$(thisCommand)) = ".BAT" Then
         'If debugflg = 1 Then debugLog "ShellExecute " & thisCommand
-        thisCommand = """" & sDockIcons.Item(CStr(selectedIconIndex)).Command & """" ' put the command in quotes so it handles spaces in the path
+        thisCommand = """" & sDockIcons(selectedIconIndex).Command & """" ' put the command in quotes so it handles spaces in the path
         'folderPath = getFolderNameFromPath(thisCommand)  ' extract the default folder from the batch full path
-        If fFExists(sDockIcons.Item(CStr(selectedIconIndex)).Command) Then
+        If fFExists(sDockIcons(selectedIconIndex).Command) Then
             Call shellExecuteWithDialog(userLevel, thisCommand, sArguments, sWorkingDirectory, intShowCmd)
         Else
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
@@ -4120,7 +4184,7 @@ tryMSCFullPAth:
     ' contains "start" so initiate a settings command
     testCMD = LCase$(Left$(thisCommand, 5))
     If InStr(testCMD, "start") <> 0 Then
-        startCommand = Mid$(thisCommand, 7)
+        startCommand = mID$(thisCommand, 7)
         validURL = True
         Call shellExecuteWithDialog(userLevel, startCommand, vbNullString, vbNullString, intShowCmd)
         Exit Sub
@@ -4156,10 +4220,14 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal thisCommand 
     Dim sUseDialogAfter As String
     Dim sAutoHideDock As String
     
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
+        
     On Error GoTo shellExecuteWithDialog_Error
    
-    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
-    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
+    sUseDialogAfter = sDockIcons(selectedIconIndex).UseDialogAfter
+    sAutoHideDock = sDockIcons(selectedIconIndex).AutoHideDock
    
     If windowState = 0 Then windowState = 1 ' .67 DAEB 01/05/2021 frmMain.frm Added creation of Windows in the states as provided by sShowCmd value in RD
    
@@ -4209,8 +4277,8 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal thisCommand 
             initiatedProcessTimer.Enabled = False
             processTimer.Enabled = False
             
-            sDockIcons.Item(CStr(selectedIconIndex)).ProcessRunning = "True" 'this will be a boolean later 'this will be a boolean later
-            sDockIcons.Item(CStr(selectedIconIndex)).InitiatedProcess = sDockIcons.Item(CStr(selectedIconIndex)).Command
+            sDockIcons(selectedIconIndex).ProcessRunning = "True" 'this will be a boolean later 'this will be a boolean later
+            sDockIcons(selectedIconIndex).InitiatedProcess = sDockIcons(selectedIconIndex).Command
             Call checkDockProcessesRunning ' trigger a test of all running processes
             
             Call enableInitiatedProcessTimer
@@ -4220,8 +4288,8 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal thisCommand 
             initiatedExplorerTimer.Enabled = False
             explorerTimer.Enabled = False
             
-            sDockIcons.Item(CStr(selectedIconIndex)).InitiatedExplorer = sDockIcons.Item(CStr(selectedIconIndex)).Command
-            sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "True" 'this will be a boolean later
+            sDockIcons(selectedIconIndex).InitiatedExplorer = sDockIcons(selectedIconIndex).Command
+            sDockIcons(selectedIconIndex).ExplorerRunning = "True" 'this will be a boolean later
             Call checkExplorerRunning
             
             ' turn the two timers that auto populate the arrays back on again
@@ -4236,7 +4304,7 @@ Private Sub shellExecuteWithDialog(ByRef userLevel As String, ByVal thisCommand 
         'MsgBox sTitle & " Command Issued - " & sCommand, vbSystemModal + vbExclamation, "SteamyDock Confirmation Message"
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
         'MessageBox Me.hwnd, sTitle & " Command Issued - " & sCommand, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-        ans = msgBoxA(sDockIcons.Item(CStr(selectedIconIndex)).Title & " Command Issued - " & thisCommand, vbOKOnly, "SteamyDock Confirmation Message", False)
+        ans = msgBoxA(sDockIcons(selectedIconIndex).Title & " Command Issued - " & thisCommand, vbOKOnly, "SteamyDock Confirmation Message", False)
     End If
     
     
@@ -4260,11 +4328,14 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
 
     Dim sUseDialogAfter As String
     Dim sAutoHideDock As String
+    ' Dim stringKeyValue As String
     
+    ' stringKeyValue =  CStr(selectedIconIndex)
+        
     On Error GoTo shellCommand_Error
         
-    sUseDialogAfter = sDockIcons.Item(CStr(selectedIconIndex)).UseDialogAfter
-    sAutoHideDock = sDockIcons.Item(CStr(selectedIconIndex)).AutoHideDock
+    sUseDialogAfter = sDockIcons(selectedIconIndex).UseDialogAfter
+    sAutoHideDock = sDockIcons(selectedIconIndex).AutoHideDock
     
     '.nn Added new check box to allow autohide of the dock prior to launch of the chosen app
     If sAutoHideDock = "1" Then
@@ -4285,7 +4356,7 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
         initiatedProcessTimer.Enabled = False
         processTimer.Enabled = False
         
-        sDockIcons.Item(CStr(selectedIconIndex)).InitiatedProcess = sDockIcons.Item(CStr(selectedIconIndex)).Command
+        sDockIcons(selectedIconIndex).InitiatedProcess = sDockIcons(selectedIconIndex).Command
         Call checkDockProcessesRunning ' trigger a test of all running processes
         
         Call enableInitiatedProcessTimer
@@ -4295,8 +4366,8 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
         initiatedExplorerTimer.Enabled = False
         explorerTimer.Enabled = False
         
-        sDockIcons.Item(CStr(selectedIconIndex)).InitiatedExplorer = sDockIcons.Item(CStr(selectedIconIndex)).Command
-        sDockIcons.Item(CStr(selectedIconIndex)).ExplorerRunning = "True" 'this will be a boolean later
+        sDockIcons(selectedIconIndex).InitiatedExplorer = sDockIcons(selectedIconIndex).Command
+        sDockIcons(selectedIconIndex).ExplorerRunning = "True" 'this will be a boolean later
         Call checkExplorerRunning
         
         ' turn the two timers that auto populate the arrays back on again
@@ -4307,7 +4378,7 @@ Private Sub shellCommand(ByVal shellparam1 As String, Optional ByVal windowState
     ' call up a dialog box if required
     If sUseDialogAfter = "1" Then
         ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
-        MessageBox Me.hWnd, sDockIcons.Item(CStr(selectedIconIndex)).Title & " Command Issued - " & sDockIcons.Item(CStr(selectedIconIndex)).Command, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+        MessageBox Me.hWnd, sDockIcons(selectedIconIndex).Title & " Command Issued - " & sDockIcons(selectedIconIndex).Command, "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
     End If
 
    On Error GoTo 0
@@ -4463,13 +4534,16 @@ End Sub
     Dim sSecondApp As String
     Dim sRunSecondAppBeforehand As String
     Dim sAppToTerminate As String
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
   
     On Error GoTo startRunTimer_Error
   
-    sUseDialog = sDockIcons.Item(CStr(selectedIconIndex)).UseDialog
-    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex)).SecondApp
-    sRunSecondAppBeforehand = sDockIcons.Item(CStr(selectedIconIndex)).RunSecondAppBeforehand
-    sAppToTerminate = sDockIcons.Item(CStr(selectedIconIndex)).AppToTerminate
+    sUseDialog = sDockIcons(selectedIconIndex).UseDialog
+    sSecondApp = sDockIcons(selectedIconIndex).SecondApp
+    sRunSecondAppBeforehand = sDockIcons(selectedIconIndex).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons(selectedIconIndex).AppToTerminate
     
     ' if the process to kill is named then kill it before running the main process associated with the icon
     
@@ -4483,7 +4557,7 @@ End Sub
     ' run the second app
      If sSecondApp <> vbNullString And sRunSecondAppBeforehand = "1" Then
         If sUseDialog = "1" Then
-            rmessage = "Are you sure you wish to run the associated second application? - " & sDockIcons.Item(CStr(selectedIconIndex)).Title & "?" & vbCr & sSecondApp
+            rmessage = "Are you sure you wish to run the associated second application? - " & sDockIcons(selectedIconIndex).Title & "?" & vbCr & sSecondApp
             answer = MsgBox(rmessage, vbYesNo)
             'answer = msgBoxA(rmessage, vbYesNo, "SteamyDock Confirmation Message", False)
             
@@ -4503,7 +4577,7 @@ End Sub
     ' run the selected program
     If sSecondApp <> vbNullString And sRunSecondAppBeforehand <> "" Then
         If sUseDialog = "1" Then
-            rmessage = "Are you sure you wish to run the associated second application? - " & sDockIcons.Item(CStr(selectedIconIndex)).Title & "?" & vbCr & sSecondApp
+            rmessage = "Are you sure you wish to run the associated second application? - " & sDockIcons(selectedIconIndex).Title & "?" & vbCr & sSecondApp
             answer = MsgBox(rmessage, vbYesNo)
             'answer = msgBoxA(rmessage, vbYesNo, "SteamyDock Confirmation Message", False)
             If answer = vbNo Then
@@ -4566,10 +4640,13 @@ End Sub
 Private Sub delayRunTimer_Timer()
 
     Dim sSecondApp As String
+    ' Dim stringKeyValue As String
     
+    ' stringKeyValue =  CStr(selectedIconIndex)
+        
     On Error GoTo delayRunTimer_Timer_Error
 
-    sSecondApp = sDockIcons.Item(CStr(selectedIconIndex)).SecondApp
+    sSecondApp = sDockIcons(selectedIconIndex).SecondApp
     
     delayRunTimerCount = delayRunTimerCount + 1
     If delayRunTimerCount >= 1 Then
@@ -4602,10 +4679,13 @@ End Sub
 Private Sub bounceDownTimer_Timer()
     Dim bvalue As Double: bvalue = 0
     Dim sQuickLaunch As String
-
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
+    
     On Error GoTo bounceDownTimer_Timer_Error
     
-    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
+    sQuickLaunch = sDockIcons(selectedIconIndex).QuickLaunch
     
     ' first type of animation using a tall double bounce
     If rDIconActivationFX = "1" Then
@@ -4674,10 +4754,13 @@ Private Sub bounceUpTimer_Timer()
    
     Dim sQuickLaunch As String
     Dim bvalue As Double: bvalue = 0
-  
+    ' Dim stringKeyValue As String
+    
+    ' stringKeyValue =  CStr(selectedIconIndex)
+      
     On Error GoTo bounceUpTimer_Error
    
-    sQuickLaunch = sDockIcons.Item(CStr(selectedIconIndex)).QuickLaunch
+    sQuickLaunch = sDockIcons(selectedIconIndex).QuickLaunch
     
     If rDIconActivationFX = "0" Then ' no icon animation at all
         bounceUpTimer.Enabled = False
@@ -5247,6 +5330,7 @@ Public Sub prepareArraysAndCollections()
     
     Dim sFilename As String
     Dim sDisabled As String
+    Dim stringKeyValue As String
     
     On Error GoTo prepareArraysAndCollections_Error
     
@@ -5258,25 +5342,30 @@ Public Sub prepareArraysAndCollections()
     'this routine adds the additional images that the dock uses, not the icons but the decoration
     Call loadAdditionalImagestoDictionary
     
-    ' now load the user specified icons to the dictionary
+    ' now load the user specified icons to the collection
+    ' now we obtain the icon data from the SQLite database with error check returned
+
     For useloop = iconArrayLowerBound To iconArrayUpperBound
-    
-        ' previously we extracted icondata from the random access data file,
-        ' now we obtain the icon data from the SQLite database with error check returned
-        'readIconParamsFromDb useloop
+
+        ' create multiple icon instances using the cwMainIcon class with a text key based upon a short word and a numeric value useloop
+        ' Later when we want to insert we use the ID to identify the icon not the key, we are now using a positional collection
+        ' and so referencing by keys is less important.
+        
         Call createDockIcons(useloop)
+        
+        stringKeyValue = CStr(useloop)
 
-        sFilename = sDockIcons.Item(CStr(useloop)).FileName
+        sFilename = sDockIcons(useloop).FileName
 
-        partialStringKey = CStr(useloop)
+        partialStringKey = useloop
         
         ' read the main icon variables into arrays
         'sFileNameArray(useloop) = sFilename
         dictionaryLocationArray(useloop) = useloop
         'sTitleArray(useloop) = sTitle
-        'sDockIcons.Item(CStr(useloop)).Command = sCommand
+        'sDockIcons(useloop).Command = sCommand
         
-        sDisabled = sDockIcons.Item(CStr(useloop)).Disabled
+        sDisabled = sDockIcons(useloop).Disabled
         
         overallIconOpacity = Val(rDIconOpacity) ' overall icon opacity of all icons
 
@@ -5287,7 +5376,7 @@ Public Sub prepareArraysAndCollections()
             ' reduce the opacity
             thisOpacity = overallIconOpacity * 0.6
             
-            sDockIcons.Item(CStr(useloop)).Disabled = 1
+            sDockIcons(useloop).Disabled = 1
             
             ' create keys for transparent images in the collLargeIcons/collSmallIcons collections
             largeKey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeLargePxls))
@@ -5306,7 +5395,7 @@ Public Sub prepareArraysAndCollections()
             End If
                         
            ' now add the same image handle to the icon image property
-            sDockIcons.Item(CStr(useloop)).IconTransparentImageSmall = thisBitmap
+            sDockIcons(useloop).IconTransparentImageSmall = thisBitmap
                        
                         
             ' now cache all the images to the collection transparently at the larger size
@@ -5322,7 +5411,7 @@ Public Sub prepareArraysAndCollections()
             End If
             
             ' now add the same image handle to the icon image property
-            sDockIcons.Item(CStr(useloop)).IconTransparentImageLarge = thisBitmap
+            sDockIcons(useloop).IconTransparentImageLarge = thisBitmap
             
         Else
     
@@ -5340,7 +5429,7 @@ Public Sub prepareArraysAndCollections()
             End If
             
             ' now add the same image handle to the icon image property
-            sDockIcons.Item(CStr(useloop)).IconImageSmall = thisBitmap
+            sDockIcons(useloop).IconImageSmall = thisBitmap
             
             
             
@@ -5359,14 +5448,14 @@ Public Sub prepareArraysAndCollections()
             End If
             
             ' now add the same image handle to the icon image property
-            sDockIcons.Item(CStr(useloop)).IconImageLarge = thisBitmap
+            sDockIcons(useloop).IconImageLarge = thisBitmap
             
             
         End If
         
         ' check to see if each process is running and store the result away - this is also run on a 10s timer
-        sDockIcons.Item(CStr(useloop)).ExplorerRunning = isExplorerRunning(sDockIcons.Item(CStr(useloop)).Command)
-        sDockIcons.Item(CStr(useloop)).ProcessRunning = CStr(IsRunning(sDockIcons.Item(CStr(useloop)).Command))
+        sDockIcons(useloop).ExplorerRunning = isExplorerRunning(sDockIcons(useloop).Command)
+        sDockIcons(useloop).ProcessRunning = CStr(IsRunning(sDockIcons(useloop).Command))
 
     Next useloop
 
@@ -6932,19 +7021,21 @@ Private Sub checkTargetCommandValidity()
     Dim pathArray() As String: ' pathArray() = vbNullString
     Dim pathElement As Variant ' you cannot initialise a variant
     Dim currentCommand As String: currentCommand = vbNullString
+    ' Dim stringKeyValue As String
     
     executableFileString = "com cmd msc cpl bat exe"
     pathString = Environ$("path")
     
     For useloop = 1 To rdIconUpperBound
-        sDockIcons.Item(CStr(useloop)).TargetExists = "0"
+        ' stringKeyValue =  CStr(useloop)
+        sDockIcons(useloop).TargetExists = "0"
 
         ' instead of looping through all the command stored in the docksettings.ini file, we now store all the current commands in an array
         ' we loop through the array much quicker than looping through the temporary settings file and extracting the commands from each
 
         ' if the array location is empty then use GOTO to jump to the next iteration, ' sorry! VB6 has no continue.
-        If sDockIcons.Item(CStr(useloop)).Command = vbNullString Then GoTo l_next_iteration
-        thisCommand = sDockIcons.Item(CStr(useloop)).Command
+        If sDockIcons(useloop).Command = vbNullString Then GoTo l_next_iteration
+        thisCommand = sDockIcons(useloop).Command
 
         If fFExists(thisCommand) Then
             GoTo l_next_iteration ' when we match a condition we loop over the subsequent conditions to iterate over the next item.
@@ -7050,7 +7141,7 @@ Private Sub checkTargetCommandValidity()
 
 l_set_flag:
         ' set a flag to enable a small 'x' on this icon
-        sDockIcons.Item(CStr(useloop)).TargetExists = "1"
+        sDockIcons(useloop).TargetExists = "1"
 
 l_next_iteration:
     Next useloop
@@ -7676,9 +7767,9 @@ Const Estart As Double = #1/1/1970#
     Dim e As String
     Dim d As Date
     
-    c = Mid$(dateString, 1, 19)
+    c = mID$(dateString, 1, 19)
     d = CDate(c)
-    msFrac = Val(Mid$(dateString, 21, 3))
+    msFrac = Val(mID$(dateString, 21, 3))
     
     fSecondsFromDateString = CLng((d - Estart) * 86400) '  1643899670
 

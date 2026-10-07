@@ -22,7 +22,7 @@ Option Explicit
 
 ' local property holders for this class
 
-Private mKeyValue As String
+Private mID As String
 Private mFilename As String
 Private mFileName2 As String
 Private mTitle As String
@@ -50,10 +50,11 @@ Private mExplorerRunning   As String   ' contains true/false according to the ru
 Private mInitiatedProcess  As String   ' containing the binary name of any process initiated by the dock
 Private mInitiatedExplorer As String   ' containing the binary name of any explorer process initiated by the dock
 
-Private mIconHOffset As Long
-Private mIconVOffset As Long
-Private mIconHeight As Long
-Private mIconWidth As Long
+Private mX As Long
+Private mY As Long
+Private mHeight As Long
+Private mWidth As Long
+
 Private mIconIndex As Integer
 Private mIconOpacity As Integer
 Private mIconImageLarge As Long ' longPtr
@@ -93,43 +94,43 @@ End Sub
 
 '
 '---------------------------------------------------------------------------------------
-' Property  : KeyValue
+' Property  : ID
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get KeyValue() As String
-   On Error GoTo KeyValueGet_Error
+Public Property Get ID() As String
+   On Error GoTo IDGet_Error
 
-   KeyValue = mKeyValue
+   ID = mID
 
    On Error GoTo 0
    Exit Property
 
-KeyValueGet_Error:
+IDGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property KeyValue  of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property ID  of Class Module cwIcon"
 End Property
+
 '---------------------------------------------------------------------------------------
-' Property  : KeyValue
+' Property  : ID
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let KeyValue(ByVal newValue As String)
-   On Error GoTo KeyValueLet_Error
+Public Property Let ID(ByVal newValue As String)
+   On Error GoTo IDLet_Error
 
-    If mKeyValue <> newValue Then mKeyValue = newValue Else Exit Property
-
+    If mID <> newValue Then mID = newValue Else Exit Property
 
    On Error GoTo 0
    Exit Property
 
-KeyValueLet_Error:
+IDLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property KeyValue of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property ID of Class Module cwIcon"
 End Property
 
 '
@@ -1185,85 +1186,85 @@ End Property
 
 '
 '---------------------------------------------------------------------------------------
-' Property  : IconHeight
+' Property  : Height
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get IconHeight() As Long
-   On Error GoTo IconHeightGet_Error
+Public Property Get Height() As Long
+   On Error GoTo HeightGet_Error
 
-   IconHeight = mIconHeight
+   Height = mHeight
 
    On Error GoTo 0
    Exit Property
 
-IconHeightGet_Error:
+HeightGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconHeight of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Height of Class Module cwIcon"
 End Property
 '---------------------------------------------------------------------------------------
-' Property  : IconHeight
+' Property  : Height
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let IconHeight(ByVal newValue As Long)
-   On Error GoTo IconHeightLet_Error
+Public Property Let Height(ByVal newValue As Long)
+   On Error GoTo HeightLet_Error
 
-    If mIconHeight <> newValue Then mIconHeight = newValue Else Exit Property
+    If mHeight <> newValue Then mHeight = newValue Else Exit Property
     
 
 
    On Error GoTo 0
    Exit Property
 
-IconHeightLet_Error:
+HeightLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconHeight of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Height of Class Module cwIcon"
 End Property
 
 
 '---------------------------------------------------------------------------------------
-' Property  : IconWidth
+' Property  : Width
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get IconWidth() As Long
-   On Error GoTo IconWidthGet_Error
+Public Property Get Width() As Long
+   On Error GoTo WidthGet_Error
 
-   IconWidth = mIconWidth
+   Width = mWidth
 
    On Error GoTo 0
    Exit Property
 
-IconWidthGet_Error:
+WidthGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconWidth of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Width of Class Module cwIcon"
 End Property
 '---------------------------------------------------------------------------------------
-' Property  : IconWidth
+' Property  : Width
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let IconWidth(ByVal newValue As Long)
-   On Error GoTo IconWidthLet_Error
+Public Property Let Width(ByVal newValue As Long)
+   On Error GoTo WidthLet_Error
 
-    If mIconWidth <> newValue Then mIconWidth = newValue Else Exit Property
+    If mWidth <> newValue Then mWidth = newValue Else Exit Property
     
 
    On Error GoTo 0
    Exit Property
 
-IconWidthLet_Error:
+WidthLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property IconWidth of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Width of Class Module cwIcon"
 End Property
 
 
@@ -1523,86 +1524,86 @@ IconIndexLet_Error:
 End Property
 '
 '---------------------------------------------------------------------------------------
-' Property  : iconHOffset
+' Property  : X
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get iconHOffset() As Long
-   On Error GoTo iconHOffsetGet_Error
+Public Property Get X() As Long
+   On Error GoTo XGet_Error
 
-   iconHOffset = mIconHOffset
+   X = mX
 
    On Error GoTo 0
    Exit Property
 
-iconHOffsetGet_Error:
+XGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconHOffset of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property X of Class Module cwIcon"
 End Property
 '---------------------------------------------------------------------------------------
-' Property  : iconHOffset
+' Property  : X
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let iconHOffset(ByVal newValue As Long)
-   On Error GoTo iconHOffsetLet_Error
+Public Property Let X(ByVal newValue As Long)
+   On Error GoTo XLet_Error
 
-    If mIconHOffset <> newValue Then mIconHOffset = newValue Else Exit Property
+    If mX <> newValue Then mX = newValue Else Exit Property
 
 
    On Error GoTo 0
    Exit Property
 
-iconHOffsetLet_Error:
+XLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconHOffset of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property X of Class Module cwIcon"
 End Property
 
 
 '
 '---------------------------------------------------------------------------------------
-' Property  : iconVOffset
+' Property  : Y
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Get iconVOffset() As Long
-   On Error GoTo iconVOffsetGet_Error
+Public Property Get Y() As Long
+   On Error GoTo YGet_Error
 
-   iconVOffset = mIconVOffset
+   Y = mY
 
    On Error GoTo 0
    Exit Property
 
-iconVOffsetGet_Error:
+YGet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconVOffset of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Y of Class Module cwIcon"
 End Property
 '---------------------------------------------------------------------------------------
-' Property  : iconVOffset
+' Property  : Y
 ' Author    : beededea
 ' Date      : 20/11/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Property Let iconVOffset(ByVal newValue As Long)
-   On Error GoTo iconVOffsetLet_Error
+Public Property Let Y(ByVal newValue As Long)
+   On Error GoTo YLet_Error
 
-    If mIconVOffset <> newValue Then mIconVOffset = newValue Else Exit Property
+    If mY <> newValue Then mY = newValue Else Exit Property
     
 
 
    On Error GoTo 0
    Exit Property
 
-iconVOffsetLet_Error:
+YLet_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property iconVOffset of Class Module cwIcon"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in Property Y of Class Module cwIcon"
 End Property
 
 
