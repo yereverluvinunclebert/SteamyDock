@@ -5393,9 +5393,12 @@ Public Sub prepareArraysAndCollections()
             Else ' if the image is not found display an 'x'
                 thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
             End If
-                        
-           ' now add the same image handle to the icon image property
-            sDockIcons(useloop).IconTransparentImageSmall = thisBitmap
+                                
+            ' now add the image handle to the icon small, transparent image property
+            If iconExists(sDockIcons, CStr(partialStringKey)) = True Then  ' using a VB6 collection that doesn't have an .Exists method
+                sDockIcons(useloop).IconTransparentImageSmall = thisBitmap
+            End If
+            
                        
                         
             ' now cache all the images to the collection transparently at the larger size
@@ -5410,8 +5413,10 @@ Public Sub prepareArraysAndCollections()
                 thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
             End If
             
-            ' now add the same image handle to the icon image property
-            sDockIcons(useloop).IconTransparentImageLarge = thisBitmap
+            ' now add the image handle to the icon small, transparent image property
+            If iconExists(sDockIcons, CStr(partialStringKey)) = True Then  ' using a VB6 collection that doesn't have an .Exists method
+                sDockIcons(useloop).IconTransparentImageLarge = thisBitmap
+            End If
             
         Else
     
@@ -5427,9 +5432,11 @@ Public Sub prepareArraysAndCollections()
             Else ' if the image is not found display an 'x'
                 thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
             End If
-            
-            ' now add the same image handle to the icon image property
-            sDockIcons(useloop).IconImageSmall = thisBitmap
+
+            ' now add the image handle to the icon small image property
+            If iconExists(sDockIcons, CStr(partialStringKey)) = True Then  ' using a VB6 collection that doesn't have an .Exists method
+                sDockIcons(useloop).IconImageSmall = thisBitmap
+            End If
             
             
             
@@ -5441,15 +5448,14 @@ Public Sub prepareArraysAndCollections()
                 Else
                     thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity)
                 End If
-                
-
             Else
                 thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity)
             End If
             
-            ' now add the same image handle to the icon image property
-            sDockIcons(useloop).IconImageLarge = thisBitmap
-            
+            ' now add the image handle to the icon large image property
+            If iconExists(sDockIcons, CStr(useloop)) = True Then  ' using a VB6 collection that doesn't have an .Exists method
+                sDockIcons(useloop).IconImageLarge = thisBitmap
+            End If
             
         End If
         

@@ -199,6 +199,16 @@ Public Declare Function BringWindowToTop Lib "user32.dll" (ByVal hWnd As Long) A
 
 'APIs and vars for enumerating running windows ENDS
 
+
+' using this API as it is available in Windows XP and above, suitable for ReactOS
+#If Not Win64 Then ' VB6 only
+
+    Private Declare Function RtlGenRandom Lib "advapi32.dll" Alias "SystemFunction036" ( _
+        ByRef Buffer As Any, _
+        ByVal Length As Long) As Long ' no longPtrs
+#End If
+
+
 Public Const DI_NORMAL = 3
 Public Const LR_LOADFROMFILE As Long = &H10
 Public Const SW_RESTORE = 9
@@ -1612,23 +1622,14 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     Dim sDisabled  As String
     
     Dim stringKeyValue As String
-    Dim nextKeyValue As String
+    Dim insertKey As String
 
     On Error GoTo insertNewIconDataIntoCurrentPosition_Error
     'If debugflg = 1 Then debugLog "%" & "insertNewIconDataIntoCurrentPosition"
-
-    'resize all arrays used for storing icon information
-    'Call redimPreserveCacheArrays
-    
-    ' starting at the END of the steamydock map, scroll backward and increment the number
-    ' until we reach the current position.
-    
-    'this will be replaced by a add /before for a VB6 collection
     
     Set sIcon = New cwMainIcon
     
     stringKeyValue = CStr(selectedIconIndex)
-    nextKeyValue = CStr(selectedIconIndex + 1)
     
     ' In the .ADD method the parameters are transposed due to the differences in approach for a scripting.dictionary vs a collection
     ' in a dictionary the key is key! In a collection it is the position, the key is merely a property we only use when ADDing
@@ -1638,81 +1639,51 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     
     'sDockIcons.Add selectedIconIndex, sIcon ' Cristian Buse VBA dictionary or scripting.dictionary
     
-    ' inquire the icon position above the current
-    ' extract the keyname of the icon
+    ' insert at selectedIconIndex on a positional basis not as a key
+    insertKey = selectedIconIndex & "insert" & SecureRandomHex64
+    sDockIcons.Add sIcon, insertKey, Before:=stringKeyValue  ' using a VB6 collection
+
+    sDockIcons(selectedIconIndex).FileName = sFilename
+    sDockIcons(selectedIconIndex).FileName2 = sFileName2
+    sDockIcons(selectedIconIndex).Title = sTitle
+    sDockIcons(selectedIconIndex).Command = sCommand
+    sDockIcons(selectedIconIndex).Arguments = sArguments
+    sDockIcons(selectedIconIndex).WorkingDirectory = sWorkingDirectory
+    sDockIcons(selectedIconIndex).ShowCmd = (sShowCmd)
+    sDockIcons(selectedIconIndex).OpenRunning = (sOpenRunning)
+    sDockIcons(selectedIconIndex).IsSeparator = (sIsSeparator)
+    sDockIcons(selectedIconIndex).UseContext = (sUseContext)
+    sDockIcons(selectedIconIndex).DockletFile = (sDockletFile) ' error ?
+    sDockIcons(selectedIconIndex).UseDialog = (sUseDialog)
+    sDockIcons(selectedIconIndex).UseDialogAfter = (sUseDialogAfter)
+    sDockIcons(selectedIconIndex).QuickLaunch = (sQuickLaunch)
+    sDockIcons(selectedIconIndex).AutoHideDock = (sAutoHideDock)
+    sDockIcons(selectedIconIndex).SecondApp = sSecondApp
+    sDockIcons(selectedIconIndex).RunElevated = (sRunElevated)
+    sDockIcons(selectedIconIndex).RunSecondAppBeforehand = sRunSecondAppBeforehand
+    sDockIcons(selectedIconIndex).AppToTerminate = sAppToTerminate
+    sDockIcons(selectedIconIndex).Disabled = (sDisabled)
+
+'
+'    ' tests
+'    Dim a As String
+'    Dim b As String
+'    Dim c As String
+'    a = sDockIcons(selectedIconIndex - 1).Title
+'    b = sDockIcons(selectedIconIndex).Title
+'    c = sDockIcons(selectedIconIndex + 1).Title
    
-    If iconExists(sDockIcons, stringKeyValue) = False Then  ' using a VB6 collection that doesn't have an .Exists method
-        ' insert at position selectedIconIndex
-        sDockIcons.Add sIcon, CStr(selectedIconIndex), Before:=stringKeyValue  ' using a VB6 collection
-
-        sDockIcons(selectedIconIndex).FileName = sFilename
-        sDockIcons(selectedIconIndex).FileName2 = sFileName2
-        sDockIcons(selectedIconIndex).Title = sTitle
-        sDockIcons(selectedIconIndex).Command = sCommand
-        sDockIcons(selectedIconIndex).Arguments = sArguments
-        sDockIcons(selectedIconIndex).WorkingDirectory = sWorkingDirectory
-        sDockIcons(selectedIconIndex).ShowCmd = (sShowCmd)
-        sDockIcons(selectedIconIndex).OpenRunning = (sOpenRunning)
-        sDockIcons(selectedIconIndex).IsSeparator = (sIsSeparator)
-        sDockIcons(selectedIconIndex).UseContext = (sUseContext)
-        sDockIcons(selectedIconIndex).DockletFile = (sDockletFile) ' error ?
-        sDockIcons(selectedIconIndex).UseDialog = (sUseDialog)
-        sDockIcons(selectedIconIndex).UseDialogAfter = (sUseDialogAfter)
-        sDockIcons(selectedIconIndex).QuickLaunch = (sQuickLaunch)
-        sDockIcons(selectedIconIndex).AutoHideDock = (sAutoHideDock)
-        sDockIcons(selectedIconIndex).SecondApp = sSecondApp
-        sDockIcons(selectedIconIndex).RunElevated = (sRunElevated)
-        sDockIcons(selectedIconIndex).RunSecondAppBeforehand = sRunSecondAppBeforehand
-        sDockIcons(selectedIconIndex).AppToTerminate = sAppToTerminate
-        sDockIcons(selectedIconIndex).Disabled = (sDisabled)
-
-    End If
-    
-'    For useloop = iconArrayUpperBound To selectedIconIndex Step -1
-'         Call zeroAllIconCharacteristics
-'
-'         Call readIconParamsFromDb(useloop)
-'         Call writeIconSettingsDb(useloop + 1, False)
-'    Next useloop
-'
    ' dynamically extend the number of picture boxes by one
     thisIcon = useloop + 1
     rdIconUpperBound = rdIconUpperBound + 1
     iconArrayUpperBound = rdIconUpperBound
     
     'amend the count in the alternative rdSettings.ini
-    'PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
-    
-    'resize all arrays used for storing icon information
-'    Call redimPreserveCacheArrays
+    PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
 '
-'    ' retain sVariables here - useful as local vars
-'    'when we arrive at the original position then set the current valid icon characteristics passed as params into this routine
-'    sFilename = thisFilename
-'    sTitle = thisTitle
-'    sCommand = thisCommand
-'    sArguments = thisArguments
-'    sWorkingDirectory = thisWorkingDirectory
-'    sDockletFile = thisDockletFile
-'    sIsSeparator = thisSeparator
-'    sShowCmd = thisShowCmd
-'    sOpenRunning = thisOpenRunning
-'    sUseContext = thisUseContext
-'    sUseDialog = thisUseDialog
-'    sUseDialogAfter = thisUseDialogAfter
-'    sQuickLaunch = thisQuickLaunch
-'    sDisabled = thisDisabled
-'
-'    Call writeIconSettingsDb(thisIcon, False)
-'
-'    ' then re-read the config for every icon from the top down to the selected item
-'    For useloop = iconArrayUpperBound To selectedIconIndex Step -1
-'        Call readIconParamsFromDb(useloop)
-'        Call reassignArrayElements(useloop)
+'    For useloop =1 to rdIconUpperBound
+'         Call writeIconSettingsDb(useloop, False)
 '    Next useloop
-    
-'    Call clearInitiatedExplorerArray
-'    Call clearInitiatedProcessArray
 
     'amend the count in both the alternative rdSettings.ini
     PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
@@ -2828,7 +2799,7 @@ Public Function resizeAndLoadImgToDict(ByRef thiscollection As Collection, ByVal
         thiscollection.Remove thiskey
     End If
     thiscollection.Add iconBitmap, thiskey ' using a VB6 collection
-    
+        
     resizeAndLoadImgToDict = iconBitmap
     
    On Error GoTo 0
@@ -3714,3 +3685,37 @@ executeSettings_Error:
 End Function
     
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : SecureRandomHex64
+' Author    : chatGPT
+' Date      : 09/08/2026
+' Purpose   : builds a 64bit 16 character ID string
+'---------------------------------------------------------------------------------------
+'
+Public Function SecureRandomHex64() As String
+
+    Dim B(5) As Byte
+    Dim i As Long
+    Dim theString As String
+
+    On Error GoTo SecureRandomHex64_Error
+
+    ' returns a random number and populates an array of 8 byte buffers
+    If RtlGenRandom(B(0), 8) <> 0 Then 'success
+        For i = 0 To 5
+            ' builds a string of hex pairs, padding with zero if required.
+            theString = theString & Right$("0" & Hex$(B(i)), 2)
+        Next
+    End If
+    
+    SecureRandomHex64 = "0018" & theString
+
+    On Error GoTo 0
+    Exit Function
+
+SecureRandomHex64_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure SecureRandomHex64 of Module Module1"
+
+End Function
