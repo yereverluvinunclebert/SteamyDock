@@ -5388,16 +5388,13 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity, 0)
                 End If
             Else ' if the image is not found display an 'x'
-                thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity)
+                thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity, 0)
             End If
                                 
-            ' now add the image handle to the icon small, transparent image property
-            If iconExists(sDockIcons, CStr(partialStringKey)) = True Then  ' using a VB6 collection that doesn't have an .Exists method
-                sDockIcons(useloop).IconTransparentImageSmall = thisBitmap
-            End If
+
             
                        
                         
@@ -5407,15 +5404,10 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity, 1)
                 End If
             Else
-                thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity)
-            End If
-            
-            ' now add the image handle to the icon small, transparent image property
-            If iconExists(sDockIcons, CStr(partialStringKey)) = True Then  ' using a VB6 collection that doesn't have an .Exists method
-                sDockIcons(useloop).IconTransparentImageLarge = thisBitmap
+                thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity, 1)
             End If
             
         Else
@@ -5427,16 +5419,12 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), "", overallIconOpacity, 2)
                 End If
             Else ' if the image is not found display an 'x'
-                thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , overallIconOpacity)
+                thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), "", overallIconOpacity, 2)
             End If
 
-            ' now add the image handle to the icon small image property
-            If iconExists(sDockIcons, CStr(partialStringKey)) = True Then  ' using a VB6 collection that doesn't have an .Exists method
-                sDockIcons(useloop).IconImageSmall = thisBitmap
-            End If
             
             
             
@@ -5446,16 +5434,12 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity)
+                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), "", overallIconOpacity, 3)
                 End If
             Else
-                thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , overallIconOpacity)
+                thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), "", overallIconOpacity, 3)
             End If
             
-            ' now add the image handle to the icon large image property
-            If iconExists(sDockIcons, CStr(useloop)) = True Then  ' using a VB6 collection that doesn't have an .Exists method
-                sDockIcons(useloop).IconImageLarge = thisBitmap
-            End If
             
         End If
         

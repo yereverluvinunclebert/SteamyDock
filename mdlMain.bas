@@ -2347,7 +2347,7 @@ deleteThisIcon_Error:
 End Sub
 
 
-    
+
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
 '---------------------------------------------------------------------------------------
@@ -2381,19 +2381,19 @@ Public Sub loadAdditionalImagestoDictionary()
         ' load the theme background image into the collection sDSkinLeft is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDleft.png"
         If fFExists(themeName) Then
-            resizeAndLoadImgToDict collLargeIcons, "sDSkinLeft", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, , imageOpacity
+            resizeAndLoadImgToDict collLargeIcons, "sDSkinLeft", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, "", imageOpacity, 4
         End If
     '
     '    ' load the theme background image into the collection sDSkinMid is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDmiddle.png"
         If fFExists(themeName) Then
-            resizeAndLoadImgToDict collLargeIcons, "sDSkinMid", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, , imageOpacity
+            resizeAndLoadImgToDict collLargeIcons, "sDSkinMid", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, "", imageOpacity, 4
         End If
 
     '    ' load the theme background image into the collection sDSkinRight is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDright.png"
         If fFExists(themeName) Then
-            resizeAndLoadImgToDict collLargeIcons, "sDSkinRight", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, , imageOpacity
+            resizeAndLoadImgToDict collLargeIcons, "sDSkinRight", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, "", imageOpacity, 4
         End If
         
         ' load the theme separator image into the collection sDSeparator is the unique key
@@ -2407,51 +2407,51 @@ Public Sub loadAdditionalImagestoDictionary()
     
     ' load a transparent 128 x 128 image into the collection, used to stop click-throughs
     If fFExists(App.Path & "\blankSquare.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "blank", App.Path & "\blankSquare.png", sDisabled, (0), (0), (128), (128), , 1
+        resizeAndLoadImgToDict collLargeIcons, "blank", App.Path & "\blankSquare.png", sDisabled, (0), (0), (128), (128), "", 1, 4
     End If
     
     ' .11 DAEB 01/05/2021 mdlMain.bas load a transparent 128 x 128 image into the collection, used to highlight the position of a drag/drop
     If fFExists(App.Path & "\red.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "red", App.Path & "\red.png", sDisabled, (0), (0), (256), (256), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "red", App.Path & "\red.png", sDisabled, (0), (0), (256), (256), "", imageOpacity, 4
     End If
     
     ' load a small circle image into the collection, used to signify running process
     '                           thisDictionary, key ,strFilename, strName,thisDisabled ,Left, ByVal Top As Long,Width, Height,fullStringKey)
     If fFExists(App.Path & "\tinyCircle.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
     End If
     
     If fFExists(App.Path & "\busycog.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "busycog", App.Path & "\busycog.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "busycog", App.Path & "\busycog.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
     End If
     
     If fFExists(App.Path & "\smallGoldCoin.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "smallgoldCoin", App.Path & "\smallGoldCoin.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "smallgoldCoin", App.Path & "\smallGoldCoin.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
     End If
     
     ' load a small circle image into the collection, used to signify running process
     If fFExists(App.Path & "\red-X.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "redx", App.Path & "\red-X.png", sDisabled, (0), (0), (64), (64), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "redx", App.Path & "\red-X.png", sDisabled, (0), (0), (64), (64), "", imageOpacity, 4
     End If
     
     ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
     If fFExists(App.Path & "\busy-F1-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass1", App.Path & "\busy-F1-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "hourglass1", App.Path & "\busy-F1-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
     End If
     If fFExists(App.Path & "\busy-F2-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass2", App.Path & "\busy-F2-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "hourglass2", App.Path & "\busy-F2-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
     End If
     If fFExists(App.Path & "\busy-F3-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass3", App.Path & "\busy-F3-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "hourglass3", App.Path & "\busy-F3-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
     End If
     If fFExists(App.Path & "\busy-F4-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass4", App.Path & "\busy-F4-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "hourglass4", App.Path & "\busy-F4-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
     End If
     If fFExists(App.Path & "\busy-F5-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass5", App.Path & "\busy-F5-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "hourglass5", App.Path & "\busy-F5-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
     End If
     If fFExists(App.Path & "\busy-F6-32x32x24.png") Then
-        resizeAndLoadImgToDict collLargeIcons, "hourglass6", App.Path & "\busy-F6-32x32x24.png", sDisabled, (0), (0), (128), (128), , imageOpacity
+        resizeAndLoadImgToDict collLargeIcons, "hourglass6", App.Path & "\busy-F6-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
     End If
 
     
@@ -2619,8 +2619,8 @@ Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As
     partialStringKey = LTrim$(Str$(dictionaryLocationArrayUpperBound))
     If fFExists(newFileName) Then
         ' we use the existing resizeAndLoadImgToDict to read the icon format and load into the two dictionaries
-         resizeAndLoadImgToDict collLargeIcons, partialStringKey, newFileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), , imageOpacity
-         resizeAndLoadImgToDict collSmallIcons, partialStringKey, newFileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), , imageOpacity
+         resizeAndLoadImgToDict collSmallIcons, partialStringKey, newFileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), "", imageOpacity, 2
+         resizeAndLoadImgToDict collLargeIcons, partialStringKey, newFileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), "", imageOpacity, 3
     End If
   
     'If selectedIconIndex <= rdIconUpperBound Then 'if not the top icon loop through them all and reassign the values
@@ -2707,7 +2707,7 @@ End Sub
 
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-Public Function resizeAndLoadImgToDict(ByRef thiscollection As Collection, ByVal Key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, Optional ByVal fullStringKey As String = "", Optional ByVal imageOpacity As Integer) As Long
+Public Function resizeAndLoadImgToDict(ByRef thiscollection As Collection, ByVal Key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, ByVal fullStringKey As String, ByVal imageOpacity As Integer, Optional imageLocation As Integer) As Long
 
     Dim thiskey As String
     Dim saveStatus As Boolean
@@ -2794,12 +2794,36 @@ Public Function resizeAndLoadImgToDict(ByRef thiscollection As Collection, ByVal
 '    End If
 '    thisDictionary.Add thiskey, iconBitmap
     
-    ' add the bitmap to the native VB6 collection
+
     If itemExists(thiscollection, thiskey) = True Then ' using a VB6 collection that doesn't have an .Exists method as
         thiscollection.Remove thiskey
     End If
     thiscollection.Add iconBitmap, thiskey ' using a VB6 collection
-        
+            
+    'load the same images to the icon class instance
+    If imageLocation > 0 And imageLocation <= 3 Then
+        If iconExists(sDockIcons, CStr(Key)) = True Then  ' using a VB6 collection that doesn't have an .Exists method
+                
+            
+            If imageLocation = 0 Then ' load to small transparent location
+                sDockIcons(Key).IconTransparentImageSmall = iconBitmap
+            
+            ElseIf imageLocation = 1 Then '  load to large transparent location
+                sDockIcons(Key).IconTransparentImageLarge = iconBitmap
+                
+            ElseIf imageLocation = 2 Then '  load to small image location
+                sDockIcons(Key).IconImageSmall = iconBitmap
+            
+            ElseIf imageLocation = 3 Then '  load to large image location
+                sDockIcons(Key).IconImageLarge = iconBitmap
+            
+            ElseIf imageLocation = 4 Then ' load to other images
+            
+            End If
+    
+        End If
+    End If
+    
     resizeAndLoadImgToDict = iconBitmap
     
    On Error GoTo 0
