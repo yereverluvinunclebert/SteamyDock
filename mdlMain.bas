@@ -2991,19 +2991,19 @@ Public Function updateDisplayFromDictionary(thiscollection As Collection, strFil
    On Error GoTo updateDisplayFromDictionary_Error
 
     ' get the stored image from the old large/small collections if it exists, now only used for 'other' non-icon images
-    If itemExists(thiscollection, Key) = True Then
+'    If itemExists(thiscollection, Key) = True Then
         iconBitmap = thiscollection(Key)
-    Else
-        iconBitmap = 0
-    End If
+'    Else
+'        iconBitmap = 0
+'    End If
    
     'update the various small, large and transparent icon images from the new icon class instance
     If imageLocation >= 0 And imageLocation <= 4 Then
     
-        Debug.Print justKey
-        Debug.Print imageLocation
-     
-        If iconExists(sDockIcons, CStr(justKey)) = True Then  ' using a function to determine existence of a key within a VB6 collection as this construct doesn't have an .Exists method
+'        Debug.Print justKey
+'        Debug.Print imageLocation
+'
+        'If iconExists(sDockIcons, CStr(justKey)) = True Then  ' using a function to determine existence of a key within a VB6 collection as this construct doesn't have an .Exists method
                 
             If imageLocation = 0 Then ' load the small transparent icon from the icon instance
                 iconBitmap = sDockIcons(justKey).IconTransparentImageSmall
@@ -3020,7 +3020,7 @@ Public Function updateDisplayFromDictionary(thiscollection As Collection, strFil
             ElseIf imageLocation = 4 Then ' load to other images
 
             End If
-        End If
+        'End If
     End If
     
 ' old code to show how it idoes done using a dictionary
