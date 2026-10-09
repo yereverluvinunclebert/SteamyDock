@@ -2990,46 +2990,32 @@ Public Function updateDisplayFromDictionary(thiscollection As Collection, strFil
 
    On Error GoTo updateDisplayFromDictionary_Error
 
-    ' get the stored image from the old large/small collections if it exists, now only used for 'other' non-icon images
-'    If itemExists(thiscollection, Key) = True Then
-        iconBitmap = thiscollection(Key)
-'    Else
-'        iconBitmap = 0
-'    End If
+   iconBitmap = 0
    
     'update the various small, large and transparent icon images from the new icon class instance
     If imageLocation >= 0 And imageLocation <= 4 Then
-    
-'        Debug.Print justKey
-'        Debug.Print imageLocation
 '
+        ' the key existence is no longer needed as we are now looping through a positional collection, this was carried over from a dictionary that is key-based
         'If iconExists(sDockIcons, CStr(justKey)) = True Then  ' using a function to determine existence of a key within a VB6 collection as this construct doesn't have an .Exists method
-                
-            If imageLocation = 0 Then ' load the small transparent icon from the icon instance
+            
+        Select Case imageLocation
+            Case 0  ' load the small transparent icon from the icon instance
                 iconBitmap = sDockIcons(justKey).IconTransparentImageSmall
             
-            ElseIf imageLocation = 1 Then '  load the large transparent icon from the icon instance
+            Case 1 '  load the large transparent icon from the icon instance
                 iconBitmap = sDockIcons(justKey).IconTransparentImageLarge
                 
-            ElseIf imageLocation = 2 Then '  load the small opaque image icon from the icon instance
+            Case 2 '  load the small opaque image icon from the icon instance
                 iconBitmap = sDockIcons(justKey).IconImageSmall
             
-            ElseIf imageLocation = 3 Then '  load the large opaque image icon from the icon instance
+            Case 3 '  load the large opaque image icon from the icon instance
                 iconBitmap = sDockIcons(justKey).IconImageLarge
-            
-            ElseIf imageLocation = 4 Then ' load to other images
-
-            End If
+                
+            Case 4  '  load the large opaque image icon from the icon instance
+                iconBitmap = thiscollection(Key)
+        End Select
         'End If
     End If
-    
-' old code to show how it idoes done using a dictionary
-
-'    If thisCollection(Key) <> 0 Then ' scripting.dictionary
-'        iconBitmap = thisCollection(Key)
-'    Else
-'        Exit Function
-'    End If
     
     ' draws the GDIP icon bitmap onto the screen bitmap
     Call GdipDrawImageRectI(gdipFullScreenBitmap, iconBitmap, Left, Top, Width, Height)  ' shrinks the bitmap into the image object
