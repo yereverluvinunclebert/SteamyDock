@@ -2951,6 +2951,7 @@ Private Sub sequentialBubbleAnimation()
         ' store the icon current position in the array
         Call storeCurrentIconPositions(useloop)
 
+        'iconPosLeftPxls = sDockIcons(useloop).X + iconWidthPxls ' new positioning code
         iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
    
     Next useloop
@@ -3469,7 +3470,13 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
    
     ' stringKeyValue =  CStr(useloop)
 
-    If thisIconXOffset <> 0 Then iconPosLeftPxls = iconPosLeftPxls - (thisIconXOffset / 5)
+    If thisIconXOffset <> 0 Then
+'        sDockIcons(useloop).X = sDockIcons(useloop).X - (thisIconXOffset / 5) ' new positioning code
+'        sDockIcons(useloop).X = iconPosLeftPxls - (thisIconXOffset / 5) ' interim
+        ' old
+        iconPosLeftPxls = iconPosLeftPxls - (thisIconXOffset / 5)
+    
+    End If
     
     '   check the recently disabled flag and display the transparent version instead
     If sDockIcons(useloop).Disabled = 1 Then
@@ -3657,6 +3664,7 @@ Private Sub sizeAndShowFullSizeIconByCEP(ByVal thisIconIndex As Integer, ByRef s
     ' the following two lines  position the main icon initially to the main icon's leftmost start point when small
     ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     '
+'    iconPosLeftPxls = sDockIcons(thisIconIndex).X  ' new positioning code
     iconPosLeftPxls = iconStoreLeftPixels(IconIndex)
     
     Call storeCurrentIconPositions(thisIconIndex)
@@ -3703,6 +3711,9 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
            iconCurrentTopPxls = dockDrawingPositionPxls
         End If
 
+         ' new positioning code
+'        sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex).X + sDockIcons(thisIconIndex).Width 'new and final but currently unused
+'        sDockIcons(thisIconIndex).X = iconPosLeftPxls - iconWidthPxls ' interim
         iconPosLeftPxls = iconPosLeftPxls - iconWidthPxls
         
         Call storeCurrentIconPositions(thisIconIndex - 1)
@@ -3752,6 +3763,10 @@ Private Sub sizeAndShowSingleMainIconToRightByCEP(ByVal thisIconIndex As Integer
             iconCurrentTopPxls = dockDrawingPositionPxls
         End If
         
+         ' new positioning code
+        
+'        sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex).X + sDockIcons(thisIconIndex).Width 'new and final but currently unused
+'        sDockIcons(thisIconIndex).X = (iconStoreLeftPixels(thisIconIndex)) + mainIconWidthPxls ' interim
         iconPosLeftPxls = (iconStoreLeftPixels(thisIconIndex)) + mainIconWidthPxls
 
         Call storeCurrentIconPositions(thisIconIndex + 1)
@@ -3796,7 +3811,11 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
                 sized = True
             End If
 
+             ' new positioning code
+'            sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex).X - sDockIcons(thisIconIndex).Width 'new and final but currently unused
+'            sDockIcons(thisIconIndex).X = iconPosLeftPxls - iconWidthPxls  ' interim
             iconPosLeftPxls = iconPosLeftPxls - iconWidthPxls
+            
 '            iconStoreLeftPixels(leftLoop) = iconPosLeftPxls ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '            iconStoreRightPixels(leftLoop) = iconStoreLeftPixels(leftLoop) + iconWidthPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon             ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '            iconStoreTopPixels(leftLoop) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
@@ -3832,7 +3851,11 @@ Private Sub sizeAndShowSmallIconsToRightByCEP(ByVal thisIconIndex As Integer, By
     If thisIconIndex < rdIconUpperBound Then   'check it isn't trying to animate a non-existent icon after the last icon
 
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-       iconPosLeftPxls = (iconStoreLeftPixels(IconIndex + 1)) + rightIconWidthPxls
+                    ' new positioning code
+'            sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex + 1).X - sDockIcons(thisIconIndex + 1).Width 'new and final but currently unused
+'            sDockIcons(thisIconIndex).X = (iconStoreLeftPixels(thisIconIndex + 1)) + rightIconWidthPxls  ' interim
+            ' old
+            iconPosLeftPxls = (iconStoreLeftPixels(IconIndex + 1)) + rightIconWidthPxls
        
        For rightLoop = thisIconIndex + 2 To iconArrayUpperBound
 
@@ -4925,7 +4948,7 @@ Private Sub setInitialStartPoint()
     leftMostIconPositionPxls = proportionalOffset
 
     iconPosLeftPxls = leftMostIconPositionPxls ' rDOffset
-
+'    sDockIcons(1).X = leftMostIconPositionPxls  ' new positioning code
 
    On Error GoTo 0
    Exit Sub
@@ -5146,6 +5169,8 @@ Public Sub drawSmallStaticIcons()
     ' Check bDrawn so the program doesn't redraw the whole icon picture more than once
     If bDrawn = False Then
         iconPosLeftPxls = leftMostIconPositionPxls
+'       sDockIcons(1).X = leftMostIconPositionPxls ' new positioning code
+        
         normalDockWidthPxls = 0
         iconHeightPxls = iconSizeSmallPxls
         iconWidthPxls = iconSizeSmallPxls
@@ -5169,7 +5194,9 @@ Public Sub drawSmallStaticIcons()
             Call storeCurrentIconPositions(useloop)
                     
             iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
-            
+'            sDockIcons(useloop).X = sDockIcons(useloop).X + iconWidthPxls ' interim
+'            sDockIcons(useloop).X = sDockIcons(useloop).X + sDockIcons(useloop).Width ' new positioning code
+                        
 '            If useloop = 81 Then ' debug
 '                useloop = 81
 '            End If
