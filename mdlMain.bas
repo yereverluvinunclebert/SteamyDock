@@ -2988,39 +2988,34 @@ End Function
 '
 Public Function updateDisplayFromDictionary(thiscollection As Collection, strFilename As String, ByVal Key As String, Optional Left As Long = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1, Optional ByVal imageLocation As Integer, Optional ByVal justKey As Integer) As Boolean
 
-   On Error GoTo updateDisplayFromDictionary_Error
+    On Error GoTo updateDisplayFromDictionary_Error
 
-   iconBitmap = 0
-   
-    'update the various small, large and transparent icon images from the new icon class instance
-    If imageLocation >= 0 And imageLocation <= 4 Then
-'
-        ' the key existence is no longer needed as we are now looping through a positional collection, this was carried over from a dictionary that is key-based
-        'If iconExists(sDockIcons, CStr(justKey)) = True Then  ' using a function to determine existence of a key within a VB6 collection as this construct doesn't have an .Exists method
+    iconBitmap = 0
+
+    ' the key existence is no longer needed as we are now looping through a positional collection, this was carried over from a dictionary that is key-based
+    'If iconExists(sDockIcons, CStr(justKey)) = True Then  ' using a function to determine existence of a key within a VB6 collection as this construct doesn't have an .Exists method
+        
+    Select Case imageLocation
+        Case 0  ' load the small transparent icon from the icon instance
+            iconBitmap = sDockIcons(justKey).IconTransparentImageSmall
+        
+        Case 1 '  load the large transparent icon from the icon instance
+            iconBitmap = sDockIcons(justKey).IconTransparentImageLarge
             
-        Select Case imageLocation
-            Case 0  ' load the small transparent icon from the icon instance
-                iconBitmap = sDockIcons(justKey).IconTransparentImageSmall
+        Case 2 '  load the small opaque image icon from the icon instance
+            iconBitmap = sDockIcons(justKey).IconImageSmall
+        
+        Case 3 '  load the large opaque image icon from the icon instance
+            iconBitmap = sDockIcons(justKey).IconImageLarge
             
-            Case 1 '  load the large transparent icon from the icon instance
-                iconBitmap = sDockIcons(justKey).IconTransparentImageLarge
-                
-            Case 2 '  load the small opaque image icon from the icon instance
-                iconBitmap = sDockIcons(justKey).IconImageSmall
-            
-            Case 3 '  load the large opaque image icon from the icon instance
-                iconBitmap = sDockIcons(justKey).IconImageLarge
-                
-            Case 4  '  load the large opaque image icon from the icon instance
-                iconBitmap = thiscollection(Key)
-        End Select
-        'End If
-    End If
+        Case 4  '  load the other non-icon related images from the other older collections
+            iconBitmap = thiscollection(Key)
+    End Select
     
     ' draws the GDIP icon bitmap onto the screen bitmap
     Call GdipDrawImageRectI(gdipFullScreenBitmap, iconBitmap, Left, Top, Width, Height)  ' shrinks the bitmap into the image object
     
-   Exit Function
+    Exit Function
 
 updateDisplayFromDictionary_Error:
 
