@@ -7,6 +7,7 @@ Begin VB.Form dock
    ClientTop       =   570
    ClientWidth     =   8190
    Icon            =   "frmMain.frx":0000
+   LockControls    =   -1  'True
    OLEDropMode     =   1  'Manual
    ScaleHeight     =   645
    ScaleMode       =   3  'Pixel
@@ -2397,8 +2398,6 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub responseTimer_Timer()
-
-    Dim HitIcon As cwMainIcon
     
     Dim lngReturn As Long: lngReturn = 0
     
@@ -2431,14 +2430,7 @@ Private Sub responseTimer_Timer()
     
     ' the mouse is now within the icon area or being dragged so start animating and using cpu...
     If insideDockFlg = True Or dragFromDockOperating = True Or dragToDockOperating = True Then
-    
-        Set HitIcon = IconUnderCursor(apiMouse.X, apiMouse.Y)
-        
-        If Not HitIcon Is Nothing Then
-            'We have an icon.
-            'HitIcon.Key identifies it.
-        End If
-    
+
     
         If lastPositionRelativeToDock = True Then ' we have just entered the dock so start the growth timer
             ' we cannot cause the main icon to grow on first entry to the dock as it must appear the full icon width in order
@@ -2730,6 +2722,8 @@ Private Sub animateTimer_Timer()
     Dim thiskey As String: thiskey = vbNullString
     Dim textWidth As Integer: textWidth = 0
     Dim insideIcon As Boolean: insideIcon = False
+'    Dim HitIcon As cwMainIcon
+'    Dim a As String
     
     On Error GoTo animateTimer_Error
         
@@ -2753,21 +2747,49 @@ Private Sub animateTimer_Timer()
     bDrawn = False
     expandedDockWidth = 0
     
+    
+     ' determines if and where exactly the mouse is in the < horizontal > icon hover area newmetho causes a icon growth problem
+'    Set HitIcon = IconUnderCursor(apiMouse.X, apiMouse.Y)
+'
+'    If Not HitIcon Is Nothing Then
+'        ' determines the icon index, ie. which icon is clicked upon
+'        'a = HitIcon.Title 'identifies it.
+'        IconIndex = HitIcon.IconIndex
+'        iconXOffset = apiMouse.X - sDockIcons(IconIndex).X
+'    End If
+    
+    ' determines if and where exactly the mouse is in the < horizontal > icon hover area old method
+'    For useloop = iconArrayLowerBound To iconArrayUpperBound
+'        'insideDock = apiMouse.X >= leftMostIconPositionPxls And apiMouse.X <= rightMostIconPositionPxls
+'
+'        ' determines the icon index, ie. which icon is clicked upon
+'        insideIcon = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
+'
+'        If insideIcon Then
+'            IconIndex = useloop ' this is the current icon number being hovered over
+'            iconXOffset = apiMouse.X - iconStoreLeftPixels(useloop)
+'            Exit For ' as soon as we have the index we no longer have to stay in the loop
+'        Else
+'            useloop = useloop
+'        End If
+'    Next useloop
+    
+    
     ' determines if and where exactly the mouse is in the < horizontal > icon hover area
     For useloop = iconArrayLowerBound To iconArrayUpperBound
-        'insideDock = apiMouse.X >= leftMostIconPositionPxls And apiMouse.X <= rightMostIconPositionPxls
-        
+
         ' determines the icon index, ie. which icon is clicked upon
-        insideIcon = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
-        
+        insideIcon = apiMouse.X >= sDockIcons(useloop).X And apiMouse.X <= (sDockIcons(useloop).X + sDockIcons(useloop).Width)
+
         If insideIcon Then
-            IconIndex = useloop ' this is the current icon number being hovered over
-            iconXOffset = apiMouse.X - iconStoreLeftPixels(useloop)
+            ' this is the current icon number being hovered over
+            IconIndex = useloop
+            ' this uses the current icon left position as the place to draw the main icon
+            iconXOffset = apiMouse.X - sDockIcons(useloop).X
             Exit For ' as soon as we have the index we no longer have to stay in the loop
-        Else
-            useloop = useloop
         End If
     Next useloop
+    
     
     ' put starting left position back again for the dock background
     iconPosLeftPxls = leftMostIconPositionPxls
@@ -2951,7 +2973,7 @@ Private Sub sequentialBubbleAnimation()
         ' store the icon current position in the array
         Call storeCurrentIconPositions(useloop)
 
-        sDockIcons(useloop).X = sDockIcons(useloop).X + iconWidthPxls ' new positioning code
+
         iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
    
     Next useloop
@@ -3021,15 +3043,21 @@ Private Sub storeCurrentIconPositions(ByVal thisPosition As Integer)
 
         iconStoreLeftPixels(thisPosition) = Int(iconPosLeftPxls)
         iconStoreRightPixels(thisPosition) = Int(iconStoreLeftPixels(thisPosition) + iconWidthPxls) ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-        'iconStoreTopPixels(useloop) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-        'iconStoreBottomPixels(useloop) =' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+
+        If thisPosition = 0 Then Exit Sub
+        
+        sDockIcons(thisPosition).X = Int(iconPosLeftPxls) ' new positioning code
+        sDockIcons(thisPosition).Y = Int(iconCurrentTopPxls) ' new positioning code
+        sDockIcons(thisPosition).Width = Int(iconWidthPxls) ' new positioning code
+        sDockIcons(thisPosition).Height = Int(iconHeightPxls) ' new positioning code
+        sDockIcons(thisPosition).IconIndex = Int(thisPosition) ' new positioning code
 
    On Error GoTo 0
    Exit Sub
 
 storeCurrentIconPositions_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure storeCurrentIconPositions of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure storeCurrentIconPositions of Form dock " & thisPosition
 End Sub
 
 ''---------------------------------------------------------------------------------------
@@ -3471,8 +3499,8 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
     ' stringKeyValue =  CStr(useloop)
 
     If thisIconXOffset <> 0 Then
-        sDockIcons(useloop).X = sDockIcons(useloop).X - (thisIconXOffset / 5) ' new positioning code
-        sDockIcons(useloop).X = iconPosLeftPxls - (thisIconXOffset / 5) ' interim
+        'sDockIcons(useloop).X = sDockIcons(useloop).X - (thisIconXOffset / 5) ' new positioning code
+        'sDockIcons(useloop).X = iconPosLeftPxls - (thisIconXOffset / 5) ' interim
         ' old
         iconPosLeftPxls = iconPosLeftPxls - (thisIconXOffset / 5)
     
@@ -3664,7 +3692,7 @@ Private Sub sizeAndShowFullSizeIconByCEP(ByVal thisIconIndex As Integer, ByRef s
     ' the following two lines  position the main icon initially to the main icon's leftmost start point when small
     ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     '
-    iconPosLeftPxls = sDockIcons(thisIconIndex).X  ' new positioning code
+'    iconPosLeftPxls = sDockIcons(IconIndex).X  ' new positioning code seems good
     iconPosLeftPxls = iconStoreLeftPixels(IconIndex)
     
     Call storeCurrentIconPositions(thisIconIndex)
@@ -3712,8 +3740,8 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
         End If
 
          ' new positioning code
-        sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex).X + sDockIcons(thisIconIndex).Width 'new and final but currently unused
-        sDockIcons(thisIconIndex).X = iconPosLeftPxls - iconWidthPxls ' interim
+'        sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex).X + sDockIcons(thisIconIndex).Width 'new and final but currently unused
+'        sDockIcons(thisIconIndex).X = iconPosLeftPxls - iconWidthPxls ' interim
         iconPosLeftPxls = iconPosLeftPxls - iconWidthPxls
         
         Call storeCurrentIconPositions(thisIconIndex - 1)
@@ -3765,8 +3793,10 @@ Private Sub sizeAndShowSingleMainIconToRightByCEP(ByVal thisIconIndex As Integer
         
          ' new positioning code
         
-        sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex).X + sDockIcons(thisIconIndex).Width 'new and final but currently unused
-        sDockIcons(thisIconIndex).X = (iconStoreLeftPixels(thisIconIndex)) + mainIconWidthPxls ' interim
+        ' sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex).X + sDockIcons(thisIconIndex).Width 'new and final but currently unused
+        
+       'iconPosLeftPxls = (iconStoreLeftPixels(thisIconIndex)) + mainIconWidthPxls  ' interim
+        
         iconPosLeftPxls = (iconStoreLeftPixels(thisIconIndex)) + mainIconWidthPxls
 
         Call storeCurrentIconPositions(thisIconIndex + 1)
@@ -3812,8 +3842,10 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
             End If
 
              ' new positioning code
-            sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex).X - sDockIcons(thisIconIndex).Width 'new and final but currently unused
-            sDockIcons(thisIconIndex).X = iconPosLeftPxls - iconWidthPxls  ' interim
+            'sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex).X - sDockIcons(thisIconIndex).Width 'new and final but currently unused
+            
+'            sDockIcons(thisIconIndex).X = iconPosLeftPxls - iconWidthPxls  ' interim
+            
             iconPosLeftPxls = iconPosLeftPxls - iconWidthPxls
             
 '            iconStoreLeftPixels(leftLoop) = iconPosLeftPxls ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
@@ -3852,8 +3884,8 @@ Private Sub sizeAndShowSmallIconsToRightByCEP(ByVal thisIconIndex As Integer, By
 
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
                     ' new positioning code
-            sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex + 1).X - sDockIcons(thisIconIndex + 1).Width 'new and final but currently unused
-            sDockIcons(thisIconIndex).X = (iconStoreLeftPixels(thisIconIndex + 1)) + rightIconWidthPxls  ' interim
+'            sDockIcons(thisIconIndex).X = sDockIcons(thisIconIndex + 1).X - sDockIcons(thisIconIndex + 1).Width 'new and final but currently unused
+'            sDockIcons(thisIconIndex).X = (iconStoreLeftPixels(thisIconIndex + 1)) + rightIconWidthPxls  ' interim
             ' old
             iconPosLeftPxls = (iconStoreLeftPixels(IconIndex + 1)) + rightIconWidthPxls
        
@@ -4948,7 +4980,7 @@ Private Sub setInitialStartPoint()
     leftMostIconPositionPxls = proportionalOffset
 
     iconPosLeftPxls = leftMostIconPositionPxls ' rDOffset
-    sDockIcons(1).X = leftMostIconPositionPxls  ' new positioning code
+'    sDockIcons(1).X = leftMostIconPositionPxls  ' new positioning code
 
    On Error GoTo 0
    Exit Sub
@@ -5169,7 +5201,7 @@ Public Sub drawSmallStaticIcons()
     ' Check bDrawn so the program doesn't redraw the whole icon picture more than once
     If bDrawn = False Then
         iconPosLeftPxls = leftMostIconPositionPxls
-       sDockIcons(1).X = leftMostIconPositionPxls ' new positioning code
+'       sDockIcons(1).X = leftMostIconPositionPxls ' new positioning code
         
         normalDockWidthPxls = 0
         iconHeightPxls = iconSizeSmallPxls
@@ -5194,8 +5226,8 @@ Public Sub drawSmallStaticIcons()
             Call storeCurrentIconPositions(useloop)
                     
             iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
-            sDockIcons(useloop).X = sDockIcons(useloop).X + iconWidthPxls ' interim
-            sDockIcons(useloop).X = sDockIcons(useloop).X + sDockIcons(useloop).Width ' new positioning code
+'            sDockIcons(useloop).X = sDockIcons(useloop).X + iconWidthPxls ' interim
+'            sDockIcons(useloop).X = sDockIcons(useloop).X + sDockIcons(useloop).Width ' new positioning code
                         
 '            If useloop = 81 Then ' debug
 '                useloop = 81
