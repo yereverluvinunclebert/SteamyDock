@@ -94,7 +94,7 @@ Public Function backupDatabase() As String
             
     On Error GoTo backupDatabase_Error
    
-    If debugflg = 1 Then debugLog "%" & "backupDatabase"
+    If debugFlg = 1 Then debugLog "%" & "backupDatabase"
     
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" '
 
@@ -636,7 +636,7 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As Integer, Optio
         ' we have to be careful in regard to the key value, as thisKeyValue is the positional location whereas using stringKeyValue is searching for the key
         If iconExists(sDockIcons, stringKeyValue) = True Then ' using a VB6 collection that doesn't have an .Exists method
         ' If sDockIcons.Exists(thisKeyValue) Then ' a scripting.dictionary
-            sDockIcons.Remove thisKeyValue
+            sDockIcons.Remove stringKeyValue
         End If
     
         ' In the .ADD method the parameters are transposed due to the differences in approach for a scripting.dictionary vs a collection

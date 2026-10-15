@@ -1872,21 +1872,21 @@ Private Sub mnuDisableIcon_Click()
 '   and store that as an additional icon at the end of the main collection and use the location array to point to that instead
         
 '    create new keys for both transparent images in the collLargeIcons/collSmallIcons collections
-    largeKey = dictionaryLocationArray(selectedIconIndex) & "TransparentImg" & LTrim$(Str$(iconSizeLargePxls))
-    smallKey = dictionaryLocationArray(selectedIconIndex) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
-        
-    partialStringKey = LTrim$(Str$(selectedIconIndex))
-    imageOpacity = Val(rDIconOpacity)
+'    largeKey = dictionaryLocationArray(selectedIconIndex) & "TransparentImg" & LTrim$(Str$(iconSizeLargePxls))
+'    smallKey = dictionaryLocationArray(selectedIconIndex) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
+'
+'    partialStringKey = LTrim$(Str$(selectedIconIndex))
+'    imageOpacity = Val(rDIconOpacity)
+'
+'    ' reduce the opacity
+'    imageOpacity = imageOpacity / 4
     
-    ' reduce the opacity
-    imageOpacity = imageOpacity / 4
-    
-    ' load and cache transparent versions of the current images to the associated collections
-    ' at small and large sizes.
-    If fFExists(sDockIcons(selectedIconIndex).FileName) Then
-        resizeAndLoadImgToDict collSmallIcons, partialStringKey, sDockIcons(selectedIconIndex).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity, 0
-        resizeAndLoadImgToDict collLargeIcons, partialStringKey, sDockIcons(selectedIconIndex).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity, 1
-    End If
+'    ' load and cache transparent versions of the current images to the associated collections
+'    ' at small and large sizes.
+'    If fFExists(sDockIcons(selectedIconIndex).FileName) Then
+'        resizeAndLoadImgToCollection collSmallIcons, partialStringKey, sDockIcons(selectedIconIndex).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity, 0
+'        resizeAndLoadImgToCollection collLargeIcons, partialStringKey, sDockIcons(selectedIconIndex).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity, 1
+'    End If
 
    On Error GoTo 0
    Exit Sub

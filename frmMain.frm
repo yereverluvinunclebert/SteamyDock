@@ -2981,7 +2981,7 @@ Private Sub sequentialBubbleAnimation()
     ' .nn Changed or added as part of the drag and drop functionality
     ' 12/05/2021 .nn DAEB Displays a copy of the icon that is being dragged at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
-        updateDisplayFromDictionary collLargeIcons, vbNullString, dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75), 3
+        updateDisplayFromCollection collLargeIcons, vbNullString, dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75), 3
     End If
     
     Call updateScreenUsingGDIPBitmap
@@ -3446,11 +3446,11 @@ Private Sub showSmallIcon(ByVal useloop As Integer)
     ' stringKeyValue =  CStr(useloop)
     
     ' check the recently disabled flag and display the transparent version instead
-    If sDockIcons(useloop).Disabled = 1 Then
-        thiskey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
-    Else
-        thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
-    End If
+'    If sDockIcons(useloop).Disabled = 1 Then
+'        thiskey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
+'    Else
+'        thiskey = dictionaryLocationArray(useloop) & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
+'    End If
     
     ' next line is a temporary bug fix to issue where the scripting dictionary allows for a useloop value of 0 resulting in a malformed key but Cristian Buse'
     ' dictionary replacement does not allow it as it based upon arrays. I don't want to alter the calling code  as that had unforessen effects
@@ -3458,21 +3458,26 @@ Private Sub showSmallIcon(ByVal useloop As Integer)
     
     If useloop = 0 Then Exit Sub
     
-    updateDisplayFromDictionary collSmallIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 2, useloop
+    ' check the recently disabled flag and display the transparent version instead
+    If sDockIcons(useloop).Disabled = 1 Then
+        updateDisplayFromCollection collSmallIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 0, useloop
+    Else
+        updateDisplayFromCollection collSmallIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 2, useloop
+    End If
     
     'show cogs above running processes
     If rDShowRunning = "1" Then
         If (sDockIcons(useloop).ProcessRunning = "True" Or sDockIcons(useloop).ExplorerRunning = "True") Then
             thiskey = "tinycircleResizedImg128"
-            If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-            If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls), 4
+            If dockPosition = vbBottom Then updateDisplayFromCollection collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+            If dockPosition = vbtop Then updateDisplayFromCollection collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls), 4
          End If
     End If
     ' target command validity test flag places a red X on the icon
     If sDockIcons(useloop).TargetExists = "1" Then
         thiskey = "redxResizedImg64"
-        If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-        If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2), 4
+        If dockPosition = vbBottom Then updateDisplayFromCollection collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+        If dockPosition = vbtop Then updateDisplayFromCollection collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2), 4
     End If
 
    On Error GoTo 0
@@ -3514,38 +3519,43 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
     End If
         
     ' add a 1% opaque background to the expanded image to catch click-throughs, blankresizedImg128 is the key name
-    updateDisplayFromDictionary collLargeIcons, vbNullString, "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconWidthPxls), 4
+    updateDisplayFromCollection collLargeIcons, vbNullString, "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconWidthPxls), 4
 
     ' Added a faded red background when dragged .56 DAEB 19/04/2021 frmMain.frm Added a faded red background to the current image when the drag and drop is in operation.
     If dragToDockOperating = True And useloop = IconIndex Then
-        updateDisplayFromDictionary collLargeIcons, vbNullString, "redresizedImg256", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
+        updateDisplayFromCollection collLargeIcons, vbNullString, "redresizedImg256", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
     End If
     
     ' show the icon image itself or a brief glimpse of the low res smaller version on a click event
     If selectedIconIndex = useloop And blankClickEvent = True Then
-        updateDisplayFromDictionary collLargeIcons, vbNullString, "busycogResizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
+        updateDisplayFromCollection collLargeIcons, vbNullString, "busycogResizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
     Else
-        updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 3, useloop
+        ' check the recently disabled flag and display the transparent version instead
+        If sDockIcons(useloop).Disabled = 1 Then
+            updateDisplayFromCollection collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 1, useloop
+        Else
+            updateDisplayFromCollection collLargeIcons, vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 3, useloop
+        End If
     End If
                          
     ' a small rotating hourglass for 'running' actions ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
     If dragToDockOperating = True And useloop = IconIndex Then
         If hourglassimage = vbNullString Then hourglassimage = "hourglass1resizedImg128"
-        updateDisplayFromDictionary collLargeIcons, vbNullString, hourglassimage, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
+        updateDisplayFromCollection collLargeIcons, vbNullString, hourglassimage, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
     End If
     
     ' add the small white cog to indicate a running process
     If rDShowRunning = "1" Then
         If (sDockIcons(useloop).ProcessRunning = "True" Or sDockIcons(useloop).ExplorerRunning = "True") Then
-            If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls), (iconHeightPxls), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-            If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 2)), (iconWidthPxls), (iconHeightPxls), 4
+            If dockPosition = vbBottom Then updateDisplayFromCollection collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls), (iconHeightPxls), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+            If dockPosition = vbtop Then updateDisplayFromCollection collLargeIcons, vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 2)), (iconWidthPxls), (iconHeightPxls), 4
         End If
     End If
     
     ' add a red X for invalid command ' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
     If sDockIcons(useloop).TargetExists = "1" Then ' redxResizedImg64
-            If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-            If dockPosition = vbtop Then updateDisplayFromDictionary collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2), 4
+            If dockPosition = vbBottom Then updateDisplayFromCollection collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+            If dockPosition = vbtop Then updateDisplayFromCollection collLargeIcons, vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2), 4
     End If
 
    On Error GoTo 0
@@ -5431,15 +5441,15 @@ Public Sub prepareArraysAndCollections()
         ' check if the icon is ALREADY disabled, if so we create both transparent and opaque versions of the image
         ' all dynamically disabled images are created on the fly
         
-        If sDisabled = "1" Then
+        'If sDisabled = "1" Then
             ' reduce the opacity
-            thisOpacity = overallIconOpacity * 0.6
+            thisOpacity = overallIconOpacity * 0.4
             
-            sDockIcons(useloop).Disabled = 1
+           ' sDockIcons(useloop).Disabled = 1
             
-            ' create keys for transparent images in the collLargeIcons/collSmallIcons collections
-            largeKey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeLargePxls))
-            smallKey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
+'            ' create keys for transparent images in the collLargeIcons/collSmallIcons collections
+'            largeKey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeLargePxls))
+'            smallKey = dictionaryLocationArray(useloop) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
             
             ' here is the code to cache resized images to the small image collection.
             If fFExists(sFilename) Then
@@ -5447,29 +5457,28 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity, 0)
+                    thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity, 0)
                 End If
             Else ' if the image is not found display an 'x'
-                thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity, 0)
+                thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, thisOpacity, 0)
             End If
                                 
 
-            
-                       
-                        
             ' now cache all the images to the collection transparently at the larger size
             If fFExists(sFilename) Then
                 If readEmbeddedIcons = True And ExtractSuffix(sFilename) = "exe" And rDRetainIcons = "1" Then  '
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity, 1)
+                    thisBitmap = resizeAndLoadImgToCollection(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity, 1)
                 End If
             Else
-                thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity, 1)
+                thisBitmap = resizeAndLoadImgToCollection(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, thisOpacity, 1)
             End If
             
-        Else
+        'Else
+        
+            thisOpacity = 100
     
             ' cache the images to the collection at a small size at full opacity
             If fFExists(sFilename) Then
@@ -5478,10 +5487,10 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), "", overallIconOpacity, 2)
+                    thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), "", overallIconOpacity, 2)
                 End If
             Else ' if the image is not found display an 'x'
-                thisBitmap = resizeAndLoadImgToDict(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), "", overallIconOpacity, 2)
+                thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), "", overallIconOpacity, 2)
             End If
 
             
@@ -5493,14 +5502,14 @@ Public Sub prepareArraysAndCollections()
                     ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
                     'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
                 Else
-                    thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), "", overallIconOpacity, 3)
+                    thisBitmap = resizeAndLoadImgToCollection(collLargeIcons, partialStringKey, sFilename, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), "", overallIconOpacity, 3)
                 End If
             Else
-                thisBitmap = resizeAndLoadImgToDict(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), "", overallIconOpacity, 3)
+                thisBitmap = resizeAndLoadImgToCollection(collLargeIcons, partialStringKey, App.Path & "\red-X.png", sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), "", overallIconOpacity, 3)
             End If
             
             
-        End If
+       ' End If
         
         ' check to see if each process is running and store the result away - this is also run on a 10s timer
         sDockIcons(useloop).ExplorerRunning = isExplorerRunning(sDockIcons(useloop).Command)
@@ -5831,19 +5840,19 @@ Private Sub applyThemeSkinToDock(ByVal dockSkinStart As Long, ByVal dockSkinWidt
 
     ' display the start theme left hand
     thiskey = "sDSkinLeft" & "ResizedImg" & LTrim$(Str$(sDSkinSize))
-    updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, (dockSkinStart), themeSkinTop, (sDSkinSize), (sDSkinSize), 4
+    updateDisplayFromCollection collLargeIcons, vbNullString, thiskey, (dockSkinStart), themeSkinTop, (sDSkinSize), (sDSkinSize), 4
     
     ' display the middle theme background
     thiskey = "sDSkinMid" & "ResizedImg" & LTrim$(Str$(sDSkinSize))
-    updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, themeSkinLeft, themeSkinTop, dockSkinWidth, sDSkinSize, 4
+    updateDisplayFromCollection collLargeIcons, vbNullString, thiskey, themeSkinLeft, themeSkinTop, dockSkinWidth, sDSkinSize, 4
  
     ' display the end theme background
     thiskey = "sDSkinRight" & "ResizedImg" & LTrim$(Str$(sDSkinSize))
     '                           thisCollection, strFilename ,  key,      Left          Top            Width,        Height
-    updateDisplayFromDictionary collLargeIcons, vbNullString, thiskey, themeSkinRight, themeSkinTop, sDSkinSize, sDSkinSize, 4
+    updateDisplayFromCollection collLargeIcons, vbNullString, thiskey, themeSkinRight, themeSkinTop, sDSkinSize, sDSkinSize, 4
 
     If IsUserAnAdmin() = 1 Then
-        If dockPosition = vbBottom Then updateDisplayFromDictionary collLargeIcons, vbNullString, "smallGoldCoinResizedImg128", (themeSkinLeft), (themeSkinTop - 17), (128), (128), 4
+        If dockPosition = vbBottom Then updateDisplayFromCollection collLargeIcons, vbNullString, "smallGoldCoinResizedImg128", (themeSkinLeft), (themeSkinTop - 17), (128), (128), 4
     End If
 
    On Error GoTo 0
@@ -7887,7 +7896,7 @@ Private Sub mySub()
                 Call captureWindow(windowHwnd)
                 
                 'use GDI+ to resize
-                ' resizeAndLoadImgToDict
+                ' resizeAndLoadImgToCollection
                 
                 ' drop the image in a collection
                 'cThumbnail(location) =

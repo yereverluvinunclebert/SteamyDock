@@ -58,12 +58,17 @@ o New graphics method to be devised using an icon class for the all the icons an
 ' =============
 
 o Change other APIs to WDL to prepare for eventual 64bit compilation.
-o The testing against the 64bit static linking of the winsqlite64.obj
+  The testing against the 64bit static linking of the winsqlite64.obj
+  64 bit SQL lite - https://www.sqlite.org/download.html
+  convert SD to 64 bit using TB - will need a 64bit version of SQL DLL, found here https://www.vbforums.com/showthread.php?882919-sqlite3win32
+
 
 ' images to new settings menu items
 ' images to new control panel menu items
 
 ' remove the modification date/time test from iconSettings
+
+' 
 ' find and test using an alternative SQL dll
 ' test if the updateCounter is being updated
 ' test using RC sqlite.dll and compare speed
@@ -96,8 +101,6 @@ when a dock is wider than 2000 pixels - stitch two docks together
 
 multi-monitor support
 
-64 bit SQL lite - https://www.sqlite.org/download.html
-' convert SD to 64 bit using TB - will need a 64bit version of SQL DLL.
 
 Adding fields to the database
 =============================
