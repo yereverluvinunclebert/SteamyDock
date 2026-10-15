@@ -2381,19 +2381,19 @@ Public Sub loadAdditionalImagestoDictionary()
         ' load the theme background image into the collection sDSkinLeft is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDleft.png"
         If fFExists(themeName) Then
-            resizeAndLoadImgToCollection collLargeIcons, "sDSkinLeft", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, "", imageOpacity, 4
+            resizeAndLoadImgToCollection collLargeIcons, "sDSkinLeft", themeName, (0), (0), sDSkinSize, sDSkinSize, imageOpacity, 4
         End If
     '
     '    ' load the theme background image into the collection sDSkinMid is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDmiddle.png"
         If fFExists(themeName) Then
-            resizeAndLoadImgToCollection collLargeIcons, "sDSkinMid", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, "", imageOpacity, 4
+            resizeAndLoadImgToCollection collLargeIcons, "sDSkinMid", themeName, (0), (0), sDSkinSize, sDSkinSize, imageOpacity, 4
         End If
 
     '    ' load the theme background image into the collection sDSkinRight is the unique key
         themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDright.png"
         If fFExists(themeName) Then
-            resizeAndLoadImgToCollection collLargeIcons, "sDSkinRight", themeName, sDisabled, (0), (0), sDSkinSize, sDSkinSize, "", imageOpacity, 4
+            resizeAndLoadImgToCollection collLargeIcons, "sDSkinRight", themeName, (0), (0), sDSkinSize, sDSkinSize, imageOpacity, 4
         End If
         
         ' load the theme separator image into the collection sDSeparator is the unique key
@@ -2407,51 +2407,51 @@ Public Sub loadAdditionalImagestoDictionary()
     
     ' load a transparent 128 x 128 image into the collection, used to stop click-throughs
     If fFExists(App.Path & "\blankSquare.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "blank", App.Path & "\blankSquare.png", sDisabled, (0), (0), (128), (128), "", 1, 4
+        resizeAndLoadImgToCollection collLargeIcons, "blank", App.Path & "\blankSquare.png", (0), (0), (128), (128), 1, 4
     End If
     
     ' .11 DAEB 01/05/2021 mdlMain.bas load a transparent 128 x 128 image into the collection, used to highlight the position of a drag/drop
     If fFExists(App.Path & "\red.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "red", App.Path & "\red.png", sDisabled, (0), (0), (256), (256), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "red", App.Path & "\red.png", (0), (0), (256), (256), imageOpacity, 4
     End If
     
     ' load a small circle image into the collection, used to signify running process
     '                           thisDictionary, key ,strFilename, strName,thisDisabled ,Left, ByVal Top As Long,Width, Height,fullStringKey)
     If fFExists(App.Path & "\tinyCircle.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "tinycircle", App.Path & "\tinyCircle.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     
     If fFExists(App.Path & "\busycog.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "busycog", App.Path & "\busycog.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "busycog", App.Path & "\busycog.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     
     If fFExists(App.Path & "\smallGoldCoin.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "smallgoldCoin", App.Path & "\smallGoldCoin.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "smallgoldCoin", App.Path & "\smallGoldCoin.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     
     ' load a small circle image into the collection, used to signify running process
     If fFExists(App.Path & "\red-X.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "redx", App.Path & "\red-X.png", sDisabled, (0), (0), (64), (64), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "redx", App.Path & "\red-X.png", (0), (0), (64), (64), imageOpacity, 4
     End If
     
     ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
     If fFExists(App.Path & "\busy-F1-32x32x24.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "hourglass1", App.Path & "\busy-F1-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "hourglass1", App.Path & "\busy-F1-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     If fFExists(App.Path & "\busy-F2-32x32x24.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "hourglass2", App.Path & "\busy-F2-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "hourglass2", App.Path & "\busy-F2-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     If fFExists(App.Path & "\busy-F3-32x32x24.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "hourglass3", App.Path & "\busy-F3-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "hourglass3", App.Path & "\busy-F3-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     If fFExists(App.Path & "\busy-F4-32x32x24.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "hourglass4", App.Path & "\busy-F4-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "hourglass4", App.Path & "\busy-F4-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     If fFExists(App.Path & "\busy-F5-32x32x24.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "hourglass5", App.Path & "\busy-F5-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "hourglass5", App.Path & "\busy-F5-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     If fFExists(App.Path & "\busy-F6-32x32x24.png") Then
-        resizeAndLoadImgToCollection collLargeIcons, "hourglass6", App.Path & "\busy-F6-32x32x24.png", sDisabled, (0), (0), (128), (128), "", imageOpacity, 4
+        resizeAndLoadImgToCollection collLargeIcons, "hourglass6", App.Path & "\busy-F6-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
 
     
@@ -2491,15 +2491,15 @@ End Sub
 '' then we do the same for the smaller icon format images
 ''---------------------------------------------------------------------------------------
 ''
-'Public Sub oldAddNewImageToDictionary(ByVal newFileName As String, ByVal newName As String)
+'Public Sub oldaddNewImageToCollection(ByVal newFileName As String, ByVal newName As String)
 '
 '    Dim useloop As Integer
 '    Dim thiskey As String
 '    Dim newKey As String
 '
-'    On Error GoTo addNewImageToDictionary_Error
+'    On Error GoTo addNewImageToCollection_Error
 '
-''    If debugflg = 1 Then debugLog "%" & "addNewImageToDictionary "
+''    If debugflg = 1 Then debugLog "%" & "addNewImageToCollection "
 '
 '    'resize all arrays used for storing icon information
 '    ReDim sFileNamearray(iconArrayUpperBound) As String ' the file location of the original icons
@@ -2556,9 +2556,9 @@ End Sub
 '   On Error GoTo 0
 '   Exit Sub
 '
-'addNewImageToDictionary_Error:
+'addNewImageToCollection_Error:
 '
-'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addNewImageToDictionary of module mdlMain.bas"
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addNewImageToCollection of module mdlMain.bas"
 '
 'End Sub
     
@@ -2588,104 +2588,26 @@ End Sub
 ' then we do the same for the smaller icon format images
 '---------------------------------------------------------------------------------------
 '
-Public Sub addNewImageToDictionary(ByVal newFileName As String, ByVal newName As String)
-
-    Dim useloop As Integer
-    Dim thiskey As String
-    Dim NewKey As String
-    Dim partialStringKey As String: partialStringKey = ""
-    Dim imageOpacity As Integer: imageOpacity = 0
+Public Sub addNewImageToCollection(ByVal newFileName As String, ByVal newName As String)
     
-    Dim sCommand As String
-    Dim sDisabled As String
-    ' Dim stringKeyValue As String
+    On Error GoTo addNewImageToCollection_Error
     
-    ' stringKeyValue =  CStr(selectedIconIndex)
-    
-    On Error GoTo addNewImageToDictionary_Error
-    
-    'sDisabled = sDockIcons(selectedIconIndex).Disabled
-    
-    dictionaryLocationArrayUpperBound = iconArrayUpperBound + 1
 
-    'resize all arrays used for storing icon information
-    Call redimPreserveCacheArrays
+'    If debugflg = 1 Then debugLog "%" & "addNewImageToCollection "
 
-'    If debugflg = 1 Then debugLog "%" & "addNewImageToDictionary "
-
-    imageOpacity = Val(rDIconOpacity)
-
-    'now we add the new icon image giving it a key relating to the topmost position in the dictionary locating array
-    partialStringKey = LTrim$(Str$(dictionaryLocationArrayUpperBound))
-    If fFExists(newFileName) Then
-        ' we use the existing resizeAndLoadImgToCollection to read the icon format and load into the two dictionaries
-         resizeAndLoadImgToCollection collSmallIcons, partialStringKey, newFileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), "", imageOpacity, 2
-         resizeAndLoadImgToCollection collLargeIcons, partialStringKey, newFileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), "", imageOpacity, 3
-    End If
-  
-    'If selectedIconIndex <= rdIconUpperBound Then 'if not the top icon loop through them all and reassign the values
-        ' read the steamyDock settings one item up in the list
-        ' then write the the new item at the current location effectively overwriting it
-        For useloop = iconArrayUpperBound To (selectedIconIndex + 1) Step -1
-            ' copy the array contents one location down
-            If useloop <= rdIconUpperBound Then
-                dictionaryLocationArray(useloop) = dictionaryLocationArray(useloop - 1)
-            End If
-        Next useloop
-                                
-        ' then re-read the config
-        For useloop = selectedIconIndex To iconArrayUpperBound
-            'Call readIconParamsFromDb(useloop)
-                        
-             sCommand = sDockIcons.Item(useloop).Command
-             
-            ' read the two main icon variables into arrays, one for each
-            'sFileNameArray(useloop) = sFilename
-            'sTitleArray(useloop) = sTitle
-            'sDockIcons.Item(useloop).Command = sCommand
-            sDockIcons.Item(useloop).TargetExists = "0"
+        ' we resize and load new both transparent and opaque versions of the small and large images giving it a key relating to the current position
             
-            ' check to see if each process is running and store the result away
-            sDockIcons.Item(useloop).ExplorerRunning = isExplorerRunning(sCommand)
-            sDockIcons.Item(useloop).ProcessRunning = CStr(IsRunning(sCommand))
-        Next useloop
+        Call dock.resizeAndLoadSmallTransparentimages(collSmallIcons, selectedIconIndex, 0, 0, iconSizeSmallPxls, iconSizeSmallPxls)
         
-        dictionaryLocationArray(selectedIconIndex) = dictionaryLocationArrayUpperBound
+        Call dock.resizeAndLoadLargeTransparentimages(collLargeIcons, selectedIconIndex, 0, 0, iconSizeLargePxls, iconSizeLargePxls)
 
-
-    'End If
-    
-    ' reads from the last icon to the current one and for each it writes it one step up
-'    For useloop = rdIconUpperBound To selectedIconIndex Step -1
-'        thiskey = useloop & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        newKey = useloop + 1 & "ResizedImg" & LTrim$(Str$(thisByteSize))
-'        If thisCollection.Exists(thiskey) Then
-'            thisCollection(newKey) = thisCollection(thiskey)
-'        End If
-'    Next useloop
-    
-
-    
-    ' populate the array element containing the final icon position - 31/05/2021 removed unnecessary code
-'    iconStoreLeftPixels(rdIconUpperBound) = iconStoreLeftPixels(rdIconUpperBound - 1) + (iconWidthPxls) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'    iconStoreRightPixels(rdIconUpperBound) = iconStoreLeftPixels(rdIconUpperBound) + (iconWidthPxls)   '.nn
-'    iconStoreTopPixels(rdIconUpperBound) =
-'    iconStoreBottomPixels(rdIconUpperBound) =
-
-    ' re-order the large icons in the collLargeIcons dictionary collection
-'    Call incrementCollection(collLargeIcons, iconSizeLargePxls, newFileName, newName)
-'
-'    ' re-order the small icons in the collSmallIcons dictionary collection
-'    Call incrementCollection(collSmallIcons, iconSizeSmallPxls, newFileName, newName)
-'
-'    Call loadAdditionalImagestoDictionary ' the additional images need to be re-added back to the dictionary
 
    On Error GoTo 0
    Exit Sub
 
-addNewImageToDictionary_Error:
+addNewImageToCollection_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addNewImageToDictionary of module mdlMain.bas"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addNewImageToCollection of module mdlMain.bas"
 
 End Sub
 
@@ -2707,7 +2629,7 @@ End Sub
 
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
-Public Function resizeAndLoadImgToCollection(ByRef thiscollection As Collection, ByVal Key As String, ByVal strFilename As String, ByVal thisDisabled As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, ByVal fullStringKey As String, ByVal imageOpacity As Integer, Optional imageLocation As Integer) As Long
+Public Function resizeAndLoadImgToCollection(ByRef thiscollection As Collection, ByVal Key As String, ByVal strFilename As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, ByVal imageOpacity As Integer, Optional ByVal imageLocation As Integer) As Long
 
     Dim thiskey As String
     Dim saveStatus As Boolean
@@ -2781,13 +2703,13 @@ Public Function resizeAndLoadImgToCollection(ByRef thiscollection As Collection,
 '    End If
     
     'override the key
-    If fullStringKey = "" Then
+    'If fullStringKey = "" Then
         ' create a unique key string
         thiskey = Key & "ResizedImg" & LTrim$(Str$(Width))
-    Else
-        thiskey = fullStringKey
-    End If
-    
+'    Else
+'        thiskey = fullStringKey
+'    End If
+'
     ' add the bitmap to the dictionary collection old code
 '    If thisDictionary.Exists(thiskey) Then
 '        thisDictionary.Remove thiskey

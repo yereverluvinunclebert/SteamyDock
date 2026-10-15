@@ -1884,8 +1884,8 @@ Private Sub mnuDisableIcon_Click()
 '    ' load and cache transparent versions of the current images to the associated collections
 '    ' at small and large sizes.
 '    If fFExists(sDockIcons(selectedIconIndex).FileName) Then
-'        resizeAndLoadImgToCollection collSmallIcons, partialStringKey, sDockIcons(selectedIconIndex).FileName, sDisabled, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity, 0
-'        resizeAndLoadImgToCollection collLargeIcons, partialStringKey, sDockIcons(selectedIconIndex).FileName, sDisabled, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity, 1
+'        resizeAndLoadImgToCollection collSmallIcons, partialStringKey, sDockIcons(selectedIconIndex).FileName, (0), (0), (iconSizeSmallPxls), (iconSizeSmallPxls), smallKey, imageOpacity, 0
+'        resizeAndLoadImgToCollection collLargeIcons, partialStringKey, sDockIcons(selectedIconIndex).FileName, (0), (0), (iconSizeLargePxls), (iconSizeLargePxls), largeKey, imageOpacity, 1
 '    End If
 
    On Error GoTo 0
@@ -5114,7 +5114,7 @@ Public Sub addImageToDictionaryAndCheckForRunningProcess(newFileName As String, 
     'Sleep 25 ' a small pause to allow the o/s time to write the registry
         
     ' add to the image dictionary
-    Call addNewImageToDictionary(newFileName, newName)
+    Call addNewImageToCollection(newFileName, newName)
 
     'add to the initiated ProcessArray
     Call checkDockProcessesRunning ' trigger a test of running processes in half a second

@@ -1100,3 +1100,4 @@ o Converted all public sVariables to icon class properties, eg.
  sDisabled
 
  o replace all the scripting collections with VB6 collections
+ o fixed the enable/disable load of transparent icons
