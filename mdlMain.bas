@@ -650,6 +650,7 @@ Public gblProcessTimerRunning As Boolean
 Public Function fTestCursorWithinDockYPosition() As Boolean
     Dim outsideDock  As Boolean: outsideDock = False
     
+    rightMostIconPositionPxls = sDockIcons(CStr(rdIconUpperBound)).X + sDockIcons(CStr(rdIconUpperBound)).Width ' test
     rightMostIconPositionPxls = iconStoreRightPixels(UBound(iconStoreLeftPixels))
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
@@ -1589,38 +1590,16 @@ End Sub
 '.nn Modified the function inputs to add the missing icon characteristics that are needed when dragging and dropping an icon within the dock.
 ' .15 DAEB 20/05/2021 mdlMain.bas Added new check box to allow a quick launch of the chosen app
 
-Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, ByVal thisTitle As String, _
+Public Function insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, ByVal thisTitle As String, _
     ByVal thisCommand As String, _
     ByVal thisArguments As String, ByVal thisWorkingDirectory As String, _
     ByVal thisShowCmd As String, ByVal thisOpenRunning As String, _
     ByVal thisSeparator As String, ByVal thisDockletFile As String, _
     ByVal thisUseContext As String, ByVal thisUseDialog As String, _
-    ByVal thisUseDialogAfter As String, ByVal thisQuickLaunch As String, ByVal thisDisabled As String)
+    ByVal thisUseDialogAfter As String, ByVal thisQuickLaunch As String, ByVal thisDisabled As String) As String ' longptr
     
     Dim useloop As Integer: useloop = 0
-    Dim thisIcon As Integer: thisIcon = 0
-    
-    Dim sFilename As String
-    Dim sFileName2 As String
-    Dim sTitle  As String
-    Dim sCommand  As String
-    Dim sArguments  As String
-    Dim sWorkingDirectory  As String
-    Dim sShowCmd  As String
-    Dim sOpenRunning  As String
-    Dim sRunElevated  As String
-    Dim sIsSeparator  As String
-    Dim sUseContext  As String
-    Dim sDockletFile  As String
-    Dim sUseDialog  As String
-    Dim sUseDialogAfter  As String
-    Dim sQuickLaunch  As String
-    Dim sAutoHideDock  As String
-    Dim sSecondApp  As String
-    Dim sRunSecondAppBeforehand  As String
-    Dim sAppToTerminate As String
-    Dim sDisabled  As String
-    
+
     Dim stringKeyValue As String
     Dim insertKey As String
 
@@ -1643,26 +1622,26 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     insertKey = selectedIconIndex & "insert" & SecureRandomHex64
     sDockIcons.Add sIcon, insertKey, Before:=stringKeyValue  ' using a VB6 collection
 
-    sDockIcons(selectedIconIndex).FileName = sFilename
-    sDockIcons(selectedIconIndex).FileName2 = sFileName2
-    sDockIcons(selectedIconIndex).Title = sTitle
-    sDockIcons(selectedIconIndex).Command = sCommand
-    sDockIcons(selectedIconIndex).Arguments = sArguments
-    sDockIcons(selectedIconIndex).WorkingDirectory = sWorkingDirectory
-    sDockIcons(selectedIconIndex).ShowCmd = (sShowCmd)
-    sDockIcons(selectedIconIndex).OpenRunning = (sOpenRunning)
-    sDockIcons(selectedIconIndex).IsSeparator = (sIsSeparator)
-    sDockIcons(selectedIconIndex).UseContext = (sUseContext)
-    sDockIcons(selectedIconIndex).DockletFile = (sDockletFile) ' error ?
-    sDockIcons(selectedIconIndex).UseDialog = (sUseDialog)
-    sDockIcons(selectedIconIndex).UseDialogAfter = (sUseDialogAfter)
-    sDockIcons(selectedIconIndex).QuickLaunch = (sQuickLaunch)
-    sDockIcons(selectedIconIndex).AutoHideDock = (sAutoHideDock)
-    sDockIcons(selectedIconIndex).SecondApp = sSecondApp
-    sDockIcons(selectedIconIndex).RunElevated = (sRunElevated)
-    sDockIcons(selectedIconIndex).RunSecondAppBeforehand = sRunSecondAppBeforehand
-    sDockIcons(selectedIconIndex).AppToTerminate = sAppToTerminate
-    sDockIcons(selectedIconIndex).Disabled = (sDisabled)
+    sDockIcons(selectedIconIndex).FileName = thisFilename
+    'sDockIcons(selectedIconIndex).FileName2 = thisFileName2
+    sDockIcons(selectedIconIndex).Title = thisTitle
+    sDockIcons(selectedIconIndex).Command = thisCommand
+    sDockIcons(selectedIconIndex).Arguments = thisArguments
+    sDockIcons(selectedIconIndex).WorkingDirectory = thisWorkingDirectory
+    sDockIcons(selectedIconIndex).ShowCmd = (thisShowCmd)
+    sDockIcons(selectedIconIndex).OpenRunning = (thisOpenRunning)
+    sDockIcons(selectedIconIndex).IsSeparator = (thisSeparator)
+    sDockIcons(selectedIconIndex).UseContext = (thisUseContext)
+    sDockIcons(selectedIconIndex).DockletFile = (thisDockletFile) ' error ?
+    sDockIcons(selectedIconIndex).UseDialog = (thisUseDialog)
+    sDockIcons(selectedIconIndex).UseDialogAfter = (thisUseDialogAfter)
+    sDockIcons(selectedIconIndex).QuickLaunch = "0"
+    sDockIcons(selectedIconIndex).AutoHideDock = ("")
+    sDockIcons(selectedIconIndex).SecondApp = ""
+    sDockIcons(selectedIconIndex).RunElevated = "0"
+    sDockIcons(selectedIconIndex).RunSecondAppBeforehand = ""
+    sDockIcons(selectedIconIndex).AppToTerminate = ""
+    sDockIcons(selectedIconIndex).Disabled = "0"
 
 '
 '    ' tests
@@ -1674,8 +1653,9 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
 '    c = sDockIcons(selectedIconIndex + 1).Title
    
    ' dynamically extend the number of picture boxes by one
-    thisIcon = useloop + 1
-    rdIconUpperBound = rdIconUpperBound + 1
+    
+    ' read the database and get the record count
+    rdIconUpperBound = getRecordCount()
     iconArrayUpperBound = rdIconUpperBound
     
     'amend the count in the alternative rdSettings.ini
@@ -1689,15 +1669,17 @@ Public Sub insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, By
     PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
+    
+    insertNewIconDataIntoCurrentPosition = insertKey
 
    On Error GoTo 0
-   Exit Sub
+   Exit Function
 
 insertNewIconDataIntoCurrentPosition_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertNewIconDataIntoCurrentPosition of module mdlMain.bas"
     
-End Sub
+End Function
 
 
 '---------------------------------------------------------------------------------------
@@ -2086,11 +2068,11 @@ Public Sub addProgramDLLorEXE()
             End If
 
         Else ' the file doesn't exist in any form with ? or otherwise as a valid path
-            iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+            iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
             If fFExists(iconFilename) Then
                 IconImage = iconFilename
             Else
-                IconImage = App.Path & "\iconSettings\Icons\help.png"
+                IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
             End If
         End If
     Else
@@ -2115,11 +2097,11 @@ Public Sub addProgramDLLorEXE()
         If fFExists(iconFilename) Then
           IconImage = iconFilename
         Else
-            iconFilename = App.Path & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+            iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
             If fFExists(iconFilename) Then
                 IconImage = iconFilename
             Else
-                IconImage = App.Path & "\iconSettings\Icons\help.png"
+                IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
             End If
         End If
 
@@ -2323,8 +2305,9 @@ Public Sub deleteThisIcon()
     If querySingleRecordFromDatabase(rdIconUpperBound) = True Then Call deleteSpecificKey(rdIconUpperBound)
         
     'now the changes are complete, decrement the icon count and the maximum icon
-    rdIconUpperBound = rdIconUpperBound - 1
-    iconArrayUpperBound = iconArrayUpperBound - 1
+    ' read the database and get the record count
+    rdIconUpperBound = getRecordCount()
+    iconArrayUpperBound = rdIconUpperBound
 
     'amend the count in both the alternative rdSettings.ini
     'PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
@@ -2566,41 +2549,28 @@ End Sub
 ' Procedure : addNewImageFromDictionary
 ' Author    : beededea
 ' Date      : 18/06/2020
-' Purpose   : only used when a single icon is to be added to the dock
-'             this routine is a workaround to the memory leakage problem in resizeAndLoadImgToCollection
-'             where if run twice the RAM usage doubled as the vars are not clearing their contents when the routine ends
-'
-' When an icon is added it should no longer call the routine to recreate the arrays and collections
-' instead it calls this routine, previously there was one dictionary.
-'
-' there is now a separate dictionary for the smaller icons
-' there is another dictionary for the larger icons
-' there is a third temporary dictionary that is used as temporary storage whilst resizing the above
-' when a new icon is added to the dock
-'
-' we use the existing resizeAndLoadImgToCollection to read the larger icon format
-' the icons to the left are written to the 3rd temporary dictionary with existing keys, the new icon is then written using the current location as part of the key
-' the icons to the right are then read from the old dictionary and then written to the new temporary dictionary with updated keys
-' the larger image dictionary is cleared down readied for population
-' the temporary dictionary is used to repopulate the larger image dictionary, a clone
-' the temporary dictionary is cleared down, ready for re-use
-
-' then we do the same for the smaller icon format images
+' Purpose   : only used when a single icon is to be added to the dock using the menu
+'             we load in several formats
 '---------------------------------------------------------------------------------------
 '
-Public Sub addNewImageToCollection(ByVal newFileName As String, ByVal newName As String)
+Public Sub addNewImageToCollection(ByVal newFileName As String, ByVal newName As String, Optional ByVal thisKey As String)
     
     On Error GoTo addNewImageToCollection_Error
     
-
-'    If debugflg = 1 Then debugLog "%" & "addNewImageToCollection "
+        '    If debugflg = 1 Then debugLog "%" & "addNewImageToCollection "
 
         ' we resize and load new both transparent and opaque versions of the small and large images giving it a key relating to the current position
-            
-        Call dock.resizeAndLoadSmallTransparentimages(collSmallIcons, selectedIconIndex, 0, 0, iconSizeSmallPxls, iconSizeSmallPxls)
+        ' It uses the sDockIcons(Key).FileName
         
-        Call dock.resizeAndLoadLargeTransparentimages(collLargeIcons, selectedIconIndex, 0, 0, iconSizeLargePxls, iconSizeLargePxls)
-
+        Call redimPreserveCacheArrays
+        
+        Call dock.resizeAndLoadSmallTransparentimages(collSmallIcons, selectedIconIndex, 0, 0, iconSizeSmallPxls, iconSizeSmallPxls, thisKey)
+        
+        Call dock.resizeAndLoadLargeTransparentimages(collLargeIcons, selectedIconIndex, 0, 0, iconSizeLargePxls, iconSizeLargePxls, thisKey)
+        
+        Call dock.resizeAndLoadSmallOpaqueImages(collSmallIcons, selectedIconIndex, 0, 0, iconSizeSmallPxls, iconSizeSmallPxls, thisKey)
+        
+        Call dock.resizeAndLoadLargeOpaqueImages(collLargeIcons, selectedIconIndex, 0, 0, iconSizeLargePxls, iconSizeLargePxls, thisKey)
 
    On Error GoTo 0
    Exit Sub
@@ -2631,7 +2601,7 @@ End Sub
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
 Public Function resizeAndLoadImgToCollection(ByRef thiscollection As Collection, ByVal Key As String, ByVal strFilename As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, ByVal imageOpacity As Integer, Optional ByVal imageLocation As Integer) As Long
 
-    Dim thiskey As String
+    Dim thisKey As String
     Dim saveStatus As Boolean
     Dim encoderCLSID As CLSID
     Dim bytesFromFile() As Byte
@@ -2705,7 +2675,7 @@ Public Function resizeAndLoadImgToCollection(ByRef thiscollection As Collection,
     'override the key
     'If fullStringKey = "" Then
         ' create a unique key string
-        thiskey = Key & "ResizedImg" & LTrim$(Str$(Width))
+        thisKey = Key & "ResizedImg" & LTrim$(Str$(Width))
 '    Else
 '        thiskey = fullStringKey
 '    End If
@@ -2718,10 +2688,10 @@ Public Function resizeAndLoadImgToCollection(ByRef thiscollection As Collection,
 
      'load the images into the old small/large collections
     If imageLocation = 4 Then
-        If itemExists(thiscollection, thiskey) = True Then ' using a VB6 collection that doesn't have an .Exists method as
-            thiscollection.Remove thiskey
+        If itemExists(thiscollection, thisKey) = True Then ' using a VB6 collection that doesn't have an .Exists method as
+            thiscollection.Remove thisKey
         End If
-        thiscollection.Add iconBitmap, thiskey ' using a VB6 collection
+        thiscollection.Add iconBitmap, thisKey ' using a VB6 collection
     End If
     
     'load the same images to the new icon class instance

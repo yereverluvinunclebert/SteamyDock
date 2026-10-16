@@ -420,6 +420,7 @@ Private Declare Function QueryDosDevice Lib "kernel32" Alias "QueryDosDeviceA" (
 'Public sAppToTerminateArray() As String
 'Public sDisabledArray() As String
 
+Public iconAppFolder As String
 
 
 '
