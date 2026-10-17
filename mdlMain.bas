@@ -2220,10 +2220,7 @@ Public Sub deleteThisIcon()
     Dim useCacheMemory As Boolean: useCacheMemory = False
     Dim fromArray As Boolean: fromArray = False
     Dim toArray As Boolean: toArray = False
-    ' Dim stringKeyValue As String
-    
-    ' stringKeyValue =  CStr(selectedIconIndex)
-        
+           
     On Error GoTo deleteThisIcon_Error
     
 '    If debugflg = 1 Then debugLog "%" & "deleteThisIcon"
@@ -2231,7 +2228,6 @@ Public Sub deleteThisIcon()
     If selectedIconIndex = 0 Then Exit Sub
     If selectedIconIndex = iconArrayUpperBound Then Exit Sub
 
-    'itemName = sTitleArray(selectedIconIndex)
     itemName = sDockIcons(selectedIconIndex).Title
     
     'If chkConfirmSaves.Value = 1 Then
@@ -2267,30 +2263,15 @@ Public Sub deleteThisIcon()
     'if not the top icon loop through them all from this location upward and reassign the values
     If selectedIconIndex < rdIconUpperBound Then
         Dim thiskey As String
-        'thiskey = sDockIcons(selectedIconIndex).Key
-        'sDockIcons(thiskey).Remove Key
         sDockIcons.Remove selectedIconIndex
     End If
     
-    ' as we are writing to the in-memory cache at some point later we need to write to disc set a flag stating the settings file changes needs to be committed
-    ' to disc as they are just in memory at the moment, * retained for possible future use *
-'    gblRequiresCommitToDisc = False
-'    dock.tmrWriteCache.Enabled = False
-    
-    ' Here we would normally delete the final unwanted record at rdIconUpperBound but when using a VB6 random access record, it is not possible to delete, instead we do not care and leave it to be!
-    ' The usage of the random access data file has now been removed from the program, replaced by an SQL database.
-    ' In the dcurrent atabase version, if we did not tidy up then we would be left with an unused record, so we delete it here.
-    
-    ' query the database for the record, if the record is found then delete it
-    'If querySingleRecordFromDatabase(rdIconUpperBound) = True Then Call deleteSpecificKey(rdIconUpperBound)
-    
-    'now the changes are complete, decrement the icon count and the maximum icon
-    ' read the database and get the record count
+    ' now the changes are complete, decrement the icon count and the maximum icon to reality
+    ' we do that by reading the collection count
     rdIconUpperBound = sDockIcons.Count 'getRecordCount()
     iconArrayUpperBound = rdIconUpperBound
 
     'amend the count in both the alternative rdSettings.ini
-    'PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
 
@@ -2307,8 +2288,7 @@ Public Sub deleteThisIcon()
          
     stopAnimating = False
        
-               
-    ' attempt to write the database every 5 secs only until the icons are no longer raised
+    ' attempt to write the database every second but only until the icons are no longer raised (dock unused)
     dock.tmrWriteDatabase.Enabled = True
            
     On Error GoTo 0

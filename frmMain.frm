@@ -7716,7 +7716,7 @@ End Sub
 ' Procedure : tmrWriteDatabase_Timer
 ' Author    : beededea
 ' Date      : 17/10/2026
-' Purpose   :
+' Purpose   : only writes the database when the dock is not in use
 '---------------------------------------------------------------------------------------
 '
 Private Sub tmrWriteDatabase_Timer()
