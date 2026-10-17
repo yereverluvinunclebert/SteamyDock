@@ -1655,7 +1655,7 @@ Public Function insertNewIconDataIntoCurrentPosition(ByVal thisFilename As Strin
    ' dynamically extend the number of picture boxes by one
     
     ' read the database and get the record count
-    rdIconUpperBound = getRecordCount()
+    rdIconUpperBound = getRecordCount
     iconArrayUpperBound = rdIconUpperBound
     
     'amend the count in the alternative rdSettings.ini
@@ -1991,6 +1991,7 @@ Public Sub addProgramDLLorEXE()
 
      Dim IconImage As String: IconImage = vbNullString
      Dim iconFilename As String: iconFilename = vbNullString
+     Dim thisKey As String
      Dim retFileName As String: retFileName = vbNullString
      Dim retfileTitle As String: retfileTitle = vbNullString
      Dim dialogInitDir As String: dialogInitDir = vbNullString
@@ -2112,7 +2113,7 @@ Public Sub addProgramDLLorEXE()
     dock.Refresh
     
     Call insertNewIconDataIntoCurrentPosition(IconImage, thisTitle, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(IconImage, retFileName)
+    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(IconImage, retFileName) ' , thiskey)
         
     ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
     If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2182,7 +2183,7 @@ End Sub
 '
 '    dock.Refresh
 '
-'    Call insertNewIconDataIntoCurrentPosition(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+'    call insertNewIconDataIntoCurrentPosition(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
 '    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(iconImage, retFileName)
 '
 '    Call checkDockProcessesRunning ' trigger a test of running processes in half a second
@@ -2210,7 +2211,6 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Sub deleteThisIcon()
-
     Dim useloop As Integer
     Dim thisIcon As Integer
     Dim notQuiteTheTop As Integer
@@ -2266,30 +2266,10 @@ Public Sub deleteThisIcon()
     
     'if not the top icon loop through them all from this location upward and reassign the values
     If selectedIconIndex < rdIconUpperBound Then
-        
-        ' cache vars retained for possible future use
-        'useCacheMemory = True
-        fromArray = False
-        toArray = False
-        'glbStartRecord = selectedIconIndex
-        
-        ' read the steamyDock settings one item up in the list then write the new item at the current location effectively overwriting it
-        For useloop = selectedIconIndex + 1 To iconArrayUpperBound
-            Call readIconParamsFromDb(useloop)   ' read from file but write to interim array cache
-            Call writeIconSettingsDb(useloop - 1, toArray)  ' write changes to array for later commit
-        Next useloop
-                    
-        ' then re-read the config for every icon - moving the image and arrays
-        For useloop = selectedIconIndex To rdIconUpperBound
-            Call readIconParamsFromDb(useloop)  ' , read from array from the beginning
-            reassignArrayElements (useloop)
-    
-            ' instead of reordering the images within the dictionary, which is difficult as you can't just add and
-            ' replace objects into an existing collection, also it does not release memory. So, instead we simply
-            ' remove the icon reference from the settings file, leave the collection alone and manipulate the index number
-            ' indicating which image in the collection to use.
-            If useloop + 1 <= iconArrayUpperBound Then dictionaryLocationArray(useloop) = dictionaryLocationArray(useloop + 1)
-       Next useloop
+        Dim thisKey As String
+        'thiskey = sDockIcons(selectedIconIndex).Key
+        'sDockIcons(thiskey).Remove Key
+        sDockIcons.Remove selectedIconIndex
     End If
     
     ' as we are writing to the in-memory cache at some point later we need to write to disc set a flag stating the settings file changes needs to be committed
@@ -2302,11 +2282,12 @@ Public Sub deleteThisIcon()
     ' In the dcurrent atabase version, if we did not tidy up then we would be left with an unused record, so we delete it here.
     
     ' query the database for the record, if the record is found then delete it
-    If querySingleRecordFromDatabase(rdIconUpperBound) = True Then Call deleteSpecificKey(rdIconUpperBound)
+    'If querySingleRecordFromDatabase(rdIconUpperBound) = True Then Call deleteSpecificKey(rdIconUpperBound)
+    
         
     'now the changes are complete, decrement the icon count and the maximum icon
     ' read the database and get the record count
-    rdIconUpperBound = getRecordCount()
+    rdIconUpperBound = sDockIcons.Count 'getRecordCount()
     iconArrayUpperBound = rdIconUpperBound
 
     'amend the count in both the alternative rdSettings.ini
@@ -2318,9 +2299,14 @@ Public Sub deleteThisIcon()
 
     'reduce by one, all arrays used for storing icon information
     Call redimPreserveCacheArrays
+    Call dock.drawSmallStaticIcons ' simple static redraw of the small icons
+    
+    Call writeIconStateToDatabase
     
     Call checkDockProcessesRunning ' trigger a test of running processes in half a second
        
+    
+    
     On Error GoTo 0
     Exit Sub
 
