@@ -5492,6 +5492,10 @@ Public Sub resizeAndLoadLargeOpaqueImages(ByRef thiscollection As Collection, By
 
     thisOpacity = 100
      
+    ' the key is genrally a simple positional key, ie derived from the position in the collection from 1-120, eg 4. The override key is only for newly added icons via the menu or drag and drop to ensure uniqueness of the key
+    ' even though the item will be dropped positionally into the collection. The item above will still retain the key 4 so the new item will need a unique key
+    ' It is a complex unique key that exists only during the lifetime of the program.
+     
     ' key override
     If thiskey <> "" Then
         Key = thiskey
@@ -5530,22 +5534,28 @@ Public Sub resizeAndLoadSmallOpaqueImages(ByRef thiscollection As Collection, By
             
     On Error GoTo resizeAndLoadSmallOpaqueImages_Error
 
-       thisOpacity = 100
+    thisOpacity = 100
 
-        ' key override
-        If thiskey <> "" Then Key = thiskey
+    ' the key is genrally a simple positional key, ie derived from the position in the collection from 1-120, eg 4. The override key is only for newly added icons via the menu or drag and drop to ensure uniqueness of the key
+    ' even though the item will be dropped positionally into the collection. The item above will still retain the key 4 so the new item will need a unique key
+    ' It is a complex unique key that exists only during the lifetime of the program.
+     
+    ' key override
+    If thiskey <> "" Then
+        Key = thiskey
+    End If
     
-        If fFExists(sDockIcons(Key).FileName) Then
-            ' if the global setting allows extraction of icons from DLLs then
-            If readEmbeddedIcons = True And ExtractSuffix(sDockIcons(Key).FileName) = "exe" And rDRetainIcons = "1" Then  '
-                ' bSuccess = fExtractEmbeddedPNGFromEXe(sDockIcons(Key).FileName, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
-                'checkQuestionMark Key, sDockIcons(Key).FileNameArray(Key), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
-            Else
-                thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, Key, sDockIcons(Key).FileName, Left, Top, Width, Height, thisOpacity, 2)
-            End If
-        Else ' if the image is not found display an 'x'
-            thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, Key, App.Path & "\red-X.png", Left, Top, Width, Height, thisOpacity, 2)
+    If fFExists(sDockIcons(Key).FileName) Then
+        ' if the global setting allows extraction of icons from DLLs then
+        If readEmbeddedIcons = True And ExtractSuffix(sDockIcons(Key).FileName) = "exe" And rDRetainIcons = "1" Then  '
+            ' bSuccess = fExtractEmbeddedPNGFromEXe(sDockIcons(Key).FileName, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+            'checkQuestionMark Key, sDockIcons(Key).FileNameArray(Key), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+        Else
+            thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, Key, sDockIcons(Key).FileName, Left, Top, Width, Height, thisOpacity, 2)
         End If
+    Else ' if the image is not found display an 'x'
+        thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, Key, App.Path & "\red-X.png", Left, Top, Width, Height, thisOpacity, 2)
+    End If
 
     On Error GoTo 0
     Exit Sub
@@ -5569,21 +5579,30 @@ Public Sub resizeAndLoadLargeTransparentimages(ByRef thiscollection As Collectio
     Dim thisOpacity As Single: thisOpacity = 0
     Dim thisBitmap As Long 'longptr or removed
             
-        On Error GoTo resizeAndLoadLargeTransparentimages_Error
+    On Error GoTo resizeAndLoadLargeTransparentimages_Error
 
-        ' reduce the opacity
-        thisOpacity = Val(rDIconOpacity) * 0.4
+    ' reduce the opacity
+    thisOpacity = Val(rDIconOpacity) * 0.4
             
-        If fFExists(sDockIcons(Key).FileName) Then
-            If readEmbeddedIcons = True And ExtractSuffix(sDockIcons(Key).FileName) = "exe" And rDRetainIcons = "1" Then  '
-                ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
-                'checkQuestionMark useloop, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
-            Else
-                thisBitmap = resizeAndLoadImgToCollection(collLargeIcons, Key, sDockIcons(Key).FileName, Left, Top, Width, Height, thisOpacity, 1)
-            End If
+    ' the key is genrally a simple positional key, ie derived from the position in the collection from 1-120, eg 4. The override key is only for newly added icons via the menu or drag and drop to ensure uniqueness of the key
+    ' even though the item will be dropped positionally into the collection. The item above will still retain the key 4 so the new item will need a unique key
+    ' It is a complex unique key that exists only during the lifetime of the program.
+     
+    ' key override
+    If thiskey <> "" Then
+        Key = thiskey
+    End If
+
+    If fFExists(sDockIcons(Key).FileName) Then
+        If readEmbeddedIcons = True And ExtractSuffix(sDockIcons(Key).FileName) = "exe" And rDRetainIcons = "1" Then  '
+            ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+            'checkQuestionMark useloop, sFileNameArray(useloop), iconSizeLargePxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
         Else
-            thisBitmap = resizeAndLoadImgToCollection(collLargeIcons, Key, App.Path & "\red-X.png", Left, Top, Width, Height, thisOpacity, 1)
+            thisBitmap = resizeAndLoadImgToCollection(collLargeIcons, Key, sDockIcons(Key).FileName, Left, Top, Width, Height, thisOpacity, 1)
         End If
+    Else
+        thisBitmap = resizeAndLoadImgToCollection(collLargeIcons, Key, App.Path & "\red-X.png", Left, Top, Width, Height, thisOpacity, 1)
+    End If
 
     On Error GoTo 0
     Exit Sub
@@ -5607,20 +5626,29 @@ Public Sub resizeAndLoadSmallTransparentimages(ByRef thiscollection As Collectio
             
     On Error GoTo resizeAndLoadSmallTransparentimages_Error
 
-            ' reduce the opacity
-            thisOpacity = Val(rDIconOpacity) * 0.4
-            
-            ' here is the code to cache resized transparent images to the small image collection.
-            If fFExists(sDockIcons(Key).FileName) Then
-                If readEmbeddedIcons = True And ExtractSuffix(sDockIcons(Key).FileName) = "exe" And rDRetainIcons = "1" Then  '
-                    ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
-                    'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
-                Else
-                    thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, Key, sDockIcons(Key).FileName, Left, Top, Width, Height, thisOpacity, 0)
-                End If
-            Else ' if the image is not found display an 'x'
-                thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, Key, App.Path & "\red-X.png", Left, Top, Width, Height, thisOpacity, 0)
-            End If
+    ' reduce the opacity
+    thisOpacity = Val(rDIconOpacity) * 0.4
+    
+    ' the key is genrally a simple positional key, ie derived from the position in the collection from 1-120, eg 4. The override key is only for newly added icons via the menu or drag and drop to ensure uniqueness of the key
+    ' even though the item will be dropped positionally into the collection. The item above will still retain the key 4 so the new item will need a unique key
+    ' It is a complex unique key that exists only during the lifetime of the program.
+     
+    ' key override
+    If thiskey <> "" Then
+        Key = thiskey
+    End If
+    
+    ' here is the code to cache resized transparent images to the small image collection.
+    If fFExists(sDockIcons(Key).FileName) Then
+        If readEmbeddedIcons = True And ExtractSuffix(sDockIcons(Key).FileName) = "exe" And rDRetainIcons = "1" Then  '
+            ' bSuccess = fExtractEmbeddedPNGFromEXe(sFilename, hiddenForm.hiddenPicbox, iconSizeSmallPxls, True)
+            'checkQuestionMark partialStringKey, sFileNameArray(useloop), iconSizeSmallPxls ' if the question mark appears in the icon string - test it for validity and an embedded icon
+        Else
+            thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, Key, sDockIcons(Key).FileName, Left, Top, Width, Height, thisOpacity, 0)
+        End If
+    Else ' if the image is not found display an 'x'
+        thisBitmap = resizeAndLoadImgToCollection(collSmallIcons, Key, App.Path & "\red-X.png", Left, Top, Width, Height, thisOpacity, 0)
+    End If
 
     On Error GoTo 0
     Exit Sub

@@ -2547,7 +2547,7 @@ Public Sub addNewImageToCollection(ByVal newFileName As String, ByVal newName As
         ' we resize and load new both transparent and opaque versions of the small and large images giving it a key relating to the current position
         ' It uses the sDockIcons(Key).FileName
         
-        Call redimPreserveCacheArrays
+        Call redimPreserveCacheArrays ' retain until all arrays are replaced
         
         Call dock.resizeAndLoadSmallTransparentimages(collSmallIcons, selectedIconIndex, 0, 0, iconSizeSmallPxls, iconSizeSmallPxls, thiskey)
         
