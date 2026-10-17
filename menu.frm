@@ -510,7 +510,7 @@ Private Sub mnuAddBluetooth_Click()
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
 
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "BlueTooth", "C:\WINDOWS\system32\bthprops.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "BlueTooth", "C:\WINDOWS\system32\bthprops.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "BlueTooth", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -558,7 +558,7 @@ Private Sub mnuAddCache_Click()
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
 
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Clear Cache", "C:\WINDOWS\system32\rundll32.exe", "advapi32.dll , ProcessIdleTasks", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Clear Cache", "C:\WINDOWS\system32\rundll32.exe", "advapi32.dll , ProcessIdleTasks", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Clear Cache", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -607,7 +607,7 @@ Private Sub mnuAddDisplay_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Display", "desk.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Display", "desk.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Display", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -652,7 +652,7 @@ Private Sub mnuAddEventViewer_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Event Viewer", "eventvwr.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Event Viewer", "eventvwr.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Event Viewer", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -707,7 +707,7 @@ Private Sub mnuAddMouse_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Mouse", "main.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Mouse", "main.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Mouse", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -760,7 +760,7 @@ Private Sub mnuAddMyDocuments_Click()
        
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "My Documents", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -821,8 +821,8 @@ Private Sub mnuAddMyMusic_Click()
 
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' using the Special CLSID for the video folder this, in fact resolves to the my documents folder and not the video folder below.
-        'thisKey =  insertNewIconDataIntoCurrentPosition(iconImage, "My Music", "::{1CF1260C-4DD0-4ebb-811F-33C572699FDE}", vbNullString, vbNullString, vbNullString, vbNullString)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "My Music", userprof & "\Music", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        'thisKey =  insertNewIconIntoCollection(iconImage, "My Music", "::{1CF1260C-4DD0-4ebb-811F-33C572699FDE}", vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "My Music", userprof & "\Music", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "My Music", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -881,7 +881,7 @@ Private Sub mnuAddMyPictures_Click()
 
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "My Pictures", userprof & "\Pictures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "My Pictures", userprof & "\Pictures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "My Pictures", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -939,8 +939,8 @@ Private Sub mnuAddMyVideos_Click()
        
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        'thisKey =  insertNewIconDataIntoCurrentPosition(iconImage, "My Videos", "::{A0953C92-50DC-43bf-BE83-3742FED03C9C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "My Videos", userprof & "\Videos", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        'thisKey =  insertNewIconIntoCollection(iconImage, "My Videos", "::{A0953C92-50DC-43bf-BE83-3742FED03C9C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "My Videos", userprof & "\Videos", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "My Videos", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -988,7 +988,7 @@ Private Sub mnuAddNetworkConnections_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Network Connections", "ncpa.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Network Connections", "ncpa.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network Connections", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1033,7 +1033,7 @@ Private Sub mnuAddPerfMon_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Performance Monitor", "perfmon.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Performance Monitor", "perfmon.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Performance Monitor", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1111,7 +1111,7 @@ Private Sub mnuAddProgramFeatures_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Programs & Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Programs & Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Programs & Features", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1158,7 +1158,7 @@ Private Sub mnuAddServices_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Services Management", "services.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Services Management", "services.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Services Management", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1209,7 +1209,7 @@ Private Sub mnuAddSleep_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Sleep", "C:\Windows\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Sleep", "C:\Windows\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Sleep", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1256,7 +1256,7 @@ Private Sub mnuAddSound_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Sound", "mmsys.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Sound", "mmsys.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Sound", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1305,7 +1305,7 @@ Private Sub mnuAddSystemProperties_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "System Properties", "sysdm.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "System Properties", "sysdm.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "System Properties", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1353,7 +1353,7 @@ Private Sub mnuAddTaskSched_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Task Scheduler", "taskschd.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Task Scheduler", "taskschd.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Task Scheduler", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1409,7 +1409,7 @@ Private Sub mnuAddTimeDate_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Date & Time", "timedate.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Date & Time", "timedate.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Date & Time", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -1831,7 +1831,7 @@ Private Sub mnuCloneIcon_Click()
     sDisabled = sDockIcons(selectedIconIndex).Disabled
 
     ' the params will be removeable, they are actually removeable already.
-    thiskey = insertNewIconDataIntoCurrentPosition(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
+    thiskey = insertNewIconIntoCollection(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
     Call menuForm.addImageToDictionaryAndCheckForRunningProcess(sFilename, sTitle, thiskey)
 
    On Error GoTo 0
@@ -2089,7 +2089,7 @@ Private Sub mnuMSSettingsDateAndTime_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "DateAndTime", "start ms-settings:dateandtime", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "DateAndTime", "start ms-settings:dateandtime", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DateAndTime", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2138,7 +2138,7 @@ Private Sub mnuMSSettingsWindowsDefender_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "windowsdefender", "start ms-settings:windowsdefender", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "windowsdefender", "start ms-settings:windowsdefender", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "windowsdefender", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2183,7 +2183,7 @@ Private Sub mnuMSSettingsStartupApps_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Startup Apps", "start ms-settings:startupapps", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Startup Apps", "start ms-settings:startupapps", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Startup Apps", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2228,7 +2228,7 @@ Private Sub mnuMSSettingsVideoPlayback_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "VideoPlayback", "start ms-settings:videoplayback", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "VideoPlayback", "start ms-settings:videoplayback", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Startup Apps", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2273,7 +2273,7 @@ Private Sub mnuMSSettingsControlCenter_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Startup Apps", "start ms-settings:controlcenter", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Startup Apps", "start ms-settings:controlcenter", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Control Centre", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2318,7 +2318,7 @@ Private Sub mnuMSSettingsBluetooth_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Startup Apps", "start ms-settings:bluetooth", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Startup Apps", "start ms-settings:bluetooth", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Bluetooth", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2363,7 +2363,7 @@ Private Sub mnuMSSettingsCamera_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Camera", "start ms-settings:camera", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Camera", "start ms-settings:camera", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Startup Apps", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2408,7 +2408,7 @@ Private Sub mnuMSSettingsMouseTouchpad_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "MouseTouchpad", "start ms-settings:mousetouchpad", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "MouseTouchpad", "start ms-settings:mousetouchpad", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "MouseTouchpad", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2453,7 +2453,7 @@ Private Sub mnuMSSettingsPrinters_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Printers", "start ms-settings:printers", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Printers", "start ms-settings:printers", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Printers", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2498,7 +2498,7 @@ Private Sub mnuMSSettingsDevicesTouch_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "DevicesTouch", "start ms-settings:devices-touch", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "DevicesTouch", "start ms-settings:devices-touch", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DevicesTouch", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2543,7 +2543,7 @@ Private Sub mnuMSSettingsUSB_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "USB", "start ms-settings:usb", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "USB", "start ms-settings:usb", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "USB", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2588,7 +2588,7 @@ Private Sub mnuMSSettingsNetworkStatus_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Network-Status", "start ms-settings:network-status", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Network-Status", "start ms-settings:network-status", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network-Status", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2633,7 +2633,7 @@ Private Sub mnuMSSettingsAdvancedSettings_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "AdvancedSettings", "start ms-settings:advancedsettings", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "AdvancedSettings", "start ms-settings:advancedsettings", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "AdvancedSettings", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2679,7 +2679,7 @@ Private Sub mnuMSSettingsNetworkEthernet_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Network-Ethernet", "start ms-settings:network-ethernet", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Network-Ethernet", "start ms-settings:network-ethernet", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network-Ethernet", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2724,7 +2724,7 @@ Private Sub mnuMSSettingsNetworkWifi_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Network-Wifi", "start ms-settings:network-wifi", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Network-Wifi", "start ms-settings:network-wifi", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network-Wifi", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2771,7 +2771,7 @@ Private Sub mnuMSSettingsThemes_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Themes", "start ms-settings:themes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Themes", "start ms-settings:themes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Themes", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2817,7 +2817,7 @@ Private Sub mnuMSSettingsDeviceUsage_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "DeviceUsage", "start ms-settings:deviceusage", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "DeviceUsage", "start ms-settings:deviceusage", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DeviceUsage", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2864,7 +2864,7 @@ Private Sub mnuMSSettingsDisplayAdvanced_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "DisplayAdvanced", "start ms-settings:display-advanced", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "DisplayAdvanced", "start ms-settings:display-advanced", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DisplayAdvanced", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2910,7 +2910,7 @@ Private Sub mnuMSSettingsAppsVolume_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "AppsVolume", "start ms-settings:apps-volume", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "AppsVolume", "start ms-settings:apps-volume", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "AppsVolume", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2956,7 +2956,7 @@ Private Sub mnuMSSettingsBatterySaverUsageDetails_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "BatterySaverUsageDetails", "start ms-settings:batterysaver-usagedetails", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "BatterySaverUsageDetails", "start ms-settings:batterysaver-usagedetails", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "BatterySaverUsageDetails", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -3002,7 +3002,7 @@ Private Sub mnuMSSettingsDisplay_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Display", "start ms-settings:display", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Display", "start ms-settings:display", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Display", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -3053,7 +3053,7 @@ Private Sub mnuMSSettingsPowerSleep_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "PowerSleep", "start ms-settings:powersleep", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "PowerSleep", "start ms-settings:powersleep", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "PowerSleep", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and PowerSleep the properties of the new icon.
@@ -3101,7 +3101,7 @@ Private Sub mnuMSSettingsSound_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Sound", "start ms-settings:sound", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Sound", "start ms-settings:sound", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Sound", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and Sound the properties of the new icon.
@@ -3150,7 +3150,7 @@ Private Sub mnuMSSettingsDisksAndVolumes_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "DisksAndVolumes", "start ms-settings:disksandvolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "DisksAndVolumes", "start ms-settings:disksandvolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DisksAndVolumes", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and DisksAndVolumes the properties of the new icon.
@@ -3204,7 +3204,7 @@ Private Sub mnuMSSettingsWindowsUpdate_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "DisksAndVolumes", "start ms-settings:disksandvolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "DisksAndVolumes", "start ms-settings:disksandvolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "disksandvolumes", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and DisksAndVolumes the properties of the new icon.
@@ -3533,7 +3533,7 @@ Private Sub mnuSettingsAppsFeatures_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Apps & Features", "start ms-settings:appsfeatures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Apps & Features", "start ms-settings:appsfeatures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Apps & Features", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -3583,7 +3583,7 @@ Private Sub mnuSettingsOtherusers_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Other Users", "start ms-settings:otherusers", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Other Users", "start ms-settings:otherusers", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Other Users", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -3985,7 +3985,7 @@ Private Sub menuAddBlank_Click()
     
     If fFExists(IconImage) Then
         ' general tool to add an icon
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, vbNullString, thiskey)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Separator", thiskey)
         
@@ -4034,7 +4034,7 @@ Private Sub mnuAddShutdown_click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Shutdown", "C:\Windows\System32\shutdown.exe", "/s /t 00 /f /i", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Shutdown", "C:\Windows\System32\shutdown.exe", "/s /t 00 /f /i", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Shutdown", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4082,7 +4082,7 @@ Private Sub mnuAddHibernate_click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Hibernate", "C:\Windows\System32\shutdown.exe", "/h", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Hibernate", "C:\Windows\System32\shutdown.exe", "/h", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Hibernate", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4128,7 +4128,7 @@ Private Sub mnuAddReboot_click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Reboot", "C:\Windows\System32\shutdown.exe", "/r /t 00", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, "1", vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Reboot", "C:\Windows\System32\shutdown.exe", "/r /t 00", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, "1", vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Reboot", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4176,7 +4176,7 @@ Private Sub mnuAddLockWorkstation_click()
     
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Lock Workstation", Environ$("windir") & "\system32\rundll32.exe", "user32.dll, LockWorkStation", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Lock Workstation", Environ$("windir") & "\system32\rundll32.exe", "user32.dll, LockWorkStation", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Lock Workstation", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4222,7 +4222,7 @@ Private Sub mnuAddLogOut_click()
         
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Log Out", Environ$("windir") & "\system32\shutdown.exe", "/l", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Log Out", Environ$("windir") & "\system32\shutdown.exe", "/l", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Log Out", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4269,7 +4269,7 @@ Private Sub mnuAddNetwork_click()
     ' thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4316,7 +4316,7 @@ Private Sub mnuAddWorkgroup_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "WorkGroup", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "WorkGroup", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "WorkGroup", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4362,7 +4362,7 @@ Private Sub mnuAddPrinters_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Printers", "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Printers", "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Printers", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4410,7 +4410,7 @@ Private Sub mnuAddTask_click()
         ' if a 32 bit application on a 64bit o/s, regardless of the command, the o/s calls C:\Windows\SysWOW64\taskmgr.exe
         If fFExists(IconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Task Manager", Environ$("windir") & "\SysWOW64\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            thiskey = insertNewIconIntoCollection(IconImage, "Task Manager", Environ$("windir") & "\SysWOW64\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Task Manager", thiskey)
         
             ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4426,7 +4426,7 @@ Private Sub mnuAddTask_click()
         ' if a 32 bit application on a 32bit o/s, regardless of the o/s calls C:\Windows\System32\taskmgr.exe
         If fFExists(IconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Task Manager", Environ$("windir") & "\System32\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            thiskey = insertNewIconIntoCollection(IconImage, "Task Manager", Environ$("windir") & "\System32\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Task Manager")
         Else
          '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
@@ -4467,7 +4467,7 @@ Private Sub mnuAddControl_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Control panel", "control.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Control panel", "control.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Control panel")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4513,7 +4513,7 @@ Private Sub mnuAddPrograms_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Programs and Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Programs and Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Programs and Features")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4558,7 +4558,7 @@ Private Sub mnuAddDock_click()
 
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Dock Settings", "[Settings]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Dock Settings", "[Settings]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Dock Settings")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4605,7 +4605,7 @@ Private Sub mnuAddCompMgmt_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Computer Management", "compmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Computer Management", "compmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Computer Management")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4650,7 +4650,7 @@ Private Sub mnuAddDevMgmt_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Device Management", "devmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Device Management", "devmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Device Management")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4702,7 +4702,7 @@ Private Sub mnuAddDiscMgmt_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Disc Management", "diskmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Disc Management", "diskmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Disc Management")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4746,7 +4746,7 @@ Private Sub mnuAddRecycle_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Recycle Bin", "::{645ff040-5081-101b-9f08-00aa002f954e}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Recycle Bin", "::{645ff040-5081-101b-9f08-00aa002f954e}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Recycle Bin")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4795,7 +4795,7 @@ Private Sub mnuAddQuit_click()
     
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Quit", "[Quit]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Quit", "[Quit]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Quit")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4842,7 +4842,7 @@ Private Sub mnuAddProgramFiles_click()
 
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Program Files", "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Program Files", "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Program Files")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4891,7 +4891,7 @@ Private Sub mnuAddSeparator_click()
         
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Separator", vbNullString, vbNullString, vbNullString, vbNullString, sIsSeparator, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Separator", vbNullString, vbNullString, vbNullString, vbNullString, sIsSeparator, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Separator")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4954,7 +4954,7 @@ Private Sub mnuaddFolder_click()
 
         If fFExists(IconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            thiskey = insertNewIconDataIntoCurrentPosition(IconImage, getFolder, getFolder, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            thiskey = insertNewIconIntoCollection(IconImage, getFolder, getFolder, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             Call addImageToDictionaryAndCheckForRunningProcess(IconImage, getFolder, thiskey)
         
             ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -4988,15 +4988,12 @@ End Sub
 '
 Private Sub mnuAddMyComputer_click()
 
-
     Dim IconImage As String
     Dim iconFilename As String
     Dim thiskey As String
     
-    
-    
     ' check the icon exists
-   On Error GoTo mnuAddMyComputer_click_Error
+    On Error GoTo mnuAddMyComputer_click_Error
    'If debugflg = 1 Then debugLog "%mnuAddMyComputer_click"
 
     iconFilename = iconAppFolder & "\iconSettings\my collection" & "\my folder.png"
@@ -5008,7 +5005,7 @@ Private Sub mnuAddMyComputer_click()
        
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "My Computer", "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "My Computer", "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "My Computer")
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -5021,7 +5018,7 @@ Private Sub mnuAddMyComputer_click()
         '         MsgBox "Unable to add my computer image as it does not exist"
     End If
         
-        
+       
    On Error GoTo 0
    Exit Sub
 
@@ -5062,7 +5059,7 @@ Private Sub mnuAddEnhanced_click()
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
 
-        thiskey = insertNewIconDataIntoCurrentPosition(IconImage, "Enhanced Icon Settings", iconAppFolder & "\iconSettings.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconIntoCollection(IconImage, "Enhanced Icon Settings", iconAppFolder & "\iconSettings.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Enhanced Icon Settings", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -5145,7 +5142,7 @@ Private Sub mnuAddDocklet_click()
 '      End If
 '
 '       '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-'      thisKey =  insertNewIconDataIntoCurrentPosition(txtCurrentIcon.Text, "Docklet", vbNullString, vbNullString, vbNullString, txtTarget.Text, vbNullString)
+'      thisKey =  insertNewIconIntoCollection(txtCurrentIcon.Text, "Docklet", vbNullString, vbNullString, vbNullString, txtTarget.Text, vbNullString)
 '
 '    ' disable the fields, only enable the target fields and use the target field as a temporary location for the docklet data
 '

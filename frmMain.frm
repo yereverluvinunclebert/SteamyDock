@@ -13,6 +13,12 @@ Begin VB.Form dock
    ScaleMode       =   3  'Pixel
    ScaleWidth      =   546
    ShowInTaskbar   =   0   'False
+   Begin VB.Timer tmrWriteDatabase 
+      Enabled         =   0   'False
+      Interval        =   5000
+      Left            =   5430
+      Top             =   2250
+   End
    Begin VB.Timer tmrWriteCache 
       Enabled         =   0   'False
       Interval        =   1500
@@ -1789,7 +1795,7 @@ Public Sub fMouseUp(Button As Integer)
                     selectedIconIndex = targetIconIndex ' reset the selectedIconIndex
                     thisFilename = sFilename
                     
-                    Call insertNewIconDataIntoCurrentPosition(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
+                    Call insertNewIconIntoCollection(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
                     Call menuForm.addImageToDictionaryAndCheckForRunningProcess(thisFilename, sTitle)
                     
                     'delete the selected icon at its old location
@@ -2149,7 +2155,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         End If
         
         If fFExists(IconImage) Then ' last check that the default ? image has not been deleted.
-            Call insertNewIconDataIntoCurrentPosition(IconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            Call insertNewIconIntoCollection(IconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             ' .51 DAEB 08/04/2021 frmMain.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
             Call menuForm.addImageToDictionaryAndCheckForRunningProcess(IconImage, iconTitle) ' , thiskey)
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
@@ -7676,6 +7682,49 @@ setDPIAware_Error:
 End Sub
 
     
+'---------------------------------------------------------------------------------------
+' Procedure : tmrWriteDatabase_Timer
+' Author    : beededea
+' Date      : 17/10/2026
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub tmrWriteDatabase_Timer()
+
+    On Error GoTo tmrWriteDatabase_Timer_Error
+    
+    'if the dock has been idle for three seconds write the database
+    
+'    Dim lastInputVar As LASTINPUTINFO
+'    Dim currentIdleTime As Long: currentIdleTime = 0
+'
+'    ' check to see if the app has not been used for a while, ie it has been idle
+'
+'    lastInputVar.cbSize = Len(lastInputVar)
+'    Call GetLastInputInfo(lastInputVar)
+'    currentIdleTime = GetTickCount - lastInputVar.dwTime
+'
+'    'MsgBox "current idle time " & currentIdleTime
+'
+'    ' only allows the function to continue only if the dock has been idle for more than 3 secs
+'    If currentIdleTime < 5 Then Exit Sub
+
+    If animatedIconsRaised = True Then Exit Sub
+        
+    Call writeIconStateToDatabase
+    
+    tmrWriteDatabase.Enabled = False
+    
+    'MsgBox "database written"
+
+    On Error GoTo 0
+    Exit Sub
+
+tmrWriteDatabase_Timer_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure tmrWriteDatabase_Timer of Form dock"
+End Sub
+
 '---------------------------------------------------------------------------------------
 ' Procedure : tmrWriteCache_Timer
 ' Author    : beededea

@@ -1575,7 +1575,7 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : insertNewIconDataIntoCurrentPosition
+' Procedure : insertNewIconIntoCollection
 ' Author    : beededea
 ' Date      : 18/08/2019
 ' Purpose   : Add something to the dock called by all the menuAdd functions that follow
@@ -1590,7 +1590,7 @@ End Sub
 '.nn Modified the function inputs to add the missing icon characteristics that are needed when dragging and dropping an icon within the dock.
 ' .15 DAEB 20/05/2021 mdlMain.bas Added new check box to allow a quick launch of the chosen app
 
-Public Function insertNewIconDataIntoCurrentPosition(ByVal thisFilename As String, ByVal thisTitle As String, _
+Public Function insertNewIconIntoCollection(ByVal thisFilename As String, ByVal thisTitle As String, _
     ByVal thisCommand As String, _
     ByVal thisArguments As String, ByVal thisWorkingDirectory As String, _
     ByVal thisShowCmd As String, ByVal thisOpenRunning As String, _
@@ -1603,8 +1603,8 @@ Public Function insertNewIconDataIntoCurrentPosition(ByVal thisFilename As Strin
     Dim stringKeyValue As String
     Dim insertKey As String
 
-    On Error GoTo insertNewIconDataIntoCurrentPosition_Error
-    'If debugflg = 1 Then debugLog "%" & "insertNewIconDataIntoCurrentPosition"
+    On Error GoTo insertNewIconIntoCollection_Error
+    'If debugflg = 1 Then debugLog "%" & "insertNewIconIntoCollection"
     
     Set sIcon = New cwMainIcon
     
@@ -1670,14 +1670,14 @@ Public Function insertNewIconDataIntoCurrentPosition(ByVal thisFilename As Strin
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
     
-    insertNewIconDataIntoCurrentPosition = insertKey
+    insertNewIconIntoCollection = insertKey
 
    On Error GoTo 0
    Exit Function
 
-insertNewIconDataIntoCurrentPosition_Error:
+insertNewIconIntoCollection_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertNewIconDataIntoCurrentPosition of module mdlMain.bas"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertNewIconIntoCollection of module mdlMain.bas"
     
 End Function
 
@@ -1911,7 +1911,7 @@ End Sub
 ''        origSettingsFile = rdAppPath & "\settings.ini"
 ''        If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
 ''
-''            ' we don't need to write anything else to the intermediate rdsettings file as it has already been done in insertNewIconDataIntoCurrentPosition
+''            ' we don't need to write anything else to the intermediate rdsettings file as it has already been done in insertNewIconIntoCollection
 ''
 ''            'using the intermediate option is much faster just requiring a file copy
 ''            ' all we need to do is copy the duplicate settings file to the original
@@ -1991,7 +1991,7 @@ Public Sub addProgramDLLorEXE()
 
      Dim IconImage As String: IconImage = vbNullString
      Dim iconFilename As String: iconFilename = vbNullString
-     Dim thisKey As String
+     Dim thiskey As String
      Dim retFileName As String: retFileName = vbNullString
      Dim retfileTitle As String: retfileTitle = vbNullString
      Dim dialogInitDir As String: dialogInitDir = vbNullString
@@ -2112,7 +2112,7 @@ Public Sub addProgramDLLorEXE()
     
     dock.Refresh
     
-    Call insertNewIconDataIntoCurrentPosition(IconImage, thisTitle, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+    Call insertNewIconIntoCollection(IconImage, thisTitle, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
     Call menuForm.addImageToDictionaryAndCheckForRunningProcess(IconImage, retFileName) ' , thiskey)
         
     ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -2183,7 +2183,7 @@ End Sub
 '
 '    dock.Refresh
 '
-'    call insertNewIconDataIntoCurrentPosition(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+'    call insertNewIconIntoCollection(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
 '    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(iconImage, retFileName)
 '
 '    Call checkDockProcessesRunning ' trigger a test of running processes in half a second
@@ -2266,7 +2266,7 @@ Public Sub deleteThisIcon()
     
     'if not the top icon loop through them all from this location upward and reassign the values
     If selectedIconIndex < rdIconUpperBound Then
-        Dim thisKey As String
+        Dim thiskey As String
         'thiskey = sDockIcons(selectedIconIndex).Key
         'sDockIcons(thiskey).Remove Key
         sDockIcons.Remove selectedIconIndex
@@ -2284,7 +2284,6 @@ Public Sub deleteThisIcon()
     ' query the database for the record, if the record is found then delete it
     'If querySingleRecordFromDatabase(rdIconUpperBound) = True Then Call deleteSpecificKey(rdIconUpperBound)
     
-        
     'now the changes are complete, decrement the icon count and the maximum icon
     ' read the database and get the record count
     rdIconUpperBound = sDockIcons.Count 'getRecordCount()
@@ -2299,14 +2298,14 @@ Public Sub deleteThisIcon()
 
     'reduce by one, all arrays used for storing icon information
     Call redimPreserveCacheArrays
-    Call dock.drawSmallStaticIcons ' simple static redraw of the small icons
-    
-    Call writeIconStateToDatabase
     
     Call checkDockProcessesRunning ' trigger a test of running processes in half a second
-       
-    
-    
+           
+    Call dock.drawSmallStaticIcons ' simple static redraw of the small icons
+               
+    ' attempt to write the database every 5 secs only until the icons are no longer raised
+    dock.tmrWriteDatabase.Enabled = True
+           
     On Error GoTo 0
     Exit Sub
 
@@ -2539,7 +2538,7 @@ End Sub
 '             we load in several formats
 '---------------------------------------------------------------------------------------
 '
-Public Sub addNewImageToCollection(ByVal newFileName As String, ByVal newName As String, Optional ByVal thisKey As String)
+Public Sub addNewImageToCollection(ByVal newFileName As String, ByVal newName As String, Optional ByVal thiskey As String)
     
     On Error GoTo addNewImageToCollection_Error
     
@@ -2550,13 +2549,13 @@ Public Sub addNewImageToCollection(ByVal newFileName As String, ByVal newName As
         
         Call redimPreserveCacheArrays
         
-        Call dock.resizeAndLoadSmallTransparentimages(collSmallIcons, selectedIconIndex, 0, 0, iconSizeSmallPxls, iconSizeSmallPxls, thisKey)
+        Call dock.resizeAndLoadSmallTransparentimages(collSmallIcons, selectedIconIndex, 0, 0, iconSizeSmallPxls, iconSizeSmallPxls, thiskey)
         
-        Call dock.resizeAndLoadLargeTransparentimages(collLargeIcons, selectedIconIndex, 0, 0, iconSizeLargePxls, iconSizeLargePxls, thisKey)
+        Call dock.resizeAndLoadLargeTransparentimages(collLargeIcons, selectedIconIndex, 0, 0, iconSizeLargePxls, iconSizeLargePxls, thiskey)
         
-        Call dock.resizeAndLoadSmallOpaqueImages(collSmallIcons, selectedIconIndex, 0, 0, iconSizeSmallPxls, iconSizeSmallPxls, thisKey)
+        Call dock.resizeAndLoadSmallOpaqueImages(collSmallIcons, selectedIconIndex, 0, 0, iconSizeSmallPxls, iconSizeSmallPxls, thiskey)
         
-        Call dock.resizeAndLoadLargeOpaqueImages(collLargeIcons, selectedIconIndex, 0, 0, iconSizeLargePxls, iconSizeLargePxls, thisKey)
+        Call dock.resizeAndLoadLargeOpaqueImages(collLargeIcons, selectedIconIndex, 0, 0, iconSizeLargePxls, iconSizeLargePxls, thiskey)
 
    On Error GoTo 0
    Exit Sub
@@ -2587,7 +2586,7 @@ End Sub
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.
 Public Function resizeAndLoadImgToCollection(ByRef thiscollection As Collection, ByVal Key As String, ByVal strFilename As String, ByVal Left As Long, ByVal Top As Long, ByVal Width As Long, ByVal Height As Long, ByVal imageOpacity As Integer, Optional ByVal imageLocation As Integer) As Long
 
-    Dim thisKey As String
+    Dim thiskey As String
     Dim saveStatus As Boolean
     Dim encoderCLSID As CLSID
     Dim bytesFromFile() As Byte
@@ -2661,7 +2660,7 @@ Public Function resizeAndLoadImgToCollection(ByRef thiscollection As Collection,
     'override the key
     'If fullStringKey = "" Then
         ' create a unique key string
-        thisKey = Key & "ResizedImg" & LTrim$(Str$(Width))
+        thiskey = Key & "ResizedImg" & LTrim$(Str$(Width))
 '    Else
 '        thiskey = fullStringKey
 '    End If
@@ -2674,10 +2673,10 @@ Public Function resizeAndLoadImgToCollection(ByRef thiscollection As Collection,
 
      'load the images into the old small/large collections
     If imageLocation = 4 Then
-        If itemExists(thiscollection, thisKey) = True Then ' using a VB6 collection that doesn't have an .Exists method as
-            thiscollection.Remove thisKey
+        If itemExists(thiscollection, thiskey) = True Then ' using a VB6 collection that doesn't have an .Exists method as
+            thiscollection.Remove thiskey
         End If
-        thiscollection.Add iconBitmap, thisKey ' using a VB6 collection
+        thiscollection.Add iconBitmap, thiskey ' using a VB6 collection
     End If
     
     'load the same images to the new icon class instance
