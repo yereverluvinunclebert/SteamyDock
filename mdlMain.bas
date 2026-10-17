@@ -635,7 +635,7 @@ Public lHotKey As Long
 Public gblExplorerTimerRunning As Boolean
 Public gblProcessTimerRunning As Boolean
 
-
+Public stopAnimating As Boolean
 
 
 
@@ -2300,8 +2300,13 @@ Public Sub deleteThisIcon()
     Call redimPreserveCacheArrays
     
     Call checkDockProcessesRunning ' trigger a test of running processes in half a second
-           
+               
+    stopAnimating = True
+               
     Call dock.drawSmallStaticIcons ' simple static redraw of the small icons
+         
+    stopAnimating = False
+       
                
     ' attempt to write the database every 5 secs only until the icons are no longer raised
     dock.tmrWriteDatabase.Enabled = True

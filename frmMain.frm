@@ -15,7 +15,7 @@ Begin VB.Form dock
    ShowInTaskbar   =   0   'False
    Begin VB.Timer tmrWriteDatabase 
       Enabled         =   0   'False
-      Interval        =   5000
+      Interval        =   1000
       Left            =   5430
       Top             =   2250
    End
@@ -2427,13 +2427,13 @@ Private Sub responseTimer_Timer()
     
     ' the mouse has left the Max icon area
     If gblOutsideDock = True And dragFromDockOperating = False Then
-        Call stopAnimating
+        Call stopBounceAnimation
         Exit Sub ' leave the timer loop and do nothing else
     End If
     
      ' dragging from the dock for deletion
     If (gblOutsideDock = True And dragFromDockOperating = True) Then
-        If animateTimer = False Then Call startAnimating
+        If animateTimer = False Then Call startBounceAnimation
         hourGlassTimer.Enabled = False
         dragToDockOperating = False
         Exit Sub
@@ -2451,7 +2451,7 @@ Private Sub responseTimer_Timer()
 '            lastPositionRelativeToDock = False
         End If
         
-        If animateTimer = False Then Call startAnimating
+        If animateTimer = False Then Call startBounceAnimation
         If dragFromDockOperating = True Then
             hourGlassTimer.Enabled = True
             dragToDockOperating = True
@@ -2637,14 +2637,14 @@ startHidingDockTimers_Error:
 
 End Sub
 '---------------------------------------------------------------------------------------
-' Procedure : startAnimating
+' Procedure : startBounceAnimation
 ' Author    : beededea
 ' Date      : 19/12/2022
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub startAnimating()
-    On Error GoTo startAnimating_Error
+Private Sub startBounceAnimation()
+    On Error GoTo startBounceAnimation_Error
 
         animatedIconsRaised = True
         dockZorder = "high"
@@ -2664,28 +2664,28 @@ Private Sub startAnimating()
     On Error GoTo 0
     Exit Sub
 
-startAnimating_Error:
+startBounceAnimation_Error:
 
     With Err
          If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure startAnimating of Form dock"
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure startBounceAnimation of Form dock"
             Resume Next
           End If
     End With
 
 End Sub
 '---------------------------------------------------------------------------------------
-' Procedure : stopAnimating
+' Procedure : stopBounceAnimation
 ' Author    : beededea
 ' Date      : 19/12/2022
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub stopAnimating()
+Private Sub stopBounceAnimation()
         ' only cancel the running of the animation timer when neither of the two bounce timers are running
         ' this allows the bouncetimers to complete even if the mouse moves out of the dock area.
         ' these timers control the initiation of the chosen application so it is important that they both complete.
-    On Error GoTo stopAnimating_Error
+    On Error GoTo stopBounceAnimation_Error
 
         dockJustEntered = True
         dragToDockOperating = False ' stops the middle invisible icon on the sequentialBubbleAnimation routine
@@ -2708,11 +2708,11 @@ Private Sub stopAnimating()
     On Error GoTo 0
     Exit Sub
 
-stopAnimating_Error:
+stopBounceAnimation_Error:
 
     With Err
          If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure stopAnimating of Form dock"
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure stopBounceAnimation of Form dock"
             Resume Next
           End If
     End With
@@ -2737,6 +2737,8 @@ Private Sub animateTimer_Timer()
 '    Dim a As String
     
     On Error GoTo animateTimer_Error
+    
+    If stopAnimating = True Then Exit Sub
         
     ' if the bounce or fade timer are running cause animation to continue even if the mouse is stationary.
     If bounceUpTimer.Enabled = True Or bounceDownTimer.Enabled = True Or hourGlassTimer.Enabled = True Or autoFadeOutTimer.Enabled = True Or autoFadeInTimer.Enabled = True Or autoSlideOutTimer.Enabled = True Or autoSlideInTimer.Enabled = True Then ' .nn Changed or added as part of the drag and drop functionality
