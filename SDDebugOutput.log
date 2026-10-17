@@ -21630,3 +21630,34 @@
 2026-10-16 16:58:59.501 % sub initialiseGDIPStartup
 2026-10-16 16:58:59.501 % sub createIconDictionaryCollections
 2026-10-16 16:58:59.501 % sub prepareArraysAndCollections
+2026-10-17 01:26:44.497 % sub toggleDebugging
+2026-10-17 01:26:44.612 *****************************
+2026-10-17 01:26:44.612 % SteamyDock program started.
+2026-10-17 01:26:44.612 *****************************
+2026-10-17 01:26:44.613 % sub sDriveStrings
+2026-10-17 01:26:44.613 % sub checkLicenceState
+2026-10-17 01:26:44.684 % sub classicThemeCapable
+2026-10-17 01:26:44.684 % sub disableAdmin
+2026-10-17 01:26:44.684 % sub checkSteamyDockInstallation
+2026-10-17 01:26:44.685 % sub locateDockSettingsFiles
+2026-10-17 01:26:44.691 %backupDatabase
+2026-10-17 01:26:45.080 % sub readDockConfiguration
+2026-10-17 01:26:45.083 % sub readDockSettingsFile
+2026-10-17 01:26:45.241 % sub setUserHotKey
+2026-10-17 01:26:45.242 % func monitorProperties
+2026-10-17 01:26:45.242 % sub resolveVB6SizeBug
+2026-10-17 01:26:45.271 % sub setLocalConfigurationVars
+2026-10-17 01:26:45.273 % sub initialiseGDIPStartup
+2026-10-17 01:26:45.273 % sub createIconDictionaryCollections
+2026-10-17 01:26:45.273 % sub prepareArraysAndCollections
+2026-10-17 01:26:51.396 % sub createGDIStructures
+2026-10-17 01:26:51.397 % sub showSplashScreen
+2026-10-17 01:26:51.514 % sub createNewGDIPBitmap
+2026-10-17 01:26:51.514 % sub setAutoHide
+2026-10-17 01:26:51.515 % sub setWindowCharacteristics
+2026-10-17 01:26:51.555 % sub setUpProcessTimers
+2026-10-17 01:26:51.600 ******************************
+2026-10-17 01:26:51.600 % SteamyDock startup complete.
+2026-10-17 01:26:51.600 ******************************
+2026-10-17 01:29:43.357 Written settings to file - Done. 101 records, last run taking 0 seconds 
+2026-10-17 01:29:48.105 Written settings to file - Done. 101 records, last run taking 1 seconds 
