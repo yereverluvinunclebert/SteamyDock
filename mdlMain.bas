@@ -1600,7 +1600,7 @@ Public Function insertNewIconIntoCollection(ByVal thisFilename As String, ByVal 
     
     Dim useloop As Integer: useloop = 0
 
-    Dim stringKeyValue As String
+    Dim StringKeyValue As String
     Dim insertKey As String
 
     On Error GoTo insertNewIconIntoCollection_Error
@@ -1608,7 +1608,7 @@ Public Function insertNewIconIntoCollection(ByVal thisFilename As String, ByVal 
     
     Set sIcon = New cwMainIcon
     
-    stringKeyValue = CStr(selectedIconIndex)
+    StringKeyValue = CStr(selectedIconIndex)
     
     ' In the .ADD method the parameters are transposed due to the differences in approach for a scripting.dictionary vs a collection
     ' in a dictionary the key is key! In a collection it is the position, the key is merely a property we only use when ADDing
@@ -1620,7 +1620,7 @@ Public Function insertNewIconIntoCollection(ByVal thisFilename As String, ByVal 
     
     ' insert at selectedIconIndex on a positional basis not as a key
     insertKey = selectedIconIndex & "insert" & SecureRandomHex64
-    sDockIcons.Add sIcon, insertKey, Before:=stringKeyValue  ' using a VB6 collection
+    sDockIcons.Add sIcon, insertKey, before:=StringKeyValue  ' using a VB6 collection
 
     sDockIcons(selectedIconIndex).FileName = thisFilename
     'sDockIcons(selectedIconIndex).FileName2 = thisFileName2
@@ -1662,7 +1662,7 @@ Public Function insertNewIconIntoCollection(ByVal thisFilename As String, ByVal 
     PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
 '
 '    For useloop =1 to rdIconUpperBound
-'         Call writeIconSettingsDb(useloop, False)
+'         Call writeIconParamsToDB(useloop, False)
 '    Next useloop
 
     'amend the count in both the alternative rdSettings.ini
@@ -2265,6 +2265,11 @@ Public Sub deleteThisIcon()
         Dim thiskey As String
         sDockIcons.Remove selectedIconIndex
     End If
+    
+    ' here we should really clean up any references to images that still exist that were loaded when the icon was created
+    ' there are only four image objects still tied up and they will die when the program is restarted.
+    ' for the moment we do not dispose of the images as if an icon is cloned it also clones the image handles to the stored
+    ' image
     
     ' now the changes are complete, decrement the icon count and the maximum icon to reality
     ' we do that by reading the collection count

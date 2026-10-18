@@ -211,19 +211,19 @@ Public iconArrayLowerBound As Integer
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : writeIconSettingsDb
+' Procedure : writeIconParamsToDB
 ' Author    : beededea
 ' Date      : 21/09/2019
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Public Sub writeIconSettingsDb(ByVal iconNumberToWrite As Integer, Optional ByVal writeArray As Boolean)
+Public Sub writeIconParamsToDB(ByVal iconNumberToWrite As Integer, Optional ByVal writeArray As Boolean)
     
     Dim errCnt As Integer: errCnt = 0
     Static writeDBErrorCount As Integer
         
-    On Error GoTo writeIconSettingsDb_Error
-   'If debugFlg = 1 Then debugLog "%writeIconSettingsDb"
+    On Error GoTo writeIconParamsToDB_Error
+   'If debugFlg = 1 Then debugLog "%writeIconParamsToDB"
         
         ' check to see if there have been any prior errors reading records from the db, if so, don't read any more records
         If writeDBErrorCount > 0 Then Exit Sub
@@ -235,9 +235,9 @@ Public Sub writeIconSettingsDb(ByVal iconNumberToWrite As Integer, Optional ByVa
     On Error GoTo 0
    Exit Sub
 
-writeIconSettingsDb_Error:
+writeIconParamsToDB_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconSettingsDb of Module Common"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconParamsToDB of Module Common"
     
 End Sub
 
@@ -263,7 +263,7 @@ Public Sub readIconParamsFromDb(ByVal iconNumberToRead As Integer) ' , Optional 
         If readDBFlag > 0 Then Exit Sub
         
          ' obtain the icon data from the SQLite database with error check returned
-        errCnt = getIconSettingsFromDatabase(iconNumberToRead)
+        errCnt = getSingleIconpropertyValuesFromDB(iconNumberToRead)
         readDBFlag = readDBFlag + errCnt
 
         
@@ -297,7 +297,7 @@ Public Sub createDockIcons(ByVal iconNumberToRead As Integer)
         If readDBFlag > 0 Then Exit Sub
         
          ' obtain the icon data from the SQLite database with error check returned
-        errCnt = getIconSettingsFromDatabase(iconNumberToRead, True)
+        errCnt = getSingleIconpropertyValuesFromDB(iconNumberToRead, True)
         readDBFlag = readDBFlag + errCnt
 
 
@@ -332,7 +332,7 @@ End Sub
 '         ' get the relevant entries from the registry
 '         readRegistryIconValues (useloop)
 '         ' write the rocketdock alternative settings.ini
-'         Call writeIconSettingsDb(useloop, settingsFile)
+'         Call writeIconParamsToDB(useloop, settingsFile)
 '     Next useloop
 '
 '
@@ -753,7 +753,7 @@ Public Function GetShellShortcutInfo(ByVal full_name As String, _
     ' Get the shortcut's folder and name.
     shortcut_path = Left$(full_name, InStrRev(full_name, _
         "\"))
-    shortcut_name = Mid$(full_name, InStrRev(full_name, _
+    shortcut_name = mID$(full_name, InStrRev(full_name, _
         "\") + 1)
     If Not Right$(shortcut_name, 4) = ".lnk" Then _
         shortcut_name = shortcut_name & ".lnk"
@@ -848,8 +848,10 @@ End Sub
 ' Procedure : writeIconStateToDatabase
 ' Author    : beededea
 ' Date      : 02/07/2025
-' Purpose   : writing the in-memory cache to disc. The data relating to the icons is written to an array to avoid any user delay,
-'             the writing to disc is VERY slow resulting in 15 seconds pause. However, we still need to write the data to disc.
+' Purpose   : writing the in-memory cache to disc. The data relating to the icons is written to a collection to avoid any delay to the user,
+'             the writing to disc is VERY slow resulting in 15 seconds pause. However, we still need to write the data to disc. This routine
+'             will only be called when the program exits and after an icon is deleted, this will be called via a timer which checks if the
+'             dock is not raised before calling this routine.
 '---------------------------------------------------------------------------------------
 '
 Public Sub writeIconStateToDatabase()
@@ -869,7 +871,7 @@ Public Sub writeIconStateToDatabase()
     'loop from the start operation value to the end
     For useloop = startRecord To rdIconUpperBound
 
-        Call writeIconSettingsDb(useloop)
+        Call writeIconParamsToDB(useloop)
 
     Next useloop
 

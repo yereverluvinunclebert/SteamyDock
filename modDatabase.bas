@@ -94,7 +94,7 @@ Public Function backupDatabase() As String
             
     On Error GoTo backupDatabase_Error
    
-    If debugFlg = 1 Then debugLog "%" & "backupDatabase"
+    If debugflg = 1 Then debugLog "%" & "backupDatabase"
     
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" '
 
@@ -520,14 +520,14 @@ End Function
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : getIconSettingsFromDatabase
+' Procedure : getSingleIconpropertyValuesFromDB
 ' Author    : beededea
 ' Date      : 24/11/2025
 ' Purpose   : Retrieves all the data fields for a given key.
 '             Raises error 5 if the key is not found.
 '---------------------------------------------------------------------------------------
 '
-Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As Integer, Optional ByVal addIcon As Boolean) As Integer
+Public Function getSingleIconpropertyValuesFromDB(ByVal thisKeyValue As Integer, Optional ByVal addIcon As Boolean) As Integer
     Dim sFilename As String
     Dim sFileName2 As String
     Dim sTitle  As String
@@ -553,14 +553,14 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As Integer, Optio
 
     Dim DataSet As SQLiteDataSet
     
-    On Error GoTo getIconSettingsFromDatabase_Error
+    On Error GoTo getSingleIconpropertyValuesFromDB_Error
 
     ' select one record matching the supplied key pulling all fields/columns into a dataset
     Set DataSet = DBConnection.OpenDataSet("SELECT * FROM iconDataTable WHERE key= " & thisKeyValue)
     
     ' No matching row
     If DataSet.RecordCount = 0 Then
-       GoTo getIconSettingsFromDatabase_Error
+       GoTo getSingleIconpropertyValuesFromDB_Error
     End If
     
     ' retain the sVariables as local vars - useful
@@ -738,17 +738,17 @@ Public Function getIconSettingsFromDatabase(ByVal thisKeyValue As Integer, Optio
 
     
     ' no error count
-    getIconSettingsFromDatabase = 0
+    getSingleIconpropertyValuesFromDB = 0
     
     On Error GoTo 0
     Exit Function
 
-getIconSettingsFromDatabase_Error:
+getSingleIconpropertyValuesFromDB_Error:
     
     ' error count of 1 passed back to calling routine
-    getIconSettingsFromDatabase = 1
+    getSingleIconpropertyValuesFromDB = 1
 
-     MsgBox "Error Data not found for this key " & thisKeyValue & " or other error - " & Err.Number & " (" & Err.Description & ") in procedure getIconSettingsFromDatabase of module ModDatase"
+     MsgBox "Error Data not found for this key " & thisKeyValue & " or other error - " & Err.Number & " (" & Err.Description & ") in procedure getSingleIconpropertyValuesFromDB of module ModDatase"
 End Function
 
 

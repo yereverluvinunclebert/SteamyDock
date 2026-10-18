@@ -1781,59 +1781,63 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuCloneIcon_Click()
-    Dim sFilename As String
-    Dim sFileName2 As String
-    Dim sTitle As String
-    Dim sCommand  As String
-    Dim sArguments  As String
-    Dim sWorkingDirectory  As String
-    Dim sShowCmd  As String
-    Dim sOpenRunning  As String
-    Dim sRunElevated  As String
-    Dim sIsSeparator  As String
-    Dim sUseContext  As String
-    Dim sDockletFile  As String
-    Dim sUseDialog  As String
-    Dim sUseDialogAfter  As String
-    Dim sQuickLaunch  As String
-    Dim sAutoHideDock  As String
-    Dim sSecondApp  As String
-    Dim sRunSecondAppBeforehand  As String
-    Dim sAppToTerminate As String
-    Dim sDisabled  As String
-    Dim thiskey As String
-    
-    ' Dim stringKeyValue As String
-    
-    ' stringKeyValue =  CStr(selectedIconIndex)
-    
-    dock.Refresh
-    
-    sFilename = sDockIcons(selectedIconIndex).FileName
-    sFileName2 = sDockIcons(selectedIconIndex).FileName2
-    sTitle = sDockIcons(selectedIconIndex).Title
-    sCommand = sDockIcons(selectedIconIndex).Command
-    sArguments = sDockIcons(selectedIconIndex).Arguments
-    sWorkingDirectory = sDockIcons(selectedIconIndex).WorkingDirectory
-    sShowCmd = sDockIcons(selectedIconIndex).ShowCmd
-    sOpenRunning = sDockIcons(selectedIconIndex).OpenRunning
-    sIsSeparator = sDockIcons(selectedIconIndex).IsSeparator
-    sUseContext = sDockIcons(selectedIconIndex).UseContext
-    sDockletFile = sDockIcons(selectedIconIndex).DockletFile
-    sUseDialog = sDockIcons(selectedIconIndex).UseDialog
-    sUseDialogAfter = sDockIcons(selectedIconIndex).UseDialogAfter
-    sQuickLaunch = sDockIcons(selectedIconIndex).QuickLaunch
-    sAutoHideDock = sDockIcons(selectedIconIndex).AutoHideDock
-    sSecondApp = sDockIcons(selectedIconIndex).SecondApp
-    sRunElevated = sDockIcons(selectedIconIndex).RunElevated
-    sRunSecondAppBeforehand = sDockIcons(selectedIconIndex).RunSecondAppBeforehand
-    sAppToTerminate = sDockIcons(selectedIconIndex).AppToTerminate
-    sDisabled = sDockIcons(selectedIconIndex).Disabled
 
-    ' the params will be removeable, they are actually removeable already.
-    thiskey = insertNewIconIntoCollection(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
-    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(sFilename, sTitle, thiskey)
+    Dim sourceIcon As cwMainIcon
+    Dim clonedIcon As cwMainIcon
+    Dim stringKeyValue As String
+    Dim insertKey As String
+    
+    ' Select our source element ie. the one we want to copy (this time by index and not key)
+    Set sourceIcon = sDockIcons.Item(selectedIconIndex)
+    
+    ' clone the original object plus all property values including handles to images
+    Set clonedIcon = sourceIcon.clone()
+    
+    ' modify the clone's title
+    clonedIcon.Title = sourceIcon.Title & "cloned"
+    
+    ' add the clone back into the collection
+    
+    stringKeyValue = CStr(selectedIconIndex)
+    
+    ' in a dictionary the key is key! In a collection it is the position, the key is merely a property we only use when ADDing
+    
+    ' If Before is a numeric expression, it must be a number from 1 through the value of the collection's Count property.
+    ' If Before is a String expression, it must correspond to the key string specified when the element being referred to was added to the collection.
+        
+    ' insert at selectedIconIndex on a positional basis not as a key
+    insertKey = selectedIconIndex & "insert" & SecureRandomHex64
+    sDockIcons.Add clonedIcon, insertKey, before:=stringKeyValue  ' using a VB6 collection
+    
+    ' here we should really resolve any references to images that are shared between the two identical icons
+    ' for the moment we do not care
+    
+    ' now the changes are complete, increment the icon count and the maximum icon to reality
+    ' we do that by reading the collection count
+    rdIconUpperBound = sDockIcons.Count 'getRecordCount()
+    iconArrayUpperBound = rdIconUpperBound
 
+    'amend the count in both the alternative rdSettings.ini
+    PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
+    PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
+
+    If selectedIconIndex > rdIconUpperBound Then selectedIconIndex = rdIconUpperBound
+
+    'reduce by one, all arrays used for storing icon information
+    Call redimPreserveCacheArrays
+    
+    Call checkDockProcessesRunning ' trigger a test of running processes in half a second
+               
+    stopAnimating = True
+               
+    Call dock.drawSmallStaticIcons ' simple static redraw of the small icons
+         
+    stopAnimating = False
+       
+    ' attempt to write the database every second but only until the icons are no longer raised (dock unused)
+    dock.tmrWriteDatabase.Enabled = True
+           
+    
    On Error GoTo 0
    Exit Sub
 
@@ -1841,8 +1845,6 @@ mnuCloneIcon_Click_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuCloneIcon_Click of Form menuForm"
 End Sub
-
-
 
 
 '---------------------------------------------------------------------------------------

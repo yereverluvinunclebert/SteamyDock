@@ -1702,3 +1702,68 @@ End Sub
 
 
 
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : clone
+' Author    : beededea
+' Date      : 18/10/2026
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Function clone() As cwMainIcon
+
+    Dim newIcon As New cwMainIcon
+
+    ' Copy all properties
+    
+    On Error GoTo clone_Error
+
+    newIcon.FileName = mFilename
+    newIcon.FileName2 = mFileName2
+    newIcon.Title = mTitle
+    newIcon.Command = mCommand
+    newIcon.Arguments = mArguments
+    newIcon.WorkingDirectory = mWorkingDirectory
+    newIcon.ShowCmd = mShowCmd
+    newIcon.OpenRunning = mOpenRunning
+    newIcon.IsSeparator = mIsSeparator
+    newIcon.UseContext = mUseContext
+    newIcon.DockletFile = mDockletFile
+    newIcon.UseDialog = mUseDialog
+    newIcon.UseDialogAfter = mUseDialogAfter
+    newIcon.QuickLaunch = mQuickLaunch
+    newIcon.AutoHideDock = mAutoHideDock
+    newIcon.SecondApp = mSecondApp
+    newIcon.RunElevated = mRunElevated
+    newIcon.RunSecondAppBeforehand = mRunSecondAppBeforehand
+    newIcon.AppToTerminate = mAppToTerminate
+    newIcon.Disabled = mDisabled
+    newIcon.IconIndex = mIconIndex
+    newIcon.IconOpacity = mIconOpacity
+    
+    ' these next four properties are handles to images, if we clone the whole icon then these references
+    ' will be replicated and both icons will have the same handles
+    ' when we delete an icon we should really dispose of the objects. Doing so
+    ' would mean that the remaining icon would have handles to objects that no longer exist
+    ' my feeling is we should either input the image again and have a new set of handles
+    ' or stop worrying about it and not clean up properly after a delete.
+    
+    newIcon.IconImageLarge = mIconImageLarge
+    newIcon.IconImageSmall = mIconImageSmall
+    newIcon.IconTransparentImageLarge = mIconTransparentImageLarge
+    newIcon.IconTransparentImageSmall = mIconTransparentImageSmall
+    
+    newIcon.MarkedDirty = mMarkedDirty
+            
+    Set clone = newIcon
+
+    On Error GoTo 0
+    Exit Function
+
+clone_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure clone of Class Module cwMainIcon"
+
+End Function
