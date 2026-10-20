@@ -4470,7 +4470,7 @@ Private Sub mnuAddControl_click()
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         thiskey = insertNewIconIntoCollection(IconImage, "Control panel", "control.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Control panel")
+        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Control panel", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location

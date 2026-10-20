@@ -1600,7 +1600,7 @@ Public Function insertNewIconIntoCollection(ByVal thisFilename As String, ByVal 
     
     Dim useloop As Integer: useloop = 0
 
-    Dim StringKeyValue As String
+    Dim stringKeyValue As String
     Dim insertKey As String
 
     On Error GoTo insertNewIconIntoCollection_Error
@@ -1608,7 +1608,7 @@ Public Function insertNewIconIntoCollection(ByVal thisFilename As String, ByVal 
     
     Set sIcon = New cwMainIcon
     
-    StringKeyValue = CStr(selectedIconIndex)
+    stringKeyValue = CStr(selectedIconIndex)
     
     ' In the .ADD method the parameters are transposed due to the differences in approach for a scripting.dictionary vs a collection
     ' in a dictionary the key is key! In a collection it is the position, the key is merely a property we only use when ADDing
@@ -1620,7 +1620,7 @@ Public Function insertNewIconIntoCollection(ByVal thisFilename As String, ByVal 
     
     ' insert at selectedIconIndex on a positional basis not as a key
     insertKey = selectedIconIndex & "insert" & SecureRandomHex64
-    sDockIcons.Add sIcon, insertKey, before:=StringKeyValue  ' using a VB6 collection
+    sDockIcons.Add sIcon, insertKey, before:=stringKeyValue  ' using a VB6 collection
 
     sDockIcons(selectedIconIndex).FileName = thisFilename
     'sDockIcons(selectedIconIndex).FileName2 = thisFileName2
@@ -1988,7 +1988,7 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Public Sub addProgramDLLorEXE()
-
+ 
      Dim IconImage As String: IconImage = vbNullString
      Dim iconFilename As String: iconFilename = vbNullString
      Dim thiskey As String
@@ -2112,8 +2112,8 @@ Public Sub addProgramDLLorEXE()
     
     dock.Refresh
     
-    Call insertNewIconIntoCollection(IconImage, thisTitle, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(IconImage, retFileName) ' , thiskey)
+    thiskey = insertNewIconIntoCollection(IconImage, thisTitle, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(IconImage, retFileName, thiskey)
         
     ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
     If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
