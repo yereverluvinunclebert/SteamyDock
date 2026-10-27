@@ -18,8 +18,13 @@ Overall status
   All icons can store their properties within an icon keyed by name stored within a VB6 collection
 
   All icon dictionaries have been converted to collections to allow eventual fast insertion and re-ordering
+  Disable this icon - works
+  Add Icon - works
+      All icon additions tested
+  Delete Icon - works
+  Clone Icon - ?
 
-  Re-ordering and insertion of icons is yet to be achieved
+  Drag and drop re-ordering and insertion of icons is yet to be achieved
 
   Third stage not yet started - to animate all the icons and eliminate the serialised nature of the existing code.
 

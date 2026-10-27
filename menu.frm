@@ -510,8 +510,8 @@ Private Sub mnuAddBluetooth_Click()
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
 
-        thiskey = insertNewIconIntoCollection(IconImage, "BlueTooth", "C:\WINDOWS\system32\bthprops.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "BlueTooth", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "BlueTooth", "C:\WINDOWS\system32\bthprops.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "BlueTooth", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -558,8 +558,8 @@ Private Sub mnuAddCache_Click()
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
 
-        thiskey = insertNewIconIntoCollection(IconImage, "Clear Cache", "C:\WINDOWS\system32\rundll32.exe", "advapi32.dll , ProcessIdleTasks", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Clear Cache", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Clear Cache", "C:\WINDOWS\system32\rundll32.exe", "advapi32.dll , ProcessIdleTasks", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Clear Cache", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -607,8 +607,8 @@ Private Sub mnuAddDisplay_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Display", "desk.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Display", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Display", "desk.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Display", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -652,8 +652,8 @@ Private Sub mnuAddEventViewer_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Event Viewer", "eventvwr.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Event Viewer", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Event Viewer", "eventvwr.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Event Viewer", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -707,8 +707,8 @@ Private Sub mnuAddMouse_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Mouse", "main.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Mouse", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Mouse", "main.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Mouse", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -760,8 +760,8 @@ Private Sub mnuAddMyDocuments_Click()
        
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "My Documents", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "My Documents", "::{A8CDFF1C-4878-43be-B5FD-F8091C1C60D0}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "My Documents", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -821,9 +821,9 @@ Private Sub mnuAddMyMusic_Click()
 
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' using the Special CLSID for the video folder this, in fact resolves to the my documents folder and not the video folder below.
-        'thisKey =  insertNewIconIntoCollection(iconImage, "My Music", "::{1CF1260C-4DD0-4ebb-811F-33C572699FDE}", vbNullString, vbNullString, vbNullString, vbNullString)
-        thiskey = insertNewIconIntoCollection(IconImage, "My Music", userprof & "\Music", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "My Music", thiskey)
+        'thisKey =  insertNewIconElementIntoCollection(iconImage, "My Music", "::{1CF1260C-4DD0-4ebb-811F-33C572699FDE}", vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "My Music", userprof & "\Music", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "My Music", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -881,8 +881,8 @@ Private Sub mnuAddMyPictures_Click()
 
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "My Pictures", userprof & "\Pictures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "My Pictures", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "My Pictures", userprof & "\Pictures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "My Pictures", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -939,9 +939,9 @@ Private Sub mnuAddMyVideos_Click()
        
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        'thisKey =  insertNewIconIntoCollection(iconImage, "My Videos", "::{A0953C92-50DC-43bf-BE83-3742FED03C9C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        thiskey = insertNewIconIntoCollection(IconImage, "My Videos", userprof & "\Videos", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "My Videos", thiskey)
+        'thisKey =  insertNewIconElementIntoCollection(iconImage, "My Videos", "::{A0953C92-50DC-43bf-BE83-3742FED03C9C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "My Videos", userprof & "\Videos", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "My Videos", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -988,8 +988,8 @@ Private Sub mnuAddNetworkConnections_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Network Connections", "ncpa.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network Connections", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Network Connections", "ncpa.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Network Connections", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -1033,8 +1033,8 @@ Private Sub mnuAddPerfMon_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Performance Monitor", "perfmon.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Performance Monitor", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Performance Monitor", "perfmon.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Performance Monitor", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -1111,8 +1111,8 @@ Private Sub mnuAddProgramFeatures_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Programs & Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Programs & Features", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Programs & Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Programs & Features", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -1158,8 +1158,8 @@ Private Sub mnuAddServices_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Services Management", "services.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Services Management", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Services Management", "services.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Services Management", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -1209,8 +1209,8 @@ Private Sub mnuAddSleep_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Sleep", "C:\Windows\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Sleep", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Sleep", "C:\Windows\System32\RUNDLL32.exe", "powrprof.dll,SetSuspendState 0,1,0", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Sleep", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -1256,8 +1256,8 @@ Private Sub mnuAddSound_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Sound", "mmsys.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Sound", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Sound", "mmsys.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Sound", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -1305,8 +1305,8 @@ Private Sub mnuAddSystemProperties_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "System Properties", "sysdm.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "System Properties", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "System Properties", "sysdm.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "System Properties", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -1353,8 +1353,8 @@ Private Sub mnuAddTaskSched_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Task Scheduler", "taskschd.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Task Scheduler", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Task Scheduler", "taskschd.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Task Scheduler", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -1409,8 +1409,8 @@ Private Sub mnuAddTimeDate_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Date & Time", "timedate.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Date & Time", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Date & Time", "timedate.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Date & Time", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -1786,28 +1786,96 @@ Private Sub mnuCloneIcon_Click()
     Dim clonedIcon As cwMainIcon
     Dim stringKeyValue As String
     Dim insertKey As String
+    Dim IconImage As String
+    Dim thiskey As String
     
-    ' Select our source element ie. the one we want to copy (this time by index and not key)
-    Set sourceIcon = sDockIcons.Item(selectedIconIndex)
+    Dim sFilename As String
+    Dim sFileName2 As String
+    Dim sTitle  As String
+    Dim sCommand  As String
+    Dim sArguments  As String
+    Dim sWorkingDirectory  As String
+    Dim sShowCmd  As String
+    Dim sOpenRunning  As String
+    Dim sRunElevated  As String
+    Dim sIsSeparator  As String
+    Dim sUseContext  As String
+    Dim sDockletFile  As String
+    Dim sUseDialog  As String
+    Dim sUseDialogAfter  As String
+    Dim sQuickLaunch  As String
+    Dim sAutoHideDock  As String
+    Dim sSecondApp  As String
+    Dim sRunSecondAppBeforehand  As String
+    Dim sAppToTerminate As String
+    Dim sDisabled  As String
+    Dim sIconIndex As String
+    Dim sIconOpacity As String
+    Dim sIconImageLarge As Long
+    Dim sIconImageSmall  As Long
+    Dim sIconTransparentImageLarge  As Long
+    Dim sIconTransparentImageSmall  As Long
     
-    ' clone the original object plus all property values including handles to images
-    Set clonedIcon = sourceIcon.clone()
     
-    ' modify the clone's title
-    clonedIcon.Title = sourceIcon.Title & "cloned"
+    sFilename = sDockIcons(selectedIconIndex).FileName
+    sFileName2 = sDockIcons(selectedIconIndex).FileName2
+    sTitle = sDockIcons(selectedIconIndex).Title
+    sCommand = sDockIcons(selectedIconIndex).Command
+    sArguments = sDockIcons(selectedIconIndex).Arguments
+    sWorkingDirectory = sDockIcons(selectedIconIndex).WorkingDirectory
+    sShowCmd = sDockIcons(selectedIconIndex).ShowCmd
+    sOpenRunning = sDockIcons(selectedIconIndex).OpenRunning
+    sIsSeparator = sDockIcons(selectedIconIndex).IsSeparator
+    sUseContext = sDockIcons(selectedIconIndex).UseContext
+    sDockletFile = sDockIcons(selectedIconIndex).DockletFile   ' error ?"
+    sUseDialog = sDockIcons(selectedIconIndex).UseDialog
+    sUseDialogAfter = sDockIcons(selectedIconIndex).UseDialogAfter
+    sQuickLaunch = sDockIcons(selectedIconIndex).QuickLaunch
+    sAutoHideDock = sDockIcons(selectedIconIndex).AutoHideDock
+    sSecondApp = sDockIcons(selectedIconIndex).SecondApp
+    sRunElevated = sDockIcons(selectedIconIndex).RunElevated
+    sRunSecondAppBeforehand = sDockIcons(selectedIconIndex).RunSecondAppBeforehand
+    sAppToTerminate = sDockIcons(selectedIconIndex).AppToTerminate
+    sDisabled = sDockIcons(selectedIconIndex).Disabled
+    sIconIndex = sDockIcons(selectedIconIndex).IconIndex
+    sIconOpacity = sDockIcons(selectedIconIndex).IconOpacity
+    sIconImageLarge = sDockIcons(selectedIconIndex).IconImageLarge
+    sIconImageSmall = sDockIcons(selectedIconIndex).IconImageSmall
+    sIconTransparentImageLarge = sDockIcons(selectedIconIndex).IconTransparentImageLarge
+    sIconTransparentImageSmall = sDockIcons(selectedIconIndex).IconTransparentImageSmall
     
-    ' add the clone back into the collection
+    IconImage = iconAppFolder & "\iconSettings\my collection\steampunk icons MKII\folder-closed.png"
     
-    stringKeyValue = CStr(selectedIconIndex)
+    thiskey = insertNewIconElementIntoCollection(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
+    Call addImageToCollectionAndCheckForRunningProcess(IconImage, sWorkingDirectory, thiskey)
+
     
-    ' in a dictionary the key is key! In a collection it is the position, the key is merely a property we only use when ADDing
     
-    ' If Before is a numeric expression, it must be a number from 1 through the value of the collection's Count property.
-    ' If Before is a String expression, it must correspond to the key string specified when the element being referred to was added to the collection.
-        
-    ' insert at selectedIconIndex on a positional basis not as a key
-    insertKey = selectedIconIndex & "insert" & SecureRandomHex64
-    sDockIcons.Add clonedIcon, insertKey, before:=stringKeyValue  ' using a VB6 collection
+    
+'    ' Select our source element ie. the one we want to copy (this time by index and not key)
+'    Set sourceIcon = sDockIcons.Item(selectedIconIndex)
+'
+'    ' clone the original object plus all property values including handles to images
+'    Set clonedIcon = sourceIcon.clone()
+'
+'    ' modify the clone's title
+'    clonedIcon.Title = sourceIcon.Title & "cloned"
+'
+'    ' add the clone back into the collection
+'
+'    stringKeyValue = CStr(selectedIconIndex)
+'
+'    ' in a dictionary the key is key! In a collection it is the position, the key is merely a property we only use when ADDing
+'
+'    ' If Before is a numeric expression, it must be a number from 1 through the value of the collection's Count property.
+'    ' If Before is a String expression, it must correspond to the key string specified when the element being referred to was added to the collection.
+'
+'    ' insert at selectedIconIndex on a positional basis not as a key
+'    insertKey = selectedIconIndex & "insert" & SecureRandomHex64
+'    sDockIcons.Add clonedIcon, insertKey, before:=stringKeyValue  ' using a VB6 collection
+'
+    
+    
     
     ' here we should really resolve any references to images that are shared between the two identical icons
     ' for the moment we do not care
@@ -1833,10 +1901,9 @@ Private Sub mnuCloneIcon_Click()
     Call dock.drawSmallStaticIcons ' simple static redraw of the small icons
          
     stopAnimating = False
-       
+    
     ' attempt to write the database every second but only until the icons are no longer raised (dock unused)
-    dock.tmrWriteDatabase.Enabled = True
-           
+    'dock.tmrWriteDatabase.Enabled = True
     
    On Error GoTo 0
    Exit Sub
@@ -1887,6 +1954,10 @@ Private Sub mnuDisableIcon_Click()
     ' triggers for telling the iconSettings tool that it needs to refresh
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
+            
+    ' attempt to write the database every second but only until the icons are no longer raised (dock unused)
+    'dock.tmrWriteDatabase.Enabled = True
+
     
 '   we cannot modify the current icon in the dictionary
 '   instead, create a transparent version of the disabled icon on the fly based upon the filename
@@ -2091,8 +2162,8 @@ Private Sub mnuMSSettingsDateAndTime_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "DateAndTime", "start ms-settings:dateandtime", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DateAndTime", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "DateAndTime", "start ms-settings:dateandtime", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "DateAndTime", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2140,8 +2211,8 @@ Private Sub mnuMSSettingsWindowsDefender_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "windowsdefender", "start ms-settings:windowsdefender", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "windowsdefender", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "windowsdefender", "start ms-settings:windowsdefender", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "windowsdefender", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2185,8 +2256,8 @@ Private Sub mnuMSSettingsStartupApps_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Startup Apps", "start ms-settings:startupapps", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Startup Apps", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Startup Apps", "start ms-settings:startupapps", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Startup Apps", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2230,8 +2301,8 @@ Private Sub mnuMSSettingsVideoPlayback_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "VideoPlayback", "start ms-settings:videoplayback", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Startup Apps", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "VideoPlayback", "start ms-settings:videoplayback", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Startup Apps", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2275,8 +2346,8 @@ Private Sub mnuMSSettingsControlCenter_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Startup Apps", "start ms-settings:controlcenter", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Control Centre", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Startup Apps", "start ms-settings:controlcenter", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Control Centre", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2320,8 +2391,8 @@ Private Sub mnuMSSettingsBluetooth_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Startup Apps", "start ms-settings:bluetooth", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Bluetooth", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Startup Apps", "start ms-settings:bluetooth", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Bluetooth", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2365,8 +2436,8 @@ Private Sub mnuMSSettingsCamera_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Camera", "start ms-settings:camera", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Startup Apps", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Camera", "start ms-settings:camera", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Startup Apps", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2410,8 +2481,8 @@ Private Sub mnuMSSettingsMouseTouchpad_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "MouseTouchpad", "start ms-settings:mousetouchpad", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "MouseTouchpad", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "MouseTouchpad", "start ms-settings:mousetouchpad", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "MouseTouchpad", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2455,8 +2526,8 @@ Private Sub mnuMSSettingsPrinters_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Printers", "start ms-settings:printers", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Printers", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Printers", "start ms-settings:printers", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Printers", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2500,8 +2571,8 @@ Private Sub mnuMSSettingsDevicesTouch_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "DevicesTouch", "start ms-settings:devices-touch", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DevicesTouch", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "DevicesTouch", "start ms-settings:devices-touch", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "DevicesTouch", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2545,8 +2616,8 @@ Private Sub mnuMSSettingsUSB_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "USB", "start ms-settings:usb", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "USB", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "USB", "start ms-settings:usb", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "USB", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2590,8 +2661,8 @@ Private Sub mnuMSSettingsNetworkStatus_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Network-Status", "start ms-settings:network-status", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network-Status", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Network-Status", "start ms-settings:network-status", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Network-Status", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2635,8 +2706,8 @@ Private Sub mnuMSSettingsAdvancedSettings_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "AdvancedSettings", "start ms-settings:advancedsettings", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "AdvancedSettings", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "AdvancedSettings", "start ms-settings:advancedsettings", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "AdvancedSettings", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2681,8 +2752,8 @@ Private Sub mnuMSSettingsNetworkEthernet_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Network-Ethernet", "start ms-settings:network-ethernet", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network-Ethernet", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Network-Ethernet", "start ms-settings:network-ethernet", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Network-Ethernet", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2726,8 +2797,8 @@ Private Sub mnuMSSettingsNetworkWifi_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Network-Wifi", "start ms-settings:network-wifi", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network-Wifi", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Network-Wifi", "start ms-settings:network-wifi", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Network-Wifi", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2773,8 +2844,8 @@ Private Sub mnuMSSettingsThemes_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Themes", "start ms-settings:themes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Themes", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Themes", "start ms-settings:themes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Themes", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2819,8 +2890,8 @@ Private Sub mnuMSSettingsDeviceUsage_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "DeviceUsage", "start ms-settings:deviceusage", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DeviceUsage", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "DeviceUsage", "start ms-settings:deviceusage", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "DeviceUsage", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2866,8 +2937,8 @@ Private Sub mnuMSSettingsDisplayAdvanced_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "DisplayAdvanced", "start ms-settings:display-advanced", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DisplayAdvanced", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "DisplayAdvanced", "start ms-settings:display-advanced", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "DisplayAdvanced", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2912,8 +2983,8 @@ Private Sub mnuMSSettingsAppsVolume_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "AppsVolume", "start ms-settings:apps-volume", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "AppsVolume", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "AppsVolume", "start ms-settings:apps-volume", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "AppsVolume", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2958,8 +3029,8 @@ Private Sub mnuMSSettingsBatterySaverUsageDetails_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "BatterySaverUsageDetails", "start ms-settings:batterysaver-usagedetails", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "BatterySaverUsageDetails", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "BatterySaverUsageDetails", "start ms-settings:batterysaver-usagedetails", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "BatterySaverUsageDetails", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -3004,8 +3075,8 @@ Private Sub mnuMSSettingsDisplay_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Display", "start ms-settings:display", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Display", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Display", "start ms-settings:display", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Display", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -3055,8 +3126,8 @@ Private Sub mnuMSSettingsPowerSleep_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "PowerSleep", "start ms-settings:powersleep", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "PowerSleep", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "PowerSleep", "start ms-settings:powersleep", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "PowerSleep", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and PowerSleep the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -3103,8 +3174,8 @@ Private Sub mnuMSSettingsSound_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Sound", "start ms-settings:sound", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Sound", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Sound", "start ms-settings:sound", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Sound", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and Sound the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -3152,8 +3223,8 @@ Private Sub mnuMSSettingsDisksAndVolumes_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "DisksAndVolumes", "start ms-settings:disksandvolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "DisksAndVolumes", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "DisksAndVolumes", "start ms-settings:disksandvolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "DisksAndVolumes", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and DisksAndVolumes the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -3206,8 +3277,8 @@ Private Sub mnuMSSettingsWindowsUpdate_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "DisksAndVolumes", "start ms-settings:disksandvolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "disksandvolumes", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "DisksAndVolumes", "start ms-settings:disksandvolumes", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "disksandvolumes", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and DisksAndVolumes the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -3535,8 +3606,8 @@ Private Sub mnuSettingsAppsFeatures_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Apps & Features", "start ms-settings:appsfeatures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Apps & Features", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Apps & Features", "start ms-settings:appsfeatures", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Apps & Features", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -3585,8 +3656,8 @@ Private Sub mnuSettingsOtherusers_Click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Other Users", "start ms-settings:otherusers", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Other Users", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Other Users", "start ms-settings:otherusers", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Other Users", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -3987,9 +4058,9 @@ Private Sub menuAddBlank_Click()
     
     If fFExists(IconImage) Then
         ' general tool to add an icon
-        thiskey = insertNewIconIntoCollection(IconImage, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, vbNullString, thiskey)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Separator", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, vbNullString, thiskey)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Separator", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4036,8 +4107,8 @@ Private Sub mnuAddShutdown_click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Shutdown", "C:\Windows\System32\shutdown.exe", "/s /t 00 /f /i", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Shutdown", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Shutdown", "C:\Windows\System32\shutdown.exe", "/s /t 00 /f /i", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Shutdown", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4084,8 +4155,8 @@ Private Sub mnuAddHibernate_click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Hibernate", "C:\Windows\System32\shutdown.exe", "/h", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Hibernate", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Hibernate", "C:\Windows\System32\shutdown.exe", "/h", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Hibernate", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4130,8 +4201,8 @@ Private Sub mnuAddReboot_click()
            
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Reboot", "C:\Windows\System32\shutdown.exe", "/r /t 00", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, "1", vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Reboot", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Reboot", "C:\Windows\System32\shutdown.exe", "/r /t 00", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, "1", vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Reboot", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4178,8 +4249,8 @@ Private Sub mnuAddLockWorkstation_click()
     
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Lock Workstation", Environ$("windir") & "\system32\rundll32.exe", "user32.dll, LockWorkStation", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Lock Workstation", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Lock Workstation", Environ$("windir") & "\system32\rundll32.exe", "user32.dll, LockWorkStation", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Lock Workstation", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4224,8 +4295,8 @@ Private Sub mnuAddLogOut_click()
         
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Log Out", Environ$("windir") & "\system32\shutdown.exe", "/l", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Log Out", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Log Out", Environ$("windir") & "\system32\shutdown.exe", "/l", "%windir%", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Log Out", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4271,8 +4342,8 @@ Private Sub mnuAddNetwork_click()
     ' thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Network", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Network", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Network", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4318,8 +4389,8 @@ Private Sub mnuAddWorkgroup_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "WorkGroup", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "WorkGroup", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "WorkGroup", "::{208D2C60-3AEA-1069-A2D7-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "WorkGroup", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4364,8 +4435,8 @@ Private Sub mnuAddPrinters_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Printers", "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Printers", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Printers", "::{F02C1A0D-BE21-4350-88B0-7367FC96EF3C}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Printers", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4393,49 +4464,25 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub mnuAddTask_click()
-    Dim IconImage As String
     Dim iconFilename As String
-    Dim thiskey As String
-    ' check the icon exists
+    Dim folderPath As String
+
     On Error GoTo mnuAddTask_click_Error
+    
     'If debugflg = 1 Then debugLog "%" & "mnuAddTask_click"
     
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\task-manager(tskmgr).png"
-    If fFExists(iconFilename) Then
-        IconImage = iconFilename
-    Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
-    End If
-    
+    ' if a 32 bit application on a 64bit o/s, regardless of the command, the o/s calls C:\Windows\SysWOW64\taskmgr.exe
     If Is64bit() Then
-        sixtyFourBit = True
-        ' if a 32 bit application on a 64bit o/s, regardless of the command, the o/s calls C:\Windows\SysWOW64\taskmgr.exe
-        If fFExists(IconImage) Then
-            '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            thiskey = insertNewIconIntoCollection(IconImage, "Task Manager", Environ$("windir") & "\SysWOW64\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-            Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Task Manager", thiskey)
+        folderPath = Environ$("windir") & "\SysWOW64\" & "taskmgr.exe"
         
-            ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
-            If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
-                Call menuForm.mnuIconSettings_Click_Event
-            End If
-        Else
-         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add Task Manager image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-         'MsgBox "Unable to add Task Manager image as it does not exist"
-        End If
+        sixtyFourBit = True
     Else
-        ' if a 32 bit application on a 32bit o/s, regardless of the o/s calls C:\Windows\System32\taskmgr.exe
-        If fFExists(IconImage) Then
-            '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            thiskey = insertNewIconIntoCollection(IconImage, "Task Manager", Environ$("windir") & "\System32\" & "taskmgr.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-            Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Task Manager")
-        Else
-         '.11 DAEB 01/04/2021 menu.frm Replaced the modal msgbox with the non-modal form
-         MessageBox Me.hWnd, "Unable to add Task Manager image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
-         'MsgBox "Unable to add Task Manager image as it does not exist"
-        End If
+        folderPath = Environ$("windir") & "\System32\" & "taskmgr.exe"
     End If
+            
+    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\task-manager(tskmgr).png"
+    
+    Call addMenuItem(iconFilename, "Task Manager", folderPath, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
        
    On Error GoTo 0
    Exit Sub
@@ -4444,6 +4491,63 @@ mnuAddTask_click_Error:
 
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure mnuAddTask_click of Form rDIconConfigForm"
 End Sub
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : addMenuItem
+' Author    : beededea
+' Date      : 18/08/2019
+' Purpose   : Add a task manager icon on an Icon map right click.
+'---------------------------------------------------------------------------------------
+'
+Private Sub addMenuItem(ByVal thisFilename As String, ByVal thisTitle As String, _
+    ByVal thisCommand As String, _
+    ByVal thisArguments As String, ByVal thisWorkingDirectory As String, _
+    ByVal thisShowCmd As String, ByVal thisOpenRunning As String, _
+    ByVal thisSeparator As String, ByVal thisDockletFile As String, _
+    ByVal thisUseContext As String, ByVal thisUseDialog As String, _
+    ByVal thisUseDialogAfter As String, ByVal thisQuickLaunch As String, ByVal thisDisabled As String)
+    
+    Dim IconImage As String
+    Dim thiskey As String
+    
+    On Error GoTo addMenuItem_Error
+    
+    'If debugflg = 1 Then debugLog "%" & "addMenuItem"
+    
+    ' check the icon exists
+    If fFExists(thisFilename) Then
+        IconImage = thisFilename
+    Else
+        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+    End If
+    
+    If fFExists(IconImage) Then
+        thiskey = insertNewIconElementIntoCollection(IconImage, thisTitle, thisCommand, thisArguments, thisWorkingDirectory, thisShowCmd, thisOpenRunning, thisSeparator, thisDockletFile, thisUseContext, thisUseDialog, thisUseDialogAfter, thisQuickLaunch, thisDisabled)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, thisCommand, thiskey)
+    
+        If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
+            Call menuForm.mnuIconSettings_Click_Event
+        End If
+        
+    Else
+    
+        'Replaced the modal msgbox with the non-modal form
+        MessageBox Me.hWnd, "Unable to add " & thisTitle & " image as it does not exist", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
+    
+    End If
+        
+    ' attempt to write the database every second but only until the icons are no longer raised (dock unused)
+    dock.tmrWriteDatabase.Enabled = True
+       
+   On Error GoTo 0
+   Exit Sub
+
+addMenuItem_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addMenuItem of Form rDIconConfigForm"
+End Sub
+
 '---------------------------------------------------------------------------------------
 ' Procedure : mnuAddControl_click
 ' Author    : beededea
@@ -4469,8 +4573,8 @@ Private Sub mnuAddControl_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Control panel", "control.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Control panel", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Control panel", "control.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Control panel", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4515,8 +4619,8 @@ Private Sub mnuAddPrograms_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Programs and Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Programs and Features", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Programs and Features", "appwiz.cpl", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Programs and Features", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4560,8 +4664,8 @@ Private Sub mnuAddDock_click()
 
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Dock Settings", "[Settings]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Dock Settings", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Dock Settings", "[Settings]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Dock Settings", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4607,8 +4711,8 @@ Private Sub mnuAddCompMgmt_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Computer Management", "compmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Computer Management", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Computer Management", "compmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Computer Management", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4652,8 +4756,8 @@ Private Sub mnuAddDevMgmt_Click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Device Management", "devmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Device Management", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Device Management", "devmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Device Management", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4704,8 +4808,8 @@ Private Sub mnuAddDiscMgmt_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Disc Management", "diskmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Disc Management", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Disc Management", "diskmgmt.msc", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Disc Management", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4748,8 +4852,8 @@ Private Sub mnuAddRecycle_click()
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Recycle Bin", "::{645ff040-5081-101b-9f08-00aa002f954e}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Recycle Bin", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Recycle Bin", "::{645ff040-5081-101b-9f08-00aa002f954e}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Recycle Bin", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4797,8 +4901,8 @@ Private Sub mnuAddQuit_click()
     
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Quit", "[Quit]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Quit", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Quit", "[Quit]", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Quit", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4844,8 +4948,8 @@ Private Sub mnuAddProgramFiles_click()
 
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Program Files", "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Program Files", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Program Files", "::{7be9d83c-a729-4d97-b5a7-1b7313c39e0a}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Program Files", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4893,8 +4997,8 @@ Private Sub mnuAddSeparator_click()
         
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "Separator", vbNullString, vbNullString, vbNullString, vbNullString, sIsSeparator, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Separator", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Separator", vbNullString, vbNullString, vbNullString, vbNullString, sIsSeparator, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Separator", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -4956,8 +5060,8 @@ Private Sub mnuaddFolder_click()
 
         If fFExists(IconImage) Then
             '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-            thiskey = insertNewIconIntoCollection(IconImage, getFolder, getFolder, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-            Call addImageToDictionaryAndCheckForRunningProcess(IconImage, getFolder, thiskey)
+            thiskey = insertNewIconElementIntoCollection(IconImage, getFolder, getFolder, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            Call addImageToCollectionAndCheckForRunningProcess(IconImage, getFolder, thiskey)
         
             ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
             If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -5007,8 +5111,8 @@ Private Sub mnuAddMyComputer_click()
        
     If fFExists(IconImage) Then
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-        thiskey = insertNewIconIntoCollection(IconImage, "My Computer", "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "My Computer", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "My Computer", "::{20D04FE0-3AEA-1069-A2D8-08002B30309D}", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "My Computer", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -5061,8 +5165,8 @@ Private Sub mnuAddEnhanced_click()
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
 
-        thiskey = insertNewIconIntoCollection(IconImage, "Enhanced Icon Settings", iconAppFolder & "\iconSettings.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-        Call addImageToDictionaryAndCheckForRunningProcess(IconImage, "Enhanced Icon Settings", thiskey)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Enhanced Icon Settings", iconAppFolder & "\iconSettings.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Enhanced Icon Settings", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
         If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -5144,7 +5248,7 @@ Private Sub mnuAddDocklet_click()
 '      End If
 '
 '       '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
-'      thisKey =  insertNewIconIntoCollection(txtCurrentIcon.Text, "Docklet", vbNullString, vbNullString, vbNullString, txtTarget.Text, vbNullString)
+'      thisKey =  insertNewIconElementIntoCollection(txtCurrentIcon.Text, "Docklet", vbNullString, vbNullString, vbNullString, txtTarget.Text, vbNullString)
 '
 '    ' disable the fields, only enable the target fields and use the target field as a temporary location for the docklet data
 '
@@ -5174,16 +5278,16 @@ mnuAddDocklet_click_Error:
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : addImageToDictionaryAndCheckForRunningProcess
+' Procedure : addImageToCollectionAndCheckForRunningProcess
 ' Author    : beededeaand
 ' Date      : 02/05/2020
 ' Purpose   : used by all the right click menu options to add a new icon
 '---------------------------------------------------------------------------------------
 '
-Public Sub addImageToDictionaryAndCheckForRunningProcess(newFileName As String, newName As String, Optional ByVal thiskey As String)
+Public Sub addImageToCollectionAndCheckForRunningProcess(newFileName As String, newName As String, Optional ByVal thiskey As String)
 
-   On Error GoTo addImageToDictionaryAndCheckForRunningProcess_Error
-   'If debugflg = 1 Then debugLog "%addImageToDictionaryAndCheckForRunningProcess"
+   On Error GoTo addImageToCollectionAndCheckForRunningProcess_Error
+   'If debugflg = 1 Then debugLog "%addImageToCollectionAndCheckForRunningProcess"
         
     'Sleep 25 ' a small pause to allow the o/s time to write the registry
         
@@ -5201,9 +5305,9 @@ Public Sub addImageToDictionaryAndCheckForRunningProcess(newFileName As String, 
    On Error GoTo 0
    Exit Sub
 
-addImageToDictionaryAndCheckForRunningProcess_Error:
+addImageToCollectionAndCheckForRunningProcess_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addImageToDictionaryAndCheckForRunningProcess of Form menuForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure addImageToCollectionAndCheckForRunningProcess of Form menuForm"
 
 End Sub
 

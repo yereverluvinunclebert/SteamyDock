@@ -869,7 +869,7 @@ Public Sub writeIconStateToDatabase()
     startRecord = 1
 
     'loop from the start operation value to the end
-    For useloop = startRecord To rdIconUpperBound
+    For useloop = startRecord To sDockIcons.Count
 
         Call writeIconParamsToDB(useloop)
 

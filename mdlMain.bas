@@ -1575,7 +1575,7 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : insertNewIconIntoCollection
+' Procedure : insertNewIconElementIntoCollection
 ' Author    : beededea
 ' Date      : 18/08/2019
 ' Purpose   : Add something to the dock called by all the menuAdd functions that follow
@@ -1590,21 +1590,21 @@ End Sub
 '.nn Modified the function inputs to add the missing icon characteristics that are needed when dragging and dropping an icon within the dock.
 ' .15 DAEB 20/05/2021 mdlMain.bas Added new check box to allow a quick launch of the chosen app
 
-Public Function insertNewIconIntoCollection(ByVal thisFilename As String, ByVal thisTitle As String, _
+Public Function insertNewIconElementIntoCollection(ByVal thisFilename As String, ByVal thisTitle As String, _
     ByVal thisCommand As String, _
     ByVal thisArguments As String, ByVal thisWorkingDirectory As String, _
     ByVal thisShowCmd As String, ByVal thisOpenRunning As String, _
     ByVal thisSeparator As String, ByVal thisDockletFile As String, _
     ByVal thisUseContext As String, ByVal thisUseDialog As String, _
-    ByVal thisUseDialogAfter As String, ByVal thisQuickLaunch As String, ByVal thisDisabled As String) As String ' longptr
+    ByVal thisUseDialogAfter As String, ByVal thisQuickLaunch As String, ByVal thisDisabled As String) As String
     
     Dim useloop As Integer: useloop = 0
 
     Dim stringKeyValue As String
     Dim insertKey As String
 
-    On Error GoTo insertNewIconIntoCollection_Error
-    'If debugflg = 1 Then debugLog "%" & "insertNewIconIntoCollection"
+    On Error GoTo insertNewIconElementIntoCollection_Error
+    'If debugflg = 1 Then debugLog "%" & "insertNewIconElementIntoCollection"
     
     Set sIcon = New cwMainIcon
     
@@ -1670,14 +1670,14 @@ Public Function insertNewIconIntoCollection(ByVal thisFilename As String, ByVal 
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
     
-    insertNewIconIntoCollection = insertKey
+    insertNewIconElementIntoCollection = insertKey
 
    On Error GoTo 0
    Exit Function
 
-insertNewIconIntoCollection_Error:
+insertNewIconElementIntoCollection_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertNewIconIntoCollection of module mdlMain.bas"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure insertNewIconElementIntoCollection of module mdlMain.bas"
     
 End Function
 
@@ -1911,7 +1911,7 @@ End Sub
 ''        origSettingsFile = rdAppPath & "\settings.ini"
 ''        If fFExists(origSettingsFile) Then ' does the original settings.ini exist?
 ''
-''            ' we don't need to write anything else to the intermediate rdsettings file as it has already been done in insertNewIconIntoCollection
+''            ' we don't need to write anything else to the intermediate rdsettings file as it has already been done in insertNewIconElementIntoCollection
 ''
 ''            'using the intermediate option is much faster just requiring a file copy
 ''            ' all we need to do is copy the duplicate settings file to the original
@@ -2112,8 +2112,8 @@ Public Sub addProgramDLLorEXE()
     
     dock.Refresh
     
-    thiskey = insertNewIconIntoCollection(IconImage, thisTitle, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(IconImage, retFileName, thiskey)
+    thiskey = insertNewIconElementIntoCollection(IconImage, thisTitle, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+    Call menuForm.addImageToCollectionAndCheckForRunningProcess(IconImage, retFileName, thiskey)
         
     ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
     If sDShowIconSettings = "1" And dragInsideDockOperating <> True Then ' do not show when dragging an icon inside the dock to a new location
@@ -2183,8 +2183,8 @@ End Sub
 '
 '    dock.Refresh
 '
-'    call insertNewIconIntoCollection(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
-'    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(iconImage, retFileName)
+'    call insertNewIconElementIntoCollection(iconImage, retFileName, retFileName, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+'    Call menuForm.addImageToCollectionAndCheckForRunningProcess(iconImage, retFileName)
 '
 '    Call checkDockProcessesRunning ' trigger a test of running processes in half a second
 '
@@ -2202,12 +2202,12 @@ End Sub
 'End Sub
 
 
-' .09 DAEB 30/04/2021 mdlMain.bas deleteThisIcon created by extracting from the menu form so it can be used elsewhere
+
 '---------------------------------------------------------------------------------------
 ' Procedure : deleteThisIcon
 ' Author    : beededea
 ' Date      : 01/05/2021
-' Purpose   :
+' Purpose   : created by extracting from the menu form so it can be used elsewhere
 '---------------------------------------------------------------------------------------
 '
 Public Sub deleteThisIcon()
@@ -2260,12 +2260,14 @@ Public Sub deleteThisIcon()
     
     dragInsideDockOperating = False '.nn new check for dragInsideDockOperating '.nn reset
     
+    ' Debug.Print sDockIcons.Count
+    
     'if not the top icon loop through them all from this location upward and reassign the values
-    If selectedIconIndex < rdIconUpperBound Then
+    If selectedIconIndex < sDockIcons.Count Then
         Dim thiskey As String
         sDockIcons.Remove selectedIconIndex
     End If
-    
+        
     ' here we should really clean up any references to images that still exist that were loaded when the icon was created
     ' there are only four image objects still tied up and they will die when the program is restarted.
     ' for the moment we do not dispose of the images as if an icon is cloned it also clones the image handles to the stored
@@ -2276,6 +2278,8 @@ Public Sub deleteThisIcon()
     rdIconUpperBound = sDockIcons.Count 'getRecordCount()
     iconArrayUpperBound = rdIconUpperBound
 
+    ' Debug.Print sDockIcons.Count
+    
     'amend the count in both the alternative rdSettings.ini
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile
     PutINISetting "Software\SteamyDock\DockSettings", "lastIconChanged", selectedIconIndex, dockSettingsFile
@@ -2286,12 +2290,6 @@ Public Sub deleteThisIcon()
     Call redimPreserveCacheArrays
     
     Call checkDockProcessesRunning ' trigger a test of running processes in half a second
-               
-    stopAnimating = True
-               
-    Call dock.drawSmallStaticIcons ' simple static redraw of the small icons
-         
-    stopAnimating = False
        
     ' attempt to write the database every second but only until the icons are no longer raised (dock unused)
     dock.tmrWriteDatabase.Enabled = True

@@ -15,7 +15,7 @@ Begin VB.Form dock
    ShowInTaskbar   =   0   'False
    Begin VB.Timer tmrWriteDatabase 
       Enabled         =   0   'False
-      Interval        =   1000
+      Interval        =   1500
       Left            =   5430
       Top             =   2250
    End
@@ -1795,8 +1795,8 @@ Public Sub fMouseUp(Button As Integer)
                     selectedIconIndex = targetIconIndex ' reset the selectedIconIndex
                     thisFilename = sFilename
                     
-                    Call insertNewIconIntoCollection(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
-                    Call menuForm.addImageToDictionaryAndCheckForRunningProcess(thisFilename, sTitle)
+                    Call insertNewIconElementIntoCollection(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
+                    Call menuForm.addImageToCollectionAndCheckForRunningProcess(thisFilename, sTitle)
                     
                     'delete the selected icon at its old location
                     If sourceIconIndex < targetIconIndex Then
@@ -2155,9 +2155,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         End If
         
         If fFExists(IconImage) Then ' last check that the default ? image has not been deleted.
-            Call insertNewIconIntoCollection(IconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            Call insertNewIconElementIntoCollection(IconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             ' .51 DAEB 08/04/2021 frmMain.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
-            Call menuForm.addImageToDictionaryAndCheckForRunningProcess(IconImage, iconTitle) ' , thiskey)
+            Call menuForm.addImageToCollectionAndCheckForRunningProcess(IconImage, iconTitle) ' , thiskey)
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
              'MessageBox Me.hwnd, iconTitle & " dropped successfully to the dock. ", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
              '            MsgBox iconTitle & " dropped successfully to the dock. ", vbSystemModal
@@ -2425,19 +2425,34 @@ Private Sub responseTimer_Timer()
     
     insideDockFlg = Not gblOutsideDock '.nn Added as part of the drag and drop functionality
     
+            
+    'Debug.Print "here 1"
+    
     ' the mouse has left the Max icon area
     If gblOutsideDock = True And dragFromDockOperating = False Then
         Call stopBounceAnimation
+        
+        'Debug.Print "responseTimer 1 "
         Exit Sub ' leave the timer loop and do nothing else
     End If
     
+            
+    'Debug.Print "here 2"
+    
      ' dragging from the dock for deletion
     If (gblOutsideDock = True And dragFromDockOperating = True) Then
-        If animateTimer = False Then Call startBounceAnimation
+        If animateTimer.Enabled = False Then Call startBounceAnimation
         hourGlassTimer.Enabled = False
         dragToDockOperating = False
+        
+        'Debug.Print "responseTimer 2 "
+        
         Exit Sub
     End If
+    
+            
+    'Debug.Print "here 3"
+    
     
     ' the mouse is now within the icon area or being dragged so start animating and using cpu...
     If insideDockFlg = True Or dragFromDockOperating = True Or dragToDockOperating = True Then
@@ -2457,6 +2472,9 @@ Private Sub responseTimer_Timer()
             dragToDockOperating = True
         End If
     End If
+            
+    'Debug.Print "here 4"
+    
    
    On Error GoTo 0
    Exit Sub
@@ -2739,11 +2757,12 @@ Private Sub animateTimer_Timer()
     On Error GoTo animateTimer_Error
     
     If stopAnimating = True Then Exit Sub
-        
+                    
     ' if the bounce or fade timer are running cause animation to continue even if the mouse is stationary.
     If bounceUpTimer.Enabled = True Or bounceDownTimer.Enabled = True Or hourGlassTimer.Enabled = True Or autoFadeOutTimer.Enabled = True Or autoFadeInTimer.Enabled = True Or autoSlideOutTimer.Enabled = True Or autoSlideInTimer.Enabled = True Then ' .nn Changed or added as part of the drag and drop functionality
         ' carry on as usual and animate when any animation timers are running
     Else ' we are only interested in analysing if there is any Y axis movement
+                
         ' however, if the animate timers are not running and the cursor position is static then do no animation - just exit, saving CPU '
         'If savApIMouseX = apiMouse.x And savApIMouseY = apiMouse.y Then
             animateTimer.Enabled = False
@@ -2761,7 +2780,8 @@ Private Sub animateTimer_Timer()
     expandedDockWidth = 0
     
     
-     ' determines if and where exactly the mouse is in the < horizontal > icon hover area newmetho causes a icon growth problem
+' * new method that determines if and where exactly the mouse is in the < horizontal > icon hover area commented out as it causes a icon growth problem
+
 '    Set HitIcon = IconUnderCursor(apiMouse.X, apiMouse.Y)
 '
 '    If Not HitIcon Is Nothing Then
@@ -2770,6 +2790,9 @@ Private Sub animateTimer_Timer()
 '        IconIndex = HitIcon.IconIndex
 '        iconXOffset = apiMouse.X - sDockIcons(IconIndex).X
 '    End If
+
+
+' * old method for determining the position of the mouse and which icon is clicked using arrays to hold the icon positions is retained for reference
     
     ' determines if and where exactly the mouse is in the < horizontal > icon hover area old method
 '    For useloop = iconArrayLowerBound To iconArrayUpperBound
@@ -2787,8 +2810,9 @@ Private Sub animateTimer_Timer()
 '        End If
 '    Next useloop
     
-    
-    ' determines if and where exactly the mouse is in the < horizontal > icon hover area
+        
+' * combination method using icon properties to determine if and where exactly the mouse is in the < horizontal > icon hover area
+
     For useloop = iconArrayLowerBound To iconArrayUpperBound
 
         ' determines the icon index, ie. which icon is clicked upon
@@ -2797,20 +2821,21 @@ Private Sub animateTimer_Timer()
         If insideIcon Then
             ' this is the current icon number being hovered over
             IconIndex = useloop
+            Debug.Print useloop
             ' this uses the current icon left position as the place to draw the main icon
             iconXOffset = apiMouse.X - sDockIcons(useloop).X
             Exit For ' as soon as we have the index we no longer have to stay in the loop
         End If
     Next useloop
-    
-    
+        
+        
     ' put starting left position back again for the dock background
     iconPosLeftPxls = leftMostIconPositionPxls
     
     ' NOTE:
     ' if it is the first time the dock is entered then it is drawDockByCursorEntryPosition that draws all the icons into the correct location.
     ' when the icons have been ordered correctly then sequentialBubbleAnimation provides the animation from that point on.
-    
+        
     If dockJustEntered = True Then
         If Val(rDHoverFX) = 1 Then Call selectBubbleType(2) ' select drawDockByCursorEntryPosition - finds horizontal start point for the dock and place icons accordingly
         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
@@ -2937,7 +2962,7 @@ Private Sub sequentialBubbleAnimation()
     iconPosLeftPxls = saveStartLeftPxls
 
     If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth)
-    
+        
     Call determineDynamicIconRangeToAnimate(leftmostResizedIcon, rightmostResizedIcon)
     
     ' .61 DAEB 26/04/2021 frmMain.frm size modifier moved to the sequential bump animation
@@ -2957,7 +2982,7 @@ Private Sub sequentialBubbleAnimation()
     
     ' resize all the icons as we run through each in the loop, display them just before the end of the loop
     For useloop = iconArrayLowerBound To iconArrayUpperBound ' loop through all the icons one by one
-    
+
 '    useloop = 0
 '
 '    For Each Icon In sDockIcons
@@ -3009,6 +3034,8 @@ Private Sub sequentialBubbleAnimation()
     Call updateScreenUsingGDIPBitmap
     
 '    If debugflg = 1 Then
+
+
 
 
 '    If tmrWriteCache.Enabled = True Then DrawTheText "tmrWriteCache " & gblRecordsToCommit
@@ -3255,7 +3282,7 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
             End If
             
             'debug location no.2
-            DrawTheText "Debug Watch funcBlend32bpp.SourceConstantAlpha = " & funcBlend32bpp.SourceConstantAlpha, dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
+            DrawTheText "Debug Watch 2 dockJustEntered = " & dockJustEntered, dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
         
             If iconHeightPxls < iconSizeSmallPxls Then
                 iconHeightPxls = iconSizeSmallPxls
@@ -5285,7 +5312,7 @@ Public Sub drawSmallStaticIcons()
         Next
         
         'debug location no.1
-        DrawTheText "Debug Watch funcBlend32bpp.SourceConstantAlpha = " & funcBlend32bpp.SourceConstantAlpha, dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
+        DrawTheText "Debug Watch 1 dockJustEntered = " & dockJustEntered, dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
                                             
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     '            iconStoreLeftPixels(UBound(iconStoreLeftPixels)) = iconPosLeftPxls
