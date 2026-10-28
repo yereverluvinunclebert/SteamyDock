@@ -57,7 +57,7 @@ Public iconData As String
 
 Public rdIconUpperBound As Integer
 Public rdIconLowerBound As Integer
-Public iconArrayUpperBound As Integer
+'Public rdIconUpperBound As Integer
 Public iconArrayLowerBound As Integer
 
 '
@@ -193,7 +193,7 @@ Public iconArrayLowerBound As Integer
 '
 '    ' the very last icon is always blank and non-editable
 '    ' we add 2 to the recordNumberToWrite, 1 for the conversion from settings.ini to a random access data and then another position above the maximum for a blank icon
-'    If thisRecordNumber = iconArrayUpperBound Then
+'    If thisRecordNumber = rdIconUpperBound Then
 '        Call zeroAllIconCharacteristics
 '        sFilename = App.Path & "\blank.png"
 '        sTitle = "dockMaximum"

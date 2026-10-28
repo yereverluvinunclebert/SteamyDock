@@ -1371,7 +1371,7 @@ Public Sub readDockConfiguration()
         
         ' read the database and get the record count
         rdIconUpperBound = getRecordCount()
-        iconArrayUpperBound = rdIconUpperBound
+        rdIconUpperBound = rdIconUpperBound
         
         Call redimPreserveCacheArrays
 
@@ -1656,7 +1656,7 @@ Public Function insertNewIconElementIntoCollection(ByVal thisFilename As String,
     
     ' read the database and get the record count
     rdIconUpperBound = getRecordCount
-    iconArrayUpperBound = rdIconUpperBound
+    'rdIconUpperBound = rdIconUpperBound
     
     'amend the count in the alternative rdSettings.ini
     PutINISetting "Software\SteamyDock\IconSettings\Icons", "count", rdIconUpperBound, dockSettingsFile
@@ -1800,43 +1800,43 @@ Public Sub redimPreserveCacheArrays()
     
    On Error GoTo redimPreserveCacheArrays_Error
     
-'    ReDim Preserve sFileNamearray(iconArrayUpperBound) As String  ' the file location of the original icons
-'    ReDim Preserve sFileName2array(iconArrayUpperBound) As String  ' sFileName2
-'    ReDim Preserve sTitlearray(iconArrayUpperBound) As String  ' the name assigned to each icon
-'    ReDim Preserve sCommandarray(iconArrayUpperBound) As String  ' the Windows command or exe assigned to each icon
-'    ReDim Preserve sArgumentsarray(iconArrayUpperBound) As String  ' sArguments
-'    ReDim Preserve sWorkingDirectoryarray(iconArrayUpperBound) As String  ' sWorkingDirectory
-'    ReDim Preserve sShowCmdarray(iconArrayUpperBound) As String  ' sShowCmd
-'    ReDim Preserve sOpenRunningarray(iconArrayUpperBound) As String  ' sOpenRunning
-'    ReDim Preserve sIsSeparatorarray(iconArrayUpperBound) As String  ' sIsSeparator
-'    ReDim Preserve sUseContextarray(iconArrayUpperBound) As String  ' sUseContext
-'    ReDim Preserve sDockletFilearray(iconArrayUpperBound) As String  ' sDockletFile
-'    ReDim Preserve sUseDialogarray(iconArrayUpperBound) As String  ' sUseDialog
-'    ReDim Preserve sUseDialogAfterarray(iconArrayUpperBound) As String  ' sUseDialogAfter
-'    ReDim Preserve sQuickLauncharray(iconArrayUpperBound) As String  ' sQuickLaunch
-'    ReDim Preserve sAutoHideDockarray(iconArrayUpperBound) As String  ' sAutoHideDock
-'    ReDim Preserve sSecondApparray(iconArrayUpperBound) As String  ' sSecondApp
-'    ReDim Preserve sRunElevatedarray(iconArrayUpperBound) As String  ' sRunElevated
-'    ReDim Preserve sRunSecondAppBeforehandarray(iconArrayUpperBound) As String  ' sRunSecondAppBeforehand
-'    ReDim Preserve sAppToTerminatearray(iconArrayUpperBound) As String  ' sAppToTerminate
-'    ReDim Preserve sDisabledarray(iconArrayUpperBound) As String  ' sDisabled
+'    ReDim Preserve sFileNamearray(rdIconUpperBound) As String  ' the file location of the original icons
+'    ReDim Preserve sFileName2array(rdIconUpperBound) As String  ' sFileName2
+'    ReDim Preserve sTitlearray(rdIconUpperBound) As String  ' the name assigned to each icon
+'    ReDim Preserve sCommandarray(rdIconUpperBound) As String  ' the Windows command or exe assigned to each icon
+'    ReDim Preserve sArgumentsarray(rdIconUpperBound) As String  ' sArguments
+'    ReDim Preserve sWorkingDirectoryarray(rdIconUpperBound) As String  ' sWorkingDirectory
+'    ReDim Preserve sShowCmdarray(rdIconUpperBound) As String  ' sShowCmd
+'    ReDim Preserve sOpenRunningarray(rdIconUpperBound) As String  ' sOpenRunning
+'    ReDim Preserve sIsSeparatorarray(rdIconUpperBound) As String  ' sIsSeparator
+'    ReDim Preserve sUseContextarray(rdIconUpperBound) As String  ' sUseContext
+'    ReDim Preserve sDockletFilearray(rdIconUpperBound) As String  ' sDockletFile
+'    ReDim Preserve sUseDialogarray(rdIconUpperBound) As String  ' sUseDialog
+'    ReDim Preserve sUseDialogAfterarray(rdIconUpperBound) As String  ' sUseDialogAfter
+'    ReDim Preserve sQuickLauncharray(rdIconUpperBound) As String  ' sQuickLaunch
+'    ReDim Preserve sAutoHideDockarray(rdIconUpperBound) As String  ' sAutoHideDock
+'    ReDim Preserve sSecondApparray(rdIconUpperBound) As String  ' sSecondApp
+'    ReDim Preserve sRunElevatedarray(rdIconUpperBound) As String  ' sRunElevated
+'    ReDim Preserve sRunSecondAppBeforehandarray(rdIconUpperBound) As String  ' sRunSecondAppBeforehand
+'    ReDim Preserve sAppToTerminatearray(rdIconUpperBound) As String  ' sAppToTerminate
+'    ReDim Preserve sDisabledarray(rdIconUpperBound) As String  ' sDisabled
     
 
-        ReDim Preserve dictionaryLocationArray(iconArrayUpperBound) As String ' the file location of the original icons
-        'ReDim Preserve sFileNameArray(iconArrayUpperBound) As String ' the file location of the original icons
-        'ReDim Preserve sTitleArray(iconArrayUpperBound) As String ' the name assigned to each icon
-        'ReDim Preserve sCommandArray(iconArrayUpperBound) As String ' the Windows command or exe assigned to each icon
+        ReDim Preserve dictionaryLocationArray(rdIconUpperBound) As String ' the file location of the original icons
+        'ReDim Preserve sFileNameArray(rdIconUpperBound) As String ' the file location of the original icons
+        'ReDim Preserve sTitleArray(rdIconUpperBound) As String ' the name assigned to each icon
+        'ReDim Preserve sCommandArray(rdIconUpperBound) As String ' the Windows command or exe assigned to each icon
         
-        'ReDim Preserve targetExistsArray(iconArrayUpperBound) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-        'ReDim Preserve processCheckArray(iconArrayUpperBound) As Boolean ' the array that contains true/false according to the running state of the associated process
-       'ReDim Preserve explorerCheckArray(iconArrayUpperBound) As Boolean ' the array that contains true/false according to the running state of the associated process
-        'ReDim Preserve initiatedProcessArray(iconArrayUpperBound) As String ' the array containing the binary name of any process initiated by the dock
-        'ReDim Preserve initiatedExplorerArray(iconArrayUpperBound) As String ' the array containing the binary name of any process initiated by the dock
-        'ReDim Preserve disabledArray(iconArrayUpperBound) As Integer ' the array
+        'ReDim Preserve targetExistsArray(rdIconUpperBound) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+        'ReDim Preserve processCheckArray(rdIconUpperBound) As Boolean ' the array that contains true/false according to the running state of the associated process
+       'ReDim Preserve explorerCheckArray(rdIconUpperBound) As Boolean ' the array that contains true/false according to the running state of the associated process
+        'ReDim Preserve initiatedProcessArray(rdIconUpperBound) As String ' the array containing the binary name of any process initiated by the dock
+        'ReDim Preserve initiatedExplorerArray(rdIconUpperBound) As String ' the array containing the binary name of any process initiated by the dock
+        'ReDim Preserve disabledArray(rdIconUpperBound) As Integer ' the array
                
-        ReDim Preserve iconStoreLeftPixels(iconArrayUpperBound) As Double
-        ReDim Preserve iconStoreRightPixels(iconArrayUpperBound) As Double
-        ReDim Preserve iconStoreBottomPixels(iconArrayUpperBound) As Double
+        ReDim Preserve iconStoreLeftPixels(rdIconUpperBound) As Double
+        ReDim Preserve iconStoreRightPixels(rdIconUpperBound) As Double
+        ReDim Preserve iconStoreBottomPixels(rdIconUpperBound) As Double
 
    On Error GoTo 0
    Exit Sub
@@ -2226,7 +2226,7 @@ Public Sub deleteThisIcon()
 '    If debugflg = 1 Then debugLog "%" & "deleteThisIcon"
 
     If selectedIconIndex = 0 Then Exit Sub
-    If selectedIconIndex = iconArrayUpperBound Then Exit Sub
+    If selectedIconIndex = rdIconUpperBound Then Exit Sub
 
     itemName = sDockIcons(selectedIconIndex).Title
     
@@ -2276,7 +2276,7 @@ Public Sub deleteThisIcon()
     ' now the changes are complete, decrement the icon count and the maximum icon to reality
     ' we do that by reading the collection count
     rdIconUpperBound = sDockIcons.Count 'getRecordCount()
-    iconArrayUpperBound = rdIconUpperBound
+    rdIconUpperBound = rdIconUpperBound
 
     ' Debug.Print sDockIcons.Count
     
@@ -2458,13 +2458,13 @@ End Sub
 ''    If debugflg = 1 Then debugLog "%" & "addNewImageToCollection "
 '
 '    'resize all arrays used for storing icon information
-'    ReDim sFileNamearray(iconArrayUpperBound) As String ' the file location of the original icons
-'    ReDim dictionaryLocationarray(iconArrayUpperBound) As String ' the file location of the original icons
-'    ReDim sTitlearray(iconArrayUpperBound) As String ' the name assigned to each icon
-'    ReDim sCommandarray(iconArrayUpperBound) As String ' the command assigned to each icon
-'    ReDim targetExistsarray(iconArrayUpperBound) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
-'    ReDim processCheckarray(iconArrayUpperBound) As String ' the process name assigned to each icon
-'    ReDim initiatedProcessarray(iconArrayUpperBound) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
+'    ReDim sFileNamearray(rdIconUpperBound) As String ' the file location of the original icons
+'    ReDim dictionaryLocationarray(rdIconUpperBound) As String ' the file location of the original icons
+'    ReDim sTitlearray(rdIconUpperBound) As String ' the name assigned to each icon
+'    ReDim sCommandarray(rdIconUpperBound) As String ' the command assigned to each icon
+'    ReDim targetExistsarray(rdIconUpperBound) As Integer ' .88 DAEB 08/12/2022 frmMain.frm Array for storing the state of the target command
+'    ReDim processCheckarray(rdIconUpperBound) As String ' the process name assigned to each icon
+'    ReDim initiatedProcessarray(rdIconUpperBound) As String ' if we redim the array without preserving the contents nor re-sorting and repopulating again we lose the ability to track processes initiated from the dock
 '                                                         ' but I feel that it does not really matter so I am going to not bother at the moment, this is something that could be done later!
 '
 '    ' assuming that the details have already been written to the configuration file
@@ -2493,7 +2493,7 @@ End Sub
 '    ReDim Preserve iconStoreTopPixels(rdIconUpperBound) ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
 '    ReDim Preserve iconStoreBottomPixels(rdIconUpperBound) ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 '
-'    iconArrayUpperBound = rdIconUpperBound '<*
+'    rdIconUpperBound = rdIconUpperBound '<*
 '
 '    ' populate the array element containing the final icon position - 31/05/2021 removed unnecessary code
 ''    iconStoreLeftPixels(rdIconUpperBound) = iconStoreLeftPixels(rdIconUpperBound - 1) + (iconWidthPxls) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion

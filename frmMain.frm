@@ -1393,7 +1393,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
         
     'clicking on the 'blank' icons at the beginning and the end
     If selectedIconIndex = 0 Then Exit Sub
-    If selectedIconIndex = iconArrayUpperBound Then Exit Sub
+    If selectedIconIndex = rdIconUpperBound Then Exit Sub
     
     dragImageToDisplayKey = dictionaryLocationArray(selectedIconIndex) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
     
@@ -1426,7 +1426,7 @@ Private Sub Form_MouseMove(Button As Integer, Shift As Integer, X As Single, Y A
         
     'clicking on the 'blank' icons at the beginning and the end
     If selectedIconIndex = 0 Then Exit Sub
-    If selectedIconIndex = iconArrayUpperBound Then Exit Sub
+    If selectedIconIndex = rdIconUpperBound Then Exit Sub
 
     ' calculates the time since the mouseDown and if no mouseup within 1/4 of a second assume it is a drag from the dock
     If mouseDownTime <> 0 Then ' time since the mouseDown event occurred
@@ -1619,7 +1619,7 @@ Public Sub fMouseUp(Button As Integer)
        
     'clicking on the 'blank' icons at the beginning and the end
     If selectedIconIndex = 0 Then Exit Sub
-    If selectedIconIndex = iconArrayUpperBound Then Exit Sub
+    If selectedIconIndex = rdIconUpperBound Then Exit Sub
             
     mouseDownTime = 0
       
@@ -2795,7 +2795,7 @@ Private Sub animateTimer_Timer()
 ' * old method for determining the position of the mouse and which icon is clicked using arrays to hold the icon positions is retained for reference
     
     ' determines if and where exactly the mouse is in the < horizontal > icon hover area old method
-'    For useloop = iconArrayLowerBound To iconArrayUpperBound
+'    For useloop = iconArrayLowerBound To rdIconUpperBound
 '        'insideDock = apiMouse.X >= leftMostIconPositionPxls And apiMouse.X <= rightMostIconPositionPxls
 '
 '        ' determines the icon index, ie. which icon is clicked upon
@@ -2813,7 +2813,7 @@ Private Sub animateTimer_Timer()
         
 ' * combination method using icon properties to determine if and where exactly the mouse is in the < horizontal > icon hover area
 
-    For useloop = iconArrayLowerBound To iconArrayUpperBound
+    For useloop = iconArrayLowerBound To rdIconUpperBound
 
         ' determines the icon index, ie. which icon is clicked upon
         insideIcon = apiMouse.X >= sDockIcons(useloop).X And apiMouse.X <= (sDockIcons(useloop).X + sDockIcons(useloop).Width)
@@ -2981,7 +2981,7 @@ Private Sub sequentialBubbleAnimation()
     'Dim Icon As cwMainIcon
     
     ' resize all the icons as we run through each in the loop, display them just before the end of the loop
-    For useloop = iconArrayLowerBound To iconArrayUpperBound ' loop through all the icons one by one
+    For useloop = iconArrayLowerBound To rdIconUpperBound ' loop through all the icons one by one
 
 '    useloop = 0
 '
@@ -3957,7 +3957,7 @@ Private Sub sizeAndShowSmallIconsToRightByCEP(ByVal thisIconIndex As Integer, By
             ' old
             iconPosLeftPxls = (iconStoreLeftPixels(IconIndex + 1)) + rightIconWidthPxls
        
-       For rightLoop = thisIconIndex + 2 To iconArrayUpperBound
+       For rightLoop = thisIconIndex + 2 To rdIconUpperBound
 
             Call sizeEachSmallIconToRight(rightLoop, rightmostResizedIcon, showsmall)
 
@@ -5282,7 +5282,7 @@ Public Sub drawSmallStaticIcons()
         If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth, True)
                 
         ' this loop redraws all the icons at the same small size after the mouse has left the icon area
-        For useloop = iconArrayLowerBound To iconArrayUpperBound
+        For useloop = iconArrayLowerBound To rdIconUpperBound
                       
 '        Dim Icon As cwMainIcon
 '
@@ -5470,7 +5470,7 @@ Public Sub prepareArraysAndCollections()
     
     ' now load the user specified icons to the icon collection class
 
-    For useloop = iconArrayLowerBound To iconArrayUpperBound
+    For useloop = iconArrayLowerBound To rdIconUpperBound
 
         ' create multiple icon instances using the cwMainIcon class with a text key based upon a short word and a numeric value useloop
         ' Later when we want to insert we use the ID to identify the icon not the key, we are now using a positional collection

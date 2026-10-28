@@ -348,7 +348,7 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
     Dim sAppToTerminate As String
     Dim sDisabled  As String
     
-    Dim stringKeyValue As String
+    'Dim stringKeyValue As String
 
     'Dim a As Integer
 
@@ -370,20 +370,20 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
         ' get the relevant stored icon from the dictionary collection if it exists
         
         ' stringify key provided as an integer
-        stringKeyValue = CStr(thisKeyValue)
+        'stringKeyValue = CStr(thisKeyValue)
             
         ' we have to be careful in regard to the key value, as thisKeyValue is the positional location whereas using stringKeyValue is searching for the key
-        If iconExists(sDockIcons, stringKeyValue) = False Then  ' using a VB6 collection that doesn't have an .Exists method
+        'If iconExists(sDockIcons, stringKeyValue) = False Then  ' using a VB6 collection that doesn't have an .Exists method
         ' If sDockIcons.Exists(thisKeyValue) = false Then ' a scripting.dictionary
         
-            Set sIcon = New cwMainIcon
+'            Set sIcon = New cwMainIcon
             
             ' In the .ADD method the parameters are transposed due to the differences in approach for a scripting.dictionary vs a collection
             ' in a dictionary the key is key! In a collection it is the position, the key is merely a property.
             
             'sDockIcons.Add thisKeyValue, sIcon ' Cristian Buse VBA dictionary or scripting.dictionary
-            sDockIcons.Add sIcon, stringKeyValue ' using a VB6 collection
-        Else
+'            sDockIcons.Add sIcon, stringKeyValue ' using a VB6 collection
+        'Else
             'assign the temporary 's' variables from the icon properties.
             sFilename = sDockIcons(thisKeyValue).FileName
             sFileName2 = sDockIcons(thisKeyValue).FileName2
@@ -405,7 +405,7 @@ Public Function putIconSettingsIntoDatabase(ByVal thisKeyValue As Integer) As In
             sRunSecondAppBeforehand = sDockIcons(thisKeyValue).RunSecondAppBeforehand
             sAppToTerminate = sDockIcons(thisKeyValue).AppToTerminate
             sDisabled = sDockIcons(thisKeyValue).Disabled
-        End If
+        'End If
                 
         ' now write the variables from the icon class
         
@@ -1066,7 +1066,7 @@ Public Sub insertRecordsFromRandomDataFileIntoDatabase()
     '       iconDisabled As String
 
     ' loop through all the records in data file
-    For useloop = iconArrayLowerBound To iconArrayUpperBound
+    For useloop = iconArrayLowerBound To rdIconUpperBound
     
         ' extract filenames from the random access data file
         'Call getIconSettings(useloop)
