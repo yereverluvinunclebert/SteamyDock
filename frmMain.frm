@@ -2414,6 +2414,8 @@ Private Sub responseTimer_Timer()
     
     On Error GoTo responseTimer_Error
     
+    'Debug.Print "responseTimer 0 "
+    
     lngReturn = GetCursorPos(apiMouse) ' return the mouse position every 4 - 200ms - sufficient
         
     currentDockHeightPxls = fSetDockUpperHeightLimit()
@@ -2426,7 +2428,7 @@ Private Sub responseTimer_Timer()
     insideDockFlg = Not gblOutsideDock '.nn Added as part of the drag and drop functionality
     
             
-    'Debug.Print "here 1"
+
     
     ' the mouse has left the Max icon area
     If gblOutsideDock = True And dragFromDockOperating = False Then
@@ -2445,7 +2447,7 @@ Private Sub responseTimer_Timer()
         hourGlassTimer.Enabled = False
         dragToDockOperating = False
         
-        'Debug.Print "responseTimer 2 "
+        Debug.Print "responseTimer 2 "
         
         Exit Sub
     End If
@@ -2756,7 +2758,10 @@ Private Sub animateTimer_Timer()
     
     On Error GoTo animateTimer_Error
     
-    If stopAnimating = True Then Exit Sub
+    If stopAnimating = True Then
+        'Debug.Print "stopAnimating " & stopAnimating
+        Exit Sub
+    End If
                     
     ' if the bounce or fade timer are running cause animation to continue even if the mouse is stationary.
     If bounceUpTimer.Enabled = True Or bounceDownTimer.Enabled = True Or hourGlassTimer.Enabled = True Or autoFadeOutTimer.Enabled = True Or autoFadeInTimer.Enabled = True Or autoSlideOutTimer.Enabled = True Or autoSlideInTimer.Enabled = True Then ' .nn Changed or added as part of the drag and drop functionality
@@ -2789,6 +2794,8 @@ Private Sub animateTimer_Timer()
 '        'a = HitIcon.Title 'identifies it.
 '        IconIndex = HitIcon.IconIndex
 '        iconXOffset = apiMouse.X - sDockIcons(IconIndex).X
+'
+'        Debug.Print "HitIcon = " & IconIndex
 '    End If
 
 
@@ -2809,7 +2816,7 @@ Private Sub animateTimer_Timer()
 '            useloop = useloop
 '        End If
 '    Next useloop
-    
+'
         
 ' * combination method using icon properties to determine if and where exactly the mouse is in the < horizontal > icon hover area
 
@@ -2821,7 +2828,7 @@ Private Sub animateTimer_Timer()
         If insideIcon Then
             ' this is the current icon number being hovered over
             IconIndex = useloop
-            Debug.Print useloop
+            'Debug.Print "HitIcon = " & IconIndex
             ' this uses the current icon left position as the place to draw the main icon
             iconXOffset = apiMouse.X - sDockIcons(useloop).X
             Exit For ' as soon as we have the index we no longer have to stay in the loop

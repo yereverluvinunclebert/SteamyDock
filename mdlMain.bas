@@ -650,7 +650,7 @@ Public stopAnimating As Boolean
 Public Function fTestCursorWithinDockYPosition() As Boolean
     Dim outsideDock  As Boolean: outsideDock = False
     
-    rightMostIconPositionPxls = sDockIcons(CStr(rdIconUpperBound)).X + sDockIcons(CStr(rdIconUpperBound)).Width ' test
+    'rightMostIconPositionPxls = sDockIcons(CStr(rdIconUpperBound)).X + sDockIcons(CStr(rdIconUpperBound)).Width ' test
     rightMostIconPositionPxls = iconStoreRightPixels(UBound(iconStoreLeftPixels))
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area

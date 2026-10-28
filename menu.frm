@@ -1816,6 +1816,8 @@ Private Sub mnuCloneIcon_Click()
     Dim sIconTransparentImageLarge  As Long
     Dim sIconTransparentImageSmall  As Long
     
+    ' Select our source element ie. the one we want to copy (this time by index and not key)
+    Set sourceIcon = sDockIcons.Item(selectedIconIndex)
     
     sFilename = sDockIcons(selectedIconIndex).FileName
     sFileName2 = sDockIcons(selectedIconIndex).FileName2
@@ -1849,33 +1851,31 @@ Private Sub mnuCloneIcon_Click()
     thiskey = insertNewIconElementIntoCollection(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
     Call addImageToCollectionAndCheckForRunningProcess(IconImage, sWorkingDirectory, thiskey)
 
-    
-    
-    
 '    ' Select our source element ie. the one we want to copy (this time by index and not key)
 '    Set sourceIcon = sDockIcons.Item(selectedIconIndex)
 '
 '    ' clone the original object plus all property values including handles to images
 '    Set clonedIcon = sourceIcon.clone()
-'
-'    ' modify the clone's title
+''
+''    ' modify the clone's title
 '    clonedIcon.Title = sourceIcon.Title & "cloned"
-'
-'    ' add the clone back into the collection
-'
+''
+''    ' add the clone back into the collection
+''
 '    stringKeyValue = CStr(selectedIconIndex)
-'
-'    ' in a dictionary the key is key! In a collection it is the position, the key is merely a property we only use when ADDing
-'
-'    ' If Before is a numeric expression, it must be a number from 1 through the value of the collection's Count property.
-'    ' If Before is a String expression, it must correspond to the key string specified when the element being referred to was added to the collection.
-'
-'    ' insert at selectedIconIndex on a positional basis not as a key
+''
+''    ' in a dictionary the key is key! In a collection it is the position, the key is merely a property we only use when ADDing
+''
+''    ' If Before is a numeric expression, it must be a number from 1 through the value of the collection's Count property.
+''    ' If Before is a String expression, it must correspond to the key string specified when the element being referred to was added to the collection.
+''
+''    ' insert at selectedIconIndex on a positional basis not as a key
 '    insertKey = selectedIconIndex & "insert" & SecureRandomHex64
 '    sDockIcons.Add clonedIcon, insertKey, before:=stringKeyValue  ' using a VB6 collection
+''
 '
-    
-    
+'    Call addImageToCollectionAndCheckForRunningProcess(IconImage, sWorkingDirectory, thiskey)
+'
     
     ' here we should really resolve any references to images that are shared between the two identical icons
     ' for the moment we do not care
@@ -1896,14 +1896,14 @@ Private Sub mnuCloneIcon_Click()
     
     Call checkDockProcessesRunning ' trigger a test of running processes in half a second
                
-    stopAnimating = True
-               
-    Call dock.drawSmallStaticIcons ' simple static redraw of the small icons
-         
-    stopAnimating = False
+'    stopAnimating = True
+'
+'    Call dock.drawSmallStaticIcons ' simple static redraw of the small icons
+'
+'    stopAnimating = False
     
     ' attempt to write the database every second but only until the icons are no longer raised (dock unused)
-    'dock.tmrWriteDatabase.Enabled = True
+    dock.tmrWriteDatabase.Enabled = True
     
    On Error GoTo 0
    Exit Sub
