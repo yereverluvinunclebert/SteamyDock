@@ -1883,7 +1883,7 @@ Private Sub mnuCloneIcon_Click()
     ' now the changes are complete, increment the icon count and the maximum icon to reality
     ' we do that by reading the collection count
     rdIconUpperBound = sDockIcons.Count 'getRecordCount()
-    rdIconUpperBound = rdIconUpperBound
+    'rdIconUpperBound = rdIconUpperBound
 
     'amend the count in both the alternative rdSettings.ini
     PutINISetting "Software\SteamyDock\DockSettings", "lastChangedByWhom", "steamyDock", dockSettingsFile

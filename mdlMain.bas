@@ -1370,7 +1370,7 @@ Public Sub readDockConfiguration()
         
         ' read the database and get the record count
         rdIconUpperBound = getRecordCount()
-        rdIconUpperBound = rdIconUpperBound
+        'rdIconUpperBound = rdIconUpperBound
         
         Call redimPreserveCacheArrays
 
@@ -2275,7 +2275,7 @@ Public Sub deleteThisIcon()
     ' now the changes are complete, decrement the icon count and the maximum icon to reality
     ' we do that by reading the collection count
     rdIconUpperBound = sDockIcons.Count 'getRecordCount()
-    rdIconUpperBound = rdIconUpperBound
+   'rdIconUpperBound = rdIconUpperBound
 
     ' Debug.Print sDockIcons.Count
     
@@ -2334,26 +2334,26 @@ Public Sub loadAdditionalImagestoDictionary()
     If rDtheme <> vbNullString And rDtheme <> "Blank" Then
         imageOpacity = Val(rDThemeOpacity)
         ' load the theme background image into the collection sDSkinLeft is the unique key
-        themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDleft.png"
+        themeName = sdAppPath & "\skins\" & rDtheme & "\" & rDtheme & "SDleft.png"
         If fFExists(themeName) Then
             resizeAndLoadImgToCollection "sDSkinLeft", themeName, (0), (0), sDSkinSize, sDSkinSize, imageOpacity, 4
         End If
     '
     '    ' load the theme background image into the collection sDSkinMid is the unique key
-        themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDmiddle.png"
+        themeName = sdAppPath & "\skins\" & rDtheme & "\" & rDtheme & "SDmiddle.png"
         If fFExists(themeName) Then
             resizeAndLoadImgToCollection "sDSkinMid", themeName, (0), (0), sDSkinSize, sDSkinSize, imageOpacity, 4
         End If
 
     '    ' load the theme background image into the collection sDSkinRight is the unique key
-        themeName = App.Path & "\skins\" & rDtheme & "\" & rDtheme & "SDright.png"
+        themeName = sdAppPath & "\skins\" & rDtheme & "\" & rDtheme & "SDright.png"
         If fFExists(themeName) Then
             resizeAndLoadImgToCollection "sDSkinRight", themeName, (0), (0), sDSkinSize, sDSkinSize, imageOpacity, 4
         End If
         
         ' load the theme separator image into the collection sDSeparator is the unique key
-    '    If fFExists(App.path & "\skins\" & rDtheme & "\" & rDThemeImage) Then
-    '        resizeAndLoadImgToCollection "sDSeparator", App.path & "\skins\" & rDtheme & "\" & rDThemeImage, vbNullString, CLng(0), CLng(0), CLng(128), CLng(128)
+    '    If fFExists(sdapppath & "\skins\" & rDtheme & "\" & rDThemeImage) Then
+    '        resizeAndLoadImgToCollection "sDSeparator", sdapppath & "\skins\" & rDtheme & "\" & rDThemeImage, vbNullString, CLng(0), CLng(0), CLng(128), CLng(128)
     '    End If
     
     End If
@@ -2361,52 +2361,52 @@ Public Sub loadAdditionalImagestoDictionary()
     imageOpacity = Val(rDIconOpacity)
     
     ' load a transparent 128 x 128 image into the collection, used to stop click-throughs
-    If fFExists(App.Path & "\blankSquare.png") Then
-        resizeAndLoadImgToCollection "blank", App.Path & "\blankSquare.png", (0), (0), (128), (128), 1, 4
+    If fFExists(sdAppPath & "\blankSquare.png") Then
+        resizeAndLoadImgToCollection "blank", sdAppPath & "\blankSquare.png", (0), (0), (128), (128), 1, 4
     End If
     
     ' .11 DAEB 01/05/2021 mdlMain.bas load a transparent 128 x 128 image into the collection, used to highlight the position of a drag/drop
-    If fFExists(App.Path & "\red.png") Then
-        resizeAndLoadImgToCollection "red", App.Path & "\red.png", (0), (0), (256), (256), imageOpacity, 4
+    If fFExists(sdAppPath & "\red.png") Then
+        resizeAndLoadImgToCollection "red", sdAppPath & "\red.png", (0), (0), (256), (256), imageOpacity, 4
     End If
     
     ' load a small circle image into the collection, used to signify running process
     '                           thisDictionary, key ,strFilename, strName,thisDisabled ,Left, ByVal Top As Long,Width, Height,fullStringKey)
-    If fFExists(App.Path & "\tinyCircle.png") Then
-        resizeAndLoadImgToCollection "tinycircle", App.Path & "\tinyCircle.png", (0), (0), (128), (128), imageOpacity, 4
+    If fFExists(sdAppPath & "\tinyCircle.png") Then
+        resizeAndLoadImgToCollection "tinycircle", sdAppPath & "\tinyCircle.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     
-    If fFExists(App.Path & "\busycog.png") Then
-        resizeAndLoadImgToCollection "busycog", App.Path & "\busycog.png", (0), (0), (128), (128), imageOpacity, 4
+    If fFExists(sdAppPath & "\busycog.png") Then
+        resizeAndLoadImgToCollection "busycog", sdAppPath & "\busycog.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     
-    If fFExists(App.Path & "\smallGoldCoin.png") Then
-        resizeAndLoadImgToCollection "smallgoldCoin", App.Path & "\smallGoldCoin.png", (0), (0), (128), (128), imageOpacity, 4
+    If fFExists(sdAppPath & "\smallGoldCoin.png") Then
+        resizeAndLoadImgToCollection "smallgoldCoin", sdAppPath & "\smallGoldCoin.png", (0), (0), (128), (128), imageOpacity, 4
     End If
     
     ' load a small circle image into the collection, used to signify running process
-    If fFExists(App.Path & "\red-X.png") Then
-        resizeAndLoadImgToCollection "redx", App.Path & "\red-X.png", (0), (0), (64), (64), imageOpacity, 4
+    If fFExists(sdAppPath & "\red-X.png") Then
+        resizeAndLoadImgToCollection "redx", sdAppPath & "\red-X.png", (0), (0), (64), (64), imageOpacity, 4
     End If
     
     ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
-    If fFExists(App.Path & "\busy-F1-32x32x24.png") Then
-        resizeAndLoadImgToCollection "hourglass1", App.Path & "\busy-F1-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
+    If fFExists(sdAppPath & "\busy-F1-32x32x24.png") Then
+        resizeAndLoadImgToCollection "hourglass1", sdAppPath & "\busy-F1-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
-    If fFExists(App.Path & "\busy-F2-32x32x24.png") Then
-        resizeAndLoadImgToCollection "hourglass2", App.Path & "\busy-F2-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
+    If fFExists(sdAppPath & "\busy-F2-32x32x24.png") Then
+        resizeAndLoadImgToCollection "hourglass2", sdAppPath & "\busy-F2-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
-    If fFExists(App.Path & "\busy-F3-32x32x24.png") Then
-        resizeAndLoadImgToCollection "hourglass3", App.Path & "\busy-F3-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
+    If fFExists(sdAppPath & "\busy-F3-32x32x24.png") Then
+        resizeAndLoadImgToCollection "hourglass3", sdAppPath & "\busy-F3-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
-    If fFExists(App.Path & "\busy-F4-32x32x24.png") Then
-        resizeAndLoadImgToCollection "hourglass4", App.Path & "\busy-F4-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
+    If fFExists(sdAppPath & "\busy-F4-32x32x24.png") Then
+        resizeAndLoadImgToCollection "hourglass4", sdAppPath & "\busy-F4-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
-    If fFExists(App.Path & "\busy-F5-32x32x24.png") Then
-        resizeAndLoadImgToCollection "hourglass5", App.Path & "\busy-F5-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
+    If fFExists(sdAppPath & "\busy-F5-32x32x24.png") Then
+        resizeAndLoadImgToCollection "hourglass5", sdAppPath & "\busy-F5-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
-    If fFExists(App.Path & "\busy-F6-32x32x24.png") Then
-        resizeAndLoadImgToCollection "hourglass6", App.Path & "\busy-F6-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
+    If fFExists(sdAppPath & "\busy-F6-32x32x24.png") Then
+        resizeAndLoadImgToCollection "hourglass6", sdAppPath & "\busy-F6-32x32x24.png", (0), (0), (128), (128), imageOpacity, 4
     End If
 
     
@@ -2878,6 +2878,11 @@ Public Function updateDisplayFromCollection(strFilename As String, ByVal Key As 
             
         Case 4  '  load the other non-icon related images from the other older collections
             iconBitmap = collAdditionalImages(Key)
+            
+        Case 5 '  load the drag icon
+            justKey = CInt(Key)
+            iconBitmap = sDockIcons(justKey).IconImageLarge
+            
     End Select
     
     ' draws the GDIP icon bitmap onto the screen bitmap

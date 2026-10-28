@@ -1404,7 +1404,9 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
     If selectedIconIndex = 0 Then Exit Sub
     If selectedIconIndex = rdIconUpperBound Then Exit Sub
     
-    dragImageToDisplayKey = dictionaryLocationArray(selectedIconIndex) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
+    'dragImageToDisplayKey = dictionaryLocationArray(selectedIconIndex) & "ResizedImg" & LTrim$(Str$(iconSizeLargePxls))
+    
+    dragImageToDisplayKey = selectedIconIndex
     
 '    dock.animateTimer.Enabled = False
 '    dock.responseTimer.Enabled = False
@@ -2423,52 +2425,36 @@ Private Sub responseTimer_Timer()
     
     On Error GoTo responseTimer_Error
     
-    'Debug.Print "responseTimer 0 "
-    
     lngReturn = GetCursorPos(apiMouse) ' return the mouse position every 4 - 200ms - sufficient
         
     currentDockHeightPxls = fSetDockUpperHeightLimit()
+    
     Call tuneResponseTimerInterval
+    
     dockYEntrancePoint = fDefineDockYEntrancePoint()
     
     lastPositionRelativeToDock = gblOutsideDock
+    
     gblOutsideDock = fTestCursorWithinDockYPosition()
     
     insideDockFlg = Not gblOutsideDock '.nn Added as part of the drag and drop functionality
     
-            
-
-    
     ' the mouse has left the Max icon area
     If gblOutsideDock = True And dragFromDockOperating = False Then
         Call stopBounceAnimation
-        
-        'Debug.Print "responseTimer 1 "
         Exit Sub ' leave the timer loop and do nothing else
     End If
-    
-            
-    'Debug.Print "here 2"
     
      ' dragging from the dock for deletion
     If (gblOutsideDock = True And dragFromDockOperating = True) Then
         If animateTimer.Enabled = False Then Call startBounceAnimation
         hourGlassTimer.Enabled = False
         dragToDockOperating = False
-        
-        Debug.Print "responseTimer 2 "
-        
         Exit Sub
     End If
     
-            
-    'Debug.Print "here 3"
-    
-    
     ' the mouse is now within the icon area or being dragged so start animating and using cpu...
     If insideDockFlg = True Or dragFromDockOperating = True Or dragToDockOperating = True Then
-
-    
         If lastPositionRelativeToDock = True Then ' we have just entered the dock so start the growth timer
             ' we cannot cause the main icon to grow on first entry to the dock as it must appear the full icon width in order
             ' for the animation to operate, a new animation method will be required, a complete rewrite
@@ -2483,9 +2469,6 @@ Private Sub responseTimer_Timer()
             dragToDockOperating = True
         End If
     End If
-            
-    'Debug.Print "here 4"
-    
    
    On Error GoTo 0
    Exit Sub
@@ -3044,7 +3027,7 @@ Private Sub sequentialBubbleAnimation()
     ' .nn Changed or added as part of the drag and drop functionality
     ' 12/05/2021 .nn DAEB Displays a copy of the icon that is being dragged at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
-        updateDisplayFromCollection vbNullString, dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75), 3
+        updateDisplayFromCollection vbNullString, dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75), 5
     End If
     
     Call updateScreenUsingGDIPBitmap
