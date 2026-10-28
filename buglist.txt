@@ -15,15 +15,7 @@ Overall status
   
   Working, a good learning platform and the dock functions.
 
-  All icons can store their properties within an icon keyed by name stored within a VB6 collection
-
-  All icon dictionaries have been converted to collections to allow eventual fast insertion and re-ordering
-  Disable this icon - works
-  Add Icon - works
-      All icon additions tested
-  Delete Icon - works
-  Clone Icon - ?
-
+o New collections
   Drag and drop re-ordering and insertion of icons is yet to be achieved
 
   Third stage not yet started - to animate all the icons and eliminate the serialised nature of the existing code.
@@ -39,25 +31,9 @@ o A Few bugs overall,
 
 o cwMainIcon shared across SD and iconSettings WIP
 
-o replace the insert, delete reassembly of scripting collections with VB6 collection /before /after allowing insertion of records
-
-Dim employees As New Collection
-
-employees.Add Item:="John Doe", Key:="Emp2"
-employees.Add Item:="Jane Smith", Key:="Emp3"
-
-' Insert Bob before Jane Smith using her key
-employees.Add Item:="Bob Jones", Key:="Emp1", Before:="Emp3"
-
-o Test the disable the Icon menu option.
-
 o Test all the VB6 collections with TB's own implementation of collections, faster.
 
 o Test TB's loading of PNGs without all the GDI+ stuff. So, this will be cross platform.
-
-o New graphics method to be devised using an icon class for the all the icons and a collection for same
-  Test project - transparent Cairo.
-
 
 ' Current Tasks:
 ' =============
@@ -1106,3 +1082,13 @@ o Converted all public sVariables to icon class properties, eg.
 
  o replace all the scripting collections with VB6 collections
  o fixed the enable/disable load of transparent icons
+
+
+   All icons can store their properties within an icon keyed by name stored within a VB6 collection
+
+  All icon dictionaries have been converted to collections to allow eventual fast insertion and re-ordering
+  Disable this icon - functions
+  Add Icon - functions
+      All icon additions tested
+  Delete Icon - functions
+  Clone Icon - functions
