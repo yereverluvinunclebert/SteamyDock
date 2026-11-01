@@ -113,7 +113,7 @@ Private Declare Function ExtractIconEx Lib "shell32.dll" Alias "ExtractIconExA" 
 ' The CLSIDFromString alias/copy extracts the CLSID value copying it into a memory location in binary format
 'Private Declare Function OLE_CLSIDFromString Lib "ole32" Alias "CLSIDFromString" (ByVal lpszProgID As Long, ByVal pclsid As Long) As Long
 
-#If Not WIN64 Then ' compiled using 32bit compiler Then ' VB6 only, if TwinBasic then let WDL do it.
+#If Not Win64 Then ' compiled using 32bit compiler Then ' VB6 only, if TwinBasic then let WDL do it.
     ' provides the CLSID ByRef meaning that it provides the address of the memory location where the IID will be written
     Private Declare Function CLSIDFromString Lib "ole32" (ByVal lpsz As Long, ByRef CLSID As IID) As Long
     Private Declare Function OleCreatePictureIndirect Lib "oleaut32" (ByRef pPictDesc As PICTDESC, ByRef riid As Any, ByVal fPictureOwnsHandle As Long, ByRef pIPicture As IPicture) As Long
@@ -177,7 +177,7 @@ Public Function fExtractEmbeddedPNGFromEXE(ByVal FileName As String, ByRef targe
     Dim lhIconID() As Long
     Dim nIcons As Integer: nIcons = 0
     Dim lResult As Long: lResult = 0
-    Dim lFlags As Long: lFlags = 0
+    Dim lflags As Long: lflags = 0
     Dim i As Long: i = 0
     Dim pic As StdPicture ' interface for a Picture object
     Dim GSI As GdiplusStartupInput
@@ -223,7 +223,7 @@ Public Function fExtractEmbeddedPNGFromEXE(ByVal FileName As String, ByRef targe
     '    LR_SHARED
     '    LR_VGACOLOR
     '
-    lFlags = LR_LOADFROMFILE '16
+    lflags = LR_LOADFROMFILE '16
 
     ' Call PrivateExtractIcons with the 5th param set to nothing, solely to obtain the total number of Icons in the file.
     lResult = PrivateExtractIcons(FileName, lIconIndex, lxSize, lySize, ByVal 0&, ByVal 0&, 0&, 0&)
@@ -253,7 +253,7 @@ Public Function fExtractEmbeddedPNGFromEXE(ByVal FileName As String, ByRef targe
     lResult = PrivateExtractIcons(FileName, lIconIndex, lxSize, _
                             lySize, lhIcon(LBound(lhIcon)), _
                             lhIconID(LBound(lhIconID)), _
-                            nIcons * 2, lFlags)
+                            nIcons * 2, lflags)
         
     ' create an Ipicture icon with a handle, no specific size - to check as to a valid pic before we write directly to the targetPicBox
     Set pic = CreateIcon(lhIcon(i + lIconIndex - 1))
@@ -294,7 +294,7 @@ Public Function fExtractEmbeddedPNGFromEXE(ByVal FileName As String, ByRef targe
                 If writePNGToFile = True Then
                 
                     ' take the filename, extract just the filename body minus the suffix, then point it to the special folder with a PNG suffix.
-                    sJustTheFilename = Mid(FileName, InStrRev(FileName, "\") + 1, Len(FileName))
+                    sJustTheFilename = mID(FileName, InStrRev(FileName, "\") + 1, Len(FileName))
                     sJustTheFilename = ExtractFilenameWithoutSuffix(sJustTheFilename)
                     sOutputFilename = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\images\" & sJustTheFilename & ".png"
     
@@ -355,7 +355,7 @@ Private Function make32BitLong(ByVal LoWord As Integer, Optional ByVal HiWord As
 
    On Error GoTo make32BitLong_Error
    
-   If debugflg = 1 Then debugLog "%make32BitLong"
+   'If debugflg = 1 Then debugLog "%make32BitLong"
 
     make32BitLong = CLng(HiWord) * CLng(&H10000) + CLng(LoWord)
 
@@ -405,13 +405,13 @@ Private Function CreateIcon(ByVal hImage As Long) As IPicture
         If (Result = OLE_ERROR_CODES.S_OK) Then
         
             ' Create an IPicture object from the bitmap handle described by
-            ' the PICTDESC structure, then the byRef pointer to the confirmed valid GUID obtained above.
+            ' the PICTDESC structure, then the byRef pointer to the confirmed valid GUID ImageFormatBMP obtained above.
             ' The Boolean parameter 1 transfers ownership of the image handle
             ' to the resulting picture object in pic.
             
             'Result = Ole_CreatePic(dsc, VarPtr(IID(0)), True, pic) ' old OLE method retained for documentation purposes
             
-            ' Creates a new picture object initialised from and according to the PICTDESC structure.
+            ' Creates a new picture object - pic - initialised from and according to the PICTDESC structure.
             Result = OleCreatePictureIndirect(dsc, ImageFormatBMP, 1, pic)
                     
             ' if valid ID (no errors) then create icon

@@ -445,7 +445,7 @@ Begin VB.Form dock
       Appearance      =   0  'Flat
       BackColor       =   &H80000000&
       BorderStyle     =   1  'Fixed Single
-      Caption         =   $"frmMain.frx":068F
+      Caption         =   $"frmMain.frx":069D
       ForeColor       =   &H80000008&
       Height          =   1380
       Left            =   2715
@@ -1806,8 +1806,8 @@ Public Sub fMouseUp(Button As Integer)
                     selectedIconIndex = targetIconIndex ' reset the selectedIconIndex
                     thisFilename = sFilename
                     
-                    Call insertNewIconElementIntoCollection(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
-                    Call menuForm.addImageToCollectionAndCheckForRunningProcess(thisFilename, sTitle)
+                    thiskey = insertNewIconElementIntoCollection(thisFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
+                    Call menuForm.addImageToCollectionAndCheckForRunningProcess(thisFilename, sTitle, thiskey)
                     
                     'delete the selected icon at its old location
                     If sourceIconIndex < targetIconIndex Then
@@ -2166,9 +2166,9 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         End If
         
         If fFExists(IconImage) Then ' last check that the default ? image has not been deleted.
-            Call insertNewIconElementIntoCollection(IconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+            thiskey = insertNewIconElementIntoCollection(IconImage, iconTitle, iconCommand, iconArguments, iconWorkingDirectory, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
             ' .51 DAEB 08/04/2021 frmMain.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
-            Call menuForm.addImageToCollectionAndCheckForRunningProcess(IconImage, iconTitle) ' , thiskey)
+            Call menuForm.addImageToCollectionAndCheckForRunningProcess(IconImage, iconTitle, thiskey)
             ' .43 DAEB 01/04/2021 frmMain.frm Replaced the modal msgbox with the non-modal form
              'MessageBox Me.hwnd, iconTitle & " dropped successfully to the dock. ", "SteamyDock Confirmation Message", vbOKOnly + vbExclamation
              '            MsgBox iconTitle & " dropped successfully to the dock. ", vbSystemModal
@@ -3281,7 +3281,7 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
             End If
             
             'debug location no.2
-            DrawTheText "Debug Watch 2 dockJustEntered = " & dockJustEntered, dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
+            DrawTheText "Debug Watch 2 ", dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
         
             If iconHeightPxls < iconSizeSmallPxls Then
                 iconHeightPxls = iconSizeSmallPxls
@@ -5311,7 +5311,7 @@ Public Sub drawSmallStaticIcons()
         Next
         
         'debug location no.1
-        DrawTheText "Debug Watch 1 dockJustEntered = " & dockJustEntered, dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
+        DrawTheText "Debug Watch 1 ", dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
                                             
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     '            iconStoreLeftPixels(UBound(iconStoreLeftPixels)) = iconPosLeftPxls

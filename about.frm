@@ -145,6 +145,7 @@ Option Explicit
 '
 Private Sub aboutPicture_Click()
    On Error GoTo aboutPicture_Click_Error
+   
    'If debugflg = 1 Then debugLog "%aboutPicture_Click"
 
     Me.Hide

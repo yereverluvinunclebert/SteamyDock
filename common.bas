@@ -1582,7 +1582,7 @@ End Sub
 Public Sub getAllDriveNames(sDriveStrings As String)
     Dim vDrive As Variant ' probably handling this already in .NET
     Dim sDeviceName As String: sDeviceName = vbNullString
-    Dim thiskey As String: thiskey = vbNullString
+    Dim thisKey As String: thisKey = vbNullString
     Dim driveCount As Integer: driveCount = 0
     
     
@@ -1953,6 +1953,7 @@ Public Sub locateDockSettingsFiles()
     ' variables declared
     Dim dockSettingsDir As String: dockSettingsDir = vbNullString
     Dim dockSettingsBackupDir As String: dockSettingsBackupDir = vbNullString
+    Dim dockSettingsImagesDir As String
     
     Dim inputData As String:  inputData = vbNullString
     Dim outputData As String: outputData = vbNullString
@@ -1964,6 +1965,7 @@ Public Sub locateDockSettingsFiles()
     ' dock Settings main docksettings.ini
     dockSettingsDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock" ' just for this user alone
     dockSettingsBackupDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\backup" ' just for this user alone
+    dockSettingsImagesDir = SpecialFolder(SpecialFolder_AppData) & "\steamyDock\images"
     dockSettingsFile = dockSettingsDir & "\docksettings.ini" ' the third config option for just the dock configuration, not the icons
     'iconDataFile = dockSettingsDir & "\iconsettings.dat" ' the random access dat file for the icon data alone, now obsolete
     gblsIconDataBase = dockSettingsDir & "\iconSettings.db"
@@ -1973,9 +1975,14 @@ Public Sub locateDockSettingsFiles()
         MkDir dockSettingsDir
     End If
     
-    'if the folder does not exist then create the folder
+    'if the backup folder does not exist then create the folder
     If Not fDirExists(dockSettingsBackupDir) Then
         MkDir dockSettingsBackupDir
+    End If
+    
+    'if the images folder does not exist then create the folder
+    If Not fDirExists(dockSettingsImagesDir) Then
+        MkDir dockSettingsImagesDir
     End If
     
     'if the docksettings.ini does not exist then create the file by copying
