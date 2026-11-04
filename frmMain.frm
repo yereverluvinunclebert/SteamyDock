@@ -917,7 +917,7 @@ Private iconXOffset As Double
 Private dynamicSizeModifierPxls As Double
 Private differenceFromLeftMostResizedIconPxls As Double
 Private animateStep As Single
-Private dockDrawingPositionPxls As Single
+Private dockDrawingYPositionPxls As Single
 'Private dockTopPxls As Single '.nn
 
 Private lngFont As Long
@@ -1268,6 +1268,9 @@ Private Sub Form_Load()
     ' Resize data arrays and load the icon images into the collections
     Call prepareArraysAndCollections
     
+    ' set the initial position of all icons in the collection
+    Call setInitialIconPositions
+    
     ' sets bmpInfo object to create a bitmap of the whole screen size and get a handle to the Device Context
     Call createGDIStructures
            
@@ -1321,7 +1324,51 @@ Form_Load_Error:
     
 End Sub
 
+'---------------------------------------------------------------------------------------
+' Procedure : setInitialIconPositions
+' Author    : beededea
+' Date      : 04/11/2026
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub setInitialIconPositions()
 
+    Dim useloop As Integer
+    
+    On Error GoTo setInitialIconPositions_Error
+    
+    ' dockDrawingYPositionPxls is set within setInitialStartPoint as is leftMostIconPositionPxls
+    
+    For useloop = 1 To sDockIcons.Count
+        
+        If dockPosition = vbBottom Then
+            sDockIcons(useloop).Y = dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
+        End If
+        
+        If dockPosition = vbtop Then
+            ' NOTE: everything is inverted...
+            sDockIcons(useloop).Y = dockDrawingYPositionPxls
+        End If
+        
+        If useloop = 1 Then
+            sDockIcons(useloop).X = leftMostIconPositionPxls
+        Else
+            sDockIcons(useloop).X = sDockIcons(useloop - 1).X + sDockIcons(useloop - 1).Width
+        End If
+        
+        sDockIcons(useloop).Height = iconSizeSmallPxls
+        sDockIcons(useloop).Width = iconSizeSmallPxls
+        
+    Next useloop
+
+    On Error GoTo 0
+    Exit Sub
+
+setInitialIconPositions_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setInitialIconPositions of Form dock"
+
+End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : connectSQLDatabase
@@ -3087,34 +3134,28 @@ End Sub
 '---------------------------------------------------------------------------------------
 '
 Private Sub storeCurrentIconPositions(ByVal thisPosition As Integer)
-        
-   Dim a As String
-   
+           
    On Error GoTo storeCurrentIconPositions_Error
 
-        a = "int"
-        iconStoreLeftPixels(thisPosition) = Int(iconPosLeftPxls)
+    iconStoreLeftPixels(thisPosition) = Int(iconPosLeftPxls)
+    
+    'iconStoreRightPixels(thisPosition) = sDockIcons(CStr(thisPosition)).X + sDockIcons(CStr(thisPosition)).Width ' test
+    iconStoreRightPixels(thisPosition) = Int(iconStoreLeftPixels(thisPosition) + iconWidthPxls) ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
+    
+    If thisPosition = 0 Or thisPosition > sDockIcons.Count Then Exit Sub
         
-        'iconStoreRightPixels(thisPosition) = sDockIcons(CStr(thisPosition)).X + sDockIcons(CStr(thisPosition)).Width ' test
-        a = "store"
-        iconStoreRightPixels(thisPosition) = Int(iconStoreLeftPixels(thisPosition) + iconWidthPxls) ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-        
-        If thisPosition = 0 Or thisPosition > sDockIcons.Count Then Exit Sub
-        
-        a = "sDockicons"
-        
-            sDockIcons(thisPosition).X = Int(iconPosLeftPxls) ' new positioning code
-            sDockIcons(thisPosition).Y = Int(iconCurrentTopPxls) ' new positioning code
-            sDockIcons(thisPosition).Width = Int(iconWidthPxls) ' new positioning code
-            sDockIcons(thisPosition).Height = Int(iconHeightPxls) ' new positioning code
-            sDockIcons(thisPosition).IconIndex = Int(thisPosition) ' new positioning code
+    sDockIcons(thisPosition).X = Int(iconPosLeftPxls) ' new positioning code
+    sDockIcons(thisPosition).Y = Int(iconCurrentTopPxls) ' new positioning code
+    sDockIcons(thisPosition).Width = Int(iconWidthPxls) ' new positioning code
+    sDockIcons(thisPosition).Height = Int(iconHeightPxls) ' new positioning code
+    sDockIcons(thisPosition).IconIndex = Int(thisPosition) ' new positioning code
 
    On Error GoTo 0
    Exit Sub
 
 storeCurrentIconPositions_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure storeCurrentIconPositions of Form dock " & thisPosition & " count " & sDockIcons.Count & " a = " & a * " ubound " & UBound(iconStoreLeftPixels)
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure storeCurrentIconPositions of Form dock " & thisPosition & " count " & sDockIcons.Count & " ubound " & UBound(iconStoreLeftPixels)
     
 End Sub
 
@@ -3136,15 +3177,15 @@ End Sub
 '            If dockPosition = vbBottom Then
 '
 '                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
-'                    iconCurrentBottomPxls = ((dockDrawingPositionPxls + iconSizeLargePxls)) + xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
+'                    iconCurrentBottomPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls)) + xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 '                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
-'                    iconCurrentBottomPxls = ((dockDrawingPositionPxls + iconSizeLargePxls)) - xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
+'                    iconCurrentBottomPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls)) - xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 '                Else
 '                    ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-'                    iconCurrentTopPxls = dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
-'                    iconCurrentBottomPxls = dockDrawingPositionPxls + iconSizeLargePxls ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'                    iconCurrentTopPxls = dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
+'                    iconCurrentBottomPxls = dockDrawingYPositionPxls + iconSizeLargePxls ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 '                End If
 '            End If
 '
@@ -3153,13 +3194,13 @@ End Sub
 '                ' NOTE: everything is inverted...
 '
 '                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-'                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) - xAxisModifier '.nn added the slidein/out
-'                    iconCurrentBottomPxls = ((dockDrawingPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) - xAxisModifier '.nn added the slidein/out
+'                    iconCurrentBottomPxls = ((dockDrawingYPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 '                ElseIf autoSlideMode = "slidein" Then
-'                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) + xAxisModifier
-'                    iconCurrentBottomPxls = ((dockDrawingPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+'                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) + xAxisModifier
+'                    iconCurrentBottomPxls = ((dockDrawingYPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 '                Else
-'                    iconCurrentTopPxls = dockDrawingPositionPxls '.48 DAEB 01/04/2021 frmMain.frm  removed the vertical adjustment already applied to iconCurrentTopPxls
+'                    iconCurrentTopPxls = dockDrawingYPositionPxls '.48 DAEB 01/04/2021 frmMain.frm  removed the vertical adjustment already applied to iconCurrentTopPxls
 '                End If
 '            End If
 '
@@ -3194,15 +3235,15 @@ Private Sub sizeEachSmallIconToLeft(ByVal useloop As Integer, ByVal leftmostAnim
             If dockPosition = vbBottom Then
                 
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
-                    iconCurrentBottomPxls = ((dockDrawingPositionPxls + iconSizeLargePxls)) + xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
+                    iconCurrentBottomPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls)) + xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
                 ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
-                    iconCurrentBottomPxls = ((dockDrawingPositionPxls + iconSizeLargePxls)) - xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
+                    iconCurrentBottomPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls)) - xAxisModifier ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
                 Else
                     ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-                    iconCurrentTopPxls = dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
-                    iconCurrentBottomPxls = dockDrawingPositionPxls + iconSizeLargePxls ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+                    iconCurrentTopPxls = dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
+                    iconCurrentBottomPxls = dockDrawingYPositionPxls + iconSizeLargePxls ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
                 End If
             End If
             
@@ -3211,13 +3252,13 @@ Private Sub sizeEachSmallIconToLeft(ByVal useloop As Integer, ByVal leftmostAnim
                 ' NOTE: everything is inverted...
                 
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) - xAxisModifier '.nn added the slidein/out
-                    iconCurrentBottomPxls = ((dockDrawingPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) - xAxisModifier '.nn added the slidein/out
+                    iconCurrentBottomPxls = ((dockDrawingYPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
                 ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) + xAxisModifier
-                    iconCurrentBottomPxls = ((dockDrawingPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) + xAxisModifier
+                    iconCurrentBottomPxls = ((dockDrawingYPositionPxls)) + xAxisModifier  ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
                 Else
-                    iconCurrentTopPxls = dockDrawingPositionPxls '.48 DAEB 01/04/2021 frmMain.frm  removed the vertical adjustment already applied to iconCurrentTopPxls
+                    iconCurrentTopPxls = dockDrawingYPositionPxls '.48 DAEB 01/04/2021 frmMain.frm  removed the vertical adjustment already applied to iconCurrentTopPxls
                 End If
             End If
 
@@ -3262,30 +3303,30 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
               
             If dockPosition = vbBottom Then
                If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                   iconCurrentTopPxls = (dockDrawingPositionPxls + dynamicSizeModifierPxls) + xAxisModifier '.nn
+                   iconCurrentTopPxls = (dockDrawingYPositionPxls + dynamicSizeModifierPxls) + xAxisModifier '.nn
                ElseIf autoSlideMode = "slidein" Then
-                   iconCurrentTopPxls = (dockDrawingPositionPxls + dynamicSizeModifierPxls) - xAxisModifier '.nn
+                   iconCurrentTopPxls = (dockDrawingYPositionPxls + dynamicSizeModifierPxls) - xAxisModifier '.nn
                Else
-                   iconCurrentTopPxls = (dockDrawingPositionPxls + dynamicSizeModifierPxls) '.nn
+                   iconCurrentTopPxls = (dockDrawingYPositionPxls + dynamicSizeModifierPxls) '.nn
                End If
             End If
              
             If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) - xAxisModifier
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) - xAxisModifier
                 ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) + xAxisModifier
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) + xAxisModifier
                 Else
-                    iconCurrentTopPxls = dockDrawingPositionPxls
+                    iconCurrentTopPxls = dockDrawingYPositionPxls
                 End If
             End If
             
             'debug location no.2
-            DrawTheText "Debug Watch 2 ", dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
+            DrawTheText "Debug Watch 2 ", dockDrawingYPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
         
             If iconHeightPxls < iconSizeSmallPxls Then
                 iconHeightPxls = iconSizeSmallPxls
-                iconCurrentTopPxls = dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
+                iconCurrentTopPxls = dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
             End If
             iconWidthPxls = iconHeightPxls
             
@@ -3325,12 +3366,12 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
             If dockPosition = vbBottom Then
                 
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = dockDrawingPositionPxls + xAxisModifier
+                    iconCurrentTopPxls = dockDrawingYPositionPxls + xAxisModifier
                 ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = dockDrawingPositionPxls - xAxisModifier
+                    iconCurrentTopPxls = dockDrawingYPositionPxls - xAxisModifier
                 Else
                     ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-                    iconCurrentTopPxls = dockDrawingPositionPxls
+                    iconCurrentTopPxls = dockDrawingYPositionPxls
                 End If
                 
                 If selectedIconIndex = IconIndex Then
@@ -3342,14 +3383,14 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
                 
                 ' the slidein/out
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) - xAxisModifier
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) - xAxisModifier
                 ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) + xAxisModifier
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) + xAxisModifier
                 Else
-                    iconCurrentTopPxls = dockDrawingPositionPxls
+                    iconCurrentTopPxls = dockDrawingYPositionPxls
                 End If
                 
-                If selectedIconIndex = IconIndex Then iconCurrentTopPxls = dockDrawingPositionPxls + bounceHeight
+                If selectedIconIndex = IconIndex Then iconCurrentTopPxls = dockDrawingYPositionPxls + bounceHeight
             End If
 
             'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - iconSizeLargePxls
@@ -3396,12 +3437,12 @@ Private Sub sizeEachResizedIconToRight(ByVal useloop As Integer, ByVal rightmost
         If dockPosition = vbBottom Then
             
             If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                iconCurrentTopPxls = (dockDrawingPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)) + xAxisModifier
+                iconCurrentTopPxls = (dockDrawingYPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)) + xAxisModifier
             ElseIf autoSlideMode = "slidein" Then
-                iconCurrentTopPxls = (dockDrawingPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)) - xAxisModifier
+                iconCurrentTopPxls = (dockDrawingYPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)) - xAxisModifier
             Else
                 ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-                iconCurrentTopPxls = (dockDrawingPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls))
+                iconCurrentTopPxls = (dockDrawingYPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls))
             End If
             'If selectedIconIndex = iconIndex + 1 Then iconCurrentTopPxls = iconCurrentTopPxls - bounceHeight
         End If
@@ -3410,11 +3451,11 @@ Private Sub sizeEachResizedIconToRight(ByVal useloop As Integer, ByVal rightmost
             
             '.nn added the slidein/out
             If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) - xAxisModifier
+                iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) - xAxisModifier
             ElseIf autoSlideMode = "slidein" Then
-                iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) + xAxisModifier
+                iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) + xAxisModifier
             Else
-                iconCurrentTopPxls = dockDrawingPositionPxls
+                iconCurrentTopPxls = dockDrawingYPositionPxls
             End If
         End If
         
@@ -3451,12 +3492,12 @@ Private Sub sizeEachSmallIconToRight(ByVal useloop As Integer, ByVal rightmostRe
             If dockPosition = vbBottom Then
                 
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
                 ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
                 Else
                     ' .46 DAEB 01/04/2021 frmMain.frm Ensured that there is a line to calculate iconCurrentTopPxls now that autoSlideMode is now undefined at startup
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls))
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls))
                 End If
             End If
             
@@ -3464,11 +3505,11 @@ Private Sub sizeEachSmallIconToRight(ByVal useloop As Integer, ByVal rightmostRe
                 
                 '.nn added the slidein/out
                 If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) - xAxisModifier
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) - xAxisModifier
                 ElseIf autoSlideMode = "slidein" Then
-                    iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeSmallPxls)) + xAxisModifier
+                    iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeSmallPxls)) + xAxisModifier
                 Else
-                    iconCurrentTopPxls = dockDrawingPositionPxls
+                    iconCurrentTopPxls = dockDrawingYPositionPxls
                 End If
             End If
 
@@ -3647,7 +3688,7 @@ Private Sub drawTextAboveIcon(ByVal useloop As Integer, ByVal textWidth As Integ
                         DrawTheText sDockIcons(useloop).Title, iconCurrentTopPxls + iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                     ElseIf dockPosition = vbBottom Then
                         ' puts the text 10% +10 px above the icon
-                        DrawTheText sDockIcons(useloop).Title, dockDrawingPositionPxls - ((iconSizeLargePxls / 10) + 40), iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
+                        DrawTheText sDockIcons(useloop).Title, dockDrawingYPositionPxls - ((iconSizeLargePxls / 10) + 40), iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                         'DrawTheText sTitleArray(iconIndex), (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                         'DrawTheText textToDisplay, (screenHorizontalEdge - ((iconSizeLargePxls / 10) + 40)) - iconSizeLargePxls, iconPosLeftPxls, textWidth, rDFontName, Val(Abs(rDFontSize))
                     End If
@@ -3800,11 +3841,11 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
         iconWidthPxls = iconSizeLargePxls
             
         If dockPosition = vbBottom Then
-            iconCurrentTopPxls = dockDrawingPositionPxls
+            iconCurrentTopPxls = dockDrawingYPositionPxls
         End If
 
         If dockPosition = vbtop Then
-           iconCurrentTopPxls = dockDrawingPositionPxls
+           iconCurrentTopPxls = dockDrawingYPositionPxls
         End If
 
          ' new positioning code
@@ -3852,11 +3893,11 @@ Private Sub sizeAndShowSingleMainIconToRightByCEP(ByVal thisIconIndex As Integer
         rightIconWidthPxls = iconWidthPxls
          
         If dockPosition = vbBottom Then
-            iconCurrentTopPxls = dockDrawingPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls) '.nn removal of dynamicSizeModifierPxls
+            iconCurrentTopPxls = dockDrawingYPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls) '.nn removal of dynamicSizeModifierPxls
         End If
 
         If dockPosition = vbtop Then ' .48 DAEB 01/04/2021 frmMain.frm removed the vertical adjustment already applied to iconCurrentTopPxls
-            iconCurrentTopPxls = dockDrawingPositionPxls
+            iconCurrentTopPxls = dockDrawingYPositionPxls
         End If
         
          ' new positioning code
@@ -5015,12 +5056,12 @@ Private Sub setInitialStartPoint()
         screenHorizontalEdge = screenHeightPixels ' .73 DAEB 11/05/2021 frmMain.frm  sngBottom renamed to screenHorizontalEdge
         
         If dockSlidOut = True Then
-            dockDrawingPositionPxls = (screenHeightPixels - 10) ' 10 pixels above the bottom of the screen ' .nn
+            dockDrawingYPositionPxls = (screenHeightPixels - 10) ' 10 pixels above the bottom of the screen ' .nn
         Else
             '  taking into account the largest icons size
             dockUpPartPxls = (screenHeightPixels) - iconSizeLargePxls
             ' the dock expanded (uppermost) position taking into account the dock vertical offset as defined by the user
-            dockDrawingPositionPxls = dockUpPartPxls - (Val(rDvOffset)) - rdDefaultYPos
+            dockDrawingYPositionPxls = dockUpPartPxls - (Val(rDvOffset)) - rdDefaultYPos
         End If
 
     End If
@@ -5029,10 +5070,10 @@ Private Sub setInitialStartPoint()
         screenHorizontalEdge = 0 ' .nn 'the top of the screen, position 0
         
         If dockSlidOut = True Then ' if the dock has slid out then we need to expose just the first 10 pixels of the dock
-            dockDrawingPositionPxls = 10
+            dockDrawingYPositionPxls = 10
         Else
             ' the dock furthest out position from the top of the screen taking into account the dock vertical offset as defined by the user
-            dockDrawingPositionPxls = Val(rDvOffset) + rdDefaultYPos
+            dockDrawingYPositionPxls = Val(rDvOffset) + rdDefaultYPos
             
         End If
          ' .nn ENDS
@@ -5292,6 +5333,7 @@ Public Sub drawSmallStaticIcons()
 '            useloop = useloop + 1
                       
             ' call this to set the size of all icons in small mode, do it just once, all the subsequent icons will take that same size without recalculation.
+            ' the icon current top pixels is defined here by calling
             If useloop = iconArrayLowerBound Then Call sizeEachSmallIconToLeft(useloop, rdIconUpperBound, True)
             
             ' display the small size icons
@@ -5311,7 +5353,7 @@ Public Sub drawSmallStaticIcons()
         Next
         
         'debug location no.1
-        DrawTheText "Debug Watch 1 ", dockDrawingPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
+        DrawTheText "Debug Watch 1 ", dockDrawingYPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
                                             
          ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     '            iconStoreLeftPixels(UBound(iconStoreLeftPixels)) = iconPosLeftPxls
@@ -5367,22 +5409,22 @@ End Sub
 '
 ''                If dockPosition = vbbottom Then
 ''                    If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-''                        iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
+''                        iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
 ''                    ElseIf autoSlideMode = "slidein" Then
-''                        iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
+''                        iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
 ''                    Else
-''                        iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) '.nn
+''                        iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) '.nn
 ''                    End If
 ''                End If
 ''                If dockPosition = vbtop Then
 ''                    ' .nn
 ''                    If autoSlideMode = "slideout" Then 'slideout is the default but if the slider timer is not running then xAxisModifier = 0
-''                        'iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
+''                        'iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
 ''                    ElseIf autoSlideMode = "slidein" Then
-''                        iconCurrentTopPxls = dockDrawingPositionPxls - xAxisModifier
-''                        'iconCurrentTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
+''                        iconCurrentTopPxls = dockDrawingYPositionPxls - xAxisModifier
+''                        'iconCurrentTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
 ''                    Else
-''                        iconCurrentTopPxls = dockDrawingPositionPxls - xAxisModifier
+''                        iconCurrentTopPxls = dockDrawingYPositionPxls - xAxisModifier
 ''                    End If
 ''
 ''                End If
@@ -5434,7 +5476,7 @@ End Sub
 '            iconWidthPxls = iconSizeLargePxls * animateStep
 '
 '            If dockPosition = vbBottom Then
-'                iconCurrentTopPxls = dockDrawingPositionPxls + iconSizeLargePxls - (iconSizeLargePxls * animateStep)
+'                iconCurrentTopPxls = dockDrawingYPositionPxls + iconSizeLargePxls - (iconSizeLargePxls * animateStep)
 '            End If
 '
 '            If selectedIconIndex = iconIndex Then
@@ -5965,26 +6007,26 @@ Private Sub applyThemeSkinToDock(ByVal dockSkinStart As Long, ByVal dockSkinWidt
     If autoSlideMode = "slideout" Then
         If dockPosition = vbtop Then
             ' set the skin to a position above the icons and modified in the Y axis by the slideTimer
-            bgThemeTopPxls = (dockDrawingPositionPxls) - xAxisModifier '.nn
+            bgThemeTopPxls = (dockDrawingYPositionPxls) - xAxisModifier '.nn
         Else ' dockPosition = vbBottom
             ' set the skin to a position above the small icons and modified in the Y axis by the slideTimer if the slider timer is running
-            bgThemeTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
+            bgThemeTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) + xAxisModifier
         End If
     ElseIf autoSlideMode = "slidein" Then
         If dockPosition = vbtop Then
             ' set the skin to a position above the icons and modified in the Y axis by the slideTimer
-            bgThemeTopPxls = (dockDrawingPositionPxls) + xAxisModifier '.nn
+            bgThemeTopPxls = (dockDrawingYPositionPxls) + xAxisModifier '.nn
         Else ' dockPosition = vbBottom
             ' set the skin to a position above the small icons and modified in the Y axis by the slideTimer if the slider timer is running
-            bgThemeTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
+            bgThemeTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls)) - xAxisModifier
         End If
     Else
         If dockPosition = vbtop Then
             ' set the skin to a position above the icons
-            bgThemeTopPxls = (dockDrawingPositionPxls)  '.nn
+            bgThemeTopPxls = (dockDrawingYPositionPxls)  '.nn
         Else ' dockPosition = vbBottom
             ' set the skin to a position above the small icons
-            bgThemeTopPxls = ((dockDrawingPositionPxls + iconSizeLargePxls - iconSizeSmallPxls))
+            bgThemeTopPxls = ((dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls))
         End If
     End If
     ' .49 DAEB 01/04/2021 frmMain.frm added the vertical adjustment for sliding in and out ENDS
