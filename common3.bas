@@ -22,7 +22,7 @@ Public sIcon As New cwMainIcon
 '------------------------------------------------------------
 
 Public gblOutsideDock As Boolean
-Public leftMostIconPositionPxls As Single
+Public leftMostIconXPositionPxls As Single
 Public rightMostIconPositionPxls As Single
 Public dockYEntrancePoint As Integer
 'Public glbStartRecord As Integer

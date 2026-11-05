@@ -192,7 +192,7 @@ Begin VB.Form dock
       Tag             =   "controls the bounceUpward when the icon is clicked"
       Top             =   1605
    End
-   Begin VB.Timer responseTimer 
+   Begin VB.Timer tmrInsideDockTester 
       Interval        =   200
       Left            =   270
       Tag             =   "Determines whetherto turn on the animate timer"
@@ -519,13 +519,13 @@ Begin VB.Form dock
       Width           =   1215
    End
    Begin VB.Label Label1 
-      Caption         =   "responseTimer"
+      Caption         =   "tmrInsideDockTester"
       Height          =   255
       Left            =   960
       TabIndex        =   1
       Tag             =   "Determines whetherto turn on the animate timer"
       Top             =   720
-      Width           =   1215
+      Width           =   2250
    End
    Begin VB.Label Label 
       Caption         =   "animateTimer"
@@ -1328,7 +1328,7 @@ End Sub
 ' Procedure : setInitialIconPositions
 ' Author    : beededea
 ' Date      : 04/11/2026
-' Purpose   :
+' Purpose   : called on startup
 '---------------------------------------------------------------------------------------
 '
 Private Sub setInitialIconPositions()
@@ -1337,7 +1337,7 @@ Private Sub setInitialIconPositions()
     
     On Error GoTo setInitialIconPositions_Error
     
-    ' dockDrawingYPositionPxls is set within setInitialStartPoint as is leftMostIconPositionPxls
+    ' dockDrawingYPositionPxls is set within setInitialStartPoint as is leftMostIconXPositionPxls
     
     For useloop = 1 To sDockIcons.Count
         
@@ -1351,7 +1351,7 @@ Private Sub setInitialIconPositions()
         End If
         
         If useloop = 1 Then
-            sDockIcons(useloop).X = leftMostIconPositionPxls
+            sDockIcons(useloop).X = leftMostIconXPositionPxls
         Else
             sDockIcons(useloop).X = sDockIcons(useloop - 1).X + sDockIcons(useloop - 1).Width
         End If
@@ -1456,7 +1456,7 @@ Private Sub Form_MouseDown(Button As Integer, Shift As Integer, X As Single, Y A
     dragImageToDisplayKey = selectedIconIndex
     
 '    dock.animateTimer.Enabled = False
-'    dock.responseTimer.Enabled = False
+'    dock.tmrInsideDockTester.Enabled = False
 
     On Error GoTo 0
     Exit Sub
@@ -1720,7 +1720,7 @@ Public Sub fMouseUp(Button As Integer)
             hourGlassTimer.Enabled = False ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
         Else
             animateTimer.Enabled = False ' stops the animation
-            responseTimer.Enabled = False ' stops the assessment of the mouse position
+            tmrInsideDockTester.Enabled = False ' stops the assessment of the mouse position
         End If
             
         ' now alter the menu options to suit the icon type/status that we are encountering
@@ -1819,7 +1819,7 @@ Public Sub fMouseUp(Button As Integer)
         
         If hideDockForNMinutes = False Then ' re-enable timers only when the dock is operating normally and not when instructed to hide
             animateTimer.Enabled = True
-            responseTimer.Enabled = True
+            tmrInsideDockTester.Enabled = True
         End If
         
         usedMenuFlag = True ' essential
@@ -2458,43 +2458,49 @@ End Sub
 
 '
 '---------------------------------------------------------------------------------------
-' Procedure : responseTimer
+' Procedure : tmrInsideDockTester (responseTimer)
 ' Author    : beededea
 ' Date      : 07/04/2020
-' Purpose   : Determines whether to turn on the animate timer
-'             It determines the position of the mouse and then if no animation required, draws the icons
-'             in small size (only) when the mouse cursor leaves the dock area
+' Purpose   : Determines whether the cursor is within the dock area in order to determine whether to turn on the animate timer
+'             It determines the position of the mouse using fTestCursorWithinDockYPosition.
+'             It also modifies the tmrInsideDockTester interval improving the responsiveness of the dock and making fadeouts smoother.
+'
 '---------------------------------------------------------------------------------------
 '
-Private Sub responseTimer_Timer()
+Private Sub tmrInsideDockTester_Timer()
     
-    Dim lngReturn As Long: lngReturn = 0
+    Dim lngReturn As Long
     
-    On Error GoTo responseTimer_Error
+    On Error GoTo tmrInsideDockTester_Error
     
-    lngReturn = GetCursorPos(apiMouse) ' return the mouse position every 4 - 200ms - sufficient
+    ' return the mouse position every 4 - 200ms - sufficient
+    lngReturn = GetCursorPos(apiMouse)
         
+    ' determine the dock upper limit when entering and triggering the main animation
     currentDockHeightPxls = fSetDockUpperHeightLimit()
     
+    ' improve the responsiveness of the dock whilst the cursor is within the dock zone by temporarily decreasing the interval
+    ' and causing this timer to run more frequently.
     Call tuneResponseTimerInterval
     
     dockYEntrancePoint = fDefineDockYEntrancePoint()
-    
     lastPositionRelativeToDock = gblOutsideDock
     
+    ' determines the position of the mouse
     gblOutsideDock = fTestCursorWithinDockYPosition()
     
-    insideDockFlg = Not gblOutsideDock '.nn Added as part of the drag and drop functionality
+    ' part of the drag and drop functionality
+    insideDockFlg = Not gblOutsideDock
     
-    ' the mouse has left the Max icon area
+    ' the mouse has left the Max icon area, so we stop all animation
     If gblOutsideDock = True And dragFromDockOperating = False Then
         Call stopBounceAnimation
         Exit Sub ' leave the timer loop and do nothing else
     End If
     
-     ' dragging from the dock for deletion
+     ' dragging from the dock for deletion of an icon
     If (gblOutsideDock = True And dragFromDockOperating = True) Then
-        If animateTimer.Enabled = False Then Call startBounceAnimation
+        If animateTimer.Enabled = False Then Call startAnimation
         hourGlassTimer.Enabled = False
         dragToDockOperating = False
         Exit Sub
@@ -2502,15 +2508,20 @@ Private Sub responseTimer_Timer()
     
     ' the mouse is now within the icon area or being dragged so start animating and using cpu...
     If insideDockFlg = True Or dragFromDockOperating = True Or dragToDockOperating = True Then
-        If lastPositionRelativeToDock = True Then ' we have just entered the dock so start the growth timer
+    
+        ' this little bit of code reatined for future potential use
+'        If lastPositionRelativeToDock = True Then ' we have just entered the dock so start the growth timer
             ' we cannot cause the main icon to grow on first entry to the dock as it must appear the full icon width in order
             ' for the animation to operate, a new animation method will be required, a complete rewrite
             
 '            iconGrowthTimer.Enabled = True
 '            lastPositionRelativeToDock = False
-        End If
+'        End If
         
-        If animateTimer = False Then Call startBounceAnimation
+        ' this is where we start the animation
+        If animateTimer = False Then Call startAnimation
+        
+        ' show the hourglass on top of the dock item if being dragged within the dock
         If dragFromDockOperating = True Then
             hourGlassTimer.Enabled = True
             dragToDockOperating = True
@@ -2520,9 +2531,9 @@ Private Sub responseTimer_Timer()
    On Error GoTo 0
    Exit Sub
 
-responseTimer_Error:
+tmrInsideDockTester_Error:
 
-    'MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure responseTimer of Form dock"
+    'MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure tmrInsideDockTester of Form dock"
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -2566,7 +2577,7 @@ End Function
 ' Procedure : fSetDockUpperHeightLimit
 ' Author    : beededea
 ' Date      : 19/12/2022
-' Purpose   :
+' Purpose   : determine the dock upper limit when entering and triggering the main animation
 '---------------------------------------------------------------------------------------
 '
 Private Function fSetDockUpperHeightLimit() As Long
@@ -2574,7 +2585,7 @@ Private Function fSetDockUpperHeightLimit() As Long
     
     On Error GoTo fSetDockUpperHeightLimit_Error
     
-    ' 22/10/2020 .01 frmMain.frm responsetimer fix the incorrect check of the timer state to determine the dock upper limit when entering and triggering the main animation
+    '
     If animatedIconsRaised = True Then
         dockHeightPxls = iconSizeLargePxls + Val(rDvOffset) + rdDefaultYPos
     Else
@@ -2609,9 +2620,9 @@ Private Sub tuneResponseTimerInterval()
     ' .18 STARTS DAEB frmMain.frm 31/01/2021 reinstated checks of fade out and slide timers to set a more frequent response timer to improve animation
 
     If animatedIconsRaised = True Or autoFadeOutTimer.Enabled = True Or autoSlideOutTimer.Enabled = True Then ' logic to test on states needs to be refined
-        responseTimer.Interval = 4 ' tests the mouse position more regularly, making dock much more responsive and fadeouts smoother
+        tmrInsideDockTester.Interval = 4 ' tests the mouse position more regularly, making dock much more responsive and fadeouts smoother
     Else
-        responseTimer.Interval = 100 ' reduced to 5 times per second
+        tmrInsideDockTester.Interval = 100 ' reduced to 5 times per second
     End If
 
 End Sub
@@ -2696,14 +2707,14 @@ startHidingDockTimers_Error:
 
 End Sub
 '---------------------------------------------------------------------------------------
-' Procedure : startBounceAnimation
+' Procedure : startAnimation
 ' Author    : beededea
 ' Date      : 19/12/2022
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub startBounceAnimation()
-    On Error GoTo startBounceAnimation_Error
+Private Sub startAnimation()
+    On Error GoTo startAnimation_Error
 
         animatedIconsRaised = True
         dockZorder = "high"
@@ -2723,11 +2734,11 @@ Private Sub startBounceAnimation()
     On Error GoTo 0
     Exit Sub
 
-startBounceAnimation_Error:
+startAnimation_Error:
 
     With Err
          If .Number <> 0 Then
-            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure startBounceAnimation of Form dock"
+            MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure startAnimation of Form dock"
             Resume Next
           End If
     End With
@@ -2810,7 +2821,7 @@ Private Sub animateTimer_Timer()
         ' however, if the animate timers are not running and the cursor position is static then do no animation - just exit, saving CPU '
         'If savApIMouseX = apiMouse.x And savApIMouseY = apiMouse.y Then
             animateTimer.Enabled = False
-            responseTimer.Enabled = True
+            tmrInsideDockTester.Enabled = True
 '            Exit Sub             ' if the timer that does the bouncing is running then we need to animate even if the mouse is stationary...
         'End If
         If savApIMouseX = apiMouse.X And savApIMouseY <> apiMouse.Y Then Exit Sub ' if moving in the x axis but not in the y axis we also exit
@@ -2842,7 +2853,7 @@ Private Sub animateTimer_Timer()
     
     ' determines if and where exactly the mouse is in the < horizontal > icon hover area old method
 '    For useloop = iconArrayLowerBound To rdIconUpperBound
-'        'insideDock = apiMouse.X >= leftMostIconPositionPxls And apiMouse.X <= rightMostIconPositionPxls
+'        'insideDock = apiMouse.X >= leftMostIconXPositionPxls And apiMouse.X <= rightMostIconPositionPxls
 '
 '        ' determines the icon index, ie. which icon is clicked upon
 '        insideIcon = apiMouse.X >= iconStoreLeftPixels(useloop) And apiMouse.X <= iconStoreRightPixels(useloop)
@@ -2876,7 +2887,7 @@ Private Sub animateTimer_Timer()
         
         
     ' put starting left position back again for the dock background
-    iconPosLeftPxls = leftMostIconPositionPxls
+    iconPosLeftPxls = leftMostIconXPositionPxls
     
     ' NOTE:
     ' if it is the first time the dock is entered then it is drawDockByCursorEntryPosition that draws all the icons into the correct location.
@@ -3204,7 +3215,7 @@ End Sub
 '                End If
 '            End If
 '
-'            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
+'            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconXPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
 '            showsmall = True
 '            expandedDockWidth = expandedDockWidth + iconWidthPxls
 '        End If
@@ -3262,7 +3273,7 @@ Private Sub sizeEachSmallIconToLeft(ByVal useloop As Integer, ByVal leftmostAnim
                 End If
             End If
 
-            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
+            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconXPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
             showsmall = True
             expandedDockWidth = expandedDockWidth + iconWidthPxls
         End If
@@ -3330,7 +3341,7 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
             End If
             iconWidthPxls = iconHeightPxls
             
-             'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - (iconSizeLargePxls - dynamicSizeModifierPxls)
+             'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconXPositionPxls + iconSizeLargePxls - (iconSizeLargePxls - dynamicSizeModifierPxls)
             
              expandedDockWidth = expandedDockWidth + iconWidthPxls
              showsmall = False
@@ -3393,7 +3404,7 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
                 If selectedIconIndex = IconIndex Then iconCurrentTopPxls = dockDrawingYPositionPxls + bounceHeight
             End If
 
-            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - iconSizeLargePxls
+            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconXPositionPxls + iconSizeLargePxls - iconSizeLargePxls
 '            If useloop = 0 Then
                 showsmall = False
 '            Else
@@ -3460,7 +3471,7 @@ Private Sub sizeEachResizedIconToRight(ByVal useloop As Integer, ByVal rightmost
         End If
         
         
-        'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)
+        'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconXPositionPxls + iconSizeLargePxls - (iconSizeSmallPxls + dynamicSizeModifierPxls)
         expandedDockWidth = expandedDockWidth + iconWidthPxls
         showsmall = False
     End If
@@ -3513,7 +3524,7 @@ Private Sub sizeEachSmallIconToRight(ByVal useloop As Integer, ByVal rightmostRe
                 End If
             End If
 
-            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
+            'If dockPosition = vbRight Then iconPosLeftPxls = leftMostIconXPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
             expandedDockWidth = expandedDockWidth + iconWidthPxls
             showsmall = True
         End If
@@ -3859,7 +3870,7 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
         Call showLargeIconTypes(thisIconIndex - 1)
     End If
 
-     ' leftMostIconPositionPxls = iconPosLeftPxls
+     ' leftMostIconXPositionPxls = iconPosLeftPxls
 
    On Error GoTo 0
    Exit Sub
@@ -4752,7 +4763,7 @@ End Sub
         End If
     End If
     
-    responseTimer.Enabled = True
+    tmrInsideDockTester.Enabled = True
     animateTimer.Enabled = True
     
     On Error GoTo 0
@@ -5085,10 +5096,10 @@ Private Sub setInitialStartPoint()
     hOffsetPxls = ((screenWidthPixels - normalDockWidthPxls) / 2)
     ' calculate the left position from the mid point including user-specified offset
     proportionalOffset = hOffsetPxls + (hOffsetPxls * (Val(rDOffset) / 100))
-    leftMostIconPositionPxls = proportionalOffset
+    leftMostIconXPositionPxls = proportionalOffset
 
-    iconPosLeftPxls = leftMostIconPositionPxls ' rDOffset
-'    sDockIcons(1).X = leftMostIconPositionPxls  ' new positioning code
+    iconPosLeftPxls = leftMostIconXPositionPxls ' rDOffset
+'    sDockIcons(1).X = leftMostIconXPositionPxls  ' new positioning code
 
    On Error GoTo 0
    Exit Sub
@@ -5308,8 +5319,8 @@ Public Sub drawSmallStaticIcons()
     
     ' Check bDrawn so the program doesn't redraw the whole icon picture more than once
     If bDrawn = False Then
-        iconPosLeftPxls = leftMostIconPositionPxls
-'       sDockIcons(1).X = leftMostIconPositionPxls ' new positioning code
+        iconPosLeftPxls = leftMostIconXPositionPxls
+'       sDockIcons(1).X = leftMostIconXPositionPxls ' new positioning code
         
         normalDockWidthPxls = 0
         iconHeightPxls = iconSizeSmallPxls
@@ -5384,7 +5395,7 @@ End Sub
 '' Author    : beededea
 '' Date      : 04/05/2020
 '' Purpose   : Starting at a set LEFT hand side, it loops through each element in the small dictionary and adds each icon to the
-''             combined image for display - no animation performed. This runs in conjunction with the responseTimer that operates
+''             combined image for display - no animation performed. This runs in conjunction with the tmrInsideDockTester that operates
 ''             at a much reduced rate to avoid overuse of the CPU.
 ''             It only displays small icon images from the small collection.
 ''---------------------------------------------------------------------------------------
@@ -5444,7 +5455,7 @@ End Sub
 '            Next useloop
 '
 '       DrawTheText "iconCurrentTopPxls " & iconCurrentTopPxls, 440, 50, 300, rDFontName, Val(Abs(rDFontSize))
-''       DrawTheText "responseTimer.interval " & responseTimer.Interval, 460, 50, 300, rDFontName, Val(Abs(rDFontSize))
+''       DrawTheText "tmrInsideDockTester.interval " & tmrInsideDockTester.Interval, 460, 50, 300, rDFontName, Val(Abs(rDFontSize))
 '
 '
 '   On Error GoTo 0
@@ -6524,7 +6535,7 @@ Private Sub autoFadeInTimer_Timer()
     autoHideChecker.Enabled = False
     autoFadeOutTimer.Enabled = False
     
-    responseTimer.Interval = 4  ' this frequency is also maintained within the responseTimer event. This event does the animation that actually
+    tmrInsideDockTester.Interval = 4  ' this frequency is also maintained within the tmrInsideDockTester event. This event does the animation that actually
                                 ' accomplishes the fade
                                 ' it stays at this frequency until the fadeTimer is done when it reverts to 200
                                 ' it is important as this maintains the smoothness of the fadeout.
@@ -6545,7 +6556,7 @@ Private Sub autoFadeInTimer_Timer()
         funcBlend32bpp.SourceConstantAlpha = 255
         dockHidden = False
     
-        responseTimer.Interval = 200 ' return the responseTimer interval to normal, may not be necessary here
+        tmrInsideDockTester.Interval = 200 ' return the tmrInsideDockTester interval to normal, may not be necessary here
         autoFadeInTimer.Enabled = False
         autoFadeInTimerCount = 0 ' .10 DAEB 25/01/2021 Added new parameter autoFadeInTimerCount for the new fade in timer
         autoHideChecker.Enabled = True
@@ -6594,7 +6605,7 @@ Private Sub autoFadeOutTimer_Timer()
         Exit Sub
     End If
         
-    responseTimer.Interval = 4  ' this frequency is also maintained within the responseTimer event. This event does the animation that actually
+    tmrInsideDockTester.Interval = 4  ' this frequency is also maintained within the tmrInsideDockTester event. This event does the animation that actually
                                 ' accomplishes the fade
                                 ' it stays at this frequency until the fadeTimer is done when it reverts to 200
                                 ' it is important as this maintains the smoothness of the fadeout.
@@ -6615,7 +6626,7 @@ Private Sub autoFadeOutTimer_Timer()
         funcBlend32bpp.SourceConstantAlpha = 0
         dockHidden = True
     
-        responseTimer.Interval = 200 ' return the responseTimer interval to normal, may not be necessary here
+        tmrInsideDockTester.Interval = 200 ' return the tmrInsideDockTester interval to normal, may not be necessary here
         autoFadeOutTimer.Enabled = False
         autoFadeOutTimerCount = 0
         'autoHideChecker.Enabled = True
@@ -6657,7 +6668,7 @@ End Sub
 '        autoHideMode = "fadein" 'if the cursor enters the dock during a fade out this will turn it into a fade in
 '    End If
 '
-'    responseTimer.Interval = 5  ' this frequency is also maintained within the responseTimer event. This event does the animation that actually
+'    tmrInsideDockTester.Interval = 5  ' this frequency is also maintained within the tmrInsideDockTester event. This event does the animation that actually
 '                                ' accomplishes the fade
 '                                ' it stays at this frequency until the fadeTimer is done when it reverts to 200
 '                                ' it is important as this maintains the smoothness of the fadeout.
@@ -6687,7 +6698,7 @@ End Sub
 '            dockHidden = False
 '        End If
 '
-'        responseTimer.Interval = 200 ' return the responseTimer interval to normal, may not be necessary here
+'        tmrInsideDockTester.Interval = 200 ' return the tmrInsideDockTester interval to normal, may not be necessary here
 '        autoFadeOutTimer.Enabled = False
 '        autoFadeOutTimerCount = 0
 '    End If
@@ -6736,7 +6747,7 @@ Private Sub autoSlideOutTimer_Timer()
 
     'If animatedIconsRaised = True Then autoSlideMode = "slidein" 'if the cursor enters the dock during a fade out this will turn it into a fade in
 
-    responseTimer.Interval = 4  ' this frequency is also maintained within the responseTimer event. This event does the animation that actually
+    tmrInsideDockTester.Interval = 4  ' this frequency is also maintained within the tmrInsideDockTester event. This event does the animation that actually
                                 ' accomplishes the fade
                                 ' it stays at this frequency until the fadeTimer is done when it reverts to 200
                                 ' it is important as this maintains the smoothness of the slideout.
@@ -6751,7 +6762,7 @@ Private Sub autoSlideOutTimer_Timer()
     If iconCurrentTopPxls - 10 > (screenHeightPixels) Then ' the extra 10 pixels is to ensure the theme is off screen too
         autoSlideOutTimer.Enabled = False
         autoSlideOutTimerCount = 0
-        responseTimer.Interval = 200 ' return the responseTimer interval to normal, may not be necessary here
+        tmrInsideDockTester.Interval = 200 ' return the tmrInsideDockTester interval to normal, may not be necessary here
         dockSlidOut = True ' we need a flag to state that the dock has 'slidden' to determine the position just the first 10 pixels of the dock
         dockHidden = True
     End If
@@ -6759,7 +6770,7 @@ Private Sub autoSlideOutTimer_Timer()
     If autoSlideOutTimerCount >= Val(rDAutoHideDuration) Then
         ' ensure the opacity of the whole dock is zero
         'funcBlend32bpp.SourceConstantAlpha = 0
-        responseTimer.Interval = 200 ' return the responseTimer interval to normal, may not be necessary here
+        tmrInsideDockTester.Interval = 200 ' return the tmrInsideDockTester interval to normal, may not be necessary here
         autoSlideOutTimer.Enabled = False
         autoSlideOutTimerCount = 0
         dockSlidOut = True ' we need a flag to state that the dock has 'slidden'
@@ -6802,7 +6813,7 @@ Private Sub autoSlideInTimer_Timer()
  
     'animateTimer.Enabled = True
  
-    responseTimer.Interval = 4  ' this frequency is also maintained within the responseTimer event. This event does the animation that actually
+    tmrInsideDockTester.Interval = 4  ' this frequency is also maintained within the tmrInsideDockTester event. This event does the animation that actually
                                 ' accomplishes the fade
                                 ' it stays at this frequency until the fadeTimer is done when it reverts to 200
                                 ' it is important as this maintains the smoothness of the slideout.
@@ -6815,7 +6826,7 @@ Private Sub autoSlideInTimer_Timer()
         iconCurrentTopPxls = 860 '.nn
         autoSlideInTimer.Enabled = False
         autoSlideInTimerCount = 0
-        responseTimer.Interval = 200 ' return the responseTimer interval to normal, may not be necessary here
+        tmrInsideDockTester.Interval = 200 ' return the tmrInsideDockTester interval to normal, may not be necessary here
         dockHidden = False
         autoSlideMode = vbNullString 'nn Set to nothing to ensure that the modifiedslide position is not taken into account when redrawing the static loop
     Else
@@ -6826,7 +6837,7 @@ Private Sub autoSlideInTimer_Timer()
     If autoSlideInTimerCount >= Val(rDAutoHideDuration) Then
         ' ensure the opacity of the whole dock is zero
         'funcBlend32bpp.SourceConstantAlpha = 0
-        responseTimer.Interval = 200 ' return the responseTimer interval to normal, may not be necessary here
+        tmrInsideDockTester.Interval = 200 ' return the tmrInsideDockTester interval to normal, may not be necessary here
         autoSlideInTimer.Enabled = False
         autoSlideInTimerCount = 0
         dockSlidOut = True ' we need a flag to state that the dock
@@ -6868,7 +6879,7 @@ Public Sub HideDockNow()
     
     dockHidden = True
     
-    responseTimer.Enabled = False
+    tmrInsideDockTester.Enabled = False
     animateTimer.Enabled = False
     autoFadeOutTimer.Enabled = False
     autoFadeInTimer.Enabled = False
@@ -6904,7 +6915,7 @@ Public Sub ShowDockNow()
         
         Call updateScreenUsingGDIPBitmap
         
-        responseTimer.Enabled = True
+        tmrInsideDockTester.Enabled = True
 
    On Error GoTo 0
    Exit Sub

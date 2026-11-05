@@ -654,15 +654,15 @@ Public Function fTestCursorWithinDockYPosition() As Boolean
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
     If dockPosition = vbBottom Then
-        outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > rightMostIconPositionPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-'        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > rightMostIconPositionPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.Y < dockYEntrancePoint Or apiMouse.X < leftMostIconXPositionPxls Or apiMouse.X > rightMostIconPositionPxls    ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+'        If apiMouse.Y < dockYEntrancePoint Or apiMouse.X < leftMostIconXPositionPxls Or apiMouse.X > rightMostIconPositionPxls Then  ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
 '            outsideDock = True
 '        Else
 '            outsideDock = False
 '        End If
     End If
     If dockPosition = vbtop Then
-        outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < leftMostIconPositionPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        outsideDock = apiMouse.Y > dockYEntrancePoint Or apiMouse.X < leftMostIconXPositionPxls Or apiMouse.X > iconStoreLeftPixels(UBound(iconStoreLeftPixels)) ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
     End If
     
     fTestCursorWithinDockYPosition = outsideDock ' return
