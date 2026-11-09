@@ -928,7 +928,7 @@ Private lngFormat As Long
 Private iconHeightPxls As Single
 'Private iconWidthPxls As Single
 Private iconPosLeftPxls As Single
-Private iconCurrentTopPxls As Single
+Private iconCurrentTopPxls As Long
 Private iconCurrentBottomPxls As Single ' 01/06/2021 DAEB frmMain.frm Added to capture the bottom Y co-ords of each icon
 Private screenHorizontalEdge As Single
 
@@ -1150,7 +1150,12 @@ Private Sub Form_Load()
         
     strTimeThen = Now()
     
-    'if the process already exists then kill it
+    ' Implements an interface to a graphics renderer be it GDI+ or Cairo or another.
+    Set gDockRenderer = New cGDIPlusDockRenderer
+    'Set gDockRenderer = New cDebugDockRenderer
+'    Set gDockRenderer = New cCairoDockRenderer
+        
+    'if the steamydock process already exists then kill it
     Call testDockRunning
     
     ' set the application to be DPI aware using the 'forbidden' API.
@@ -1268,6 +1273,9 @@ Private Sub Form_Load()
     ' Resize data arrays and load the icon images into the collections
     Call prepareArraysAndCollections
     
+    ' return the dock start point when small
+    Call setInitialStartPoint
+    
     ' set the initial position of all icons in the collection
     Call setInitialIconPositions
     
@@ -1299,8 +1307,11 @@ Private Sub Form_Load()
     'start timers
     wallpaperTimer.Enabled = True
     
+    ' test debug renderer
+    Call updateDisplayFromIconCollection
+    
     ' this form should only be revealed for db maintenance uses.
-    'hiddenForm.Show
+    'hiddenForm.Show ' keep it hidden, keep it safe...
     
     'add to the initiated ProcessArray
     'Call checkDockProcessesRunning ' trigger a test of running processes in half a second
@@ -1338,6 +1349,9 @@ Private Sub setInitialIconPositions()
     On Error GoTo setInitialIconPositions_Error
     
     ' dockDrawingYPositionPxls is set within setInitialStartPoint as is leftMostIconXPositionPxls
+    
+    If sDockIcons Is Nothing Then Exit Sub
+    If sDockIcons.Count = 0 Then Exit Sub
     
     For useloop = 1 To sDockIcons.Count
         
@@ -2940,7 +2954,7 @@ End Sub
 ' Purpose   : now update the image using GDIP to draw all the placed GDiP elements
 '---------------------------------------------------------------------------------------
 '
-Private Sub updateScreenUsingGDIPBitmap()
+Public Sub updateScreenUsingGDIPBitmap()
 
    On Error GoTo updateScreenUsingGDIPBitmap_Error
 
@@ -3066,9 +3080,9 @@ Private Sub sequentialBubbleAnimation()
                
         ' display the icon in the dock
         If showsmall = True Then ' display the small size icon or the red X if icon missing
-            Call showSmallIcon(useloop)
+            Call updateDisplayUsingSmallIcon(useloop)
         Else
-            Call showLargeIconTypes(useloop) ' display the larger size icon or the
+            Call updateDisplayUsingLargeIcon(useloop) ' display the larger size icon or the
         End If
 
         'now draw the icon text above the selected icon
@@ -3077,7 +3091,6 @@ Private Sub sequentialBubbleAnimation()
         ' store the icon current position in the array
         Call storeCurrentIconPositions(useloop)
 
-
         iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
    
     Next
@@ -3085,7 +3098,7 @@ Private Sub sequentialBubbleAnimation()
     ' .nn Changed or added as part of the drag and drop functionality
     ' 12/05/2021 .nn DAEB Displays a copy of the icon that is being dragged at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
-        updateDisplayFromCollection vbNullString, dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75), 5
+        updateDisplayFromIconClass dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75), 5
     End If
     
     Call updateScreenUsingGDIPBitmap
@@ -3298,14 +3311,13 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
     Dim useloop2 As Integer: useloop2 = 0
 '    Dim resizeProportion As Double: resizeProportion = 0
 
-            Dim a As Long
-   On Error GoTo sizeEachResizedIconToLeft_Error
+    Dim a As Long
+    On Error GoTo sizeEachResizedIconToLeft_Error
 
-            If iconHeightPxls > 18 Then
-                a = iconHeightPxls
-            End If
+    If iconHeightPxls > 18 Then
+        a = iconHeightPxls
+    End If
 
-        
     ' the group of icons to the left of the main icon, resized dynamically
     If useloop < IconIndex And useloop >= leftmostResizedIcon Then
        For useloop2 = leftmostResizedIcon To (IconIndex - 1)
@@ -3537,21 +3549,82 @@ sizeEachSmallIconToRight_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure sizeEachSmallIconToRight of Form dock"
 End Sub
 
+'
+'---------------------------------------------------------------------------------------
+' Procedure : showThisSmallIcon
+' Author    : beededea
+' Date      : 27/07/2025
+' Purpose   : analogue of updateDisplayUsingSmallIcon using icon class metrics
+'---------------------------------------------------------------------------------------
+'
+Private Sub showThisSmallIcon(ByVal thisIconIndex As Integer)
+    Dim thiskey As String: thiskey = ""
+
+    ' Dim stringKeyValue As String
+    
+    On Error GoTo showThisSmallIcon_Error
+    
+    ' stringKeyValue =  CStr(thisIconIndex)
+    
+    ' check the recently disabled flag and display the transparent version instead
+'    If sDockIcons(thisIconIndex).Disabled = 1 Then
+'        thiskey = dictionaryLocationArray(thisIconIndex) & "TransparentImg" & LTrim$(Str$(iconSizeSmallPxls))
+'    Else
+'        thiskey = dictionaryLocationArray(thisIconIndex) & "ResizedImg" & LTrim$(Str$(iconSizeSmallPxls))
+'    End If
+    
+    ' next line is a temporary bug fix to issue where the scripting dictionary allows for a thisIconIndex value of 0 resulting in a malformed key but Cristian Buse'
+    ' dictionary replacement does not allow it as it based upon arrays. I don't want to alter the calling code  as that had unforessen effects
+    ' so, for the moment a workaround.
+    
+    If thisIconIndex = 0 Then Exit Sub
+    
+    ' check the recently disabled flag and display the transparent version instead
+    If sDockIcons(thisIconIndex).Disabled = 1 Then
+        updateDisplayFromIconClass thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 0, thisIconIndex
+    Else
+        updateDisplayFromIconClass thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 2, thisIconIndex
+    End If
+    
+    'show cogs above running processes
+    If rDShowRunning = "1" Then
+        If (sDockIcons(thisIconIndex).ProcessRunning = "True" Or sDockIcons(thisIconIndex).ExplorerRunning = "True") Then
+            thiskey = "tinycircleResizedImg128"
+            If dockPosition = vbBottom Then updateDisplayFromIconClass thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls), 4  '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+            If dockPosition = vbtop Then updateDisplayFromIconClass thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls), 4
+         End If
+    End If
+    ' target command validity test flag places a red X on the icon
+    If sDockIcons(thisIconIndex).TargetExists = "1" Then
+        thiskey = "redxResizedImg64"
+        If dockPosition = vbBottom Then updateDisplayFromIconClass thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2), 4  '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+        If dockPosition = vbtop Then updateDisplayFromIconClass thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2), 4
+    End If
+
+   On Error GoTo 0
+   Exit Sub
+
+showThisSmallIcon_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure showThisSmallIcon of Form dock"
+End Sub
+
+
 
 '
 '---------------------------------------------------------------------------------------
-' Procedure : showSmallIcon
+' Procedure : updateDisplayUsingSmallIcon
 ' Author    : beededea
 ' Date      : 27/07/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub showSmallIcon(ByVal useloop As Integer)
+Private Sub updateDisplayUsingSmallIcon(ByVal useloop As Integer)
     Dim thiskey As String: thiskey = ""
     Dim thisDisabled As String: thisDisabled = ""
     ' Dim stringKeyValue As String
     
-    On Error GoTo showSmallIcon_Error
+    On Error GoTo updateDisplayUsingSmallIcon_Error
     
     ' stringKeyValue =  CStr(useloop)
     
@@ -3570,46 +3643,46 @@ Private Sub showSmallIcon(ByVal useloop As Integer)
     
     ' check the recently disabled flag and display the transparent version instead
     If sDockIcons(useloop).Disabled = 1 Then
-        updateDisplayFromCollection vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 0, useloop
+        updateDisplayFromIconClass thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 0, useloop
     Else
-        updateDisplayFromCollection vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 2, useloop
+        updateDisplayFromIconClass thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 2, useloop
     End If
     
     'show cogs above running processes
     If rDShowRunning = "1" Then
         If (sDockIcons(useloop).ProcessRunning = "True" Or sDockIcons(useloop).ExplorerRunning = "True") Then
             thiskey = "tinycircleResizedImg128"
-            If dockPosition = vbBottom Then updateDisplayFromCollection vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-            If dockPosition = vbtop Then updateDisplayFromCollection vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls), 4
+            If dockPosition = vbBottom Then updateDisplayFromIconClass thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls), 4  '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+            If dockPosition = vbtop Then updateDisplayFromIconClass thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls), (iconSizeSmallPxls), 4
          End If
     End If
     ' target command validity test flag places a red X on the icon
     If sDockIcons(useloop).TargetExists = "1" Then
         thiskey = "redxResizedImg64"
-        If dockPosition = vbBottom Then updateDisplayFromCollection vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-        If dockPosition = vbtop Then updateDisplayFromCollection vbNullString, thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2), 4
+        If dockPosition = vbBottom Then updateDisplayFromIconClass thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls - (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2), 4  '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+        If dockPosition = vbtop Then updateDisplayFromIconClass thiskey, (iconPosLeftPxls + (iconSizeSmallPxls / 2) - 3), (iconCurrentTopPxls + (iconSizeSmallPxls / 5)), (iconSizeSmallPxls / 2), (iconSizeSmallPxls / 2), 4
     End If
 
    On Error GoTo 0
    Exit Sub
 
-showSmallIcon_Error:
+updateDisplayUsingSmallIcon_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure showSmallIcon of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure updateDisplayUsingSmallIcon of Form dock"
 End Sub
 
 '---------------------------------------------------------------------------------------
-' Procedure : showLargeIconTypes
+' Procedure : updateDisplayUsingLargeIcon
 ' Author    : beededea
 ' Date      : 19/07/2025
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIconXOffset As Integer)
+Private Sub updateDisplayUsingLargeIcon(ByVal useloop As Integer, Optional ByVal thisIconXOffset As Integer)
     Dim thiskey As String: thiskey = ""
     ' Dim stringKeyValue As String
     
-   On Error GoTo showLargeIconTypes_Error
+   On Error GoTo updateDisplayUsingLargeIcon_Error
    
     ' stringKeyValue =  CStr(useloop)
 
@@ -3629,51 +3702,51 @@ Private Sub showLargeIconTypes(ByVal useloop As Integer, Optional ByVal thisIcon
 '    End If
         
     ' add a 1% opaque background to the expanded image to catch click-throughs, blankresizedImg128 is the key name
-    updateDisplayFromCollection vbNullString, "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconWidthPxls), 4
+    updateDisplayFromIconClass "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconWidthPxls), 4
 
     ' Added a faded red background when dragged .56 DAEB 19/04/2021 frmMain.frm Added a faded red background to the current image when the drag and drop is in operation.
     If dragToDockOperating = True And useloop = IconIndex Then
-        updateDisplayFromCollection vbNullString, "redresizedImg256", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
+        updateDisplayFromIconClass "redresizedImg256", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
     End If
     
     ' show the icon image itself or a brief glimpse of the low res smaller version on a click event
     If selectedIconIndex = useloop And blankClickEvent = True Then
-        updateDisplayFromCollection vbNullString, "busycogResizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
+        updateDisplayFromIconClass "busycogResizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
     Else
         ' check the recently disabled flag and display the transparent version instead
         If sDockIcons(useloop).Disabled = 1 Then
-            updateDisplayFromCollection vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 1, useloop
+            updateDisplayFromIconClass thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 1, useloop
         Else
-            updateDisplayFromCollection vbNullString, thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 3, useloop
+            updateDisplayFromIconClass thiskey, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 3, useloop
         End If
     End If
                          
     ' a small rotating hourglass for 'running' actions ' .63 DAEB 29/04/2021 frmMain.frm load a small rotating hourglass image into the collection, used to signify running actions
     If dragToDockOperating = True And useloop = IconIndex Then
         If hourglassimage = vbNullString Then hourglassimage = "hourglass1resizedImg128"
-        updateDisplayFromCollection vbNullString, hourglassimage, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
+        updateDisplayFromIconClass hourglassimage, (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconHeightPxls), 4
     End If
     
     ' add the small white cog to indicate a running process
     If rDShowRunning = "1" Then
         If (sDockIcons(useloop).ProcessRunning = "True" Or sDockIcons(useloop).ExplorerRunning = "True") Then
-            If dockPosition = vbBottom Then updateDisplayFromCollection vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls), (iconHeightPxls), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-            If dockPosition = vbtop Then updateDisplayFromCollection vbNullString, "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 2)), (iconWidthPxls), (iconHeightPxls), 4
+            If dockPosition = vbBottom Then updateDisplayFromIconClass "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls), (iconHeightPxls), 4  '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+            If dockPosition = vbtop Then updateDisplayFromIconClass "tinycircleResizedImg128", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 2)), (iconWidthPxls), (iconHeightPxls), 4
         End If
     End If
     
     ' add a red X for invalid command ' .87 DAEB 08/12/2022 frmMain.frm Target command validity flag places a red X on the icon
     If sDockIcons(useloop).TargetExists = "1" Then ' redxResizedImg64
-            If dockPosition = vbBottom Then updateDisplayFromCollection vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2), 4 '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
-            If dockPosition = vbtop Then updateDisplayFromCollection vbNullString, "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2), 4
+            If dockPosition = vbBottom Then updateDisplayFromIconClass "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls - (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2), 4  '.69 DAEB 06/05/2021 frmMain.frm Draw the small cog in the right place for the vbtop position
+            If dockPosition = vbtop Then updateDisplayFromIconClass "redxResizedImg64", (iconPosLeftPxls + (iconSizeLargePxls / 2) - 3), (iconCurrentTopPxls + (iconSizeLargePxls / 5)), (iconWidthPxls / 2), (iconHeightPxls / 2), 4
     End If
 
    On Error GoTo 0
    Exit Sub
 
-showLargeIconTypes_Error:
+updateDisplayUsingLargeIcon_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure showLargeIconTypes of Form dock"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure updateDisplayUsingLargeIcon of Form dock"
 End Sub
 
 '---------------------------------------------------------------------------------------
@@ -3818,7 +3891,7 @@ Private Sub sizeAndShowFullSizeIconByCEP(ByVal thisIconIndex As Integer, ByRef s
     Call storeCurrentIconPositions(thisIconIndex)
     
     ' display the icon in the dock
-    Call showLargeIconTypes(thisIconIndex, iconXOffset) ' display the larger size icon or the
+    Call updateDisplayUsingLargeIcon(thisIconIndex, iconXOffset) ' display the larger size icon or the
 
     'now draw the icon text above the selected icon
     Call drawTextAboveIcon(thisIconIndex, textWidth)
@@ -3867,7 +3940,7 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
         Call storeCurrentIconPositions(thisIconIndex - 1)
         
         ' display the icon in the dock
-        Call showLargeIconTypes(thisIconIndex - 1)
+        Call updateDisplayUsingLargeIcon(thisIconIndex - 1)
     End If
 
      ' leftMostIconXPositionPxls = iconPosLeftPxls
@@ -3920,7 +3993,7 @@ Private Sub sizeAndShowSingleMainIconToRightByCEP(ByVal thisIconIndex As Integer
         iconPosLeftPxls = (iconStoreLeftPixels(thisIconIndex)) + mainIconWidthPxls
 
         Call storeCurrentIconPositions(thisIconIndex + 1)
-        Call showLargeIconTypes(thisIconIndex + 1)
+        Call updateDisplayUsingLargeIcon(thisIconIndex + 1)
 
     End If
 
@@ -3949,7 +4022,7 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
     On Error GoTo sizeAndShowSmallIconsToLeftByCEP_Error
 
     If thisIconIndex > 0 Then 'check it isn't trying to animate a non-existent icon before the first icon
-        ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
+        ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecessary twip conversion
         iconPosLeftPxls = iconStoreLeftPixels(thisIconIndex - 1)
 
         For leftLoop = thisIconIndex - 2 To 0 Step -1
@@ -3973,7 +4046,7 @@ Private Sub sizeAndShowSmallIconsToLeftByCEP(ByVal thisIconIndex As Integer, ByR
 
             Call storeCurrentIconPositions(leftLoop)
 
-            If leftLoop <> 0 Then Call showSmallIcon(leftLoop)
+            If leftLoop <> 0 Then Call updateDisplayUsingSmallIcon(leftLoop)
         Next leftLoop
     End If
 
@@ -4015,7 +4088,7 @@ Private Sub sizeAndShowSmallIconsToRightByCEP(ByVal thisIconIndex As Integer, By
             iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
         
             Call storeCurrentIconPositions(rightLoop)
-            Call showSmallIcon(rightLoop)
+            Call updateDisplayUsingSmallIcon(rightLoop)
             
         Next rightLoop
     End If
@@ -5302,53 +5375,35 @@ End Sub
 ' Procedure : drawSmallStaticIcons
 ' Author    : beededea
 ' Date      : 28/07/2020
-' Purpose   : Displays small icon images from the small collection.
+' Purpose   : Displays small icons from the small image stored in the icon class collection.
 '---------------------------------------------------------------------------------------
 '
 Public Sub drawSmallStaticIcons()
-'    Dim a As Integer: a = 0
-    Dim useloop As Integer: useloop = 0
-    Dim dockHeight As Long: dockHeight = 0
-    Dim thiskey As String: thiskey = vbNullString
-    Dim dockSkinStart As Long: dockSkinStart = 0
-    Dim dockSkinWidth As Long: dockSkinWidth = 0
+
+    Dim useloop As Integer
+    Dim dockSkinStart As Long
+    Dim dockSkinWidth As Long
     
     On Error GoTo drawSmallStaticIcons_Error
 
-    Call setInitialStartPoint ' return the dock start point when small
+    ' return the dock start point when small, retained here for monitor size changes
+    Call setInitialStartPoint '
     
     ' Check bDrawn so the program doesn't redraw the whole icon picture more than once
     If bDrawn = False Then
-        iconPosLeftPxls = leftMostIconXPositionPxls
-'       sDockIcons(1).X = leftMostIconXPositionPxls ' new positioning code
-        
-        normalDockWidthPxls = 0
-        iconHeightPxls = iconSizeSmallPxls
-        iconWidthPxls = iconSizeSmallPxls
-                    
-        'Call drawSmallIconDockWithFadeEffects
                                             
         Call createNewGDIPBitmap ' clears the whole previously drawn image section and the animation continues
     
         If rDtheme <> vbNullString And rDtheme <> "Blank" Then Call applyThemeSkinToDock(dockSkinStart, dockSkinWidth, True)
                 
+        ' set the size and initial position of all icons in small mode, setting public vars
+        Call setTheSmallIconMetrics
+        
         ' this loop redraws all the icons at the same small size after the mouse has left the icon area
         For useloop = iconArrayLowerBound To rdIconUpperBound
-                      
-'        Dim Icon As cwMainIcon
-'
-'        useloop = 0
-'
-'        For Each Icon In sDockIcons
-'
-'            useloop = useloop + 1
-                      
-            ' call this to set the size of all icons in small mode, do it just once, all the subsequent icons will take that same size without recalculation.
-            ' the icon current top pixels is defined here by calling
-            If useloop = iconArrayLowerBound Then Call sizeEachSmallIconToLeft(useloop, rdIconUpperBound, True)
             
             ' display the small size icons
-            Call showSmallIcon(useloop)
+            Call showThisSmallIcon(useloop)
                             
             ' store the icon current position in the array
             Call storeCurrentIconPositions(useloop)
@@ -5356,22 +5411,11 @@ Public Sub drawSmallStaticIcons()
             iconPosLeftPxls = iconPosLeftPxls + iconWidthPxls
 '            sDockIcons(useloop).X = sDockIcons(useloop).X + iconWidthPxls ' interim
 '            sDockIcons(useloop).X = sDockIcons(useloop).X + sDockIcons(useloop).Width ' new positioning code
-                        
-'            If useloop = 81 Then ' debug
-'                useloop = 81
-'            End If
             
         Next
         
         'debug location no.1
         DrawTheText "Debug Watch 1 ", dockDrawingYPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
-                                            
-         ' .59 DAEB 26/04/2021 frmMain.frm changed to use pixels alone, removed all unnecesary twip conversion
-    '            iconStoreLeftPixels(UBound(iconStoreLeftPixels)) = iconPosLeftPxls
-    '            iconStoreRightPixels(UBound(iconStoreRightPixels)) = iconStoreLeftPixels(UBound(iconStoreLeftPixels)) + iconWidthPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the right X co-ords of each icon
-    '            iconStoreTopPixels(UBound(iconStoreRightPixels)) = iconCurrentTopPxls ' 01/06/2021 DAEB frmMain.frm Added to capture the top Y co-ords of each icon
-                    
-        'Call storeCurrentIconPositions(UBound(iconStoreLeftPixels))
         
         Call updateScreenUsingGDIPBitmap
             
@@ -5388,6 +5432,45 @@ drawSmallStaticIcons_Error:
     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure drawSmallStaticIcons of Form dock"
 
 End Sub
+
+
+
+'---------------------------------------------------------------------------------------
+' Procedure : setTheSmallIconMetrics
+' Author    : beededea
+' Date      : 19/07/2025
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Public Sub setTheSmallIconMetrics()
+   On Error GoTo setTheSmallIconMetrics_Error
+   
+        iconPosLeftPxls = leftMostIconXPositionPxls
+'       sDockIcons(1).X = leftMostIconXPositionPxls ' new positioning code
+        
+        normalDockWidthPxls = 0
+        iconHeightPxls = iconSizeSmallPxls
+        iconWidthPxls = iconSizeSmallPxls
+        
+        If dockPosition = vbBottom Then
+            iconCurrentTopPxls = dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
+            iconCurrentBottomPxls = dockDrawingYPositionPxls + iconSizeLargePxls
+        End If
+        
+        If dockPosition = vbtop Then
+            ' NOTE: everything is inverted...
+            iconCurrentTopPxls = dockDrawingYPositionPxls
+        End If
+
+   On Error GoTo 0
+   Exit Sub
+
+setTheSmallIconMetrics_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure setTheSmallIconMetrics of Form dock"
+End Sub
+
+
 
 
 ''---------------------------------------------------------------------------------------
@@ -5446,7 +5529,7 @@ End Sub
 '                Call sizeEachSmallIconToLeft(useloop, rdIconUpperBound, True)
 '
 '                ' display the small size icons
-'                Call showSmallIcon(useloop)
+'                Call updateDisplayUsingSmallIcon(useloop)
 '
 '                ' store the icon current position in the array
 '                Call storeCurrentIconPositions(useloop)
@@ -6049,19 +6132,19 @@ Private Sub applyThemeSkinToDock(ByVal dockSkinStart As Long, ByVal dockSkinWidt
 
     ' display the start theme left hand
     thiskey = "sDSkinLeft" & "ResizedImg" & LTrim$(Str$(sDSkinSize))
-    updateDisplayFromCollection vbNullString, thiskey, (dockSkinStart), themeSkinTop, (sDSkinSize), (sDSkinSize), 4
+    updateDisplayFromIconClass thiskey, (dockSkinStart), themeSkinTop, (sDSkinSize), (sDSkinSize), 4
     
     ' display the middle theme background
     thiskey = "sDSkinMid" & "ResizedImg" & LTrim$(Str$(sDSkinSize))
-    updateDisplayFromCollection vbNullString, thiskey, themeSkinLeft, themeSkinTop, dockSkinWidth, sDSkinSize, 4
+    updateDisplayFromIconClass thiskey, themeSkinLeft, themeSkinTop, dockSkinWidth, sDSkinSize, 4
  
     ' display the end theme background
     thiskey = "sDSkinRight" & "ResizedImg" & LTrim$(Str$(sDSkinSize))
     '                           thisCollection, strFilename ,  key,      Left          Top            Width,        Height
-    updateDisplayFromCollection vbNullString, thiskey, themeSkinRight, themeSkinTop, sDSkinSize, sDSkinSize, 4
+    updateDisplayFromIconClass thiskey, themeSkinRight, themeSkinTop, sDSkinSize, sDSkinSize, 4
 
     If IsUserAnAdmin() = 1 Then
-        If dockPosition = vbBottom Then updateDisplayFromCollection vbNullString, "smallGoldCoinResizedImg128", (themeSkinLeft), (themeSkinTop - 17), (128), (128), 4
+        If dockPosition = vbBottom Then updateDisplayFromIconClass "smallGoldCoinResizedImg128", (themeSkinLeft), (themeSkinTop - 17), (128), (128), 4
     End If
 
    On Error GoTo 0

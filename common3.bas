@@ -867,6 +867,9 @@ Public Sub writeIconStateToDatabase()
     If startTime = "00:00:00" Then startTime = time()
 
     startRecord = 1
+    
+    If sDockIcons Is Nothing Then Exit Sub
+    If sDockIcons.Count = 0 Then Exit Sub
 
     'loop from the start operation value to the end
     For useloop = startRecord To sDockIcons.Count

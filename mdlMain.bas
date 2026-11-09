@@ -649,8 +649,8 @@ Public stopAnimating As Boolean
 Public Function fTestCursorWithinDockYPosition() As Boolean
     Dim outsideDock  As Boolean: outsideDock = False
     
-    'rightMostIconPositionPxls = sDockIcons(CStr(rdIconUpperBound)).X + sDockIcons(CStr(rdIconUpperBound)).Width ' test
-    rightMostIconPositionPxls = iconStoreRightPixels(UBound(iconStoreLeftPixels))
+    rightMostIconPositionPxls = sDockIcons(sDockIcons.Count).X + sDockIcons(sDockIcons.Count).Width
+    'rightMostIconPositionPxls = iconStoreRightPixels(UBound(iconStoreLeftPixels))
     
     ' checks the mouse Y position - ie. is the mouse outside the vertical/horizontal dock area
     If dockPosition = vbBottom Then
@@ -2847,41 +2847,42 @@ End Function
 
         
 '---------------------------------------------------------------------------------------
-' Procedure : updateDisplayFromCollection
+' Procedure : updateDisplayFromIconClass
 ' Author    : beededea
 ' Date      : 07/04/2020
 ' Purpose   : This utility displays using GDI+, one of several icon images stored in a native collection by position in the collection.
 '             some other images are still stored in a legacy collection via key
 '---------------------------------------------------------------------------------------
 '
-Public Function updateDisplayFromCollection(strFilename As String, ByVal Key As String, Optional Left As Long = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1, Optional ByVal imageLocation As Integer, Optional ByVal justKey As Integer) As Boolean
+Public Function updateDisplayFromIconClass(ByVal Key As String, Optional Left As Long = 0, Optional Top As Long = 0, Optional Width As Long = -1, Optional Height As Long = -1, Optional ByVal imageLocation As Integer, Optional ByVal indexPosition As Integer) As Boolean
 
-    On Error GoTo updateDisplayFromCollection_Error
+    On Error GoTo updateDisplayFromIconClass_Error
 
     iconBitmap = 0
 
     ' the key existence is no longer needed as we are now looping through a positional collection, this was carried over from a dictionary that is key-based
-    'If iconExists(sDockIcons, CStr(justKey)) = True Then  ' using a function to determine existence of a key within a VB6 collection as this construct doesn't have an .Exists method
+    'If iconExists(sDockIcons, CStr(indexPosition)) = True Then  ' using a function to determine existence of a key within a VB6 collection as this construct doesn't have an .Exists method
         
     Select Case imageLocation
-        Case 0  ' load the small transparent icon from the icon instance
-            iconBitmap = sDockIcons(justKey).IconTransparentImageSmall
+        
+        Case 0 '  load the small transparent icon from the icon instance
+            iconBitmap = sDockIcons(indexPosition).IconTransparentImageSmall
         
         Case 1 '  load the large transparent icon from the icon instance
-            iconBitmap = sDockIcons(justKey).IconTransparentImageLarge
+            iconBitmap = sDockIcons(indexPosition).IconTransparentImageLarge
             
         Case 2 '  load the small opaque image icon from the icon instance
-            iconBitmap = sDockIcons(justKey).IconImageSmall
+            iconBitmap = sDockIcons(indexPosition).IconImageSmall
         
         Case 3 '  load the large opaque image icon from the icon instance
-            iconBitmap = sDockIcons(justKey).IconImageLarge
+            iconBitmap = sDockIcons(indexPosition).IconImageLarge
             
-        Case 4  '  load the other non-icon related images from the other older collections
+        Case 4 '  load the other non-icon related images from the other older collections that are accessed solely by key and not by position
             iconBitmap = collAdditionalImages(Key)
             
-        Case 5 '  load the drag icon
-            justKey = CInt(Key)
-            iconBitmap = sDockIcons(justKey).IconImageLarge
+        Case 5 '  load the drag icon, should be able to use the slected icon index (indexPosition)
+            'indexPosition = CInt(Key)
+            iconBitmap = sDockIcons(indexPosition).IconImageLarge
             
     End Select
     
@@ -2890,10 +2891,11 @@ Public Function updateDisplayFromCollection(strFilename As String, ByVal Key As 
     
     Exit Function
 
-updateDisplayFromCollection_Error:
+updateDisplayFromIconClass_Error:
 
-    MsgBox "Key = " & Key & " " & "Error " & Err.Number & " (" & Err.Description & ") in procedure updateDisplayFromCollection of Form dock"
+    MsgBox "Key = " & Key & " " & "Error " & Err.Number & " (" & Err.Description & ") in procedure updateDisplayFromIconClass of Form dock"
 End Function
+
 
 
 ' .10 DAEB 01/05/2021 mdlMain.bas huge number of changes as I moved multiple declarations, subs and functions to mdlmain from frmMain.

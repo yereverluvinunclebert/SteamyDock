@@ -422,6 +422,8 @@ Private Declare Function QueryDosDevice Lib "kernel32" Alias "QueryDosDeviceA" (
 
 Public iconAppFolder As String
 
+Public gDockRenderer As IDockRenderer
+
 
 '
 '---------------------------------------------------------------------------------------
@@ -1582,7 +1584,7 @@ End Sub
 Public Sub getAllDriveNames(sDriveStrings As String)
     Dim vDrive As Variant ' probably handling this already in .NET
     Dim sDeviceName As String: sDeviceName = vbNullString
-    Dim thisKey As String: thisKey = vbNullString
+    Dim thiskey As String: thiskey = vbNullString
     Dim driveCount As Integer: driveCount = 0
     
     
