@@ -6,7 +6,7 @@
 Conversion and testing using Steamydock 32bit.
 ==============================================
 
-1. Copy all the files/folder to the tbSteamydock folder and test using TB 
+1. Copy all the files/folder to the tbSteamydock folder and test using TB.
 
 -oOo-
 
@@ -14,14 +14,21 @@ Overall status
 ==============
   
   Working, a good learning platform and the dock functions.
-
-o New collections - Drag and drop re-ordering is yet to be modified/tested
-
-o Fix the first icon Error 9 (Subscript out of range) in procedure showLargeIconTypes of Form dock
+  
+o first run should use a default iconSettings.db to store default apps - create it.
+  also, a settings.ini to store the configuration - create it
+  on first run if the files do not exist (ie. not created by the installation), pop those into place
+  see what iconsettings utility does as it might handle this condition already.
 
 o Fix the dockMaximum appearing several times.
+  test an icon insert
+  test an icon delete
+  test a drag into from outside
+  test a drag and drop along the dock either way
 
-  Third stage not yet started - to animate all the icons and eliminate the serialised nature of the existing code.
+o Operating using sqlite.dll registered at runtile as per the RC6 DLLs.
+  
+  Third stage WIP - to animate all the icons and eliminate the serialised nature of the existing code.
 
 o Changing to WDL to prepare for 64bit compilation - module by module.
 
@@ -30,18 +37,20 @@ o A Few bugs overall
   New animations required - starting to resolve using the icon properties class
   Multi-monitor
 
-o Test all the VB6 collections with TB's own implementation of collections, faster, does it matter? IT is fast enough already.
+o Test all the VB6 collections with TB's own implementation of collections, faster, does it matter? 
 
-o Test TB's loading of PNGs without all the GDI+ stuff. This will facilitate cross platform.
+
+o Test TB's loading of PNGs without all the GDI+ stuff. This will facilitate cross platform. This will occur
+  naturally, no conversion required.
 
 ' Current Tasks:
 ' =============
 
 o Change other APIs to WDL to prepare for eventual 64bit compilation.
-  The testing against the 64bit static linking of the winsqlite64.obj
+
+o The testing against the 64bit static linking of the winsqlite64.obj
   64 bit SQL lite - https://www.sqlite.org/download.html
   convert SD to 64 bit using TB - will need a 64bit version of SQL DLL, found here https://www.vbforums.com/showthread.php?882919-sqlite3win32
-
 
 ' images to new settings menu items
 ' images to new control panel menu items
@@ -53,8 +62,6 @@ o Change other APIs to WDL to prepare for eventual 64bit compilation.
 ' test using RC sqlite.dll and compare speed
 
 ' remove the old text icon entries in settings.ini
-
-' make a backup of iconSettings.dat and .db on each start?
 
 ' some examples of icons are not extractable by the icon extraction method - need to test why that is.
 
@@ -70,11 +77,15 @@ when the dock is over a certain size the background does not appear
 
 when a dock is wider than 2000 pixels - stitch two docks together
 
-multi-monitor support
+o multi-monitor support
+    detect multiple monitors - we have code implemented
+    sm_xvirtualscreen returns co-ords in a positive/negative values to indicate the positioning of the second monitor
+    negative if it is situated to the left of the main monitor, positive otherwise.
+    
 
 
-Adding fields to the database
-=============================
+Info: - Adding fields to the database
+=====================================
 
 A manual task achieved either by modifying the SQL or using the DB SQL Browser to modify the fIcon table and adding new text fields
 Then changes to the VB6 database routines and thwe corresponding addition of properties within the icon class
@@ -114,12 +125,17 @@ Public Function IsWindowHung(hWndOfInterest As Long) As Boolean
     IsWindowHung = IsHungAppWindow(hWndOfInterest) <> 0&
 End Function
 
-Multi-threading to allow the save to database to occur in a separate thread that does not slow the current UI thread
+Multi-threading to allow the "save to database" to occur in a separate thread that does not slow the current UI thread
 VG's multi-threading within the same process
-Olaf's multi-process threading
+Olaf's multi-process threading without using RC
+
+VB6 native
 
 separate the task to kill a process to an external process so that the current process, ie. the dock is not held up
     the final task in the end routine can be to spawn a new binary, no need to have a separate binary that kills and restarts
+    write the icon collection 'state' to a UDT
+    create a shared memory section by defining the variables by size and type
+    create a worker process to open and read the shared memory section and write the database
 
 ' VB6 MultiProcessing (StdExe-IPC via SharedMemory)
 ' https://www.vbforums.com/showthread.php?863075-VB6-MultiProcessing-(StdExe-IPC-via-SharedMemory)
@@ -998,7 +1014,7 @@ o Converted all public sVariables to icon class properties, eg.
   All icon additions tested
   Delete Icon - functions
   Clone Icon - functions
-  
+
   o Need to test SteamyDock working with the iconSettings utility also using SQLite database at the same time, modifying the same data testing for conflicts &c WIP - working!
   o Deletion and drag/drop can be slowish to complete - will be resolved by a VBA collection
   o cwMainIcon shared across SD and iconSettings WIP
@@ -1006,4 +1022,10 @@ o Converted all public sVariables to icon class properties, eg.
   o New collections - drag/drop insertion of icons does not display the dragged icon
   o added automatic check for existence and creation of the images folder in appdata for
      privateExtractIcons to do its work and drop an image into the collections.
-  
+o New collections - Drag and drop re-ordering is yet to be modified/tested     
+o Fix the first icon Error 9 (Subscript out of range) in procedure showLargeIconTypes of Form dock, 1-based collection
+
+o document the recent architecture changes.
+o 
+
+o toolsettingsfile changed to dockSettings throughout

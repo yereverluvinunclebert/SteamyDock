@@ -272,7 +272,7 @@ Public Sub readDockSettingsFile(ByVal location As String, ByVal settingsFile As 
     rDSide = GetINISetting(location, "Side", settingsFile)
     rDOffset = GetINISetting(location, "Offset", settingsFile)
     rDvOffset = GetINISetting(location, "vOffset", settingsFile)
-    rDOptionsTabIndex = GetINISetting("Software\DockSettings", "OptionsTabIndex", toolSettingsFile)
+    rDOptionsTabIndex = GetINISetting("Software\DockSettings", "OptionsTabIndex", dockSettingsFile)
     
     
    On Error GoTo 0

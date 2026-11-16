@@ -124,7 +124,7 @@ Private Sub declineLabel_Click()
     Next
     slicence = "0"
     
-    PutINISetting "Software\SteamyDockSettings", "Licence", slicence, toolSettingsFile
+    PutINISetting "Software\SteamyDockSettings", "Licence", slicence, dockSettingsFile
     End
 
    On Error GoTo 0
@@ -150,7 +150,7 @@ Private Sub Label2_Click()
     licence.Hide
     slicence = "1"
     
-    PutINISetting "Software\SteamyDockSettings", "Licence", slicence, toolSettingsFile
+    PutINISetting "Software\SteamyDockSettings", "Licence", slicence, dockSettingsFile
 
    On Error GoTo 0
    Exit Sub

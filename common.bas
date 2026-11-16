@@ -204,7 +204,7 @@ Public dockSettingsFile As String
 Public gblsIconDataBase As String
 Public iconTempDataFile As String
 
-Public toolSettingsFile  As String
+'Public toolSettingsFile  As String
 
 'Public origSettingsFile As String
 Public RDinstalled As String
@@ -422,7 +422,7 @@ Private Declare Function QueryDosDevice Lib "kernel32" Alias "QueryDosDeviceA" (
 
 Public iconAppFolder As String
 
-Public gDockRenderer As IDockRenderer
+'Public gDockRenderer As IDockRenderer
 
 
 '
@@ -441,11 +441,11 @@ Public Sub checkLicenceState()
 
     'toolSettingsFile = App.Path & "\settings.ini"
     ' read the tool's own settings file (
-    If fFExists(toolSettingsFile) Then ' does the tool's own settings.ini exist?
-        slicence = GetINISetting("Software\DockSettings", "Licence", toolSettingsFile)
+    If fFExists(dockSettingsFile) Then ' does the tool's own settings.ini exist?
+        slicence = GetINISetting("Software\DockSettings", "Licence", dockSettingsFile)
         ' if the licence state is not already accepted then display the licence form
         
-        If slicence = "0" Then
+        If slicence = "0" Or slicence = "" Then
             Call LoadFileToTB(licence.txtLicenceTextBox, App.Path & "\licence.txt", False)
             
             licence.Show vbModal ' show the licence screen in VB modal mode (ie. on its own)

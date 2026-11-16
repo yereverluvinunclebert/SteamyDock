@@ -657,31 +657,34 @@ Attribute VB_Exposed = False
 
 ' Program Operation:
 
-' The background form is transparent. No VB6 controls are used except timers. The X,Y position of the mouse event, on a non-transparent part of the form (the icons),
-' is captured using an API and compared to stored icon X locations to determine which icon is selected. Click-through on
-' transparent parts of the icons are captured by drawing a 1% opacity background of a white square that is in itself 50% transparent.
+' The background form is transparent. No VB6 controls are used except timers. The X,Y position of the mouse event, on a non-transparent part
+' of the form (the icons), is captured using an API and compared to stored icon X locations to determine which icon is selected.
+' Click-through on transparent parts of the icons are captured & prevented by drawing a 1% opacity background of a white square that is in
+' itself 50% transparent.
 
 ' The core of this program are the routines from Olaf Schmidt that open the image files as an ADO stream of bytes and feed
-' those into GDI+. These images are then converted to bitmaps and fed into dictionary objects for storage.
+' those into GDI+ for rendering on the screen. These images are then converted to bitmaps and fed into icon classes and collection objects for storage.
 '
-' The icon images are read using GDI+ and loaded into a collection. They are resized to two sizes, the small size for an idle dock and the
-' large maximum size to which they will animate. Each icon image is loaded at startup, and the icon position is determined in the array,
-' dictionaryLocationArray. When adding or deleting images, instead of reordering the images within the dictionary, which is difficult as you can't just add and
-' replace objects into an existing collection (also it does not release memory), so, instead we simply
-' remove the icon reference from the settings data file, leave the collection alone and manipulate the index number
-' indicating which image in the collection to use. The icon image new information is stored in the dictionaryLocationArray until the next restart of the program.
+' Fundamentally, the icon images are read using GDI+ and loaded into a native VB6 collection.
+
+' The icons are resized to two sizes and two further corresponding forms, the small size for an idle dock and the large maximum size images
+' to which size the icons in the dock will animate. For each 'solid' icon there is a corresponding transparent icon. These icon images are attached
+' to an icon class that contains references to all the icon's properties.
+
+' All the icons are loaded into an icon collection. Each icon image is loaded at startup, and the icon position is held within the icon's properties.
 '
 ' Animation
 '
 ' There is a response timer and an animate timer.
-' The responseTimer draws the small icons once and monitors the mouse position, the animateTimer runs at a high frequency and draws
-' the whole dock multiple times per second providing the animation effect. The relationship of the timers is found in an Impress or Powerpoint type
-' document in the documentation folder. There are several timers and they really control the operation of everything.
 '
-' Before those timers start, the program reads all the icon locations from the settings file and loads the icons into memory using a dictionary
-' object to hold the data. The location of the objects is keyed. This occurs on startup. During runtime, the various images are
-' recalled from memory and drawn to the screen using a for...loop. The icons are positioned side by side, the rightmost position incremented to position
-' the subsequent icon, basically sequential positioning.
+' The responseTimer draws the small icons once, monitors the mouse position an d determines the frequency of the animateTimer that runs at a
+' high frequency and draws the whole dock multiple times per second providing the animation effect. The relationship of the timers is found
+' in an Impress or Powerpoint type document in the documentation folder. There are several timers and they really control the operation of everything.
+'
+' Before those timers start, the program reads all the icon locations from an SQLite databse and loads the icons into memory using a native VB6 collection
+' object to hold the data. The location of the objects is loosely keyed but the key is secondary as the indexed position is the primary
+' location. During runtime, the various images are recalled from memory and drawn to the screen using a for...loop. The icons are positioned
+' side by side, the rightmost position incremented to position from the subsequent icon, basically sequential positioning.
 '
 ' Only the central (n) icons are resized, currently three, according to cursor position, They are extracted from the 'large' collection. The other tiny icons
 ' are all extracted from the 'small' collection. This way CPU usage is minimised. Memory usage is also minimal but
@@ -693,17 +696,13 @@ Attribute VB_Exposed = False
 '
 ' Settings
 '
-' The setttings data for the whole dock are stored in a settings.ini file in the user temporary file area. These are accessed using the writefile API
-' The data related to the icons themselves are stored in a random access data file for much faster access.
-' To speed this up further, all associated icon data is stored in cached arrays so that the data can be processed quickly. The program keeps track of all icon data
-' using these arrays.
+' The configuration/settings data for the whole dock is stored in a settings.ini file that is accessed using the readfile/writefile APIs.
+
+' The data related to the icons themselves are stored in a iconSettings.db SQLite database file.
 '
 ' Arrays
 '
-' All important arrays are handled as if they are Option Base 1 even though that is not explicitly stated anywhere. As the icon data is loaded from a random access data file
-' where 0 is not an allowable position, record 1 is the default start position. To avoid confusion when reading from the data file and into associated arrays, all arrays that
-' contain cached data from the icon data file are used as if they were option base 1 starting at element 1. Note that the first record/array element is a blank icon that is only shown
-' in the dock as a spacer to allow smoother entry into the dock. It cannot be edited or deleted. Same with the final icon beyond the last user icon.
+' All important arrays are handled as if they are Option Base 1
 
 ' Globals
 '
@@ -770,7 +769,7 @@ Attribute VB_Exposed = False
 ' It requires a single typelib to be present. OLEEXP.TLB placed in sysWoW64 - required to obtain the explorer
 ' paths.
 
-' oleexp.tlb should typically be located in SysWow64 (or System32 on a 32-bit Windows install). You can register it
+' For development oleexp.tlb should typically be located in SysWow64 (or System32 on a 32-bit Windows install). You can register it
 ' manually using regtlib.exe on Win 7-10 systems or the newer utility on Win 11.
 '
 ' but it should be sufficient to let VB6 register it for you. When you first try to run or compile it will come up with the
@@ -1151,7 +1150,7 @@ Private Sub Form_Load()
     strTimeThen = Now()
     
     ' Implements an interface to a graphics renderer be it GDI+ or Cairo or another.
-    Set gDockRenderer = New cGDIPlusDockRenderer
+    'Set gDockRenderer = New cGDIPlusDockRenderer
     'Set gDockRenderer = New cDebugDockRenderer
 '    Set gDockRenderer = New cCairoDockRenderer
         
@@ -1180,9 +1179,6 @@ Private Sub Form_Load()
     
     ' extracts all the known drive names using Windows APIs to a useful global var
     Call getAllDriveNames(sAllDrives)
-            
-    ' check the state of the licence
-    Call checkLicenceState
     
     ' check the Windows version
     Call testWindowsVersion(classicThemeCapable)
@@ -1203,6 +1199,9 @@ Private Sub Form_Load()
     
     ' get the location of the dock's new settings file
     Call locateDockSettingsFiles
+                    
+    ' check the state of the licence
+    Call checkLicenceState
     
     ' backup the database prior to using it.
     Call backupDatabase
@@ -1262,7 +1261,7 @@ Private Sub Form_Load()
     Call readThemeConfiguration
     
     ' read the tool settings file and do some things for the first and only time
-    Call readToolSettings ' program specific settings do not apply to the dock, left here just in case we need it
+    Call testFirstRun ' program specific settings do not apply to the dock, left here just in case we need it
     
     ' Initialises GDI Plus
     Call initialiseGDIPStartup
@@ -1308,7 +1307,7 @@ Private Sub Form_Load()
     wallpaperTimer.Enabled = True
     
     ' test debug renderer
-    Call updateDisplayFromIconCollection
+    'Call updateDisplayFromIconCollection
     
     ' this form should only be revealed for db maintenance uses.
     'hiddenForm.Show ' keep it hidden, keep it safe...
@@ -3684,6 +3683,8 @@ Private Sub updateDisplayUsingLargeIcon(ByVal useloop As Integer, Optional ByVal
     
    On Error GoTo updateDisplayUsingLargeIcon_Error
    
+   If useloop = 0 Then Exit Sub
+   
     ' stringKeyValue =  CStr(useloop)
 
     If thisIconXOffset <> 0 Then
@@ -5825,29 +5826,32 @@ End Sub
 
 
 '---------------------------------------------------------------------------------------
-' Procedure : readToolSettings
+' Procedure : testFirstRun
 ' Author    : beededea
 ' Date      : 20/06/2019
 ' Purpose   : read this utilties' own settings.ini file and do some things using the data - unused
 '---------------------------------------------------------------------------------------
 '
-Private Sub readToolSettings()
+Private Sub testFirstRun()
     Dim sfirst As String: sfirst = vbNullString
 
-    On Error GoTo readToolSettings_Error
-    'If debugflg = 1 Then debugLog "%" & "readToolSettings"
+    On Error GoTo testFirstRun_Error
+    'If debugflg = 1 Then debugLog "%" & "testFirstRun"
    
-    If Not fFExists(toolSettingsFile) Then Exit Sub ' does the tool's own settings.ini exist?
+    If Not fFExists(dockSettingsFile) Then
+        sfirst = "True"
+        Exit Sub ' does the tool's own settings.ini exist?
+    End If
     
     'test to see if the tool has ever been run before
-    sfirst = GetINISetting("Software\SteamyDockSettings", "First", toolSettingsFile)
+    sfirst = GetINISetting("Software\SteamyDockSettings", "First", dockSettingsFile)
     
-    If sfirst = "True" Then
+    If sfirst = "True" Or sfirst = "" Then
     
         sfirst = "False"
         
         'write the updated test of first run to false
-        PutINISetting "Software\SteamyDockSettings", "First", sfirst, toolSettingsFile
+        PutINISetting "Software\SteamyDockSettings", "First", sfirst, dockSettingsFile
         
     End If
 
@@ -5858,9 +5862,9 @@ Private Sub readToolSettings()
    On Error GoTo 0
    Exit Sub
 
-readToolSettings_Error:
+testFirstRun_Error:
 
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure readToolSettings of Form rDIconConfigForm"
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure testFirstRun of Form rDIconConfigForm"
     
 End Sub
 
