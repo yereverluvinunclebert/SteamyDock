@@ -422,7 +422,7 @@ Private Declare Function QueryDosDevice Lib "kernel32" Alias "QueryDosDeviceA" (
 
 Public iconAppFolder As String
 
-'Public gDockRenderer As IDockRenderer
+Public gDockRenderer As IDockRenderer
 
 
 '

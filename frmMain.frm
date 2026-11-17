@@ -908,12 +908,12 @@ Private Const VERTRES = 10
 'Private lngHeight As Long
 'Private lngWidth As Long
 Private lngCursor As Long
-Private IconIndex As Single
+
 Private iconProportion As Double
 Private iconXOffset As Double
 
 
-Private dynamicSizeModifierPxls As Double
+'Private dynamicSizeModifierPxls As Double
 Private differenceFromLeftMostResizedIconPxls As Double
 Private animateStep As Single
 Private dockDrawingYPositionPxls As Single
@@ -1006,7 +1006,7 @@ Private mouseDownTime As Long
 Private autoHideProcessName As String
 Private soundtoplay As String
 Private delayRunTimerCount As Integer
-Private bumpFactor As Single
+
 ' We initialise all the above vars during the form_initialise phase
 Private currentDockHeightPxls As Long
 
@@ -1150,7 +1150,7 @@ Private Sub Form_Load()
     strTimeThen = Now()
     
     ' Implements an interface to a graphics renderer be it GDI+ or Cairo or another.
-    'Set gDockRenderer = New cGDIPlusDockRenderer
+    Set gDockRenderer = New cGDIPlusDockRenderer
     'Set gDockRenderer = New cDebugDockRenderer
 '    Set gDockRenderer = New cCairoDockRenderer
         
@@ -3121,33 +3121,6 @@ sequentialBubbleAnimation_Error:
 End Sub
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : determineDynamicIconRangeToAnimate
-' Author    : beededea
-' Date      : 19/07/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
-'
-Private Sub determineDynamicIconRangeToAnimate(ByRef leftmostResizedIcon As Integer, ByRef rightmostResizedIcon As Integer)
-    
-   On Error GoTo determineDynamicIconRangeToAnimate_Error
-
-    rDZoomWidth = 2 'override until the animation takes this into account
-    If CBool(rDZoomWidth And 1) = False Then
-        rDZoomWidth = rDZoomWidth + 1  ' must be 3,5,7,9 so convert to an odd number
-    End If
-     
-    ' what is the group size? extract the index of the group and calculate the leftmost member
-    leftmostResizedIcon = IconIndex - (rDZoomWidth - 1) / 2 '
-    rightmostResizedIcon = IconIndex + (rDZoomWidth - 1) / 2
-
-   On Error GoTo 0
-   Exit Sub
-
-determineDynamicIconRangeToAnimate_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure determineDynamicIconRangeToAnimate of Form dock"
-End Sub
 
 '---------------------------------------------------------------------------------------
 ' Procedure : storeCurrentIconPositions
