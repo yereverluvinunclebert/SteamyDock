@@ -90,6 +90,7 @@ Begin VB.Form dock
       Top             =   3960
    End
    Begin VB.Timer ScreenResolutionTimer 
+      Enabled         =   0   'False
       Interval        =   3000
       Left            =   255
       Top             =   2595
@@ -868,7 +869,7 @@ Attribute VB_Exposed = False
 
 Option Explicit
 
-#If Not Win64 Then ' compiled using 32bit compiler Then ' VB6 only
+#If Not WIN64 Then ' compiled using 32bit compiler Then ' VB6 only
 
     ' API to determine whether the program is running with administrator rights
     Private Declare Function IsUserAnAdmin Lib "Shell32" Alias "#680" () As Integer
@@ -1019,7 +1020,7 @@ Private lastPositionRelativeToDock As Boolean
 '------------------------------------------------------ STARTS
 ' Private Types for determining whether the app is already DPI aware, most useful when operating within the IDE, stops "already DPI aware " messages.
 
-#If Not Win64 Then ' compiled using 32bit compiler Then ' VB6 only
+#If Not WIN64 Then ' compiled using 32bit compiler Then ' VB6 only
     Private Declare Function IsProcessDPIAware Lib "user32.dll" () As Boolean
     
     Private Enum PROCESS_DPI_AWARENESS
@@ -1041,7 +1042,7 @@ Private lastPositionRelativeToDock As Boolean
 
 '------------------------------------------------------ ENDS
 
-#If Not Win64 Then ' compiled using 32bit compiler
+#If Not WIN64 Then ' compiled using 32bit compiler
     Private Declare Function BitBlt Lib "gdi32" ( _
         ByVal hDestDC As Long, _
         ByVal X As Long, _
@@ -1083,7 +1084,7 @@ Private lastPositionRelativeToDock As Boolean
 '------------------------------------------------------ STARTS
 
 ' Type defined for testing a time difference used to initiate one of the hand-coded timers
-#If Not Win64 Then ' compiled using 32bit compiler
+#If Not WIN64 Then ' compiled using 32bit compiler
     Private Type LASTINPUTINFO
         cbSize As Long
         dwTime As Long
@@ -1122,7 +1123,6 @@ Implements ISQLiteProgressHandler ' only allowed in classes and forms (classes)
 
 
 
-
 '---------------------------------------------------------------------------------------
 ' Procedure : Form_Load
 ' Author    : beededea
@@ -1145,8 +1145,9 @@ Private Sub Form_Load()
     ' comment the following function back in only when debugging
     On Error GoTo Form_Load_Error
     
+    ' in IDE mode it looks locally for the files, so instead we point to the 'live' folder
     iconAppFolder = "C:\Program Files (x86)\SteamyDock"
-        
+    
     strTimeThen = Now()
     
     ' Implements an interface to a graphics renderer be it GDI+ or Cairo or another.
@@ -1167,7 +1168,7 @@ Private Sub Form_Load()
     Call setSomeValues
     
     ' set debugging if required
-    Call toggleDebugging
+    ' Call toggleDebugging
         
     ' write to the debuglog to log
     debugLog "*****************************"
@@ -1187,7 +1188,7 @@ Private Sub Form_Load()
     Call disableAdmin  ' .17 DAEB frmMain.frm 27/01/2021 Moved disabling admin to a separate routine
 
     ' we check to see if rocketdock is installed in order to know the location of the settings.ini file used by Rocketdock
-    'Call checkRocketdockInstallation ' also sets rdAppPath
+    'Call checkRocketdockInstallation ' also sets rdAppPath - obsolete, we no longer care if RD is installed
     
     ' check where steamyDock is installed, seems obvious but someone could be running the binary somewhere remote from its default location
     Call checkSteamyDockInstallation ' in any case it sets the sdPathPath
@@ -1215,7 +1216,7 @@ Private Sub Form_Load()
     'validate the relevant entries from the settings.ini file in user appdata
     Call validateInputs
     
-    ' read the icon properties from random access file, we now use an SQL databse
+    ' read the icon properties from random access file, we now use an SQL database - obsolete
     'Call readIconConfiguration
     
     ' set the hotkey toggle to the user's chosen function key
@@ -1228,6 +1229,8 @@ Private Sub Form_Load()
         rDMonitor = "0" 'validate
     End If
     
+    
+    ' multi-monitor usage is yet to come
 '    If Val(rDMonitor) > 0 Then
 '        ' get screen bounds
 '        ' position the dock onto the correct monitor using the current monitor left position plus 1
@@ -1240,7 +1243,6 @@ Private Sub Form_Load()
 '
 '        'CenterFormOnMonitorTwo dock
 '    End If
-        
         
     ' check the selected monitor properties and determine the number of twips per pixel for this screen
     Call monitorProperties(dock)
@@ -1296,6 +1298,9 @@ Private Sub Form_Load()
         
     ' set up the timers that check to see if each process is running
     Call setUpProcessTimers
+        
+    'start non-process related timers
+    Call startOtherTimers
     
     ' Checks each target command for validity and sets a flag in an array to place a red X on the icon.
     Call checkTargetCommandValidity
@@ -1303,10 +1308,7 @@ Private Sub Form_Load()
     ' set the sound selection for any mouse click
     Call setSounds
     
-    'start timers
-    wallpaperTimer.Enabled = True
-    
-    ' test debug renderer
+    ' test debug renderer WIP
     'Call updateDisplayFromIconCollection
     
     ' this form should only be revealed for db maintenance uses.
@@ -1334,6 +1336,32 @@ Form_Load_Error:
     
 End Sub
 
+
+'---------------------------------------------------------------------------------------
+' Procedure : startOtherTimers
+' Author    : beededea
+' Date      : 19/11/2026
+' Purpose   :
+'---------------------------------------------------------------------------------------
+'
+Private Sub startOtherTimers()
+
+    On Error GoTo startOtherTimers_Error
+
+    ' start the screen resolution change timer
+    ScreenResolutionTimer.Enabled = True
+    
+    'start the timer that changes the background wallpaper
+    wallpaperTimer.Enabled = True
+    
+    On Error GoTo 0
+    Exit Sub
+
+startOtherTimers_Error:
+
+     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure startOtherTimers of Form dock"
+
+End Sub
 '---------------------------------------------------------------------------------------
 ' Procedure : setInitialIconPositions
 ' Author    : beededea
@@ -3081,7 +3109,11 @@ Private Sub sequentialBubbleAnimation()
         If showsmall = True Then ' display the small size icon or the red X if icon missing
             Call updateDisplayUsingSmallIcon(useloop)
         Else
-            Call updateDisplayUsingLargeIcon(useloop) ' display the larger size icon or the
+            If IconIndex = useloop Then
+                Call updateDisplayUsingLargeIcon(True, useloop) ' display the larger size icon or the
+            Else
+                Call updateDisplayUsingLargeIcon(False, useloop) ' display the larger size icon or the
+            End If
         End If
 
         'now draw the icon text above the selected icon
@@ -3650,7 +3682,7 @@ End Sub
 ' Purpose   :
 '---------------------------------------------------------------------------------------
 '
-Private Sub updateDisplayUsingLargeIcon(ByVal useloop As Integer, Optional ByVal thisIconXOffset As Integer)
+Private Sub updateDisplayUsingLargeIcon(ByVal displayUnderlyingBlank As Boolean, ByVal useloop As Integer, Optional ByVal thisIconXOffset As Integer)
     Dim thiskey As String: thiskey = ""
     ' Dim stringKeyValue As String
     
@@ -3676,7 +3708,7 @@ Private Sub updateDisplayUsingLargeIcon(ByVal useloop As Integer, Optional ByVal
 '    End If
         
     ' add a 1% opaque background to the expanded image to catch click-throughs, blankresizedImg128 is the key name
-    updateDisplayFromIconClass "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconWidthPxls), 4
+    If displayUnderlyingBlank = True Then updateDisplayFromIconClass "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconWidthPxls), 4
 
     ' Added a faded red background when dragged .56 DAEB 19/04/2021 frmMain.frm Added a faded red background to the current image when the drag and drop is in operation.
     If dragToDockOperating = True And useloop = IconIndex Then
@@ -3865,7 +3897,7 @@ Private Sub sizeAndShowFullSizeIconByCEP(ByVal thisIconIndex As Integer, ByRef s
     Call storeCurrentIconPositions(thisIconIndex)
     
     ' display the icon in the dock
-    Call updateDisplayUsingLargeIcon(thisIconIndex, iconXOffset) ' display the larger size icon or the
+    Call updateDisplayUsingLargeIcon(True, thisIconIndex, iconXOffset) ' display the larger size icon or the
 
     'now draw the icon text above the selected icon
     Call drawTextAboveIcon(thisIconIndex, textWidth)
@@ -3914,7 +3946,7 @@ Private Sub sizeAndShowSingleMainIconToLeftByCEP(ByVal thisIconIndex As Integer,
         Call storeCurrentIconPositions(thisIconIndex - 1)
         
         ' display the icon in the dock
-        Call updateDisplayUsingLargeIcon(thisIconIndex - 1)
+        Call updateDisplayUsingLargeIcon(False, thisIconIndex - 1)
     End If
 
      ' leftMostIconXPositionPxls = iconPosLeftPxls
@@ -3967,7 +3999,7 @@ Private Sub sizeAndShowSingleMainIconToRightByCEP(ByVal thisIconIndex As Integer
         iconPosLeftPxls = (iconStoreLeftPixels(thisIconIndex)) + mainIconWidthPxls
 
         Call storeCurrentIconPositions(thisIconIndex + 1)
-        Call updateDisplayUsingLargeIcon(thisIconIndex + 1)
+        Call updateDisplayUsingLargeIcon(False, thisIconIndex + 1)
 
     End If
 
@@ -4161,15 +4193,18 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
     
     ' stringKeyValue =  CStr(selectedIconIndex)
         
-        'If debugflg = 1 Then debugLog "%runCommand"
+    'If debugflg = 1 Then debugLog "%runCommand"
     
-    sArguments = sDockIcons(selectedIconIndex).Arguments
-    sWorkingDirectory = sDockIcons(selectedIconIndex).WorkingDirectory
-    sShowCmd = sDockIcons(selectedIconIndex).ShowCmd
-    sIsSeparator = sDockIcons(selectedIconIndex).IsSeparator
-    sUseDialog = sDockIcons(selectedIconIndex).UseDialog
-    sUseDialogAfter = sDockIcons(selectedIconIndex).UseDialogAfter
-    sDisabled = sDockIcons(selectedIconIndex).Disabled
+    ' running in a mode that means that no icon exists yet in the collection, this would generate an error, prevent an error displaying.
+    If selectedIconIndex <> 999 Then
+        sArguments = sDockIcons(selectedIconIndex).Arguments
+        sWorkingDirectory = sDockIcons(selectedIconIndex).WorkingDirectory
+        sShowCmd = sDockIcons(selectedIconIndex).ShowCmd
+        sIsSeparator = sDockIcons(selectedIconIndex).IsSeparator
+        sUseDialog = sDockIcons(selectedIconIndex).UseDialog
+        sUseDialogAfter = sDockIcons(selectedIconIndex).UseDialogAfter
+        sDisabled = sDockIcons(selectedIconIndex).Disabled
+    End If
     
     If sRunElevated = "1" Then
         userLevel = "runas"

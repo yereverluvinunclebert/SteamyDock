@@ -26,9 +26,14 @@ o Fix the dockMaximum appearing several times.
   test a drag into from outside
   test a drag and drop along the dock either way
 
-o Operating using sqlite.dll registered at runtile as per the RC6 DLLs.
-  
-  Third stage WIP - to animate all the icons and eliminate the serialised nature of the existing code.
+o bug when dragging 2nd or 3rd program to the dock, define the error and fix
+  when dragged into the dock, does it auto save?
+
+o remove the 5% backing behind any blank PNG.
+
+o Operating using sqlite.dll registered at runtime as per the RC6 DLLs. We have 32/64bit regfree code from VG. implemented but unused.
+
+o Third stage WIP - to animate all the icons and eliminate the serialised nature of the existing code.
 
 o Changing to WDL to prepare for 64bit compilation - module by module.
 
@@ -37,8 +42,7 @@ o A Few bugs overall
   New animations required - starting to resolve using the icon properties class
   Multi-monitor
 
-o Test all the VB6 collections with TB's own implementation of collections, faster, does it matter? 
-
+o Test all the VB6 collections with TB's own implementation of collections, faster. The current method is quick enough, a test only required.
 
 o Test TB's loading of PNGs without all the GDI+ stuff. This will facilitate cross platform. This will occur
   naturally, no conversion required.
