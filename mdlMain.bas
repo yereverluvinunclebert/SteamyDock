@@ -201,7 +201,7 @@ Public Declare Function BringWindowToTop Lib "user32.dll" (ByVal hWnd As Long) A
 
 
 ' using this API as it is available in Windows XP and above, suitable for ReactOS
-#If Not Win64 Then ' VB6 only
+#If Not WIN64 Then ' VB6 only
 
     Private Declare Function RtlGenRandom Lib "advapi32.dll" Alias "SystemFunction036" ( _
         ByRef Buffer As Any, _
@@ -2068,11 +2068,11 @@ Public Sub addProgramDLLorEXE()
             End If
 
         Else ' the file doesn't exist in any form with ? or otherwise as a valid path
-            iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+            iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
             If fFExists(iconFilename) Then
                 IconImage = iconFilename
             Else
-                IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+                IconImage = sdAppPath & "\iconSettings\Icons\help.png"
             End If
         End If
     Else
@@ -2097,11 +2097,11 @@ Public Sub addProgramDLLorEXE()
         If fFExists(iconFilename) Then
           IconImage = iconFilename
         Else
-            iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+            iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
             If fFExists(iconFilename) Then
                 IconImage = iconFilename
             Else
-                IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+                IconImage = sdAppPath & "\iconSettings\Icons\help.png"
             End If
         End If
 
@@ -2360,9 +2360,9 @@ Public Sub loadAdditionalImagestoDictionary()
     
     imageOpacity = Val(rDIconOpacity)
     
-    ' load a transparent 128 x 128 image into the collection, used to stop click-throughs
-    If fFExists(sdAppPath & "\blankSquare.png") Then
-        resizeAndLoadImgToCollection "blank", sdAppPath & "\blankSquare.png", (0), (0), (128), (128), 1, 4
+    ' load a transparent 128 x 128 image into the collection, 1% opacity used to stop click-throughs
+    If fFExists(sdAppPath & "\blank.png") Then
+        resizeAndLoadImgToCollection "blank", sdAppPath & "\blank.png", (0), (0), (128), (128), 1, 4
     End If
     
     ' .11 DAEB 01/05/2021 mdlMain.bas load a transparent 128 x 128 image into the collection, used to highlight the position of a drag/drop

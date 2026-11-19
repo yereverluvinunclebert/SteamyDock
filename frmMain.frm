@@ -1145,9 +1145,6 @@ Private Sub Form_Load()
     ' comment the following function back in only when debugging
     On Error GoTo Form_Load_Error
     
-    ' in IDE mode it looks locally for the files, so instead we point to the 'live' folder
-    iconAppFolder = "C:\Program Files (x86)\SteamyDock"
-    
     strTimeThen = Now()
     
     ' Implements an interface to a graphics renderer be it GDI+ or Cairo or another.
@@ -1228,8 +1225,7 @@ Private Sub Form_Load()
     If Val(rDMonitor) + 1 > GetMonitorCount Then
         rDMonitor = "0" 'validate
     End If
-    
-    
+        
     ' multi-monitor usage is yet to come
 '    If Val(rDMonitor) > 0 Then
 '        ' get screen bounds
@@ -2065,7 +2061,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
         
         ' is it a folder, does the folder exist
         If fDirExists(iconTitle) Then
-            iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-dir.png"
+            iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI" & "\document-dir.png"
             If fFExists(iconFilename) Then
                 IconImage = iconFilename
             End If
@@ -2102,7 +2098,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       If fFExists(iconFilename) Then
                           IconImage = iconFilename
                       Else
-                          IconImage = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
+                          IconImage = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI" & "\document-EXE.png"
                       End If
                       
                     End If
@@ -2112,7 +2108,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
-                      iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-msc.png"
+                      iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI" & "\document-msc.png"
                       If fFExists(iconFilename) Then
                           IconImage = iconFilename
                       End If
@@ -2123,7 +2119,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
-                      iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-bat.png"
+                      iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI" & "\document-bat.png"
                       If fFExists(iconFilename) Then
                           IconImage = iconFilename
                       End If
@@ -2134,7 +2130,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       
                       ' if there is no icon embedded found then use the default icon
                        ' check the icon exists
-                      iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-cpl.png"
+                      iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI" & "\document-cpl.png"
                       If fFExists(iconFilename) Then
                           IconImage = iconFilename
                       End If
@@ -2186,7 +2182,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                       If fFExists(iconFilename) Then
                         IconImage = iconFilename
                       Else
-                        IconImage = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-lnk.png"
+                        IconImage = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI" & "\document-lnk.png"
                       End If
                   End If
             
@@ -2239,7 +2235,7 @@ Private Sub Form_OLEDragDrop(Data As DataObject, Effect As Long, Button As Integ
                   Effect = vbDropEffectCopy
                   
                   suffix = LCase(ExtractSuffix(Data.Files(1)))
-                  IconImage = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI\document-" & suffix & ".png"
+                  IconImage = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI\document-" & suffix & ".png"
                   iconCommand = Data.Files(1)
                   If Not fFExists(IconImage) Then
                       IconImage = App.Path & "\nixietubelargeQ.png"
@@ -3708,7 +3704,9 @@ Private Sub updateDisplayUsingLargeIcon(ByVal displayUnderlyingBlank As Boolean,
 '    End If
         
     ' add a 1% opaque background to the expanded image to catch click-throughs, blankresizedImg128 is the key name
-    If displayUnderlyingBlank = True Then updateDisplayFromIconClass "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconWidthPxls), 4
+    'If displayUnderlyingBlank = True Then
+    
+    updateDisplayFromIconClass "blankresizedImg128", (iconPosLeftPxls), (iconCurrentTopPxls), (iconWidthPxls), (iconWidthPxls), 4
 
     ' Added a faded red background when dragged .56 DAEB 19/04/2021 frmMain.frm Added a faded red background to the current image when the drag and drop is in operation.
     If dragToDockOperating = True And useloop = IconIndex Then
@@ -4876,7 +4874,12 @@ Private Sub runTimer_Timer()
     runTimer.Enabled = False
     Call runCommand("run", "")  ' added new parameter to allow override ref: .68
 
-    selectedIconIndex = 999 ' sets the icon to bounce index to something that will never occur
+    ' if the second app flag is set and the run beforehand isn't then it means that another app is scheduled to run afterwards so don't clear the selectedIconIndex
+    If sDockIcons(selectedIconIndex).SecondApp <> "" And sDockIcons(selectedIconIndex).RunSecondAppBeforehand <> "1" Then
+        selectedIconIndex = selectedIconIndex
+    Else
+        selectedIconIndex = 999 ' sets the icon to bounce index to something that will never occur
+    End If
 
    On Error GoTo 0
    Exit Sub
@@ -4901,6 +4904,8 @@ Private Sub delayRunTimer_Timer()
     ' stringKeyValue =  CStr(selectedIconIndex)
         
     On Error GoTo delayRunTimer_Timer_Error
+    
+    If selectedIconIndex = 999 Then Exit Sub
 
     sSecondApp = sDockIcons(selectedIconIndex).SecondApp
     
@@ -4910,6 +4915,8 @@ Private Sub delayRunTimer_Timer()
         delayRunTimerCount = 0
         Call runCommand("run", sSecondApp)
     End If
+    
+    selectedIconIndex = 999 ' sets the icon to bounce index to something that will never occur
 
     On Error GoTo 0
     Exit Sub

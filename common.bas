@@ -43,7 +43,7 @@ Public Const TH32CS_SNAPPROCESS As Long = 2&
 Public uProcess As PROCESSENTRY32
 Public hSnapshot As Long ' a required As LongPtr
 
-#If Not Win64 Then  ' * = APIs checked for longPtr changes
+#If Not WIN64 Then  ' * = APIs checked for longPtr changes
     Public Declare Function OpenProcess Lib "kernel32.dll" (ByVal dwDesiredAccess As Long, ByVal blnheritHandle As Long, ByVal dwAppProcessId As Long) As Long ' returns a longPtr *
     Public Declare Function ProcessFirst Lib "kernel32.dll" Alias "Process32First" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version *
     Public Declare Function ProcessNext Lib "kernel32.dll" Alias "Process32Next" (ByVal hSnapshot As Long, ByRef uProcess As PROCESSENTRY32) As Long ' hSnapshot, a longPtr, use Process32First Ansi version *
@@ -56,7 +56,7 @@ Public hSnapshot As Long ' a required As LongPtr
 ' APIs for querying processes END tested above APIs for longPtr
 
 ' functions to determine 64bitness start
-#If Not Win64 Then
+#If Not WIN64 Then
     Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long ' hModule As LongPtr, returns a longPtr *
     Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long 'returns a longPtr *
     Private Declare Function IsWow64Process Lib "kernel32" (ByVal hProc As Long, bWow64Process As Boolean) As Long '  hProc As LongPtr *
@@ -91,7 +91,7 @@ Public Const HKEY_LOCAL_MACHINE = &H80000002
 Public Const HKEY_CURRENT_USER = &H80000001
 Public Const REG_SZ = 1                          ' Unicode nul terminated string
 
-#If Not Win64 Then
+#If Not WIN64 Then
     Public Declare Function RegOpenKey Lib "advapi32.dll" Alias "RegOpenKeyA" (ByVal hKey As Long, ByVal lpSubKey As String, ByRef phkResult As Long) As Long  ' hKey LongPtr, phkResult As LongPtr *
     Public Declare Function RegQueryValueEx Lib "advapi32.dll" Alias "RegQueryValueExA" (ByVal hKey As Long, ByVal lpValueName As String, ByVal lpReserved As Long, ByRef lpType As Long, ByRef lpData As Any, ByRef lpcbData As Long) As Long ' hKey As LongPtr, lpReserved LongPtr *
     Public Declare Function RegCloseKey Lib "advapi32.dll" (ByVal hKey As Long) As Long ' hKey LongPtr *
@@ -281,7 +281,7 @@ Public sAllDrives As String
 '
 '------------------------------------------------------ STARTS
 ' APIs for useful functions START
-#If Not Win64 Then ' VB6 only
+#If Not WIN64 Then ' VB6 only
     ' hWnd required as longPtr, returns longPtr
     Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Long, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Long) As Long
 #End If
@@ -420,7 +420,7 @@ Private Declare Function QueryDosDevice Lib "kernel32" Alias "QueryDosDeviceA" (
 'Public sAppToTerminateArray() As String
 'Public sDisabledArray() As String
 
-Public iconAppFolder As String
+' Public sdAppPath As String
 
 Public gDockRenderer As IDockRenderer
 
@@ -2016,9 +2016,11 @@ Public Sub locateDockSettingsFiles()
         End If
     End If
     
-    'confirm the settings file exists, if not use the version in the app itself
-    If Not fFExists(dockSettingsFile) Then
-            dockSettingsFile = App.Path & "\settings.ini"
+    'confirm the settings database file exists, if not use the default version
+    If Not fFExists(gblsIconDataBase) Then
+            If fFExists(dockSettingsDir & "\defaultIconSettings.db") Then
+                FileCopy dockSettingsDir & "\defaultIconSettings.db", gblsIconDataBase
+            End If
     End If
 
    On Error GoTo 0

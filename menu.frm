@@ -499,11 +499,11 @@ Private Sub mnuAddBluetooth_Click()
     On Error GoTo mnuAddBluetooth_Click_Error
     
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKI" & "\719c57095b05d92a.ico"
+    iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKI" & "\719c57095b05d92a.ico"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -547,11 +547,11 @@ Private Sub mnuAddCache_Click()
     On Error GoTo mnuAddCache_Click_Error
     
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\recyclebin-full.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\recyclebin-full.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -597,11 +597,11 @@ Private Sub mnuAddDisplay_Click()
 
     On Error GoTo mnuAddDisplay_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\console-green-screen-DUA0.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\console-green-screen-DUA0.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -642,11 +642,11 @@ Private Sub mnuAddEventViewer_Click()
 
     On Error GoTo mnuAddEventViewer_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\event-viewer(CEventVwr.msc).png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\event-viewer(CEventVwr.msc).png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -697,11 +697,11 @@ Private Sub mnuAddMouse_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKI" & "\cdac67ad2f7cfe33.ico"
+    iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKI" & "\cdac67ad2f7cfe33.ico"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -751,11 +751,11 @@ Private Sub mnuAddMyDocuments_Click()
     'If debugflg = 1 Then debugLog "%mnuAddMyComputer_click"
     
     ' check the icon exist
-    iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKII\folder-closed.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKII\folder-closed.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
        
     If fFExists(IconImage) Then
@@ -808,11 +808,11 @@ Private Sub mnuAddMyMusic_Click()
 
     'If debugflg = 1 Then debugLog "%mnuAddMyComputer_click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\music.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\music.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
 
     userprof = Environ$("USERPROFILE")
@@ -870,11 +870,11 @@ Private Sub mnuAddMyPictures_Click()
 
     'If debugflg = 1 Then debugLog "%mnuAddMyComputer_click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\pictures.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\pictures.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
        
     userprof = Environ$("USERPROFILE")
@@ -928,11 +928,11 @@ Private Sub mnuAddMyVideos_Click()
 
     'If debugflg = 1 Then debugLog "%mnuAddMyComputer_click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\video-folder.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\video-folder.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     userprof = Environ$("USERPROFILE")
@@ -978,11 +978,11 @@ Private Sub mnuAddNetworkConnections_Click()
 
     On Error GoTo mnuAddNetworkConnections_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKI\96d1075f6d255bec.ico"
+    iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKI\96d1075f6d255bec.ico"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -1023,11 +1023,11 @@ Private Sub mnuAddPerfMon_Click()
     
     On Error GoTo mnuAddPerfMon_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\perfmon.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\perfmon.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -1101,11 +1101,11 @@ Private Sub mnuAddProgramFeatures_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection\windows replacements" & "\windowsWoodInboxClock.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection\windows replacements" & "\windowsWoodInboxClock.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -1148,11 +1148,11 @@ Private Sub mnuAddServices_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\Administrative Tools(compmgmt.msc).png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\Administrative Tools(compmgmt.msc).png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -1200,11 +1200,11 @@ Private Sub mnuAddSleep_Click()
     On Error GoTo mnuAddSleep_Click_Error
    
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\sleep.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\sleep.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -1246,11 +1246,11 @@ Private Sub mnuAddSound_Click()
 
     On Error GoTo mnuAddSound_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\ScreenToGif.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\ScreenToGif.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -1295,11 +1295,11 @@ Private Sub mnuAddSystemProperties_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\control-panel(control).png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\control-panel(control).png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -1343,11 +1343,11 @@ Private Sub mnuAddTaskSched_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\glass-clipboard.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\glass-clipboard.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -1399,11 +1399,11 @@ Private Sub mnuAddTimeDate_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\FreeFileSync.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\FreeFileSync.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -1846,7 +1846,7 @@ Private Sub mnuCloneIcon_Click()
     sIconTransparentImageLarge = sDockIcons(selectedIconIndex).IconTransparentImageLarge
     sIconTransparentImageSmall = sDockIcons(selectedIconIndex).IconTransparentImageSmall
     
-    IconImage = iconAppFolder & "\iconSettings\my collection\steampunk icons MKII\folder-closed.png"
+    IconImage = sdAppPath & "\iconSettings\my collection\steampunk icons MKII\folder-closed.png"
     
     thiskey = insertNewIconElementIntoCollection(sFilename, sTitle, sCommand, sArguments, sWorkingDirectory, sShowCmd, sOpenRunning, sIsSeparator, sDockletFile, sUseContext, sUseDialog, sUseDialogAfter, sQuickLaunch, sDisabled)
     Call addImageToCollectionAndCheckForRunningProcess(IconImage, sWorkingDirectory, thiskey)
@@ -2153,11 +2153,11 @@ Private Sub mnuMSSettingsDateAndTime_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsDateAndTime_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2202,11 +2202,11 @@ Private Sub mnuMSSettingsWindowsDefender_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsWindowsDefender_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2247,11 +2247,11 @@ Private Sub mnuMSSettingsStartupApps_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsStartupApps_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2292,11 +2292,11 @@ Private Sub mnuMSSettingsVideoPlayback_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsVideoPlayback_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2337,11 +2337,11 @@ Private Sub mnuMSSettingsControlCenter_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsControlCenter_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2382,11 +2382,11 @@ Private Sub mnuMSSettingsBluetooth_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsBluetooth_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2427,11 +2427,11 @@ Private Sub mnuMSSettingsCamera_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsCamera_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2472,11 +2472,11 @@ Private Sub mnuMSSettingsMouseTouchpad_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsMouseTouchpad_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2517,11 +2517,11 @@ Private Sub mnuMSSettingsPrinters_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsPrinters_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2562,11 +2562,11 @@ Private Sub mnuMSSettingsDevicesTouch_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsDevicesTouch_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2607,11 +2607,11 @@ Private Sub mnuMSSettingsUSB_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsUSB_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2652,11 +2652,11 @@ Private Sub mnuMSSettingsNetworkStatus_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsNetworkStatus_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2697,11 +2697,11 @@ Private Sub mnuMSSettingsAdvancedSettings_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsAdvancedSettings_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2743,11 +2743,11 @@ Private Sub mnuMSSettingsNetworkEthernet_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsNetworkEthernet_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2788,11 +2788,11 @@ Private Sub mnuMSSettingsNetworkWifi_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsNetworkWifi_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2835,11 +2835,11 @@ Private Sub mnuMSSettingsThemes_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsThemes_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2881,11 +2881,11 @@ Private Sub mnuMSSettingsDeviceUsage_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsDeviceUsage_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2928,11 +2928,11 @@ Private Sub mnuMSSettingsDisplayAdvanced_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsDisplayAdvanced_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -2974,11 +2974,11 @@ Private Sub mnuMSSettingsAppsVolume_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsAppsVolume_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -3020,11 +3020,11 @@ Private Sub mnuMSSettingsBatterySaverUsageDetails_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsBatterySaverUsageDetails_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -3066,11 +3066,11 @@ Private Sub mnuMSSettingsDisplay_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsDisplay_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -3117,11 +3117,11 @@ Private Sub mnuMSSettingsPowerSleep_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsPowerSleep_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -3165,11 +3165,11 @@ Private Sub mnuMSSettingsSound_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsSound_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -3214,11 +3214,11 @@ Private Sub mnuMSSettingsDisksAndVolumes_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsDisksAndVolumes_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -3268,11 +3268,11 @@ Private Sub mnuMSSettingsWindowsUpdate_Click()
     ' check the icon exists
     On Error GoTo mnuMSSettingsWindowsUpdate_Click_Error
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\gpu-z.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\gpu-z.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -3343,7 +3343,7 @@ Public Sub mnuIconSettings_Click() ' .14 DAEB 01/04/2021 menu.frm made public so
    
     ' .15 DAEB 01/04/2021 menu.frm make changes for running in the IDE
     If Not InIde Then
-        thisCommand = iconAppFolder & "\iconSettings\iconsettings.exe" ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
+        thisCommand = sdAppPath & "\iconSettings\iconsettings.exe" ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
     Else
         prg = Environ$("ProgramFiles")
         thisCommand = prg & "\SteamyDock\iconSettings\iconsettings.exe"
@@ -3403,13 +3403,13 @@ Public Sub mnuIconSettings_Click_Event()
     On Error GoTo mnuIconSettings_Click_Event_Error
 
     If Not InIde Then
-        thisCommand = iconAppFolder & "\iconSettings\iconsettings.exe" ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
+        thisCommand = sdAppPath & "\iconSettings\iconsettings.exe" ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
     Else
         prg = Environ$("ProgramFiles")
         thisCommand = prg & "\SteamyDock\iconSettings\iconsettings.exe"
     End If    ' .15 DAEB 01/04/2021 menu.frm make changes for running in the IDE
     If Not InIde Then
-        thisCommand = iconAppFolder & "\iconSettings\iconsettings.exe" ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
+        thisCommand = sdAppPath & "\iconSettings\iconsettings.exe" ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
     Else
         prg = Environ$("ProgramFiles")
         thisCommand = prg & "\SteamyDock\iconSettings\iconsettings.exe"
@@ -3597,11 +3597,11 @@ Private Sub mnuSettingsAppsFeatures_Click()
     On Error GoTo mnuSettingsAppsFeatures_Click_Error
 
      ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\programs and features.ico"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\programs and features.ico"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -3647,11 +3647,11 @@ Private Sub mnuSettingsOtherusers_Click()
     On Error GoTo mnuSettingsOtherusers_Click_Error
     
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKI" & "\patersons-camp-coffee.ico"
+    iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKI" & "\patersons-camp-coffee.ico"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -4051,10 +4051,10 @@ Private Sub menuAddBlank_Click()
     On Error GoTo menuAdd_Click_Error
     'If debugflg = 1 Then debugLog "%" & "menuAddBlank_Click"
           
-    IconImage = App.Path & "\blank.png"
+    IconImage = sdAppPath & "\blankSquare.png"
     ' when we arrive at the original position then add a blank item
     ' with the following blank characteristics
-    ' iconAppFolder & "\iconSettings\Icons\help.png" ' the default Rocketdock filename for a blank item
+    ' sdAppPath & "\iconSettings\Icons\help.png" ' the default Rocketdock filename for a blank item
     
     If fFExists(IconImage) Then
         ' general tool to add an icon
@@ -4098,11 +4098,11 @@ Private Sub mnuAddShutdown_click()
    
    
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\shutdown.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\shutdown.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -4146,11 +4146,11 @@ Private Sub mnuAddHibernate_click()
    
    
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\shutdown.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\shutdown.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -4192,11 +4192,11 @@ Private Sub mnuAddReboot_click()
     'If debugflg = 1 Then debugLog "%" & "mnuAddReboot_click"
    
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\Reboot.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\Reboot.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
            
     If fFExists(IconImage) Then
@@ -4238,11 +4238,11 @@ Private Sub mnuAddLockWorkstation_click()
     'If debugflg = 1 Then debugLog "%mnuAddLog_click"
     
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\padlockLockWorkstation.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\padlockLockWorkstation.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4286,11 +4286,11 @@ Private Sub mnuAddLogOut_click()
     'If debugflg = 1 Then debugLog "%mnuAddLogOut_click"
     
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\console-green-screen-logout.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\console-green-screen-logout.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
         
     If fFExists(IconImage) Then
@@ -4332,11 +4332,11 @@ Private Sub mnuAddNetwork_click()
     'If debugflg = 1 Then debugLog "%" & "mnuAddNetwork_click"
    
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\big-globe(network).png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\big-globe(network).png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     ' thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4379,11 +4379,11 @@ Private Sub mnuAddWorkgroup_click()
     'If debugflg = 1 Then debugLog "%" & "mnuAddWorkgroup_click"
    
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\big-globe(network).png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\big-globe(network).png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4425,11 +4425,11 @@ Private Sub mnuAddPrinters_click()
     'If debugflg = 1 Then debugLog "%" & "mnuAddPrinters_click"
     
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\printer.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\printer.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4480,7 +4480,7 @@ Private Sub mnuAddTask_click()
         folderPath = Environ$("windir") & "\System32\" & "taskmgr.exe"
     End If
             
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\task-manager(tskmgr).png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\task-manager(tskmgr).png"
     
     Call addMenuItem(iconFilename, "Task Manager", folderPath, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
        
@@ -4519,7 +4519,7 @@ Private Sub addMenuItem(ByVal thisFilename As String, ByVal thisTitle As String,
     If fFExists(thisFilename) Then
         IconImage = thisFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     If fFExists(IconImage) Then
@@ -4563,11 +4563,11 @@ Private Sub mnuAddControl_click()
     On Error GoTo mnuAddControl_click_Error
     'If debugflg = 1 Then debugLog "%" & "mnuAddControl_click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\control-panel(control).png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\control-panel(control).png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4609,11 +4609,11 @@ Private Sub mnuAddPrograms_click()
     
     
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\programs and features.ico"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\programs and features.ico"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4653,11 +4653,11 @@ Private Sub mnuAddDock_click()
     On Error GoTo mnuAddDock_click_Error
       'If debugflg = 1 Then debugLog "%" & "mnuAddDock_click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\dock settings.ico"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\dock settings.ico"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4701,11 +4701,11 @@ Private Sub mnuAddCompMgmt_click()
     On Error GoTo mnuAddCompMgmt_click_Error
     'If debugflg = 1 Then debugLog "%" & "mnuAddCompMgmt_click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\Administrative Tools(compmgmt.msc).png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\Administrative Tools(compmgmt.msc).png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4746,11 +4746,11 @@ Private Sub mnuAddDevMgmt_Click()
     ' check the icon exists
     'If debugflg = 1 Then debugLog "%" & "mnuAddDevMgmt_Click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\Administrative Tools(compmgmt.msc).png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\Administrative Tools(compmgmt.msc).png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4798,11 +4798,11 @@ Private Sub mnuAddDiscMgmt_click()
     On Error GoTo mnuAddDiscMgmt_click_Error
     'If debugflg = 1 Then debugLog "%" & "mnuAddDiscMgmt_click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\discMgmt.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\discMgmt.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4842,11 +4842,11 @@ Private Sub mnuAddRecycle_click()
     'If debugflg = 1 Then debugLog "%" & "mnuAddRecycle_click"
    
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\recyclebin-full.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\recyclebin-full.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4890,11 +4890,11 @@ Private Sub mnuAddQuit_click()
     On Error GoTo mnuAddQuit_click_Error
     'If debugflg = 1 Then debugLog "%" & "mnuAddQuit_click"
    
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\quit.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\quit.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4937,11 +4937,11 @@ Private Sub mnuAddProgramFiles_click()
     On Error GoTo mnuAddProgramFiles_click_Error
     'If debugflg = 1 Then debugLog "%" & "mnuAddProgramFiles_click"
    
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\hard-drive-indicator-D.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\hard-drive-indicator-D.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
@@ -4990,7 +4990,7 @@ Private Sub mnuAddSeparator_click()
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
 
     sIsSeparator = "1"
@@ -5044,9 +5044,9 @@ Private Sub mnuaddFolder_click()
     If fDirExists(getFolder) Then
     
         If InIde Then
-            iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-dir.png"
+            iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI" & "\document-dir.png"
         Else
-            iconFilename = iconAppFolder & "\iconSettings\my collection\steampunk icons MKVI" & "\document-dir.png"
+            iconFilename = sdAppPath & "\iconSettings\my collection\steampunk icons MKVI" & "\document-dir.png"
         End If
 
         If fFExists(iconFilename) Then
@@ -5102,11 +5102,11 @@ Private Sub mnuAddMyComputer_click()
     On Error GoTo mnuAddMyComputer_click_Error
    'If debugflg = 1 Then debugLog "%mnuAddMyComputer_click"
 
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\my folder.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\my folder.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
        
     If fFExists(IconImage) Then
@@ -5151,11 +5151,11 @@ Private Sub mnuAddEnhanced_click()
     'If debugflg = 1 Then debugLog "%mnuAddEnhanced_click"
 
     ' check the icon exists
-    iconFilename = iconAppFolder & "\iconSettings\my collection" & "\rocketdockSettings.png"
+    iconFilename = sdAppPath & "\iconSettings\my collection" & "\rocketdockSettings.png"
     If fFExists(iconFilename) Then
         IconImage = iconFilename
     Else
-        IconImage = iconAppFolder & "\iconSettings\Icons\help.png"
+        IconImage = sdAppPath & "\iconSettings\Icons\help.png"
     End If
     
     '[icons]
@@ -5165,7 +5165,7 @@ Private Sub mnuAddEnhanced_click()
         '    thisFilename, thisTitle, thisCommand, thisArguments, thisWorkingDirectory)
         ' .16 DAEB 17/11/2020 menu.frm Replaced all occurrences of rocket1.exe with iconsettings.exe
 
-        thiskey = insertNewIconElementIntoCollection(IconImage, "Enhanced Icon Settings", iconAppFolder & "\iconSettings.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
+        thiskey = insertNewIconElementIntoCollection(IconImage, "Enhanced Icon Settings", sdAppPath & "\iconSettings.exe", vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString, vbNullString)
         Call addImageToCollectionAndCheckForRunningProcess(IconImage, "Enhanced Icon Settings", thiskey)
         
         ' .13 DAEB 01/04/2021 menu.frm calls mnuIconSettings_Click_Event to start up the icon settings tools and display the properties of the new icon.
@@ -5242,7 +5242,7 @@ Private Sub mnuAddDocklet_click()
 '      If InStr(GetFileNameFromPath(txtTarget.Text), "Clock") > 0 Then
 '        txtCurrentIcon.Text = rdAppPath & "\icons\clock.png"
 '      ElseIf InStr(GetFileNameFromPath(txtTarget.Text), "recycle") > 0 Then
-'        txtCurrentIcon.Text = iconAppFolder & "\iconSettings\my collection\recyclebin-full.png"
+'        txtCurrentIcon.Text = sdAppPath & "\iconSettings\my collection\recyclebin-full.png"
 '      Else
 '        txtCurrentIcon.Text = rdAppPath & "\iconSettings\icons\blank.png" ' has to be an icon of some sort
 '      End If

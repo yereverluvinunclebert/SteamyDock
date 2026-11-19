@@ -10,15 +10,12 @@ Conversion and testing using Steamydock 32bit.
 
 -oOo-
 
-Overall status 
+Overall status
 ==============
   
   Working, a good learning platform and the dock functions.
   
-o first run should use a default iconSettings.db to store default apps - create it.
-  also, a settings.ini to store the configuration - create it
-  on first run if the files do not exist (ie. not created by the installation), pop those into place
-  see what iconsettings utility does as it might handle this condition already.
+o look at the defaultDockSettings.ini and create a default iconSettings.db
 
 o Fix the dockMaximum appearing several times.
   test an icon insert
@@ -29,7 +26,7 @@ o Fix the dockMaximum appearing several times.
 o bug when dragging 2nd or 3rd program to the dock, define the error and fix
   when dragged into the dock, does it auto save?
 
-o remove the 5% backing behind any blank PNG.
+
 
 o Operating using sqlite.dll registered at runtime as per the RC6 DLLs. We have 32/64bit regfree code from VG. implemented but unused.
 
@@ -1029,7 +1026,8 @@ o Converted all public sVariables to icon class properties, eg.
 o New collections - Drag and drop re-ordering is yet to be modified/tested     
 o Fix the first icon Error 9 (Subscript out of range) in procedure showLargeIconTypes of Form dock, 1-based collection
 
-o document the recent architecture changes.
-o 
+o document the recent architecture changes
 
 o toolsettingsfile changed to dockSettings throughout
+o remove the 5% backing behind any blank PNG.
+o first run should use a default iconSettings.db to store default apps - create it.
