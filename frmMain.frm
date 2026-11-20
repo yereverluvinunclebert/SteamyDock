@@ -1651,7 +1651,6 @@ Private Sub Form_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As 
 
     Call fMouseUp(Button) ' occasionally we want to be able to trigger this manually and you can't call a Form_MouseUp
 
-
    On Error GoTo 0
    Exit Sub
 
@@ -3125,7 +3124,7 @@ Private Sub sequentialBubbleAnimation()
     ' .nn Changed or added as part of the drag and drop functionality
     ' 12/05/2021 .nn DAEB Displays a copy of the icon that is being dragged at the cursor position when a drag from the dock is underway.
     If dragFromDockOperating = True Then
-        updateDisplayFromIconClass dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75), 5
+        updateDisplayFromIconClass dragImageToDisplayKey, (apiMouse.X - iconSizeLargePxls / 2), (apiMouse.Y - iconSizeLargePxls / 2), (iconSizeLargePxls * 0.75), (iconSizeLargePxls * 0.75), 5, selectedIconIndex
     End If
     
     Call updateScreenUsingGDIPBitmap
@@ -4899,9 +4898,6 @@ End Sub
 Private Sub delayRunTimer_Timer()
 
     Dim sSecondApp As String
-    ' Dim stringKeyValue As String
-    
-    ' stringKeyValue =  CStr(selectedIconIndex)
         
     On Error GoTo delayRunTimer_Timer_Error
     
