@@ -23,9 +23,6 @@ o Fix the dockMaximum appearing several times.
   test a drag into from outside
   test a drag and drop along the dock either way
 
-o bug when dragging 2nd or 3rd program to the dock, define the error and fix
-  when dragged into the dock, does it auto save?
-
 o Operating using sqlite.dll registered at runtime as per the RC6 DLLs. We have 32/64bit regfree code from VG. implemented but unused.
 
 o Third stage WIP - to animate all the icons and eliminate the serialised nature of the existing code.
@@ -1030,3 +1027,5 @@ o toolsettingsfile changed to dockSettings throughout
 o remove the 5% backing behind any blank PNG.
 o first run should use a default iconSettings.db to store default apps - create it.
 o drag and drop within the dock is still not working
+
+o bug when dragging 2nd or 3rd program to the dock, define the error and fix.

@@ -23647,3 +23647,22 @@
 2026-11-20 09:20:05.702 ******************************
 2026-11-20 09:20:05.702 % SteamyDock startup complete.
 2026-11-20 09:20:05.703 ******************************
+2026-11-20 15:41:37.724 *****************************
+2026-11-20 15:41:37.724 % SteamyDock program started.
+2026-11-20 15:41:37.725 *****************************
+2026-11-20 15:41:38.090 % sub setUserHotKey
+2026-11-20 15:41:38.090 % func monitorProperties
+2026-11-20 15:41:38.090 % sub resolveVB6SizeBug
+2026-11-20 15:41:38.096 % sub setLocalConfigurationVars
+2026-11-20 15:41:38.097 % sub initialiseGDIPStartup
+2026-11-20 15:41:38.097 % sub createIconDictionaryCollections
+2026-11-20 15:41:38.097 % sub prepareArraysAndCollections
+2026-11-20 15:41:44.568 % sub createGDIStructures
+2026-11-20 15:41:44.568 % sub showSplashScreen
+2026-11-20 15:41:44.614 % sub createNewGDIPBitmap
+2026-11-20 15:41:44.615 % sub setAutoHide
+2026-11-20 15:41:44.615 % sub setWindowCharacteristics
+2026-11-20 15:41:44.627 % sub setUpProcessTimers
+2026-11-20 15:41:44.653 ******************************
+2026-11-20 15:41:44.653 % SteamyDock startup complete.
+2026-11-20 15:41:44.653 ******************************

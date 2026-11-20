@@ -1577,14 +1577,12 @@ End Sub
 ' Procedure : insertNewIconElementIntoCollection
 ' Author    : beededea
 ' Date      : 18/08/2019
-' Purpose   : Add something to the dock called by all the menuAdd functions that follow
-
-    ' instead of reordering the images within the dictionary (which is difficult as you can't just add and
-    ' replace objects into an existing collection, also, it does not release memory) instead we simply
-    ' add a new icon reference to the settings db, add a new image to the end of the collection and then we
-    ' manipulate an array of index numbers indicating which image in the collection to use. This persists until the
-    ' dock is restarted. Then the images are loaded and numbered sequentially.
-    
+' Purpose   : Add something to the collection of icons that forms the dock. This procedure is called by all the menuAdd functions.
+'
+' insert a new icon (sIcon) to the collection on a positional basis. The existing items have a key that corresponds to the position but
+' for each new item it receives a new unique random key, and the tie between the position and the key is lost. We are using a native VB6
+' collection which is positional in nature. The key is a left-over from the use of a scripting collection which is primarily keyed.
+'
 '---------------------------------------------------------------------------------------
 '.nn Modified the function inputs to add the missing icon characteristics that are needed when dragging and dropping an icon within the dock.
 ' .15 DAEB 20/05/2021 mdlMain.bas Added new check box to allow a quick launch of the chosen app
@@ -1619,7 +1617,7 @@ Public Function insertNewIconElementIntoCollection(ByVal thisFilename As String,
     
     ' insert at selectedIconIndex on a positional basis not as a key
     insertKey = selectedIconIndex & "insert" & SecureRandomHex64
-    sDockIcons.Add sIcon, insertKey, before:=stringKeyValue  ' using a VB6 collection
+    sDockIcons.Add sIcon, insertKey, before:=selectedIconIndex  ' using a VB6 collection index (numeric var) and not a key (string var)
 
     sDockIcons(selectedIconIndex).FileName = thisFilename
     'sDockIcons(selectedIconIndex).FileName2 = thisFileName2
@@ -1642,7 +1640,6 @@ Public Function insertNewIconElementIntoCollection(ByVal thisFilename As String,
     sDockIcons(selectedIconIndex).AppToTerminate = ""
     sDockIcons(selectedIconIndex).Disabled = "0"
 
-'
 '    ' tests
 '    Dim a As String
 '    Dim b As String

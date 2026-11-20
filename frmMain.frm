@@ -1978,7 +1978,7 @@ End Function
 ' Procedure : Form_OLEDragDrop
 ' Author    : beededea
 ' Date      : 15/04/2020
-' Purpose   : Handles drag and drop to the dock, only file types accepted. If an image, drops it straight onto the dock.
+' Purpose   : Handles drag and drop into the dock from Windows apps, only file types accepted. If an image, drops it straight onto the dock.
 '             If it is a binary then we use code to try to extract the embededded icons using privateExtractIcons API
 '             especially when the icon is a bigger one, if it is only a low resolution icon then we give it an icon based upon its suffix.
 '             direct from the icon collection.
