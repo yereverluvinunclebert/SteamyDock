@@ -13,7 +13,7 @@ Option Explicit
         [_]
     End Enum
 #End If
-#If Win64 Then
+#If WIN64 Then
     Private Const NULL_PTR As LongPtr = 0 ' this may glow red but is NOT an error, suitable for 64bit TwinBasic
     Private Const PTR_SIZE As Long = 8
 #Else

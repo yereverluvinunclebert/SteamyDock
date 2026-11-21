@@ -863,6 +863,7 @@ Public Sub writeIconStateToDatabase()
     Dim startTime As Date
     Dim EndTime As Date
     Dim duration As Long: duration = 0
+    Dim dBRecordCount As Integer
 
     If startTime = "00:00:00" Then startTime = time()
 
@@ -873,10 +874,18 @@ Public Sub writeIconStateToDatabase()
 
     'loop from the start operation value to the end
     For useloop = startRecord To sDockIcons.Count
-
         Call writeIconParamsToDB(useloop)
-
     Next useloop
+    
+    ' if due to a previous icon deletion, the database count ends up being greater than the collection count, then remove the excess records.
+    
+    dBRecordCount = getRecordCount
+    If dBRecordCount > sDockIcons.Count Then
+        For useloop = sDockIcons.Count + 1 To dBRecordCount
+            ' delete from table at indexed position (database key)
+            Call deleteSpecificKey(useloop)
+        Next useloop
+    End If
 
     ' calculate the write timing variables and report
     EndTime = time()

@@ -2258,16 +2258,15 @@ Public Sub deleteThisIcon()
     
     ' Debug.Print sDockIcons.Count
     
-    'if not the top icon loop through them all from this location upward and reassign the values
     If selectedIconIndex < sDockIcons.Count Then
-        Dim thiskey As String
+        ' remove the icon from the collection only at the index position not by key
         sDockIcons.Remove selectedIconIndex
     End If
         
-    ' here we should really clean up any references to images that still exist that were loaded when the icon was created
+    ' NOTE: Here we should really clean up any references to images that still exist that were loaded when the icon was created
     ' there are only four image objects still tied up and they will die when the program is restarted.
-    ' for the moment we do not dispose of the images as if an icon is cloned it also clones the image handles to the stored
-    ' image
+    ' for the moment we do not dispose of the images as if an icon has been previously cloned it also clones the image handles to the stored
+    ' image.
     
     ' now the changes are complete, decrement the icon count and the maximum icon to reality
     ' we do that by reading the collection count
@@ -2282,7 +2281,7 @@ Public Sub deleteThisIcon()
 
     If selectedIconIndex > rdIconUpperBound Then selectedIconIndex = rdIconUpperBound
 
-    'reduce by one, all arrays used for storing icon information
+    'reduce by one, all remaining arrays still used for storing icon information
     Call redimPreserveCacheArrays
     
     Call checkDockProcessesRunning ' trigger a test of running processes in half a second
