@@ -3,7 +3,11 @@ Attribute VB_Name = "modDatabase"
 ' Module    : modDatabase
 ' Author    : beededea
 ' Date      : 30/09/2026
-' Purpose   :
+' Purpose   : Database handling tools contained here.
+'             Lots of this module consists of tools used during the conversion from a
+'             sequential data files, arrays and dictionary storage
+'             to VB6 index-based collections, icon classes and SQLite database.
+'             Many are kept for reference purposes only. The rest are used by Steamydock.
 '---------------------------------------------------------------------------------------
 
 Option Explicit
@@ -1345,4 +1349,63 @@ End Sub
 '     MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeHiddenFormLabel of Module modDatabase"
 'End Sub
 
+
+
+    
+'---------------------------------------------------------------------------------------
+' Procedure : writeIconStateToDatabase
+' Author    : beededea
+' Date      : 02/07/2025
+' Purpose   : writing the in-memory cache to disc. The data relating to the icons is written to a collection to avoid any delay to the user,
+'             the writing to disc is VERY slow resulting in a 5 seconds pause so we avoid doing this during UI interaction. However, we still
+'             need to write the data to disc. This routine will only be called when the program exits and after an icon is deleted/added &c,
+'             this will be called via a timer which checks if the dock is not raised before calling this routine.
+'---------------------------------------------------------------------------------------
+'
+Public Sub writeIconStateToDatabase()
+
+    On Error GoTo writeIconStateToDatabase_Error
+
+    Dim useloop As Integer: useloop = 0
+    Dim startRecord As Integer: startRecord = 0
+    Dim startTime As Date
+    Dim EndTime As Date
+    Dim duration As Long: duration = 0
+    Dim dBRecordCount As Integer
+
+    If startTime = "00:00:00" Then startTime = time()
+
+    startRecord = 1
+    
+    If sDockIcons Is Nothing Then Exit Sub
+    If sDockIcons.Count = 0 Then Exit Sub
+
+    'loop from the start operation value to the end
+    For useloop = startRecord To sDockIcons.Count
+        Call writeIconParamsToDB(useloop)
+    Next useloop
+    
+    ' if due to a previous icon deletion, the database count ends up being greater than the collection count, then remove the excess records.
+    
+    dBRecordCount = getRecordCount
+    If dBRecordCount > sDockIcons.Count Then
+        For useloop = sDockIcons.Count + 1 To dBRecordCount
+            ' delete from table at indexed position (database key)
+            Call deleteSpecificKey(useloop)
+        Next useloop
+    End If
+
+    ' calculate the write timing variables and report
+    EndTime = time()
+    duration = DateDiff("s", startTime, EndTime)
+    debugLog "Written settings to file - Done. " & rdIconUpperBound & " records, last run taking " & duration & " seconds "
+
+   On Error GoTo 0
+   Exit Sub
+
+writeIconStateToDatabase_Error:
+
+    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconStateToDatabase of Form dock"
+
+End Sub
 

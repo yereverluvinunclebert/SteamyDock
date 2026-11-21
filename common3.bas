@@ -802,101 +802,43 @@ End Function
 
 
 
-'---------------------------------------------------------------------------------------
-' Procedure : zeroAllIconCharacteristics
-' Author    : beededea
-' Date      : 27/03/2025
-' Purpose   :
-'---------------------------------------------------------------------------------------
+''---------------------------------------------------------------------------------------
+'' Procedure : zeroAllIconCharacteristics
+'' Author    : beededea
+'' Date      : 27/03/2025
+'' Purpose   :
+''---------------------------------------------------------------------------------------
+''
+'Public Sub zeroAllIconCharacteristics()
 '
-Public Sub zeroAllIconCharacteristics()
-
-   On Error GoTo zeroAllIconCharacteristics_Error
-
-    'sFilename = vbNullString
-    'sFileName2 = vbNullString
-    'sTitle = vbNullString
-'    sCommand = vbNullString
-'    sArguments = vbNullString
-'    sWorkingDirectory = vbNullString
-'    sOpenRunning = "0"
-'    sIsSeparator = "0"
-'    sUseContext = "0"
-'    sDockletFile = "0"
-'    sUseDialog = "0"
-'    sUseDialogAfter = "0"
-'    sQuickLaunch = "0"
-'    sDisabled = "0"
-'    sAutoHideDock = "0"
-'    sSecondApp = vbNullString
-'    sRunSecondAppBeforehand = "0"
-'    sAppToTerminate = vbNullString
-'    sRunElevated = "0"
-
-   On Error GoTo 0
-   Exit Sub
-
-zeroAllIconCharacteristics_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure zeroAllIconCharacteristics of Module common3"
-            
-End Sub
-
-
-    
-'---------------------------------------------------------------------------------------
-' Procedure : writeIconStateToDatabase
-' Author    : beededea
-' Date      : 02/07/2025
-' Purpose   : writing the in-memory cache to disc. The data relating to the icons is written to a collection to avoid any delay to the user,
-'             the writing to disc is VERY slow resulting in 15 seconds pause. However, we still need to write the data to disc. This routine
-'             will only be called when the program exits and after an icon is deleted, this will be called via a timer which checks if the
-'             dock is not raised before calling this routine.
-'---------------------------------------------------------------------------------------
+'   On Error GoTo zeroAllIconCharacteristics_Error
 '
-Public Sub writeIconStateToDatabase()
+'    'sFilename = vbNullString
+'    'sFileName2 = vbNullString
+'    'sTitle = vbNullString
+''    sCommand = vbNullString
+''    sArguments = vbNullString
+''    sWorkingDirectory = vbNullString
+''    sOpenRunning = "0"
+''    sIsSeparator = "0"
+''    sUseContext = "0"
+''    sDockletFile = "0"
+''    sUseDialog = "0"
+''    sUseDialogAfter = "0"
+''    sQuickLaunch = "0"
+''    sDisabled = "0"
+''    sAutoHideDock = "0"
+''    sSecondApp = vbNullString
+''    sRunSecondAppBeforehand = "0"
+''    sAppToTerminate = vbNullString
+''    sRunElevated = "0"
+'
+'   On Error GoTo 0
+'   Exit Sub
+'
+'zeroAllIconCharacteristics_Error:
+'
+'    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure zeroAllIconCharacteristics of Module common3"
+'
+'End Sub
 
-    On Error GoTo writeIconStateToDatabase_Error
-
-    Dim useloop As Integer: useloop = 0
-    Dim startRecord As Integer: startRecord = 0
-    Dim startTime As Date
-    Dim EndTime As Date
-    Dim duration As Long: duration = 0
-    Dim dBRecordCount As Integer
-
-    If startTime = "00:00:00" Then startTime = time()
-
-    startRecord = 1
-    
-    If sDockIcons Is Nothing Then Exit Sub
-    If sDockIcons.Count = 0 Then Exit Sub
-
-    'loop from the start operation value to the end
-    For useloop = startRecord To sDockIcons.Count
-        Call writeIconParamsToDB(useloop)
-    Next useloop
-    
-    ' if due to a previous icon deletion, the database count ends up being greater than the collection count, then remove the excess records.
-    
-    dBRecordCount = getRecordCount
-    If dBRecordCount > sDockIcons.Count Then
-        For useloop = sDockIcons.Count + 1 To dBRecordCount
-            ' delete from table at indexed position (database key)
-            Call deleteSpecificKey(useloop)
-        Next useloop
-    End If
-
-    ' calculate the write timing variables and report
-    EndTime = time()
-    duration = DateDiff("s", startTime, EndTime)
-    debugLog "Written settings to file - Done. " & rdIconUpperBound & " records, last run taking " & duration & " seconds "
-
-   On Error GoTo 0
-   Exit Sub
-
-writeIconStateToDatabase_Error:
-
-    MsgBox "Error " & Err.Number & " (" & Err.Description & ") in procedure writeIconStateToDatabase of Form dock"
-
-End Sub

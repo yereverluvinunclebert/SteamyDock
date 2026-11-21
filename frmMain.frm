@@ -3111,6 +3111,7 @@ Private Sub sequentialBubbleAnimation()
             End If
         End If
 
+
         'now draw the icon text above the selected icon
         Call drawTextAboveIcon(useloop, textWidth)
         
@@ -3344,8 +3345,11 @@ Private Sub sizeEachResizedIconToLeft(ByVal useloop As Integer, ByVal leftmostRe
             End If
             
             'debug location no.2
-            DrawTheText "Debug Watch 2 ", dockDrawingYPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
-        
+            'DrawTheText "Debug Watch 2 ", dockDrawingYPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
+'            If IsUserAnAdmin() = 1 Then
+'                DrawTheText "Administrator Mode ", dockDrawingYPositionPxls, leftMostIconXPositionPxls - 100, 300, rDFontName, Val(Abs(rDFontSize))
+'            End If
+            
             If iconHeightPxls < iconSizeSmallPxls Then
                 iconHeightPxls = iconSizeSmallPxls
                 iconCurrentTopPxls = dockDrawingYPositionPxls + iconSizeLargePxls - iconSizeSmallPxls
@@ -3421,9 +3425,7 @@ Private Sub sizeFullSizeIcon(ByVal useloop As Integer, ByRef showsmall As Boolea
 '            Else
 '                showsmall = False
 '            End If
-
             
-    
             ' pass the values to the icon properties
             'sIcon.IconIndex = useloop
 '            sIcon.Height = iconSizeLargePxls
@@ -4218,7 +4220,7 @@ Public Sub runCommand(ByVal runAction As String, ByVal commandOverride As String
         
         thisCommand = commandOverride 'Not using the icon in the dock but the over-ridden command provided as a parameter
         ' therefore we must zero all the parameters, set from the last icon read, to empty values
-        Call zeroAllIconCharacteristics
+        'Call zeroAllIconCharacteristics
     End If
     
     If sIsSeparator = "1" Then
@@ -5427,7 +5429,11 @@ Public Sub drawSmallStaticIcons()
         Next
         
         'debug location no.1
-        DrawTheText "Debug Watch 1 ", dockDrawingYPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
+        'DrawTheText "Debug Watch 1 ", dockDrawingYPositionPxls, 50, 300, rDFontName, Val(Abs(rDFontSize))
+        
+        If IsUserAnAdmin() = 1 Then
+            DrawTheText "Administrator Mode ", dockDrawingYPositionPxls, leftMostIconXPositionPxls - 100, 300, rDFontName, Val(Abs(rDFontSize))
+        End If
         
         Call updateScreenUsingGDIPBitmap
             
@@ -6160,8 +6166,9 @@ Private Sub applyThemeSkinToDock(ByVal dockSkinStart As Long, ByVal dockSkinWidt
 
     If IsUserAnAdmin() = 1 Then
         If dockPosition = vbBottom Then updateDisplayFromIconClass "smallGoldCoinResizedImg128", (themeSkinLeft), (themeSkinTop - 17), (128), (128), 4
+        DrawTheText "Administrator Mode ", dockDrawingYPositionPxls, themeSkinLeft - 100, 300, rDFontName, Val(Abs(rDFontSize))
     End If
-
+    
    On Error GoTo 0
    Exit Sub
 
